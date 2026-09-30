@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1360" height="1040" viewBox="0 0 1360 1040">
+<style>
+text{font-family:"Noto Sans",Arial,sans-serif;fill:#111}.h1{font-size:34px;font-weight:700}.sub{font-size:16px}.label{font-size:18px;font-weight:700}.screenTitle{font-size:22px;font-weight:700}.body{font-size:17px}.meta{font-size:13px}.small{font-size:12px}.bg{fill:#efefec}.panel{fill:#fff}.row{fill:#fff;stroke:#111;stroke-width:1}.focus{fill:#fff;stroke:#111;stroke-width:3}
+</style>
+<rect class="bg" width="1360" height="1040"/>
+<text class="h1" x="32" y="52">ENKU / Interface language — EN v2</text>
+<text class="sub" x="32" y="86">Canonical EN board · Settings → Language · 7-language list</text>
+<text class="label" x="32" y="132">Landscape · 800 × 480</text><text class="label" x="862" y="132">Portrait · 480 × 800</text>
+
+<g transform="translate(32,150)">
+<rect class="panel" width="800" height="480"/>
+<text class="screenTitle" x="24" y="54">←  Interface language</text>
+<text class="label" x="24" y="96">Interface language</text>
+<g transform="translate(16,118)">
+<rect class="focus" width="368" height="52" rx="4"/><text class="body" x="18" y="31">Deutsch</text><text class="meta" x="250" y="31">German</text>
+<g transform="translate(392,0)"><rect class="row" width="368" height="52" rx="4"/><text class="body" x="18" y="31">English</text><text class="meta" x="250" y="31">English</text><text class="body" x="338" y="31">✓</text></g>
+<g transform="translate(0,60)"><rect class="row" width="368" height="52" rx="4"/><text class="body" x="18" y="31">Español</text><text class="meta" x="250" y="31">Spanish</text></g>
+<g transform="translate(392,60)"><rect class="row" width="368" height="52" rx="4"/><text class="body" x="18" y="31">Français</text><text class="meta" x="250" y="31">French</text></g>
+<g transform="translate(0,120)"><rect class="row" width="368" height="52" rx="4"/><text class="body" x="18" y="31">Italiano</text><text class="meta" x="250" y="31">Italian</text></g>
+<g transform="translate(392,120)"><rect class="row" width="368" height="52" rx="4"/><text class="body" x="18" y="31">Polski</text><text class="meta" x="250" y="31">Polish</text></g>
+<g transform="translate(0,180)"><rect class="row" width="368" height="52" rx="4"/><text class="body" x="18" y="31">Русский</text><text class="meta" x="250" y="31">Russian</text></g>
+</g>
+<text class="small" x="24" y="444">Changing interface language does not change book content or keyboard layout.</text>
+</g>
+
+<g transform="translate(862,150)">
+<rect class="panel" width="480" height="800"/>
+<text class="screenTitle" x="24" y="54">←  Interface language</text>
+<text class="label" x="24" y="96">Interface language</text>
+<g transform="translate(16,118)">
+<rect class="row" width="448" height="52" rx="4"/><text class="body" x="18" y="31">English</text><text class="meta" x="322" y="31">English</text><text class="body" x="418" y="31">✓</text>
+<g transform="translate(0,60)"><rect class="row" width="448" height="52" rx="4"/><text class="body" x="18" y="31">Русский</text><text class="meta" x="322" y="31">Russian</text></g>
+<g transform="translate(0,120)"><rect class="focus" width="448" height="52" rx="4"/><text class="body" x="18" y="31">Polski</text><text class="meta" x="322" y="31">Polish</text></g>
+<g transform="translate(0,180)"><rect class="row" width="448" height="52" rx="4"/><text class="body" x="18" y="31">Deutsch</text><text class="meta" x="322" y="31">German</text></g>
+<g transform="translate(0,240)"><rect class="row" width="448" height="52" rx="4"/><text class="body" x="18" y="31">Français</text><text class="meta" x="322" y="31">French</text></g>
+<g transform="translate(0,300)"><rect class="row" width="448" height="52" rx="4"/><text class="body" x="18" y="31">Español</text><text class="meta" x="322" y="31">Spanish</text></g>
+<g transform="translate(0,360)"><rect class="row" width="448" height="52" rx="4"/><text class="body" x="18" y="31">Italiano</text><text class="meta" x="322" y="31">Italian</text></g>
+</g>
+<text class="small" x="24" y="748">Confirm applies immediately. Back returns to Settings.</text>
+</g>
+
+<text class="label" x="32" y="678">Behavior</text>
+<text class="sub" x="32" y="712">• Checkmark = currently applied language. Focus outline = current navigation position.</text>
+<text class="sub" x="32" y="742">• Confirm applies the focused language immediately and keeps focus on that row.</text>
+<text class="sub" x="32" y="772">• Language names are shown in their native form; metadata uses canonical English names.</text>
+<text class="sub" x="32" y="802">• Book text, metadata and keyboard input language are independent from interface language.</text>
+</svg>

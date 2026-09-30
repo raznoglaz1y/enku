@@ -22,10 +22,10 @@ The goal of this phase is to convert every board marked **Needs revision** in th
 - [x] `ENKU_language_v1` → `design/screens/en/ENKU_interface_language_v2.svg`
 
 ### Library
-- [ ] `ENKU_library_v1`
-- [ ] `ENKU_library_list_v1`
-- [ ] `ENKU_library_search_v1`
-- [ ] `ENKU_book_details_v1`
+- [x] `ENKU_library_v1` → `design/screens/en/ENKU_library_grid_v2.svg`
+- [x] `ENKU_library_list_v1` → `design/screens/en/ENKU_library_list_v2.svg`
+- [x] `ENKU_library_search_v1` → `design/screens/en/ENKU_library_search_v2.svg`
+- [x] `ENKU_book_details_v1` → `design/screens/en/ENKU_book_details_v2.svg`
 
 ### Reading
 - [ ] `ENKU_quick_aa_preview_v3`

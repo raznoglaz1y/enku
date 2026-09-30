@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1360" height="1080" viewBox="0 0 1360 1080">
+<style>
+text{font-family:"Noto Sans",Arial,sans-serif;fill:#111}
+.h1{font-size:34px;font-weight:700}.sub{font-size:16px}.section{font-size:18px;font-weight:700}
+.title{font-size:22px;font-weight:700}.body{font-size:16px}.meta{font-size:12px}.preview{font-size:24px}
+.bg{fill:#efefec}.panel{fill:#fff}.row{fill:#fff;stroke:#111;stroke-width:1}.focus{fill:#fff;stroke:#111;stroke-width:2}
+.selected{fill:#111}.selectedText{fill:#fff;font-size:16px}.btn{fill:#111}.btnText{fill:#fff;font-size:16px;font-weight:700}
+.line{stroke:#111;stroke-width:1}.muted{fill:#666}
+</style><rect class="bg" width="1360" height="1080"/>
+<text class="h1" x="32" y="52">ENKU / Search in Book — EN v2</text>
+<text class="sub" x="32" y="86">Canonical EN board · shared keyboard · batched results · pre-search position preserved</text>
+<text class="section" x="32" y="132">Landscape · 800 × 480</text><text class="section" x="862" y="132">Portrait · 480 × 800</text>
+
+<g transform="translate(32,150)">
+<rect class="panel" width="800" height="480"/>
+<image href="../../icons/arrow-left.svg" x="18" y="34" width="20" height="20" style="color:#111"/><image href="../../icons/magnifying-glass.svg" x="50" y="32" width="24" height="24" style="color:#111"/>
+<text class="title" x="86" y="54">Search in book</text><text class="meta" x="708" y="28">10:42</text>
+<rect class="focus" x="24" y="76" width="620" height="48" rx="4"/><image href="../../icons/magnifying-glass.svg" x="38" y="88" width="20" height="20" style="color:#111"/>
+<text class="body" x="72" y="106">desert</text>
+<rect class="btn" x="656" y="76" width="120" height="48" rx="4"/><text class="btnText" x="716" y="106" text-anchor="middle">Search</text>
+<text class="meta" x="24" y="150">Dune · 12 matches</text>
+
+<g transform="translate(24,170)">
+<rect class="focus" width="752" height="72" rx="4"/><image href="../../icons/list.svg" x="12" y="24" width="24" height="24" style="color:#111"/>
+<text class="section" x="52" y="24">Chapter 1</text><text class="body" x="52" y="47">Beyond the window stretched the <tspan font-weight="700" text-decoration="underline">desert</tspan>.</text><text class="meta" x="52" y="65">Paul stared toward the distant horizon.</text><image href="../../icons/caret-right.svg" x="716" y="24" width="20" height="20" style="color:#111"/>
+<g transform="translate(0,82)"><image href="../../icons/list.svg" x="12" y="20" width="24" height="24" style="color:#111"/><text class="section" x="52" y="22">Chapter 3</text><text class="body" x="52" y="45">The <tspan font-weight="700" text-decoration="underline">desert</tspan> kept its secrets.</text><image href="../../icons/caret-right.svg" x="716" y="20" width="20" height="20" style="color:#111"/></g>
+<g transform="translate(0,148)"><image href="../../icons/list.svg" x="12" y="20" width="24" height="24" style="color:#111"/><text class="section" x="52" y="22">Chapter 5</text><text class="body" x="52" y="45">At night the <tspan font-weight="700" text-decoration="underline">desert</tspan> turned cold.</text><image href="../../icons/caret-right.svg" x="716" y="20" width="20" height="20" style="color:#111"/></g>
+</g>
+<text class="meta" x="24" y="452">1–3 of 12 · Next batch loads on navigation</text>
+</g>
+
+<g transform="translate(862,150)">
+<rect class="panel" width="480" height="800"/>
+<image href="../../icons/arrow-left.svg" x="18" y="34" width="20" height="20" style="color:#111"/><image href="../../icons/magnifying-glass.svg" x="50" y="32" width="24" height="24" style="color:#111"/>
+<text class="title" x="86" y="54">Search in book</text>
+<rect class="focus" x="24" y="76" width="432" height="48" rx="4"/><image href="../../icons/magnifying-glass.svg" x="38" y="88" width="20" height="20" style="color:#111"/>
+<text class="body" x="72" y="106">desert</text>
+<rect class="btn" x="24" y="136" width="432" height="48" rx="4"/><text class="btnText" x="240" y="166" text-anchor="middle">Search</text>
+<text class="meta" x="24" y="210">Dune · 12 matches</text>
+
+<g transform="translate(16,232)">
+<rect class="focus" width="448" height="82" rx="4"/><image href="../../icons/list.svg" x="12" y="28" width="24" height="24" style="color:#111"/>
+<text class="section" x="52" y="25">Chapter 1</text><text class="body" x="52" y="49">Beyond the window stretched the <tspan font-weight="700" text-decoration="underline">desert</tspan>.</text><text class="meta" x="52" y="69">Paul stared toward the distant horizon.</text><image href="../../icons/caret-right.svg" x="414" y="30" width="20" height="20" style="color:#111"/>
+<g transform="translate(0,94)"><image href="../../icons/list.svg" x="12" y="28" width="24" height="24" style="color:#111"/><text class="section" x="52" y="25">Chapter 3</text><text class="body" x="52" y="49">The <tspan font-weight="700" text-decoration="underline">desert</tspan> kept its secrets.</text><text class="meta" x="52" y="69">Every step required caution.</text><image href="../../icons/caret-right.svg" x="414" y="30" width="20" height="20" style="color:#111"/></g>
+<g transform="translate(0,188)"><image href="../../icons/list.svg" x="12" y="28" width="24" height="24" style="color:#111"/><text class="section" x="52" y="25">Chapter 5</text><text class="body" x="52" y="49">At night the <tspan font-weight="700" text-decoration="underline">desert</tspan> turned cold.</text><text class="meta" x="52" y="69">The wind fell silent.</text><image href="../../icons/caret-right.svg" x="414" y="30" width="20" height="20" style="color:#111"/></g>
+<g transform="translate(0,282)"><image href="../../icons/list.svg" x="12" y="28" width="24" height="24" style="color:#111"/><text class="section" x="52" y="25">Chapter 7</text><text class="body" x="52" y="49">Ahead lay the endless <tspan font-weight="700" text-decoration="underline">desert</tspan>.</text><text class="meta" x="52" y="69">Dunes stopped before dawn.</text><image href="../../icons/caret-right.svg" x="414" y="30" width="20" height="20" style="color:#111"/></g>
+</g>
+<text class="meta" x="24" y="648">1–4 of 12 · More results load in batches.</text>
+<text class="meta" x="24" y="730">Back returns to the original reading position.</text>
+</g>
+
+<text class="section" x="32" y="682">Behavior</text>
+<text class="sub" x="32" y="716">• Activating the query field opens the shared on-screen keyboard; keyboard language is independent from UI language.</text>
+<text class="sub" x="32" y="746">• The pre-search reading position is preserved until a result is explicitly opened.</text>
+<text class="sub" x="32" y="776">• Result highlighting uses bold + underline, not grayscale alone. Large result sets are loaded in batches.</text>
+</svg>

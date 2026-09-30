@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1360" height="1040" viewBox="0 0 1360 1040">
+
+<style>
+text{font-family:"Noto Sans",Arial,sans-serif;fill:#111}
+.h1{font-size:34px;font-weight:700}.sub{font-size:16px}.label{font-size:18px;font-weight:700}
+.title{font-size:22px;font-weight:700}.body{font-size:17px}.meta{font-size:13px}.small{font-size:12px}
+.bg{fill:#efefec}.panel{fill:#fff}.row{fill:#fff;stroke:#111;stroke-width:1}.focus{fill:#fff;stroke:#111;stroke-width:3}
+.btn{fill:#111}.btnt{fill:#fff;font-size:17px;font-weight:700}.outline{fill:#fff;stroke:#111;stroke-width:1}
+.cover{fill:#fff;stroke:#111;stroke-width:1}.bar{fill:#111}.hair{stroke:#111;stroke-width:1}
+</style>
+<rect class="bg" width="1360" height="1040"/>
+<text class="h1" x="32" y="52">ENKU / Library Search — EN v2</text>
+<text class="sub" x="32" y="86">Shared keyboard subsystem · global title + author search · explicit focus traversal</text>
+<text class="label" x="32" y="132">Landscape · 800 × 480</text><text class="label" x="862" y="132">Portrait · 480 × 800</text>
+<g transform="translate(32,150)">
+<rect class="panel" width="800" height="480"/>
+<text class="title" x="24" y="54">←  Search Library</text>
+<rect class="focus" x="24" y="76" width="752" height="48" rx="4"/><text class="body" x="46" y="106">Verne</text><text class="body" x="746" y="106">×</text>
+<text class="meta" x="24" y="148">2 results</text>
+<text class="label" x="48" y="182">Around the World in Eighty Days</text><text class="meta" x="48" y="204">Jules Verne</text>
+<text class="label" x="48" y="242">The Mysterious Island</text><text class="meta" x="48" y="264">Jules Verne</text>
+<!-- compact keyboard -->
+<g transform="translate(24,292)">
+<rect class="row" x="0" y="0" width="64" height="36" rx="3"/><text class="meta" x="32" y="23" text-anchor="middle">Q</text><rect class="row" x="72" y="0" width="64" height="36" rx="3"/><text class="meta" x="104" y="23" text-anchor="middle">W</text><rect class="row" x="144" y="0" width="64" height="36" rx="3"/><text class="meta" x="176" y="23" text-anchor="middle">E</text><rect class="row" x="216" y="0" width="64" height="36" rx="3"/><text class="meta" x="248" y="23" text-anchor="middle">R</text><rect class="row" x="288" y="0" width="64" height="36" rx="3"/><text class="meta" x="320" y="23" text-anchor="middle">T</text><rect class="row" x="360" y="0" width="64" height="36" rx="3"/><text class="meta" x="392" y="23" text-anchor="middle">Y</text><rect class="row" x="432" y="0" width="64" height="36" rx="3"/><text class="meta" x="464" y="23" text-anchor="middle">U</text><rect class="row" x="504" y="0" width="64" height="36" rx="3"/><text class="meta" x="536" y="23" text-anchor="middle">I</text><rect class="row" x="576" y="0" width="64" height="36" rx="3"/><text class="meta" x="608" y="23" text-anchor="middle">O</text><rect class="row" x="648" y="0" width="64" height="36" rx="3"/><text class="meta" x="680" y="23" text-anchor="middle">P</text>
+<rect class="row" x="36" y="44" width="64" height="36" rx="3"/><text class="meta" x="68" y="67" text-anchor="middle">A</text><rect class="row" x="108" y="44" width="64" height="36" rx="3"/><text class="meta" x="140" y="67" text-anchor="middle">S</text><rect class="row" x="180" y="44" width="64" height="36" rx="3"/><text class="meta" x="212" y="67" text-anchor="middle">D</text><rect class="row" x="252" y="44" width="64" height="36" rx="3"/><text class="meta" x="284" y="67" text-anchor="middle">F</text><rect class="row" x="324" y="44" width="64" height="36" rx="3"/><text class="meta" x="356" y="67" text-anchor="middle">G</text><rect class="row" x="396" y="44" width="64" height="36" rx="3"/><text class="meta" x="428" y="67" text-anchor="middle">H</text><rect class="row" x="468" y="44" width="64" height="36" rx="3"/><text class="meta" x="500" y="67" text-anchor="middle">J</text><rect class="row" x="540" y="44" width="64" height="36" rx="3"/><text class="meta" x="572" y="67" text-anchor="middle">K</text><rect class="row" x="612" y="44" width="64" height="36" rx="3"/><text class="meta" x="644" y="67" text-anchor="middle">L</text>
+<rect class="row" x="0" y="88" width="86" height="36" rx="3"/><text class="meta" x="43" y="111" text-anchor="middle">ABC</text>
+<rect class="row" x="94" y="88" width="86" height="36" rx="3"/><text class="meta" x="137" y="111" text-anchor="middle">123</text>
+<rect class="row" x="188" y="88" width="400" height="36" rx="3"/><text class="meta" x="388" y="111" text-anchor="middle">Space</text>
+<rect class="row" x="596" y="88" width="156" height="36" rx="3"/><text class="meta" x="674" y="111" text-anchor="middle">Delete</text>
+</g>
+</g>
+<g transform="translate(862,150)">
+<rect class="panel" width="480" height="800"/>
+<text class="title" x="24" y="54">←  Search Library</text>
+<rect class="focus" x="24" y="76" width="432" height="48" rx="4"/><text class="body" x="46" y="106">Verne</text><text class="body" x="426" y="106">×</text>
+<text class="meta" x="24" y="148">2 results</text>
+<text class="label" x="40" y="184">Around the World in Eighty Days</text><text class="meta" x="40" y="206">Jules Verne</text>
+<text class="label" x="40" y="248">The Mysterious Island</text><text class="meta" x="40" y="270">Jules Verne</text>
+<g transform="translate(24,510)">
+<rect class="row" x="0" y="0" width="36" height="38" rx="3"/><text class="meta" x="18" y="24" text-anchor="middle">Q</text><rect class="row" x="42" y="0" width="36" height="38" rx="3"/><text class="meta" x="60" y="24" text-anchor="middle">W</text><rect class="row" x="84" y="0" width="36" height="38" rx="3"/><text class="meta" x="102" y="24" text-anchor="middle">E</text><rect class="row" x="126" y="0" width="36" height="38" rx="3"/><text class="meta" x="144" y="24" text-anchor="middle">R</text><rect class="row" x="168" y="0" width="36" height="38" rx="3"/><text class="meta" x="186" y="24" text-anchor="middle">T</text><rect class="row" x="210" y="0" width="36" height="38" rx="3"/><text class="meta" x="228" y="24" text-anchor="middle">Y</text><rect class="row" x="252" y="0" width="36" height="38" rx="3"/><text class="meta" x="270" y="24" text-anchor="middle">U</text><rect class="row" x="294" y="0" width="36" height="38" rx="3"/><text class="meta" x="312" y="24" text-anchor="middle">I</text><rect class="row" x="336" y="0" width="36" height="38" rx="3"/><text class="meta" x="354" y="24" text-anchor="middle">O</text><rect class="row" x="378" y="0" width="36" height="38" rx="3"/><text class="meta" x="396" y="24" text-anchor="middle">P</text>
+<rect class="row" x="20" y="46" width="36" height="38" rx="3"/><text class="meta" x="38" y="70" text-anchor="middle">A</text><rect class="row" x="62" y="46" width="36" height="38" rx="3"/><text class="meta" x="80" y="70" text-anchor="middle">S</text><rect class="row" x="104" y="46" width="36" height="38" rx="3"/><text class="meta" x="122" y="70" text-anchor="middle">D</text><rect class="row" x="146" y="46" width="36" height="38" rx="3"/><text class="meta" x="164" y="70" text-anchor="middle">F</text><rect class="row" x="188" y="46" width="36" height="38" rx="3"/><text class="meta" x="206" y="70" text-anchor="middle">G</text><rect class="row" x="230" y="46" width="36" height="38" rx="3"/><text class="meta" x="248" y="70" text-anchor="middle">H</text><rect class="row" x="272" y="46" width="36" height="38" rx="3"/><text class="meta" x="290" y="70" text-anchor="middle">J</text><rect class="row" x="314" y="46" width="36" height="38" rx="3"/><text class="meta" x="332" y="70" text-anchor="middle">K</text><rect class="row" x="356" y="46" width="36" height="38" rx="3"/><text class="meta" x="374" y="70" text-anchor="middle">L</text>
+<rect class="row" x="0" y="92" width="60" height="38" rx="3"/><text class="meta" x="30" y="116" text-anchor="middle">ABC</text>
+<rect class="row" x="68" y="92" width="60" height="38" rx="3"/><text class="meta" x="98" y="116" text-anchor="middle">123</text>
+<rect class="row" x="136" y="92" width="184" height="38" rx="3"/><text class="meta" x="228" y="116" text-anchor="middle">Space</text>
+<rect class="row" x="328" y="92" width="104" height="38" rx="3"/><text class="meta" x="380" y="116" text-anchor="middle">Delete</text>
+</g>
+</g>
+<text class="label" x="32" y="682">Behavior</text>
+<text class="sub" x="32" y="716">• Search is global across title + author; Library filter does not constrain results.</text>
+<text class="sub" x="32" y="746">• Focus order is explicit: query field → results → keyboard → back route. Keyboard layout is independent from UI language.</text>
+<text class="sub" x="32" y="776">• Empty query shows the full Library; no-result state uses the dedicated recovery screen.</text>
+</svg>

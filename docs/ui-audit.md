@@ -110,3 +110,37 @@ Status values:
 8. “Power off” semantics are deferred until the real board’s power and wake behavior are tested.
 9. Battery percentage/thresholds are deferred until real LP505060 + board measurement behavior is characterized.
 10. `ENKU_focus_states_v1` becomes the shared focus/selection visual reference for the whole UI.
+
+
+## Block 5 — Storage / Import / Transfer
+
+| Board | Status | Audit notes |
+| --- | --- | --- |
+| `ENKU_storage_import_v1` | **Needs revision** | Storage overview is useful, but labels currently imply USB/Wi-Fi as settled import methods. For MVP, microSD/file access is confirmed; Wi-Fi is planned; USB remains implementation-dependent. Capacity/free-space values must come from the real filesystem. “Refresh library” should rescan without duplicating books or destroying reading data. |
+| `ENKU_import_methods_v1` | **Needs revision** | The selection model is clear, but USB must not be presented as guaranteed until the transport mode is chosen and implemented. Keep Wi-Fi as planned and microSD/files as the always-available local path. |
+| `ENKU_file_browser_v1` | **Approved** | Strong fit for physical navigation. Folders first, then files; back goes up one level; file state can indicate “already in library”. Preserve current directory and focused row across orientation changes. Adding a book must not remove the source file from the card. |
+| `ENKU_book_validation_v1` | **Approved** | Validation-before-add is correct. Validate structure/openability locally before committing a new library record. Cancel removes only the temporary incoming file. Existing books and reading data stay untouched until a replacement succeeds. |
+| `ENKU_replace_book_v1` | **Needs revision** | Confirmation flow is good, but duplicate detection cannot rely on filename alone. Define book identity strategy (metadata/hash/normalized identifier). Preserve progress/bookmarks/settings only when the new file is confirmed to represent the same book or when the user explicitly chooses replacement. |
+| `ENKU_import_summary_v1` | **Approved** | Session summary is useful for batch operations. Counts should be mutually exclusive: added / replaced / skipped / failed. Failed items need concise reasons and a scrollable list when necessary. |
+| `ENKU_import_complete_v1` | **Approved** | Good single-book success state. “Open” starts/resumes the added book; “Back to files” restores folder and focus. Newly added books enter Library as New unless prior reading state is intentionally restored. |
+| `ENKU_transfer_progress_v2` | **Needs revision** | Progress UI is valid for network transfer, but e-paper should update progress at a throttled cadence rather than every byte/percent change. Exact update interval should be measured on hardware. Preserve completed books if a later file fails. |
+| `ENKU_cancel_transfer_v1` | **Approved** | Correct confirmation model with Continue as safe default. Cancel removes only the incomplete temporary file and keeps previously completed imports/results. |
+| `ENKU_transfer_interrupted_v1` | **Needs revision** | Recovery concept is sound, but behavior depends on transport. For first implementation, Wi-Fi can restart a failed upload from the beginning unless resumable transfer is explicitly implemented. Completed books remain committed. |
+| `ENKU_no_memory_card_v1` | **Approved** | Distinct from empty library and read error. Retry detection is the primary action. Existing ENKU metadata/progress should not be deleted just because the card is missing. |
+| `ENKU_memory_card_error_v1` | **Approved** | Correctly separates “card present but unreadable” from “no card”. Retry should remount/reopen; never offer implicit formatting or destructive recovery. |
+| `ENKU_not_enough_space_v1` | **Needs revision** | The state is valid, but required/free-space calculation must include temporary import overhead and filesystem constraints. Storage management destination should be clearly defined; ENKU must never auto-delete books to make room. |
+| `ENKU_usb_transfer_v2` | **Reference only** | Keep as a concept/reference board only. USB transfer mode, host/device behavior and file-exposure strategy are not yet selected and should not be promised in MVP documentation. |
+
+### Decisions from this block
+
+1. **microSD / local files are part of the first usable MVP path.**
+2. Wi-Fi import remains planned; **USB transfer is not committed** until the transport architecture is chosen and verified.
+3. Library metadata, progress, bookmarks and per-book settings are logically separate from the raw book file.
+4. Import always validates a book before creating/replacing a committed library record.
+5. Duplicate detection requires an identity strategy stronger than filename equality.
+6. Replacing a file must be transactional: keep the old usable book until the new one is validated and safely written.
+7. Transfer/import operations may create temporary files; incomplete temporary files are cleaned up on cancel/failure.
+8. Already completed books in a multi-file session remain committed even if a later file fails.
+9. E-paper progress UI is **throttled**, not continuously animated.
+10. Missing card, unreadable card and insufficient space remain separate system states.
+11. ENKU never auto-formats storage and never deletes existing books automatically to make space.

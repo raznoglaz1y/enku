@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1360" height="1040" viewBox="0 0 1360 1040">
+
+<style>
+text{font-family:"Noto Sans",Arial,sans-serif;fill:#111}
+.h1{font-size:34px;font-weight:700}.sub{font-size:16px}.label{font-size:18px;font-weight:700}
+.title{font-size:22px;font-weight:700}.body{font-size:17px}.meta{font-size:13px}.small{font-size:12px}
+.bg{fill:#efefec}.panel{fill:#fff}.row{fill:#fff;stroke:#111;stroke-width:1}.focus{fill:#fff;stroke:#111;stroke-width:3}
+.btn{fill:#111}.btnt{fill:#fff;font-size:17px;font-weight:700}.outline{fill:#fff;stroke:#111;stroke-width:1}
+.cover{fill:#fff;stroke:#111;stroke-width:1}.bar{fill:#111}.hair{stroke:#111;stroke-width:1}
+</style>
+<rect class="bg" width="1360" height="1040"/>
+<text class="h1" x="32" y="52">ENKU / Library · Grid — EN v2</text>
+<text class="sub" x="32" y="86">Canonical EN board · explicit physical-navigation focus · persistent view/filter/sort state</text>
+<text class="label" x="32" y="132">Landscape · 800 × 480</text><text class="label" x="862" y="132">Portrait · 480 × 800</text>
+
+<g transform="translate(32,150)">
+<rect class="panel" width="800" height="480"/>
+<text class="small" x="24" y="26">Library</text><text class="small" x="690" y="26">10:42   Wi-Fi   82%</text>
+<text class="title" x="24" y="66">Books</text><text class="body" x="682" y="66">⌕   ⋯</text>
+<text class="body" x="24" y="106">All books · 4</text><text class="body" x="644" y="106">▦   ≡   ≛   ⇅</text>
+<!-- cards -->
+<g transform="translate(24,126)">
+<rect class="focus" x="0" y="0" width="168" height="244" rx="4"/>
+<rect class="cover" x="16" y="14" width="136" height="142"/><text class="meta" x="26" y="34">F. Dostoevsky</text><text class="label" x="26" y="74">WHITE</text><text class="label" x="26" y="98">NIGHTS</text>
+<text class="label" x="10" y="184">White Nights</text><text class="meta" x="10" y="205">Fyodor Dostoevsky</text><text class="meta" x="10" y="226">Reading · 32%</text>
+<rect class="bar" x="10" y="234" width="48" height="3"/><line class="hair" x1="58" y1="235" x2="154" y2="235"/>
+</g>
+<g transform="translate(216,126)">
+<rect class="cover" x="16" y="14" width="136" height="142"/><text class="meta" x="26" y="34">A. de Saint-Exupéry</text><text class="label" x="26" y="78">THE LITTLE</text><text class="label" x="26" y="102">PRINCE</text>
+<text class="label" x="10" y="184">The Little Prince</text><text class="meta" x="10" y="205">A. de Saint-Exupéry</text><text class="meta" x="10" y="226">New</text>
+</g>
+<g transform="translate(408,126)">
+<rect class="cover" x="16" y="14" width="136" height="142"/><text class="meta" x="26" y="34">Jules Verne</text><text class="label" x="26" y="78">AROUND THE</text><text class="label" x="26" y="102">WORLD</text>
+<text class="label" x="10" y="184">Around the World…</text><text class="meta" x="10" y="205">Jules Verne</text><text class="meta" x="10" y="226">Finished ✓</text>
+</g>
+<g transform="translate(600,126)">
+<rect class="cover" x="16" y="14" width="136" height="142"/><text class="meta" x="26" y="34">Jules Verne</text><text class="label" x="26" y="78">MYSTERIOUS</text><text class="label" x="26" y="102">ISLAND</text>
+<text class="label" x="10" y="184">The Mysterious…</text><text class="meta" x="10" y="205">Jules Verne</text><text class="meta" x="10" y="226">New</text>
+</g>
+<text class="small" x="370" y="456">1 / 1</text>
+</g>
+
+<g transform="translate(862,150)">
+<rect class="panel" width="480" height="800"/>
+<text class="small" x="24" y="26">Library</text><text class="small" x="368" y="26">10:42  82%</text>
+<text class="title" x="24" y="66">Books</text><text class="body" x="386" y="66">⌕   ⋯</text>
+<text class="body" x="24" y="106">All books · 4</text><text class="body" x="332" y="106">▦  ≡  ≛  ⇅</text>
+<g transform="translate(24,132)">
+<rect class="focus" x="0" y="0" width="196" height="250" rx="4"/>
+<rect class="cover" x="26" y="14" width="144" height="150"/><text class="meta" x="36" y="34">F. Dostoevsky</text><text class="label" x="36" y="78">WHITE</text><text class="label" x="36" y="102">NIGHTS</text>
+<text class="label" x="10" y="192">White Nights</text><text class="meta" x="10" y="214">Fyodor Dostoevsky</text><text class="meta" x="10" y="236">Reading · 32%</text>
+</g>
+<g transform="translate(260,132)">
+<rect class="cover" x="26" y="14" width="144" height="150"/><text class="meta" x="36" y="34">A. de Saint-Exupéry</text><text class="label" x="36" y="78">THE LITTLE</text><text class="label" x="36" y="102">PRINCE</text>
+<text class="label" x="10" y="192">The Little Prince</text><text class="meta" x="10" y="214">A. de Saint-Exupéry</text><text class="meta" x="10" y="236">New</text>
+</g>
+<g transform="translate(24,410)"><rect class="cover" x="26" y="14" width="144" height="150"/><text class="meta" x="36" y="34">Jules Verne</text><text class="label" x="36" y="78">AROUND THE</text><text class="label" x="36" y="102">WORLD</text><text class="label" x="10" y="192">Around the World…</text><text class="meta" x="10" y="214">Jules Verne</text><text class="meta" x="10" y="236">Finished ✓</text></g>
+<g transform="translate(260,410)"><rect class="cover" x="26" y="14" width="144" height="150"/><text class="meta" x="36" y="34">Jules Verne</text><text class="label" x="36" y="78">MYSTERIOUS</text><text class="label" x="36" y="102">ISLAND</text><text class="label" x="10" y="192">The Mysterious…</text><text class="meta" x="10" y="214">Jules Verne</text><text class="meta" x="10" y="236">New</text></g>
+<text class="small" x="220" y="774">1 / 1</text>
+</g>
+
+<text class="label" x="32" y="682">Behavior</text>
+<text class="sub" x="32" y="716">• 2 px outline marks the focused book; reading state/progress remains separate.</text>
+<text class="sub" x="32" y="746">• Grid/List, filter, sort and focused/visible book persist across orientation changes.</text>
+<text class="sub" x="32" y="776">• Confirm opens the focused book. Menu opens Book Details / actions without losing Library position.</text>
+</svg>

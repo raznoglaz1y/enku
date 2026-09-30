@@ -39,6 +39,8 @@ First-version scope:
 - storage/free-space view;
 - transfer/import progress and errors;
 - basic metadata inspection/correction where useful;
+- book-cover preview and manual replacement;
+- restore the original embedded cover when available;
 - limited book actions such as mark read/unread, reset progress and clear per-book reading overrides.
 
 Full typography and reading configuration remains on-device in the first version, because those settings are best adjusted while immediately viewing the result on the e-paper screen.

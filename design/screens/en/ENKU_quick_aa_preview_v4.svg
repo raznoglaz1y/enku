@@ -13,8 +13,8 @@ text{font-family:"Noto Sans",Arial,sans-serif;fill:#111}
 
 <g transform="translate(32,150)">
 <rect class="panel" width="800" height="480"/>
-<image href="../../icons/arrow-left.svg" x="18" y="35" width="20" height="20" style="color:#111"/>
-<image href="../../icons/text-aa.svg" x="50" y="33" width="24" height="24" style="color:#111"/>
+<g transform="translate(18,35) scale(0.078125,0.078125)" style="color:#111"><line x1="216" y1="128" x2="40" y2="128" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/><polyline points="112 56 40 128 112 200" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/></g>
+<g transform="translate(50,33) scale(0.09375,0.09375)" style="color:#111"><polyline points="144 192 80 56 16 192" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/><ellipse cx="200" cy="164" rx="32" ry="28" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/><path d="M232,192V132c0-15.46-14.33-28-32-28-9.56,0-18.14,2.18-24,8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/><line x1="125.18" y1="152" x2="34.82" y2="152" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/></g>
 <text class="title" x="86" y="54">Quick typography</text>
 <text class="meta" x="700" y="30">10:42   82%</text>
 
@@ -26,7 +26,7 @@ text{font-family:"Noto Sans",Arial,sans-serif;fill:#111}
 <g transform="translate(0,144)"><rect class="row" width="218" height="40" rx="4"/><text class="body" x="109" y="25" text-anchor="middle">Compact</text></g>
 <g transform="translate(0,192)"><rect class="row" width="218" height="40" rx="4"/><text class="body" x="109" y="25" text-anchor="middle">Dense</text></g>
 </g>
-<text class="body" x="24" y="390">All typography settings</text><image href="../../icons/caret-right.svg" x="214" y="374" width="18" height="18" style="color:#111"/>
+<text class="body" x="24" y="390">All typography settings</text><g transform="translate(214,374) scale(0.0703125,0.0703125)" style="color:#111"><polyline points="96 48 176 128 96 208" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/></g>
 <rect class="btn" x="24" y="410" width="218" height="48" rx="4"/><text class="btnText" x="133" y="441" text-anchor="middle">Apply</text>
 
 <text class="preview" x="292" y="130">It was a strange night, the kind of night</text>
@@ -41,7 +41,7 @@ text{font-family:"Noto Sans",Arial,sans-serif;fill:#111}
 
 <g transform="translate(862,150)">
 <rect class="panel" width="480" height="800"/>
-<image href="../../icons/arrow-left.svg" x="18" y="35" width="20" height="20" style="color:#111"/><image href="../../icons/text-aa.svg" x="50" y="33" width="24" height="24" style="color:#111"/>
+<g transform="translate(18,35) scale(0.078125,0.078125)" style="color:#111"><line x1="216" y1="128" x2="40" y2="128" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/><polyline points="112 56 40 128 112 200" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/></g><g transform="translate(50,33) scale(0.09375,0.09375)" style="color:#111"><polyline points="144 192 80 56 16 192" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/><ellipse cx="200" cy="164" rx="32" ry="28" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/><path d="M232,192V132c0-15.46-14.33-28-32-28-9.56,0-18.14,2.18-24,8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/><line x1="125.18" y1="152" x2="34.82" y2="152" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/></g>
 <text class="title" x="86" y="54">Quick typography</text>
 <text class="meta" x="374" y="28">82%</text>
 <text class="preview" x="24" y="116">It was a strange night, the kind</text>
@@ -59,7 +59,7 @@ text{font-family:"Noto Sans",Arial,sans-serif;fill:#111}
 <g transform="translate(142,52)"><rect class="row" width="132" height="42" rx="4"/><text class="body" x="66" y="26" text-anchor="middle">Dense</text></g>
 </g>
 <rect class="row" x="24" y="484" width="432" height="48" rx="4"/>
-<text class="body" x="40" y="514">All typography settings</text><image href="../../icons/caret-right.svg" x="424" y="496" width="20" height="20" style="color:#111"/>
+<text class="body" x="40" y="514">All typography settings</text><g transform="translate(424,496) scale(0.078125,0.078125)" style="color:#111"><polyline points="96 48 176 128 96 208" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/></g>
 <rect class="btn" x="24" y="688" width="432" height="48" rx="4"/><text class="btnText" x="240" y="719" text-anchor="middle">Apply</text>
 <text class="meta" x="24" y="770">Back closes without applying the previewed preset.</text>
 </g>

@@ -95,9 +95,13 @@ Status/header controls appear only when the reading overlay/menu is invoked.
 
 - Minimum baseline height: 48 px.
 - Button text is optically centered.
+- Standard horizontal screen/content inset: **24 px** on both sides.
+- On single-column screens with one primary call-to-action, the primary CTA spans the **full content width between the 24 px insets** in both portrait and landscape.
+- Examples: Continue, Finish setup, Connect, Save, Add books, Refresh, Done.
+- The same full-width rule is used consistently across orientations; do not size a primary CTA to its label.
 - One primary action per compact state/dialog where possible.
 - Secondary actions use outline style.
-- Full-width actions are preferred in portrait when horizontal button labels would become cramped.
+- Multi-action dialogs, segmented controls, toolbars and genuine multi-column layouts follow their local grid instead of forcing each action full-width.
 
 ## 7. Input fields and keyboard
 

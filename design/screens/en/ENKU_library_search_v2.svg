@@ -14,8 +14,8 @@ text{font-family:"Noto Sans",Arial,sans-serif;fill:#111}
 <text class="label" x="32" y="132">Landscape · 800 × 480</text><text class="label" x="862" y="132">Portrait · 480 × 800</text>
 <g transform="translate(32,150)">
 <rect class="panel" width="800" height="480"/>
-<g transform="translate(20,35)"><path d="M15 5l-7 7 7 7" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g><text class="title" x="56" y="54">Search Library</text>
-<rect class="focus" x="24" y="76" width="752" height="48" rx="4"/><text class="body" x="46" y="106">Verne</text><g transform="translate(730,88)"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"/></g>
+<g transform="translate(20,35) scale(0.078125)"><line x1="216" y1="128" x2="40" y2="128" fill="none" stroke="#111" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/><polyline points="112 56 40 128 112 200" fill="none" stroke="#111" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/></g><text class="title" x="56" y="54">Search Library</text>
+<rect class="focus" x="24" y="76" width="752" height="48" rx="4"/><text class="body" x="46" y="106">Verne</text><g transform="translate(730,88) scale(0.09375)"><line x1="200" y1="56" x2="56" y2="200" stroke="#111" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/><line x1="200" y1="200" x2="56" y2="56" stroke="#111" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/></g>
 <text class="meta" x="24" y="148">2 results</text>
 <text class="label" x="48" y="182">Around the World in Eighty Days</text><text class="meta" x="48" y="204">Jules Verne</text>
 <text class="label" x="48" y="242">The Mysterious Island</text><text class="meta" x="48" y="264">Jules Verne</text>
@@ -31,8 +31,8 @@ text{font-family:"Noto Sans",Arial,sans-serif;fill:#111}
 </g>
 <g transform="translate(862,150)">
 <rect class="panel" width="480" height="800"/>
-<g transform="translate(20,35)"><path d="M15 5l-7 7 7 7" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g><text class="title" x="56" y="54">Search Library</text>
-<rect class="focus" x="24" y="76" width="432" height="48" rx="4"/><text class="body" x="46" y="106">Verne</text><g transform="translate(410,88)"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"/></g>
+<g transform="translate(20,35) scale(0.078125)"><line x1="216" y1="128" x2="40" y2="128" fill="none" stroke="#111" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/><polyline points="112 56 40 128 112 200" fill="none" stroke="#111" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/></g><text class="title" x="56" y="54">Search Library</text>
+<rect class="focus" x="24" y="76" width="432" height="48" rx="4"/><text class="body" x="46" y="106">Verne</text><g transform="translate(410,88) scale(0.09375)"><line x1="200" y1="56" x2="56" y2="200" stroke="#111" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/><line x1="200" y1="200" x2="56" y2="56" stroke="#111" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/></g>
 <text class="meta" x="24" y="148">2 results</text>
 <text class="label" x="40" y="184">Around the World in Eighty Days</text><text class="meta" x="40" y="206">Jules Verne</text>
 <text class="label" x="40" y="248">The Mysterious Island</text><text class="meta" x="40" y="270">Jules Verne</text>

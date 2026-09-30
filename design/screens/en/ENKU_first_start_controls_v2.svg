@@ -37,4 +37,5 @@ text{font-family:"Noto Sans",Arial,sans-serif;fill:#111}.h1{font-size:34px;font-
 <text class="sub" x="32" y="716">• Finish setup saves language + orientation and opens Library.</text>
 <text class="sub" x="32" y="746">• If setup is interrupted, ENKU resumes from the saved step on next boot.</text>
 <text class="sub" x="32" y="776">• No invented rotary/button glyphs are used before the real Waveshare control mapping is tested.</text>
+<!-- Primary CTA: full content width, 24 px horizontal insets in both orientations. -->
 </svg>

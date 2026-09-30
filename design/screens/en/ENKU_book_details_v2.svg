@@ -15,7 +15,7 @@ text{font-family:"Noto Sans",Arial,sans-serif;fill:#111}
 
 <g transform="translate(32,150)">
 <rect class="panel" width="800" height="480"/>
-<g transform="translate(20,35)"><path d="M15 5l-7 7 7 7" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g><text class="title" x="56" y="54">About book</text><g transform="translate(728,35)"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></g>
+<g transform="translate(20,35) scale(0.078125)"><line x1="216" y1="128" x2="40" y2="128" fill="none" stroke="#111" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/><polyline points="112 56 40 128 112 200" fill="none" stroke="#111" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/></g><text class="title" x="56" y="54">About book</text><g transform="translate(728,35) scale(0.09375)"><circle cx="128" cy="128" r="12" fill="#111"/><circle cx="196" cy="128" r="12" fill="#111"/><circle cx="60" cy="128" r="12" fill="#111"/></g>
 <rect class="cover" x="32" y="84" width="154" height="214"/><text class="meta" x="48" y="108">F. Dostoevsky</text><text class="label" x="48" y="150">WHITE</text><text class="label" x="48" y="176">NIGHTS</text>
 <text class="title" x="222" y="110">White Nights</text><text class="body" x="222" y="142">Fyodor Dostoevsky</text>
 <text class="meta" x="222" y="180">EPUB · English</text><text class="meta" x="222" y="204">Fiction</text>
@@ -27,7 +27,7 @@ text{font-family:"Noto Sans",Arial,sans-serif;fill:#111}
 
 <g transform="translate(862,150)">
 <rect class="panel" width="480" height="800"/>
-<g transform="translate(20,35)"><path d="M15 5l-7 7 7 7" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g><text class="title" x="56" y="54">About book</text><g transform="translate(414,35)"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></g>
+<g transform="translate(20,35) scale(0.078125)"><line x1="216" y1="128" x2="40" y2="128" fill="none" stroke="#111" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/><polyline points="112 56 40 128 112 200" fill="none" stroke="#111" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/></g><text class="title" x="56" y="54">About book</text><g transform="translate(414,35) scale(0.09375)"><circle cx="128" cy="128" r="12" fill="#111"/><circle cx="196" cy="128" r="12" fill="#111"/><circle cx="60" cy="128" r="12" fill="#111"/></g>
 <rect class="cover" x="24" y="86" width="132" height="184"/><text class="meta" x="38" y="108">F. Dostoevsky</text><text class="label" x="38" y="148">WHITE</text><text class="label" x="38" y="174">NIGHTS</text>
 <text class="title" x="182" y="112">White Nights</text><text class="body" x="182" y="144">Fyodor Dostoevsky</text>
 <text class="meta" x="182" y="182">EPUB · English</text><text class="meta" x="182" y="206">Fiction</text>

@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1360" height="1040" viewBox="0 0 1360 1040">
+
+<style>
+text{font-family:"Noto Sans",Arial,sans-serif;fill:#111}
+.h1{font-size:34px;font-weight:700}.sub{font-size:16px}.label{font-size:18px;font-weight:700}
+.title{font-size:22px;font-weight:700}.body{font-size:17px}.meta{font-size:13px}.small{font-size:12px}
+.bg{fill:#efefec}.panel{fill:#fff}.row{fill:#fff;stroke:#111;stroke-width:1}.focus{fill:#fff;stroke:#111;stroke-width:3}
+.btn{fill:#111}.btnt{fill:#fff;font-size:17px;font-weight:700}.outline{fill:#fff;stroke:#111;stroke-width:1}
+.cover{fill:#fff;stroke:#111;stroke-width:1}.bar{fill:#111}.hair{stroke:#111;stroke-width:1}
+</style>
+<rect class="bg" width="1360" height="1040"/>
+<text class="h1" x="32" y="52">ENKU / Book Details — EN v2</text>
+<text class="sub" x="32" y="86">Same semantic content in both orientations · state-specific primary CTA</text>
+<text class="label" x="32" y="132">Landscape · 800 × 480</text><text class="label" x="862" y="132">Portrait · 480 × 800</text>
+
+<g transform="translate(32,150)">
+<rect class="panel" width="800" height="480"/>
+<text class="title" x="24" y="54">←  About book</text><text class="body" x="744" y="54">⋯</text>
+<rect class="cover" x="32" y="84" width="154" height="214"/><text class="meta" x="48" y="108">F. Dostoevsky</text><text class="label" x="48" y="150">WHITE</text><text class="label" x="48" y="176">NIGHTS</text>
+<text class="title" x="222" y="110">White Nights</text><text class="body" x="222" y="142">Fyodor Dostoevsky</text>
+<text class="meta" x="222" y="180">EPUB · English</text><text class="meta" x="222" y="204">Fiction</text>
+<text class="label" x="222" y="246">Reading · 32%</text><rect class="bar" x="222" y="262" width="168" height="4"/><line class="hair" x1="390" y1="264" x2="752" y2="264"/>
+<text class="meta" x="222" y="288">Last position: Chapter 1</text>
+<text class="label" x="222" y="326">Description</text><text class="meta" x="222" y="350">A short novel about four nights, chance, hope and intimacy.</text>
+<rect class="btn" x="222" y="382" width="530" height="48" rx="4"/><text class="btnt" x="487" y="413" text-anchor="middle">Continue reading</text>
+</g>
+
+<g transform="translate(862,150)">
+<rect class="panel" width="480" height="800"/>
+<text class="title" x="24" y="54">←  About book</text><text class="body" x="430" y="54">⋯</text>
+<rect class="cover" x="24" y="86" width="132" height="184"/><text class="meta" x="38" y="108">F. Dostoevsky</text><text class="label" x="38" y="148">WHITE</text><text class="label" x="38" y="174">NIGHTS</text>
+<text class="title" x="182" y="112">White Nights</text><text class="body" x="182" y="144">Fyodor Dostoevsky</text>
+<text class="meta" x="182" y="182">EPUB · English</text><text class="meta" x="182" y="206">Fiction</text>
+<text class="label" x="24" y="314">Reading · 32%</text><rect class="bar" x="24" y="332" width="138" height="4"/><line class="hair" x1="162" y1="334" x2="456" y2="334"/>
+<text class="meta" x="24" y="360">Last position: Chapter 1</text>
+<text class="label" x="24" y="408">Description</text>
+<text class="body" x="24" y="438">A short novel about four nights, chance,</text><text class="body" x="24" y="464">hope and intimacy.</text>
+<rect class="btn" x="24" y="620" width="432" height="48" rx="4"/><text class="btnt" x="240" y="651" text-anchor="middle">Continue reading</text>
+<text class="small" x="24" y="706">Primary CTA: Start reading / Continue reading / Read again.</text>
+</g>
+
+<text class="label" x="32" y="682">Behavior</text>
+<text class="sub" x="32" y="716">• Portrait and landscape expose the same title, author, format/language, category, progress, last position and description.</text>
+<text class="sub" x="32" y="746">• Missing metadata uses explicit fallbacks; absence never collapses the layout unpredictably.</text>
+<text class="sub" x="32" y="776">• Primary CTA follows the 24 px full-width rule where the layout is single-column.</text>
+</svg>

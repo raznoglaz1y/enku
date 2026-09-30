@@ -53,3 +53,32 @@ Status values:
 6. Empty Library, empty Filter and no Search Results are three distinct states and must not be collapsed into one generic empty screen.
 7. Book Details uses one semantic information model in both orientations; orientation changes layout, not available data.
 8. Destructive/reset actions default focus to **Cancel**.
+
+
+## Block 3 — Reading
+
+| Board | Status | Audit notes |
+| --- | --- | --- |
+| `ENKU_reading_menu_v2` | **Approved** | Menu structure is coherent and compact for physical navigation. Keep Font, Contents & Bookmarks, Add Bookmark, Search in book, Orientation, About book and Sleep. Canonical labels should be EN-first. Current preset/orientation values may remain as secondary text. |
+| `ENKU_quick_aa_preview_v3` | **Needs revision** | The five presets and live-preview concept are strong, but focus vs selected preset must be explicit for hardware controls. Preset values are provisional until tested on the real panel. Keep “All settings” as the path to full Typography. |
+| `ENKU_typography_v1` | **Needs revision** | The model is correct: five presets, Custom, per-book override, size/line spacing/margins/alignment. Before implementation, define min/max/step values and navigation behavior for +/- and alignment controls. Manual changes switch preset to Custom. |
+| `ENKU_contents_bookmarks_v3` | **Approved** | Contents/Bookmarks as a compact overlay is a good fit. Preserve reading position under the overlay. Current chapter/bookmark focus model is suitable; long lists scroll. Bookmark actions need a separate interaction spec if edit/delete is supported. |
+| `ENKU_empty_bookmarks_v1` | **Approved** | Correct empty state inside the combined overlay. Contents remains reachable. Returning closes overlay without changing reading position. |
+| `ENKU_no_contents_v1` | **Approved** | Correctly treats missing ToC as non-fatal. Bookmarks remain available. Do not infer chapters from arbitrary headings unless the parser has explicit structure. |
+| `ENKU_search_in_book_v1` | **Needs revision** | Result-list model is valid. Search must reuse the shared keyboard subsystem and preserve original reading position until a result is explicitly opened. Define pagination/batching strategy for many matches to avoid expensive full-book rendering/search UI updates. |
+| `ENKU_search_match_v1` | **Approved** | Match-navigation concept is clear: previous/next match, counter, contextual text, return to result list. Search highlight must be compatible with monochrome e-paper (weight/underline/inversion rather than relying on gray only). |
+| `ENKU_book_finished_v1` | **Approved** | Completion state is clear. Reaching beyond the last page sets progress to 100% and marks the book Finished/Read. Default focus on “Back to Library” is appropriate; Back keeps the reader on the final page. |
+| `ENKU_navigation_status_v2` | **Reference only** | This is a system reference board for headers, reading chrome and status icons rather than a production screen. Use it to derive shared components and status-bar rules. |
+
+### Decisions from this block
+
+1. Reading remains a **content-first screen** with chrome hidden by default.
+2. The Reading Menu is the primary gateway to reader actions; Quick Aa is a shortcut, not a second settings system.
+3. The five canonical reading presets remain **Spacious, Comfortable, Standard, Compact, Dense**; manual edits produce **Custom**.
+4. Typography can be global or per-book. Per-book settings override global reading settings only for that title.
+5. Changing typography or orientation must preserve the semantic reading position, then repaginate around that position.
+6. Contents and Bookmarks share one overlay and must not disturb the underlying reading position.
+7. Missing ToC and empty Bookmarks are valid independent states.
+8. In-book search must preserve the pre-search reading position until the user opens a result.
+9. Search highlighting cannot depend on grayscale alone; it must survive monochrome/limited e-paper rendering.
+10. Shared Reading chrome/status elements should be implemented from a reusable component spec, using `ENKU_navigation_status_v2` as reference.

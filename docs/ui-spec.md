@@ -105,14 +105,16 @@ Status/header controls appear only when the reading overlay/menu is invoked.
 
 ## 6.1 Icons
 
-- ENKU uses a consistent monochrome **line-icon** language.
+- ENKU uses the **approved Phosphor icon library** supplied in the original `icons(1).zip` asset set.
+- Use the original SVG asset geometry directly. **Do not redraw, reinterpret, normalize or create replacement versions of existing icons.**
 - Do **not** use Unicode characters, emoji, text glyphs or font symbols as production icon substitutes.
-- Core icon size: **24 px**; header/back icon: **20 px**.
-- Icons use a simple rounded line style, visually matching the original ENKU reference boards.
-- Asymmetric icons receive optical centering rather than mathematical centering.
-- Focus is applied to the control/container, not by changing the icon into a different unrelated glyph.
-- The canonical icon set includes at minimum: back, search, overflow/menu, grid, list, filter, sort, check, close, add, refresh, Wi‑Fi, lock, battery, bookmark, contents, font/typography, orientation, sleep, storage, info/about, power, delete, edit/replace.
-- Existing approved/reference boards are the visual source of truth for icon character. EN localization must preserve that icon language.
+- Core icon size: **24 px**; header/back icon: **20 px**, unless a specific approved component defines otherwise.
+- Scale the source SVG uniformly from its native `256 × 256` viewBox. Do not alter internal geometry to make icons appear artificially centered.
+- Optical placement is handled by the surrounding component/layout, not by editing the source icon.
+- Focus belongs to the control/container and never changes the underlying icon asset.
+- If a required icon already exists in the approved Phosphor asset set, that exact file must be used.
+- A new icon asset is added only when the approved set genuinely lacks the required concept; it must be reviewed before use.
+- Existing approved/reference boards remain the visual source of truth for icon sizing and spacing.
 
 ## 7. Input fields and keyboard
 

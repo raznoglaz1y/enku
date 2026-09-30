@@ -17,9 +17,9 @@ The goal of this phase is to convert every board marked **Needs revision** in th
 ## Revision order
 
 ### First Start / Language
-- [ ] `ENKU_first_start_language_v1`
-- [ ] `ENKU_first_start_controls_v1`
-- [ ] `ENKU_language_v1`
+- [x] `ENKU_first_start_language_v1` → `design/screens/en/ENKU_first_start_language_v2.svg`
+- [x] `ENKU_first_start_controls_v1` → `design/screens/en/ENKU_first_start_controls_v2.svg`
+- [x] `ENKU_language_v1` → `design/screens/en/ENKU_interface_language_v2.svg`
 
 ### Library
 - [ ] `ENKU_library_v1`

@@ -82,3 +82,31 @@ Status values:
 8. In-book search must preserve the pre-search reading position until the user opens a result.
 9. Search highlighting cannot depend on grayscale alone; it must survive monochrome/limited e-paper rendering.
 10. Shared Reading chrome/status elements should be implemented from a reusable component spec, using `ENKU_navigation_status_v2` as reference.
+
+
+## Block 4 — Settings / System
+
+| Board | Status | Audit notes |
+| --- | --- | --- |
+| `ENKU_settings_v1` | **Needs revision** | The overall information architecture is good, but the Settings root should be normalized around the final feature set and EN-first terminology. Keep Reading, Display, Wi-Fi, Language, Storage, Sleep, About and Power Off. Focus order in landscape must be explicitly defined across two columns. |
+| `ENKU_display_settings_v1` | **Needs revision** | Orientation control is valid. The e-paper refresh options are still conceptual: “Balanced”, “Clean”, full-refresh cadence and manual refresh must be validated against the real Waveshare panel/driver behavior before they become user-facing settings. Do not expose implementation knobs that cannot be measured or explained. |
+| `ENKU_sleep_settings_v1` | **Needs revision** | Sleep timer + sleep-screen choice is a good model, but actual timeout values and wake behavior must be verified on hardware. Automatic sleep should pause during active transfers/imports. Manual Sleep remains available from the Reading Menu. |
+| `ENKU_sleep_cover_v1` | **Approved** | A static full-screen book cover is an appropriate e-paper sleep screen. Preserve aspect ratio; do not stretch/crop. If no usable cover exists, fall back to the simple sleep screen. No clock, Wi-Fi status or animated content. |
+| `ENKU_sleep_screen_v1` | **Approved** | Good minimal fallback sleep state. Static title/author/progress is suitable and avoids unnecessary refreshes. If no book is open, fall back to ENKU + sleep indicator only. |
+| `ENKU_about_device_v1` | **Needs revision** | Keep it informational and read-only, but populate values from real firmware/hardware constants. Use the exact Waveshare board name, firmware version and display resolution. Add build/version metadata only if it is useful for issue reports and reproducibility. |
+| `ENKU_power_off_v1` | **Needs revision** | Confirmation UX is good and default focus on Cancel is correct, but true power-off / wake behavior depends on the real Waveshare board and power architecture. Do not promise a behavior until hardware testing confirms what “Power off” can actually do. |
+| `ENKU_low_battery_v1` | **Needs revision** | Warning UX is useful, but threshold percentage and battery accuracy are unverified. The real board’s battery measurement capability, calibration and safe critical-voltage behavior must be measured with the LP505060 pack before exposing exact percentages. |
+| `ENKU_focus_states_v1` | **Reference only** | This is a system interaction reference, not a product screen. Keep it as the canonical visual rule for focused row, selected value, focused action and active tab. Selection and focus remain independent. |
+
+### Decisions from this block
+
+1. Settings root categories are: **Reading, Display, Wi-Fi, Language, Storage, Sleep, About, Power Off**.
+2. Landscape Settings uses two columns only if focus traversal remains deterministic and easy to explain.
+3. Display refresh policy is an **implementation-driven setting**: expose only options validated on the real Waveshare e-paper hardware.
+4. Sleep screens are strictly static. No live clock, animated elements or periodic status refresh.
+5. Sleep cover preserves source aspect ratio and falls back to the simple sleep screen when unavailable or unreadable.
+6. Auto-sleep is suspended during active import/transfer/write operations.
+7. About values come from firmware/hardware constants, not hard-coded mock strings.
+8. “Power off” semantics are deferred until the real board’s power and wake behavior are tested.
+9. Battery percentage/thresholds are deferred until real LP505060 + board measurement behavior is characterized.
+10. `ENKU_focus_states_v1` becomes the shared focus/selection visual reference for the whole UI.

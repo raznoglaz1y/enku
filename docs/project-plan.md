@@ -9,9 +9,9 @@ This document defines the current high-level implementation order for ENKU.
 
 ### Localization strategy
 
-Russian remains the reference UI language. The first localization wave targets English, Polish, German, French, Spanish and Italian.
+English is the source/reference UI language. The first localization wave targets Russian, Polish, German, French, Spanish and Italian.
 
-Localization must be implemented as a firmware-level string system, not as duplicated hard-coded screens. UI layouts must tolerate longer translations, and all language packs must preserve the same physical-button navigation and focus behavior.
+Localization must be implemented as a firmware-level string system, not as duplicated hard-coded screens. Canonical UI copy, terminology and localization keys are defined in English first; all other languages map to that source. UI layouts must tolerate longer translations, and all language packs must preserve the same physical-button navigation and focus behavior.
 
 The first firmware releases should prioritize Latin and Cyrillic scripts. Larger CJK font sets can be evaluated separately once storage and RAM costs are measured on real hardware.
 

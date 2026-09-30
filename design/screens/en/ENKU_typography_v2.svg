@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1360" height="1080" viewBox="0 0 1360 1080">
+<style>
+text{font-family:"Noto Sans",Arial,sans-serif;fill:#111}
+.h1{font-size:34px;font-weight:700}.sub{font-size:16px}.section{font-size:18px;font-weight:700}
+.title{font-size:22px;font-weight:700}.body{font-size:16px}.meta{font-size:12px}.preview{font-size:24px}
+.bg{fill:#efefec}.panel{fill:#fff}.row{fill:#fff;stroke:#111;stroke-width:1}.focus{fill:#fff;stroke:#111;stroke-width:2}
+.selected{fill:#111}.selectedText{fill:#fff;font-size:16px}.btn{fill:#111}.btnText{fill:#fff;font-size:16px;font-weight:700}
+.line{stroke:#111;stroke-width:1}.muted{fill:#666}
+</style><rect class="bg" width="1360" height="1080"/>
+<text class="h1" x="32" y="52">ENKU / Typography — EN v2</text>
+<text class="sub" x="32" y="86">Canonical EN board · presets + Custom · global/per-book scope · physical controls</text>
+<text class="section" x="32" y="132">Landscape · 800 × 480</text><text class="section" x="862" y="132">Portrait · 480 × 800</text>
+
+<g transform="translate(32,150)">
+<rect class="panel" width="800" height="480"/>
+<text class="meta" x="24" y="28">Reading settings</text><image href="../../icons/arrow-left.svg" x="18" y="42" width="20" height="20" style="color:#111"/><image href="../../icons/text-aa.svg" x="50" y="40" width="24" height="24" style="color:#111"/>
+<text class="title" x="86" y="60">Typography</text><text class="meta" x="700" y="28">10:42   82%</text>
+<text class="section" x="24" y="110">Reading presets</text>
+<g transform="translate(24,128)">
+<circle cx="9" cy="13" r="8" fill="none" stroke="#111"/><text class="body" x="30" y="18">Spacious</text>
+<g transform="translate(0,42)"><circle cx="9" cy="13" r="8" fill="none" stroke="#111"/><text class="body" x="30" y="18">Comfortable</text></g>
+<g transform="translate(0,84)"><circle cx="9" cy="13" r="8" fill="none" stroke="#111"/><circle cx="9" cy="13" r="4" fill="#111"/><text class="body" x="30" y="18">Standard</text></g>
+<g transform="translate(0,126)"><circle cx="9" cy="13" r="8" fill="none" stroke="#111"/><text class="body" x="30" y="18">Compact</text></g>
+<g transform="translate(0,168)"><circle cx="9" cy="13" r="8" fill="none" stroke="#111"/><text class="body" x="30" y="18">Dense</text></g>
+</g>
+<rect class="focus" x="24" y="346" width="214" height="42" rx="4"/><rect x="36" y="358" width="16" height="16" fill="#fff" stroke="#111"/><text class="body" x="66" y="373">Use for this book only</text>
+<text class="meta" x="24" y="414">Currently applied to all books.</text>
+
+<text class="section" x="400" y="110">Custom</text>
+<text class="body" x="400" y="154">Font size</text><image href="../../icons/minus.svg" x="618" y="137" width="20" height="20" style="color:#111"/><text class="body" x="662" y="154" text-anchor="middle">22 px</text><image href="../../icons/plus.svg" x="716" y="137" width="20" height="20" style="color:#111"/>
+<text class="body" x="400" y="202">Line spacing</text><image href="../../icons/minus.svg" x="618" y="185" width="20" height="20" style="color:#111"/><text class="body" x="662" y="202" text-anchor="middle">1.30</text><image href="../../icons/plus.svg" x="716" y="185" width="20" height="20" style="color:#111"/>
+<text class="body" x="400" y="250">Margins</text><image href="../../icons/minus.svg" x="618" y="233" width="20" height="20" style="color:#111"/><text class="body" x="662" y="250" text-anchor="middle">40 px</text><image href="../../icons/plus.svg" x="716" y="233" width="20" height="20" style="color:#111"/>
+<text class="body" x="400" y="304">Alignment</text>
+<rect class="focus" x="612" y="280" width="36" height="36" rx="3"/><image href="../../icons/text-align-left.svg" x="618" y="286" width="24" height="24" style="color:#111"/>
+<image href="../../icons/text-align-center.svg" x="660" y="286" width="24" height="24" style="color:#111"/><image href="../../icons/text-align-right.svg" x="702" y="286" width="24" height="24" style="color:#111"/><image href="../../icons/text-align-justify.svg" x="744" y="286" width="24" height="24" style="color:#111"/>
+<text class="meta" x="400" y="350">Any manual change switches the preset to Custom.</text>
+</g>
+
+<g transform="translate(862,150)">
+<rect class="panel" width="480" height="800"/>
+<text class="meta" x="24" y="28">Reading settings</text><image href="../../icons/arrow-left.svg" x="18" y="42" width="20" height="20" style="color:#111"/><image href="../../icons/text-aa.svg" x="50" y="40" width="24" height="24" style="color:#111"/>
+<text class="title" x="86" y="60">Typography</text>
+<text class="section" x="24" y="112">Reading presets</text>
+<g transform="translate(24,134)">
+<circle cx="9" cy="13" r="8" fill="none" stroke="#111"/><text class="body" x="30" y="18">Spacious</text>
+<g transform="translate(0,42)"><circle cx="9" cy="13" r="8" fill="none" stroke="#111"/><text class="body" x="30" y="18">Comfortable</text></g>
+<g transform="translate(0,84)"><circle cx="9" cy="13" r="8" fill="none" stroke="#111"/><circle cx="9" cy="13" r="4" fill="#111"/><text class="body" x="30" y="18">Standard</text></g>
+<g transform="translate(0,126)"><circle cx="9" cy="13" r="8" fill="none" stroke="#111"/><text class="body" x="30" y="18">Compact</text></g>
+<g transform="translate(0,168)"><circle cx="9" cy="13" r="8" fill="none" stroke="#111"/><text class="body" x="30" y="18">Dense</text></g>
+</g>
+<text class="section" x="24" y="374">Custom</text>
+<text class="body" x="24" y="420">Font size</text><image href="../../icons/minus.svg" x="322" y="403" width="20" height="20" style="color:#111"/><text class="body" x="370" y="420" text-anchor="middle">22 px</text><image href="../../icons/plus.svg" x="426" y="403" width="20" height="20" style="color:#111"/>
+<text class="body" x="24" y="468">Line spacing</text><image href="../../icons/minus.svg" x="322" y="451" width="20" height="20" style="color:#111"/><text class="body" x="370" y="468" text-anchor="middle">1.30</text><image href="../../icons/plus.svg" x="426" y="451" width="20" height="20" style="color:#111"/>
+<text class="body" x="24" y="516">Margins</text><image href="../../icons/minus.svg" x="322" y="499" width="20" height="20" style="color:#111"/><text class="body" x="370" y="516" text-anchor="middle">40 px</text><image href="../../icons/plus.svg" x="426" y="499" width="20" height="20" style="color:#111"/>
+<text class="body" x="24" y="566">Alignment</text>
+<rect class="focus" x="292" y="542" width="36" height="36" rx="3"/><image href="../../icons/text-align-left.svg" x="298" y="548" width="24" height="24" style="color:#111"/>
+<image href="../../icons/text-align-center.svg" x="338" y="548" width="24" height="24" style="color:#111"/><image href="../../icons/text-align-right.svg" x="378" y="548" width="24" height="24" style="color:#111"/><image href="../../icons/text-align-justify.svg" x="418" y="548" width="24" height="24" style="color:#111"/>
+<rect class="row" x="24" y="622" width="432" height="48" rx="4"/><rect x="38" y="638" width="16" height="16" fill="#fff" stroke="#111"/><text class="body" x="70" y="652">Use for this book only</text>
+<text class="meta" x="24" y="696">Currently applied to all books.</text>
+<text class="meta" x="24" y="756">Changes apply immediately and keep the semantic reading position.</text>
+</g>
+
+<text class="section" x="32" y="682">Control model</text>
+<text class="sub" x="32" y="716">• Confirm on a preset applies that preset. Manual +/- or alignment changes set the active preset to Custom.</text>
+<text class="sub" x="32" y="746">• Proposed test ranges: font 16–30 px (2 px), line spacing 1.10–1.60 (0.05), margins 16–56 px (4 px).</text>
+<text class="sub" x="32" y="776">• These numerical ranges remain firmware constants pending real 3.97-inch panel readability testing.</text>
+</svg>

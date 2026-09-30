@@ -33,12 +33,12 @@ The goal of this phase is to convert every board marked **Needs revision** in th
 - [x] `ENKU_search_in_book_v1` → `design/screens/en/ENKU_search_in_book_v2.svg`
 
 ### Settings / System
-- [ ] `ENKU_settings_v1`
-- [ ] `ENKU_display_settings_v1`
-- [ ] `ENKU_sleep_settings_v1`
-- [ ] `ENKU_about_device_v1`
-- [ ] `ENKU_power_off_v1`
-- [ ] `ENKU_low_battery_v1`
+- [x] `ENKU_settings_v1` → `design/screens/en/ENKU_settings_v2.svg`
+- [x] `ENKU_display_settings_v1` → `design/screens/en/ENKU_display_settings_v2.svg`
+- [x] `ENKU_sleep_settings_v1` → `design/screens/en/ENKU_sleep_settings_v2.svg`
+- [x] `ENKU_about_device_v1` → `design/screens/en/ENKU_about_device_v2.svg`
+- [x] `ENKU_power_off_v1` → `design/screens/en/ENKU_power_off_v2.svg`
+- [x] `ENKU_low_battery_v1` → `design/screens/en/ENKU_low_battery_v2.svg`
 
 ### Storage / Import
 - [ ] `ENKU_storage_import_v1`

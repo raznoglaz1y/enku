@@ -56,4 +56,5 @@
 <text class="sub" x="32" y="742">• Focus outline and selected checkmark are independent states.</text>
 <text class="sub" x="32" y="772">• Portrait list is scrollable when more languages are added later.</text>
 <text class="sub" x="32" y="802">• Step 2 opens Orientation. Incomplete setup resumes from the saved step.</text>
+<!-- Primary CTA: full content width, 24 px horizontal insets in both orientations. -->
 </svg>

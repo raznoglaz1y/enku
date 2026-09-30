@@ -1,5 +1,7 @@
 # ENKU
 
+<p align="center"><img src="design/branding/enku-wordmark.svg" alt="ENKU" width="420"></p>
+
 An open-source e-reader project for Waveshare ESP32-S3 ePaper 3.97″.
 
 **Status: UI design and specification. Firmware is not implemented in this repository yet.**

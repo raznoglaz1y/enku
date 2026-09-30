@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1360" height="940" viewBox="0 0 1360 940">
+<style>
+text{font-family:"Noto Sans",Arial,sans-serif;fill:#111}.h1{font-size:34px;font-weight:700}.sub{font-size:16px}.label{font-size:18px;font-weight:700}.screenTitle{font-size:22px;font-weight:700}.body{font-size:17px}.meta{font-size:13px}.small{font-size:12px}.bg{fill:#efefec}.panel{fill:#fff}.focus{fill:#fff;stroke:#111;stroke-width:3}.btn{fill:#111}.btnt{fill:#fff;font-size:17px;font-weight:700}
+</style>
+<rect class="bg" width="1360" height="940"/>
+<text class="h1" x="32" y="52">ENKU / First start · Controls — EN v2</text>
+<text class="sub" x="32" y="86">Canonical EN board · step 3 of 3 · hardware-neutral until Waveshare input mapping is verified</text>
+<text class="label" x="32" y="132">Landscape · 800 × 480</text><text class="label" x="862" y="132">Portrait · 480 × 800</text>
+
+<g transform="translate(32,150)">
+<rect class="panel" width="800" height="480"/>
+<text class="body" x="24" y="30">ENKU</text><text class="small" x="700" y="30">3 / 3</text>
+<text class="screenTitle" x="24" y="78">Physical controls</text>
+<g transform="translate(34,112)">
+<text class="label" x="0" y="20">Navigate</text><text class="meta" x="0" y="43">Move focus between items</text>
+<text class="label" x="0" y="92">Confirm</text><text class="meta" x="0" y="115">Open the focused item or perform its action</text>
+<text class="label" x="0" y="164">Back</text><text class="meta" x="0" y="187">Return to the previous screen or close an overlay</text>
+</g>
+<rect class="btn" x="24" y="346" width="752" height="48" rx="4"/><text class="btnt" x="400" y="377" text-anchor="middle">Finish setup</text>
+<text class="small" x="24" y="448">Exact physical control labels/icons will be inserted after hardware verification.</text>
+</g>
+
+<g transform="translate(862,150)">
+<rect class="panel" width="480" height="800"/>
+<text class="body" x="24" y="30">ENKU</text><text class="small" x="410" y="30">3 / 3</text>
+<text class="screenTitle" x="24" y="78">Physical controls</text>
+<g transform="translate(24,118)">
+<text class="label" x="0" y="20">Navigate</text><text class="meta" x="0" y="43">Move focus between items</text>
+<text class="label" x="0" y="112">Confirm</text><text class="meta" x="0" y="135">Open the focused item or perform its action</text>
+<text class="label" x="0" y="204">Back</text><text class="meta" x="0" y="227">Return to the previous screen or close an overlay</text>
+</g>
+<rect class="btn" x="24" y="580" width="432" height="48" rx="4"/><text class="btnt" x="240" y="611" text-anchor="middle">Finish setup</text>
+<text class="small" x="24" y="752">Exact control labels are finalized on real hardware.</text>
+</g>
+
+<text class="label" x="32" y="682">Behavior</text>
+<text class="sub" x="32" y="716">• Finish setup saves language + orientation and opens Library.</text>
+<text class="sub" x="32" y="746">• If setup is interrupted, ENKU resumes from the saved step on next boot.</text>
+<text class="sub" x="32" y="776">• No invented rotary/button glyphs are used before the real Waveshare control mapping is tested.</text>
+</svg>

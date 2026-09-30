@@ -144,3 +144,28 @@ Status values:
 9. E-paper progress UI is **throttled**, not continuously animated.
 10. Missing card, unreadable card and insufficient space remain separate system states.
 11. ENKU never auto-formats storage and never deletes existing books automatically to make space.
+
+
+## Block 6 — Wi-Fi / Networking
+
+| Board | Status | Audit notes |
+| --- | --- | --- |
+| `ENKU_wifi_v1` | **Needs revision** | Overall structure is good: Wi-Fi on/off, available networks, current connection and rescan. However, scan/update behavior, connection timeout and signal-state wording must be tied to real ESP32-S3 behavior. Focus order in landscape must remain deterministic across the network list and current-connection actions. |
+| `ENKU_wifi_password_v3` | **Needs revision** | Password-entry flow is valid and should reuse the shared on-screen keyboard subsystem. EN is the source UI language, but password input must support symbols/numbers independently of interface language. “Show password” is acceptable; credentials must only be persisted after successful connection. |
+| `ENKU_saved_networks_v1` | **Needs revision** | Saved-network management is useful, but the current “Home network” concept should be simplified into an explicit **trusted / preferred network** model. Define auto-connect priority deterministically and avoid ambiguous hidden ranking rules. |
+| `ENKU_empty_networks_v1` | **Needs revision** | Empty state is fine visually, but copy currently mixes “saved” and “trusted/home” concepts. Rework after the trusted/preferred-network model is finalized. Primary action should return to Wi-Fi scan/selection. |
+| `ENKU_forget_network_v1` | **Approved** | Confirmation model is correct with Cancel as default focus. Forgetting removes stored credentials and auto-connect/trusted status for that network. If currently connected, disconnect first and return to the saved-networks list. |
+| `ENKU_wifi_transfer_v1` | **Needs revision** | Local-browser transfer is a good planned workflow. The device should expose a temporary local web endpoint while on the same LAN. Exact URL/hostname strategy, service lifetime and authentication/security model need implementation decisions before the screen is final. |
+
+### Decisions from this block
+
+1. Wi-Fi is **optional for reading**; the core reader and microSD workflow must remain fully usable offline.
+2. Credentials are saved only after a successful connection.
+3. The on-screen keyboard is shared across Wi-Fi passwords, search and other text fields; keyboard layout/input mode is independent from UI language.
+4. Saved networks and trusted/preferred networks are distinct concepts: saved = credentials known; trusted/preferred = eligible for automatic connection priority.
+5. Auto-connect behavior must be deterministic and documented. Do not hide opaque ranking logic from the user.
+6. “Home network” terminology is dropped in favor of **trusted/preferred network** terminology.
+7. Local Wi-Fi transfer runs only while the transfer screen/session is active, unless implementation later proves a safe reason to keep the service alive longer.
+8. Transfer URL/hostname and any authentication mechanism must be decided from the real firmware architecture, not hard-coded from mockups.
+9. Active transfer suppresses auto-sleep and must survive ordinary UI focus/navigation without silently aborting.
+10. Network failures should distinguish at least: authentication failure, connection timeout/unreachable network, and transfer interruption.

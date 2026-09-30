@@ -4,8 +4,16 @@ This document defines the current high-level implementation order for ENKU.
 
 ## Phase 0 — Design baseline
 - [#1 UI audit](https://github.com/raznoglaz1y/enku/issues/1)
-- [#2 English localization](https://github.com/raznoglaz1y/enku/issues/2)
+- [#2 Localization: EN / PL / DE / FR / ES / IT](https://github.com/raznoglaz1y/enku/issues/2)
 - [#11 ENKU wordmark](https://github.com/raznoglaz1y/enku/issues/11)
+
+### Localization strategy
+
+Russian remains the reference UI language. The first localization wave targets English, Polish, German, French, Spanish and Italian.
+
+Localization must be implemented as a firmware-level string system, not as duplicated hard-coded screens. UI layouts must tolerate longer translations, and all language packs must preserve the same physical-button navigation and focus behavior.
+
+The first firmware releases should prioritize Latin and Cyrillic scripts. Larger CJK font sets can be evaluated separately once storage and RAM costs are measured on real hardware.
 
 ## Phase 1 — Hardware bring-up
 - [#3 Firmware foundation](https://github.com/raznoglaz1y/enku/issues/3)

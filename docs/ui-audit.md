@@ -169,3 +169,21 @@ Status values:
 8. Transfer URL/hostname and any authentication mechanism must be decided from the real firmware architecture, not hard-coded from mockups.
 9. Active transfer suppresses auto-sleep and must survive ordinary UI focus/navigation without silently aborting.
 10. Network failures should distinguish at least: authentication failure, connection timeout/unreachable network, and transfer interruption.
+
+
+## Block 7 — Remaining edge states / system references
+
+| Board | Status | Audit notes |
+| --- | --- | --- |
+| `ENKU_add_book_v1` | **Approved** | Confirmation flow is clear for adding a local file to the Library. Source file remains on microSD. Success should hand off to the already-defined import-complete/open flow; duplicates route to duplicate/replace handling rather than silently adding a second copy. |
+| `ENKU_book_error_v2` | **Approved** | Good non-destructive error state. Retry attempts to reopen the same file; Library returns to the same book/focus. Preserve progress/bookmarks/settings. Show a specific cause only when it is reliably known (unsupported format, malformed file, missing file, etc.). |
+| `ENKU_long_text_check_v1` | **Reference only** | Keep as a localization/layout stress-test board. It defines truncation/wrapping rules for long book titles, chapter names and SSIDs. This should be reused when validating EN/DE/FR/ES/IT/PL translations. |
+| `ENKU_ui_kit_core_v1` | **Reference only** | This is the core visual component reference, not a product screen. It remains the canonical baseline for row, field, button, selected value, dimensions and basic focus-border rules, together with `ENKU_focus_states_v1`. |
+
+### Decisions from this block
+
+1. Add-to-library is explicit and non-destructive; source files on microSD remain untouched.
+2. Book-open errors never delete the book or its reading data.
+3. Known error causes may be shown; unknown causes use a generic message rather than guessed diagnostics.
+4. Long-text handling becomes part of localization QA, especially for German/French/Polish and long SSIDs/titles.
+5. `ENKU_ui_kit_core_v1` + `ENKU_focus_states_v1` together define the shared component/focus baseline for implementation.

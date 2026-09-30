@@ -28,9 +28,9 @@ The goal of this phase is to convert every board marked **Needs revision** in th
 - [x] `ENKU_book_details_v1` → `design/screens/en/ENKU_book_details_v2.svg`
 
 ### Reading
-- [ ] `ENKU_quick_aa_preview_v3`
-- [ ] `ENKU_typography_v1`
-- [ ] `ENKU_search_in_book_v1`
+- [x] `ENKU_quick_aa_preview_v3` → `design/screens/en/ENKU_quick_aa_preview_v4.svg`
+- [x] `ENKU_typography_v1` → `design/screens/en/ENKU_typography_v2.svg`
+- [x] `ENKU_search_in_book_v1` → `design/screens/en/ENKU_search_in_book_v2.svg`
 
 ### Settings / System
 - [ ] `ENKU_settings_v1`

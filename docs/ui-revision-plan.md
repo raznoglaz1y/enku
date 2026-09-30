@@ -4,6 +4,10 @@ English is the canonical source language.
 
 The goal of this phase is to convert every board marked **Needs revision** in the audit into an implementation-ready EN board built on `docs/ui-spec.md`.
 
+## Output format
+
+Final visual deliverable for each revised screen is a **PNG design board**. Existing EN SVG boards are temporary drafts and must be replaced by PNG before the revision item is considered visually final.
+
 ## Workflow for every revised screen
 
 1. Normalize behavior against `docs/ui-spec.md`.

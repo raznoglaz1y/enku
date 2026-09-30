@@ -103,6 +103,17 @@ Status/header controls appear only when the reading overlay/menu is invoked.
 - Secondary actions use outline style.
 - Multi-action dialogs, segmented controls, toolbars and genuine multi-column layouts follow their local grid instead of forcing each action full-width.
 
+## 6.1 Icons
+
+- ENKU uses a consistent monochrome **line-icon** language.
+- Do **not** use Unicode characters, emoji, text glyphs or font symbols as production icon substitutes.
+- Core icon size: **24 px**; header/back icon: **20 px**.
+- Icons use a simple rounded line style, visually matching the original ENKU reference boards.
+- Asymmetric icons receive optical centering rather than mathematical centering.
+- Focus is applied to the control/container, not by changing the icon into a different unrelated glyph.
+- The canonical icon set includes at minimum: back, search, overflow/menu, grid, list, filter, sort, check, close, add, refresh, Wi‑Fi, lock, battery, bookmark, contents, font/typography, orientation, sleep, storage, info/about, power, delete, edit/replace.
+- Existing approved/reference boards are the visual source of truth for icon character. EN localization must preserve that icon language.
+
 ## 7. Input fields and keyboard
 
 - Input field height baseline: 48 px.

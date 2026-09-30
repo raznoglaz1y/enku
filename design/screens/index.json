@@ -1,0 +1,415 @@
+[
+  {
+    "screen": "ENKU_about_device",
+    "file": "design/screens/ru/ENKU_about_device_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_add_book",
+    "file": "design/screens/ru/ENKU_add_book_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_book_details",
+    "file": "design/screens/ru/ENKU_book_details_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_book_error",
+    "file": "design/screens/ru/ENKU_book_error_v2.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_book_finished",
+    "file": "design/screens/ru/ENKU_book_finished_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_book_validation",
+    "file": "design/screens/ru/ENKU_book_validation_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_cancel_transfer",
+    "file": "design/screens/ru/ENKU_cancel_transfer_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_contents_bookmarks",
+    "file": "design/screens/ru/ENKU_contents_bookmarks_v3.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_delete_book",
+    "file": "design/screens/ru/ENKU_delete_book_v2.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_display_settings",
+    "file": "design/screens/ru/ENKU_display_settings_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_empty_bookmarks",
+    "file": "design/screens/ru/ENKU_empty_bookmarks_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_empty_filter",
+    "file": "design/screens/ru/ENKU_empty_filter_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_empty_library",
+    "file": "design/screens/ru/ENKU_empty_library_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_empty_networks",
+    "file": "design/screens/ru/ENKU_empty_networks_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_english_check",
+    "file": "design/screens/en/ENKU_english_check_v1.png",
+    "ru": "not applicable",
+    "en": "sample only",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_file_browser",
+    "file": "design/screens/ru/ENKU_file_browser_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_filter_sort",
+    "file": "design/screens/ru/ENKU_filter_sort_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_first_start_controls",
+    "file": "design/screens/ru/ENKU_first_start_controls_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_first_start_language",
+    "file": "design/screens/ru/ENKU_first_start_language_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_first_start_orientation",
+    "file": "design/screens/ru/ENKU_first_start_orientation_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_focus_states",
+    "file": "design/screens/ru/ENKU_focus_states_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_forget_network",
+    "file": "design/screens/ru/ENKU_forget_network_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_import_complete",
+    "file": "design/screens/ru/ENKU_import_complete_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_import_methods",
+    "file": "design/screens/ru/ENKU_import_methods_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_import_summary",
+    "file": "design/screens/ru/ENKU_import_summary_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_language",
+    "file": "design/screens/ru/ENKU_language_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_library",
+    "file": "design/screens/ru/ENKU_library_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_library_list",
+    "file": "design/screens/ru/ENKU_library_list_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_library_search",
+    "file": "design/screens/ru/ENKU_library_search_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_long_text_check",
+    "file": "design/screens/ru/ENKU_long_text_check_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_low_battery",
+    "file": "design/screens/ru/ENKU_low_battery_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_memory_card_error",
+    "file": "design/screens/ru/ENKU_memory_card_error_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_navigation_status",
+    "file": "design/screens/ru/ENKU_navigation_status_v2.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_no_contents",
+    "file": "design/screens/ru/ENKU_no_contents_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_no_memory_card",
+    "file": "design/screens/ru/ENKU_no_memory_card_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_no_search_results",
+    "file": "design/screens/ru/ENKU_no_search_results_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_not_enough_space",
+    "file": "design/screens/ru/ENKU_not_enough_space_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_portrait_orientation",
+    "file": "design/screens/ru/ENKU_portrait_orientation_v2.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_power_off",
+    "file": "design/screens/ru/ENKU_power_off_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_quick_aa_preview",
+    "file": "design/screens/ru/ENKU_quick_aa_preview_v3.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_reading_menu",
+    "file": "design/screens/ru/ENKU_reading_menu_v2.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_replace_book",
+    "file": "design/screens/ru/ENKU_replace_book_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_restart_reading",
+    "file": "design/screens/ru/ENKU_restart_reading_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_saved_networks",
+    "file": "design/screens/ru/ENKU_saved_networks_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_search_in_book",
+    "file": "design/screens/ru/ENKU_search_in_book_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_search_match",
+    "file": "design/screens/ru/ENKU_search_match_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_settings",
+    "file": "design/screens/ru/ENKU_settings_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_sleep_cover",
+    "file": "design/screens/ru/ENKU_sleep_cover_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_sleep_screen",
+    "file": "design/screens/ru/ENKU_sleep_screen_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_sleep_settings",
+    "file": "design/screens/ru/ENKU_sleep_settings_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_storage_import",
+    "file": "design/screens/ru/ENKU_storage_import_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_transfer_interrupted",
+    "file": "design/screens/ru/ENKU_transfer_interrupted_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_transfer_progress",
+    "file": "design/screens/ru/ENKU_transfer_progress_v2.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_typography",
+    "file": "design/screens/ru/ENKU_typography_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_ui_kit_core",
+    "file": "design/screens/ru/ENKU_ui_kit_core_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_usb_transfer",
+    "file": "design/screens/ru/ENKU_usb_transfer_v2.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_wifi",
+    "file": "design/screens/ru/ENKU_wifi_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_wifi_password",
+    "file": "design/screens/ru/ENKU_wifi_password_v3.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  },
+  {
+    "screen": "ENKU_wifi_transfer",
+    "file": "design/screens/ru/ENKU_wifi_transfer_v1.png",
+    "ru": "available",
+    "en": "pending",
+    "review": "historical board; inspect before implementation"
+  }
+]

@@ -264,3 +264,14 @@ System/reference material:
 - `ENKU_long_text_check_v1`
 
 These are not production screens. They define reusable layout/interaction rules.
+
+
+## 18. Design board format
+
+- Canonical UI review boards are **PNG images**, matching the original RU design workflow.
+- Each canonical board presents both **800 × 480 landscape** and **480 × 800 portrait** variants where applicable.
+- SVG icon files in `design/icons/` remain the approved icon source/reference library.
+- Screen behavior, dimensions, focus rules and implementation constraints live in this document and related docs; the PNG board is the visual reference.
+- Generated EN SVG screen boards created during the remediation phase are considered **draft/intermediate artifacts**, not final canonical design boards.
+- As each EN screen is visually finalized, replace its draft SVG reference with a PNG board and update the screen index / revision plan.
+- Do not rely on GitHub SVG composition, external SVG references or hand-authored inline icon geometry for final review boards.

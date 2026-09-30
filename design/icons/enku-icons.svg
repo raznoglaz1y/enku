@@ -1,15 +1,131 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
-<style>.i{fill:none;stroke:#111;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}</style>
-<symbol id="back" viewBox="0 0 24 24"><path class="i" d="M15 5l-7 7 7 7"/></symbol>
-<symbol id="search" viewBox="0 0 24 24"><circle class="i" cx="10.5" cy="10.5" r="6.5"/><path class="i" d="M15.5 15.5L21 21"/></symbol>
-<symbol id="menu" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></symbol>
-<symbol id="grid" viewBox="0 0 24 24"><rect class="i" x="4" y="4" width="6" height="6"/><rect class="i" x="14" y="4" width="6" height="6"/><rect class="i" x="4" y="14" width="6" height="6"/><rect class="i" x="14" y="14" width="6" height="6"/></symbol>
-<symbol id="list" viewBox="0 0 24 24"><path class="i" d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1.2"/><circle cx="4" cy="12" r="1.2"/><circle cx="4" cy="18" r="1.2"/></symbol>
-<symbol id="filter" viewBox="0 0 24 24"><path class="i" d="M4 5h16l-6 7v5l-4 2v-7z"/></symbol>
-<symbol id="sort" viewBox="0 0 24 24"><path class="i" d="M8 5v14M5 8l3-3 3 3M16 19V5M13 16l3 3 3-3"/></symbol>
-<symbol id="check" viewBox="0 0 24 24"><path class="i" d="M5 12l4 4L19 6"/></symbol>
-<symbol id="close" viewBox="0 0 24 24"><path class="i" d="M6 6l12 12M18 6L6 18"/></symbol>
-<symbol id="wifi" viewBox="0 0 24 24"><path class="i" d="M4 9c5-4 11-4 16 0M7 13c3-2.5 7-2.5 10 0M10 17c1.3-1 2.7-1 4 0"/><circle cx="12" cy="20" r="1.2"/></symbol>
-<symbol id="battery" viewBox="0 0 24 24"><rect class="i" x="3" y="7" width="16" height="10" rx="1"/><path class="i" d="M21 10v4"/></symbol>
-<symbol id="info" viewBox="0 0 24 24"><circle class="i" cx="12" cy="12" r="9"/><path class="i" d="M12 10v6"/><circle cx="12" cy="7" r="1.2"/></symbol>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="720" viewBox="0 0 960 720" role="img" aria-labelledby="title desc">
+<title id="title">ENKU icon set</title>
+<desc id="desc">Visible reference sheet for the ENKU monochrome line icon language.</desc>
+<style>
+  text{font-family:"Noto Sans",Arial,sans-serif;fill:#111}
+  .title{font-size:28px;font-weight:700}
+  .label{font-size:14px}
+  .box{fill:#fff;stroke:#d8d8d3;stroke-width:1}
+  .i{fill:none;stroke:#111;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+</style>
+<rect width="960" height="720" fill="#f3f3ef"/>
+<text class="title" x="36" y="48">ENKU · Core line icons</text>
+<text class="label" x="36" y="76">24 px base · monochrome · rounded line style · no Unicode placeholders</text>
+
+<!-- Back -->
+<g transform="translate(50,120)">
+  <rect class="box" width="120" height="120" rx="8"/>
+  <g transform="translate(48,30) scale(2.5)">
+    <path class="i" d="M15 5l-7 7 7 7"/>
+  </g>
+  <text class="label" x="60" y="145" text-anchor="middle">Back</text>
+</g>
+
+<!-- Search -->
+<g transform="translate(210,120)">
+  <rect class="box" width="120" height="120" rx="8"/>
+  <g transform="translate(48,30) scale(2.5)">
+    <circle class="i" cx="10.5" cy="10.5" r="6.5"/>
+    <path class="i" d="M15.5 15.5L21 21"/>
+  </g>
+  <text class="label" x="60" y="145" text-anchor="middle">Search</text>
+</g>
+
+<!-- Menu -->
+<g transform="translate(370,120)">
+  <rect class="box" width="120" height="120" rx="8"/>
+  <g transform="translate(48,30) scale(2.5)" fill="#111">
+    <circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>
+  </g>
+  <text class="label" x="60" y="145" text-anchor="middle">Menu</text>
+</g>
+
+<!-- Grid -->
+<g transform="translate(530,120)">
+  <rect class="box" width="120" height="120" rx="8"/>
+  <g transform="translate(48,30) scale(2.5)">
+    <rect class="i" x="4" y="4" width="6" height="6"/>
+    <rect class="i" x="14" y="4" width="6" height="6"/>
+    <rect class="i" x="4" y="14" width="6" height="6"/>
+    <rect class="i" x="14" y="14" width="6" height="6"/>
+  </g>
+  <text class="label" x="60" y="145" text-anchor="middle">Grid</text>
+</g>
+
+<!-- List -->
+<g transform="translate(690,120)">
+  <rect class="box" width="120" height="120" rx="8"/>
+  <g transform="translate(48,30) scale(2.5)">
+    <path class="i" d="M8 6h12M8 12h12M8 18h12"/>
+    <circle cx="4" cy="6" r="1.2" fill="#111"/><circle cx="4" cy="12" r="1.2" fill="#111"/><circle cx="4" cy="18" r="1.2" fill="#111"/>
+  </g>
+  <text class="label" x="60" y="145" text-anchor="middle">List</text>
+</g>
+
+<!-- Filter -->
+<g transform="translate(50,330)">
+  <rect class="box" width="120" height="120" rx="8"/>
+  <g transform="translate(48,30) scale(2.5)">
+    <path class="i" d="M4 5h16l-6 7v5l-4 2v-7z"/>
+  </g>
+  <text class="label" x="60" y="145" text-anchor="middle">Filter</text>
+</g>
+
+<!-- Sort -->
+<g transform="translate(210,330)">
+  <rect class="box" width="120" height="120" rx="8"/>
+  <g transform="translate(48,30) scale(2.5)">
+    <path class="i" d="M8 5v14M5 8l3-3 3 3M16 19V5M13 16l3 3 3-3"/>
+  </g>
+  <text class="label" x="60" y="145" text-anchor="middle">Sort</text>
+</g>
+
+<!-- Check -->
+<g transform="translate(370,330)">
+  <rect class="box" width="120" height="120" rx="8"/>
+  <g transform="translate(48,30) scale(2.5)">
+    <path class="i" d="M5 12l4 4L19 6"/>
+  </g>
+  <text class="label" x="60" y="145" text-anchor="middle">Check</text>
+</g>
+
+<!-- Close -->
+<g transform="translate(530,330)">
+  <rect class="box" width="120" height="120" rx="8"/>
+  <g transform="translate(48,30) scale(2.5)">
+    <path class="i" d="M6 6l12 12M18 6L6 18"/>
+  </g>
+  <text class="label" x="60" y="145" text-anchor="middle">Close</text>
+</g>
+
+<!-- Wi-Fi -->
+<g transform="translate(690,330)">
+  <rect class="box" width="120" height="120" rx="8"/>
+  <g transform="translate(48,30) scale(2.5)">
+    <path class="i" d="M4 9c5-4 11-4 16 0M7 13c3-2.5 7-2.5 10 0M10 17c1.3-1 2.7-1 4 0"/>
+    <circle cx="12" cy="20" r="1.2" fill="#111"/>
+  </g>
+  <text class="label" x="60" y="145" text-anchor="middle">Wi‑Fi</text>
+</g>
+
+<!-- Battery -->
+<g transform="translate(290,540)">
+  <rect class="box" width="120" height="120" rx="8"/>
+  <g transform="translate(48,30) scale(2.5)">
+    <rect class="i" x="3" y="7" width="16" height="10" rx="1"/>
+    <path class="i" d="M21 10v4"/>
+  </g>
+  <text class="label" x="60" y="145" text-anchor="middle">Battery</text>
+</g>
+
+<!-- Info -->
+<g transform="translate(450,540)">
+  <rect class="box" width="120" height="120" rx="8"/>
+  <g transform="translate(48,30) scale(2.5)">
+    <circle class="i" cx="12" cy="12" r="9"/>
+    <path class="i" d="M12 10v6"/>
+    <circle cx="12" cy="7" r="1.2" fill="#111"/>
+  </g>
+  <text class="label" x="60" y="145" text-anchor="middle">Info</text>
+</g>
 </svg>

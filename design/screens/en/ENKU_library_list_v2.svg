@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1360" height="1040" viewBox="0 0 1360 1040">
+
+<style>
+text{font-family:"Noto Sans",Arial,sans-serif;fill:#111}
+.h1{font-size:34px;font-weight:700}.sub{font-size:16px}.label{font-size:18px;font-weight:700}
+.title{font-size:22px;font-weight:700}.body{font-size:17px}.meta{font-size:13px}.small{font-size:12px}
+.bg{fill:#efefec}.panel{fill:#fff}.row{fill:#fff;stroke:#111;stroke-width:1}.focus{fill:#fff;stroke:#111;stroke-width:3}
+.btn{fill:#111}.btnt{fill:#fff;font-size:17px;font-weight:700}.outline{fill:#fff;stroke:#111;stroke-width:1}
+.cover{fill:#fff;stroke:#111;stroke-width:1}.bar{fill:#111}.hair{stroke:#111;stroke-width:1}
+</style>
+<rect class="bg" width="1360" height="1040"/>
+<text class="h1" x="32" y="52">ENKU / Library · List — EN v2</text>
+<text class="sub" x="32" y="86">Canonical EN board · row focus + persistent view state</text>
+<text class="label" x="32" y="132">Landscape · 800 × 480</text><text class="label" x="862" y="132">Portrait · 480 × 800</text>
+<g transform="translate(32,150)">
+<rect class="panel" width="800" height="480"/>
+<text class="small" x="24" y="26">Library</text><text class="small" x="690" y="26">10:42   82%</text>
+<text class="title" x="24" y="66">Books</text><text class="body" x="682" y="66">⌕   ⋯</text>
+<text class="body" x="24" y="106">All books · 4</text><text class="body" x="640" y="106">▦   ≡   ≛   ⇅</text>
+<g transform="translate(24,126)">
+<rect class="focus" width="752" height="68" rx="4"/><rect class="cover" x="10" y="10" width="36" height="48"/><text class="label" x="62" y="28">White Nights</text><text class="meta" x="62" y="49">Fyodor Dostoevsky</text><text class="meta" x="612" y="28">Reading · 32%</text><rect class="bar" x="612" y="44" width="44" height="3"/><line class="hair" x1="656" y1="45" x2="724" y2="45"/>
+<g transform="translate(0,78)"><rect class="cover" x="10" y="10" width="36" height="48"/><text class="label" x="62" y="28">The Little Prince</text><text class="meta" x="62" y="49">Antoine de Saint-Exupéry</text><text class="meta" x="612" y="36">New</text></g>
+<g transform="translate(0,156)"><rect class="cover" x="10" y="10" width="36" height="48"/><text class="label" x="62" y="28">Around the World in Eighty Days</text><text class="meta" x="62" y="49">Jules Verne</text><text class="meta" x="612" y="36">Finished ✓</text></g>
+<g transform="translate(0,234)"><rect class="cover" x="10" y="10" width="36" height="48"/><text class="label" x="62" y="28">The Mysterious Island</text><text class="meta" x="62" y="49">Jules Verne</text><text class="meta" x="612" y="36">New</text></g>
+</g>
+</g>
+<g transform="translate(862,150)">
+<rect class="panel" width="480" height="800"/>
+<text class="small" x="24" y="26">Library</text><text class="small" x="368" y="26">10:42  82%</text>
+<text class="title" x="24" y="66">Books</text><text class="body" x="386" y="66">⌕   ⋯</text>
+<text class="body" x="24" y="106">All books · 4</text><text class="body" x="330" y="106">▦  ≡  ≛  ⇅</text>
+<g transform="translate(16,130)">
+<rect class="focus" width="448" height="74" rx="4"/><rect class="cover" x="12" y="12" width="38" height="50"/><text class="label" x="66" y="30">White Nights</text><text class="meta" x="66" y="51">Fyodor Dostoevsky</text><text class="meta" x="330" y="30">32%</text>
+<g transform="translate(0,86)"><rect class="cover" x="12" y="12" width="38" height="50"/><text class="label" x="66" y="30">The Little Prince</text><text class="meta" x="66" y="51">A. de Saint-Exupéry</text><text class="meta" x="352" y="40">New</text></g>
+<g transform="translate(0,172)"><rect class="cover" x="12" y="12" width="38" height="50"/><text class="label" x="66" y="30">Around the World in Eighty Days</text><text class="meta" x="66" y="51">Jules Verne</text><text class="meta" x="320" y="40">Finished ✓</text></g>
+<g transform="translate(0,258)"><rect class="cover" x="12" y="12" width="38" height="50"/><text class="label" x="66" y="30">The Mysterious Island</text><text class="meta" x="66" y="51">Jules Verne</text><text class="meta" x="352" y="40">New</text></g>
+</g>
+</g>
+<text class="label" x="32" y="682">Behavior</text>
+<text class="sub" x="32" y="716">• Entire row is focusable. The outline is focus; book state/progress is persistent data.</text>
+<text class="sub" x="32" y="746">• Focus order: books first; header actions are reached through the defined navigation route, not by accidental geometry.</text>
+<text class="sub" x="32" y="776">• Long titles use up to 2 lines in production, then ellipsis; metadata remains one line.</text>
+</svg>

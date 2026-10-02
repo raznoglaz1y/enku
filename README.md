@@ -174,7 +174,10 @@ See the detailed [Hardware baseline](docs/hardware.md) and [BOM status](docs/bom
 
 - grid and list views;
 - persistent sort and filter state;
-- title/author search;
+- All / New / Reading / Finished filters;
+- Title / Author / Recently opened / Recently added sorting;
+- global title/author search independent from the active browse filter;
+- bounded/paged result queries for large libraries;
 - book details and cover handling;
 - reading-state indicators;
 - progress persistence;
@@ -275,7 +278,9 @@ Firmware has not yet been published as a working reader. The planned implementat
    - Wi-Fi;
    - battery/power state.
 
-2. **Application state**
+2. **Application state / Library**
+   - stable `book_id`-based Library records;
+   - bounded Browse/Search query model;
    - library index;
    - current book;
    - reading position;
@@ -405,7 +410,7 @@ No final mechanical dimensions will be published as authoritative until the actu
 - [ ] Implement Refresh Manager queue and render-plan pipeline
 - [ ] Connect the firmware scaffold to verified platform drivers
 - [ ] Implement EPUB/FB2/TXT parsers and text layout
-- [ ] Implement Library grid/list navigation
+- [ ] Implement LibraryService/index and grid/list navigation
 - [ ] Implement CBOR persistence and reading-position checkpoints
 - [ ] Implement typography presets and Custom mode
 - [ ] Add bookmarks and table of contents
@@ -473,6 +478,7 @@ Useful documents:
 - [Pagination & rendering model](docs/pagination-model.md)
 - [Metadata & parser model](docs/parser-model.md)
 - [Library & storage model](docs/storage-model.md)
+- [Library data model & service interface](docs/library-model.md)
 - [Persistence backend](docs/persistence-model.md)
 - [Localization architecture](docs/localization-model.md)
 - [Errors, logging & diagnostics](docs/diagnostics-model.md)
@@ -509,6 +515,7 @@ docs/
   pagination-model.md       text layout and pagination rules
   parser-model.md           metadata normalization and parser abstraction
   storage-model.md          Library identity, state and transactional storage
+  library-model.md          book records, browse/search queries and LibraryService
   persistence-model.md      CBOR records, schema versioning and crash recovery
   localization-model.md     string keys, fallback, plurals and locale packaging
   diagnostics-model.md      structured errors, bounded logs and Recovery Mode

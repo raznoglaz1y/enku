@@ -127,6 +127,33 @@ public:
     std::uint32_t calls{0};
 };
 
+class FakeAppContextService final : public AppContextService {
+public:
+    PersistStatus load(
+        AppRestoreContext& context
+    ) override {
+        if (!saved.has_value()) {
+            return PersistStatus::NotFound;
+        }
+        context = *saved;
+        return PersistStatus::Ok;
+    }
+
+    PersistStatus save(
+        const AppRestoreContext& context
+    ) override {
+        ++saves;
+        if (status == PersistStatus::Ok) {
+            saved = context;
+        }
+        return status;
+    }
+
+    PersistStatus status{PersistStatus::Ok};
+    std::optional<AppRestoreContext> saved;
+    std::uint32_t saves{0};
+};
+
 class FakeCheckpointService final : public ReaderCheckpointService {
 public:
     PersistStatus load(
@@ -188,6 +215,7 @@ int main() {
     FakeLibraryService library;
     FakeBookSourceService source;
     FakeCheckpointService checkpoint;
+    FakeAppContextService context;
 
     const std::string text =
         "Alpha beta gamma delta epsilon zeta eta theta iota kappa lambda "
@@ -217,6 +245,7 @@ int main() {
         refresh,
         library,
         checkpoint,
+        context,
         typography,
         viewport
     );
@@ -234,6 +263,9 @@ int main() {
     assert(state.current_book == "runtime-test");
     assert(state.reading_position.has_value());
     assert(!state.progress_dirty);
+    assert(context.saved.has_value());
+    assert(context.saved->screen == Screen::Reading);
+    assert(context.saved->current_book == "runtime-test");
     assert(refresh.last.reason == RefreshReason::PageTurn);
 
     const auto first_offset = state.reading_position->text_offset;
@@ -256,6 +288,9 @@ int main() {
     assert(state.library.focused_book == "runtime-test");
     assert(!state.current_book.has_value());
     assert(loader.session() == nullptr);
+    assert(context.saved.has_value());
+    assert(context.saved->screen == Screen::Library);
+    assert(!context.saved->current_book.has_value());
     assert(refresh.last.reason == RefreshReason::ScreenChanged);
 
     // Reopen restores the semantic position persisted by BackRequested.

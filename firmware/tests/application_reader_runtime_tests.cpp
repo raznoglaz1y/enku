@@ -1034,11 +1034,18 @@ int main() {
 
     FakeNetworkService wifi_network;
 
+    NetworkLifecycleCoordinator wifi_lifecycle(
+        storage.appState(),
+        wifi_network,
+        wifi_network
+    );
+
     WiFiSettingsRuntime wifi_settings(
         storage.appState(),
         storage,
         wifi_network,
         wifi_network,
+        wifi_lifecycle,
         settings_nav
     );
 

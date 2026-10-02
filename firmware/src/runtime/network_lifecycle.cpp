@@ -68,8 +68,11 @@ NetworkLifecycleCoordinator::lastPolicyStatus() const {
 }
 
 void NetworkLifecycleCoordinator::updateStatus() {
+    const auto link_state =
+        network_.connectionState();
+
     app_state_.network.connected =
-        network_.connected();
+        link_state == NetworkLinkState::Online;
 
     const auto trusted =
         network_settings_.trustedSsid();
@@ -79,13 +82,14 @@ void NetworkLifecycleCoordinator::updateStatus() {
             ? *trusted
             : std::string{};
 
-    if (app_state_.network.connected) {
+    if (link_state == NetworkLinkState::Online) {
         app_state_.network.status =
             NetworkRuntimeStatus::Connected;
         return;
     }
 
-    if (last_policy_status_ ==
+    if (link_state == NetworkLinkState::Failed ||
+        last_policy_status_ ==
             NetworkPolicyStatus::DriverError ||
         last_policy_status_ ==
             NetworkPolicyStatus::InvalidCredentials ||
@@ -109,8 +113,9 @@ void NetworkLifecycleCoordinator::updateStatus() {
         return;
     }
 
-    if (app_state_.wifi_policy ==
-        WiFiPolicy::AutoConnectTrusted) {
+    if (link_state == NetworkLinkState::Connecting ||
+        app_state_.wifi_policy ==
+            WiFiPolicy::AutoConnectTrusted) {
         app_state_.network.status =
             NetworkRuntimeStatus::Connecting;
         return;

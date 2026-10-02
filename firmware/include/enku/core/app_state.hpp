@@ -84,6 +84,11 @@ struct ReaderSearchState {
     std::uint32_t focus_index{0};
 };
 
+struct ReaderSearchHighlight {
+    std::optional<SemanticPosition> position;
+    std::string query;
+};
+
 struct AppState {
     Screen screen{Screen::Boot};
     BootState boot;
@@ -99,6 +104,7 @@ struct AppState {
     TypographyState typography;
     ReaderOverlayState reader_overlay;
     ReaderSearchState search;
+    ReaderSearchHighlight search_highlight;
     KeyboardState keyboard;
 
     NetworkState network;

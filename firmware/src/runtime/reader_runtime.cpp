@@ -46,9 +46,26 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
     }
 
     std::optional<SemanticPosition> saved_position;
-    if (app_state_.reading_position.has_value() &&
-        app_state_.reading_position->book_id == event.book_id) {
-        saved_position = app_state_.reading_position;
+
+    ReaderCheckpoint restored;
+    const auto restore_status =
+        checkpoint_.load(event.book_id, restored);
+
+    if (restore_status == PersistStatus::Ok) {
+        if (restored.position.book_id == event.book_id) {
+            saved_position = restored.position;
+        }
+    } else if (restore_status != PersistStatus::NotFound) {
+        loader_.close();
+        app_state_.library.focused_book = event.book_id;
+        app_state_.screen = Screen::Library;
+        app_state_.current_book.reset();
+        app_state_.reading_position.reset();
+        app_state_.reading_progress = 0.0F;
+        app_state_.current_book_finished = false;
+        app_state_.progress_dirty = false;
+
+        return ReaderRuntimeResult::CheckpointLoadFailed;
     }
 
     const BookLoadRequest request{

@@ -229,7 +229,8 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
     auto* active_session = session();
 
     if (app_state_.screen != Screen::Reading &&
-        app_state_.screen != Screen::ReaderOverlay) {
+        app_state_.screen != Screen::ReaderOverlay &&
+        app_state_.screen != Screen::ReadingSettings) {
         return ReaderRuntimeResult::Ignored;
     }
 
@@ -282,7 +283,8 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
         return ReaderRuntimeResult::RenderFailed;
     }
 
-    if (app_state_.screen == Screen::ReaderOverlay) {
+    if (app_state_.screen == Screen::ReaderOverlay ||
+        app_state_.screen == Screen::ReadingSettings) {
         return ReaderRuntimeResult::Applied;
     }
 

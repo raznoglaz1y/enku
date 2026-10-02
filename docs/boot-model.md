@@ -367,3 +367,33 @@ Examples:
 - Boot becomes stable only after an interactive screen renders successfully.
 - Startup timing is instrumented in development builds.
 - Boot does not rewrite valid persistence records merely by loading them.
+
+
+## 25. Storage startup recovery MVP
+
+The first concrete storage/persistence startup coordinator is now implemented as `StorageStartupCoordinator`.
+
+Current bounded boot flow:
+
+```text
+BootStage::Storage
+→ BootStage::Persistence
+→ CborLibraryService::load()
+→ BootStage::RecoveryDecision
+→ inspect /system/tmp
+→ clean only clearly stale committed artifacts
+→ preserve ambiguous/incomplete uploads
+→ Library or ErrorRecovery
+```
+
+Recovery decisions:
+
+- valid Library + no pending tmp → normal Library startup;
+- tmp content already indexed by fingerprint → stale artifact, safe to remove;
+- new/invalid/unsupported tmp content → preserve file and enter Recovery Mode;
+- unrecoverable Library index → enter Recovery Mode rather than treating it as an empty Library;
+- tmp cleanup/storage I/O failure → enter Recovery Mode.
+
+The coordinator intentionally does not auto-import ambiguous tmp files after reboot. User/source data is preserved until a later recovery action explicitly retries or removes it.
+
+This MVP covers the storage/persistence part of boot only. Display, input, settings, boot-loop markers and automatic reading restore remain separate boot stages.

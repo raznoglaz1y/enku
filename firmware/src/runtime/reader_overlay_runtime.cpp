@@ -1,9 +1,12 @@
 #include "enku/runtime/reader_overlay_runtime.hpp"
 
 #include <array>
+#include <algorithm>
+#include <string>
 
 #include "enku/core/events.hpp"
 #include "enku/core/reader_overlay.hpp"
+#include "enku/reader/document.hpp"
 
 namespace enku {
 
@@ -148,7 +151,7 @@ ReaderOverlayRuntime::navigate(int direction) {
         storage_.appState().reader_overlay;
 
     if (overlay.mode == ReaderOverlayMode::Menu) {
-        constexpr int kMenuCount = 4;
+        constexpr int kMenuCount = 7;
 
         int next =
             static_cast<int>(overlay.focus_index) +
@@ -257,6 +260,73 @@ ReaderOverlayRuntime::confirm() {
             return renderOverlay();
         }
 
+        if (item == ReaderMenuItem::ContentsBookmarks) {
+            app.screen = Screen::Reading;
+            baseline_valid_ = false;
+            return ReaderOverlayRuntimeResult::
+                ContentsBookmarksRequested;
+        }
+
+        if (item == ReaderMenuItem::AddBookmark) {
+            if (!app.reading_position.has_value()) {
+                return ReaderOverlayRuntimeResult::Failed;
+            }
+
+            std::string label = "Bookmark";
+
+            const auto* document =
+                reader_.loader().document();
+
+            if (document != nullptr) {
+                const auto section =
+                    std::find_if(
+                        document->sections.begin(),
+                        document->sections.end(),
+                        [&](const DocumentSection& value) {
+                            return value.id ==
+                                app.reading_position->
+                                    section_id;
+                        }
+                    );
+
+                if (section !=
+                        document->sections.end() &&
+                    section->title.has_value() &&
+                    !section->title->empty()) {
+                    label = *section->title;
+                } else if (
+                    !app.reading_position->
+                        section_id.empty()) {
+                    label =
+                        app.reading_position->
+                            section_id;
+                }
+            }
+
+            const auto bookmark_status =
+                storage_.bookmarks().add(
+                    BookmarkRecord{
+                        *app.reading_position,
+                        label,
+                    }
+                );
+
+            if (bookmark_status != BookmarkStatus::Ok &&
+                bookmark_status !=
+                    BookmarkStatus::AlreadyExists) {
+                return ReaderOverlayRuntimeResult::Failed;
+            }
+
+            app.screen = Screen::Reading;
+            baseline_valid_ = false;
+
+            return toOverlayResult(
+                reader_.reader().redrawCurrentPage(
+                    RefreshReason::OverlayChanged
+                )
+            );
+        }
+
         if (item == ReaderMenuItem::Orientation) {
             const auto previous_screen = app.screen;
             const auto target =
@@ -286,6 +356,13 @@ ReaderOverlayRuntime::confirm() {
             app.screen = Screen::Reading;
             baseline_valid_ = false;
             return ReaderOverlayRuntimeResult::SearchRequested;
+        }
+
+        if (item == ReaderMenuItem::AboutBook) {
+            app.screen = Screen::Reading;
+            baseline_valid_ = false;
+            return ReaderOverlayRuntimeResult::
+                AboutBookRequested;
         }
 
         if (item == ReaderMenuItem::Sleep) {

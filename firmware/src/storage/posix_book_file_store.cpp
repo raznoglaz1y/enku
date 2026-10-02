@@ -1,5 +1,6 @@
 #include "enku/storage/posix_book_file_store.hpp"
 
+#include <algorithm>
 #include <fstream>
 #include <system_error>
 #include <utility>
@@ -118,6 +119,48 @@ BookFileStatus PosixBookFileStore::remove(
     return removed
         ? BookFileStatus::Ok
         : BookFileStatus::NotFound;
+}
+
+BookFileStatus PosixBookFileStore::list(
+    const std::string& directory,
+    std::vector<std::string>& paths
+) {
+    paths.clear();
+    const auto full_dir = resolve(directory);
+
+    std::error_code ec;
+    if (!std::filesystem::exists(full_dir, ec)) {
+        return ec
+            ? BookFileStatus::IoError
+            : BookFileStatus::NotFound;
+    }
+
+    if (!std::filesystem::is_directory(full_dir, ec) || ec) {
+        return BookFileStatus::IoError;
+    }
+
+    for (const auto& entry :
+         std::filesystem::directory_iterator(full_dir, ec)) {
+        if (ec) {
+            return BookFileStatus::IoError;
+        }
+
+        if (!entry.is_regular_file()) {
+            continue;
+        }
+
+        const auto relative =
+            std::filesystem::relative(entry.path(), root_, ec);
+
+        if (ec) {
+            return BookFileStatus::IoError;
+        }
+
+        paths.push_back("/" + relative.generic_string());
+    }
+
+    std::sort(paths.begin(), paths.end());
+    return BookFileStatus::Ok;
 }
 
 } // namespace enku

@@ -333,6 +333,34 @@ const sharedChromeCss = `
   }
 </style>`;
 
+const explorePageCss = `
+<style id="enku-explore-system">
+  .hero,.hardware-hero{padding:108px 0 96px!important;border-bottom:1px solid rgba(20,20,20,.09)}
+  .hero-grid,.hardware-hero-grid{display:grid!important;grid-template-columns:.82fr 1.18fr!important;gap:96px!important;align-items:end!important}
+  .hero h1,.hardware-hero h1{font-family:"Newsreader",serif!important;font-size:clamp(70px,7.2vw,112px)!important;font-weight:500!important;line-height:.88!important;letter-spacing:-.045em!important;margin:0!important}
+  .lead,.hardware-lead{font-size:18px!important;line-height:1.65!important;color:#56524c!important;max-width:610px!important;margin:0!important}
+
+  .section,.hw-section{padding:108px 0!important;border-bottom:1px solid rgba(20,20,20,.09)}
+  .intro,.section-intro,.hw-intro{display:grid!important;grid-template-columns:.82fr 1.18fr!important;gap:96px!important;align-items:start!important;margin-bottom:62px!important}
+  .intro h2,.section-intro h2,.hw-intro h2{font-family:"Newsreader",serif!important;font-size:clamp(48px,5vw,72px)!important;font-weight:500!important;line-height:.95!important;letter-spacing:-.045em!important;margin:0!important}
+  .intro>p,.section-intro>p,.hw-intro>p{font-size:16px!important;line-height:1.7!important;color:#605c55!important;max-width:630px!important;margin:0!important}
+
+  .hardware-state>div,.state-item,.status-card,.principle{padding-top:28px!important;padding-bottom:30px!important}
+  .hardware-value,.value,.status-card strong,.principle strong{font-family:"Newsreader",serif!important;font-size:28px!important;font-weight:500!important;line-height:1.08!important}
+
+  @media(max-width:900px){
+    .hero-grid,.hardware-hero-grid,.intro,.section-intro,.hw-intro{grid-template-columns:1fr!important;gap:30px!important}
+    .hero,.hardware-hero{padding:82px 0 74px!important}
+    .section,.hw-section{padding:82px 0!important}
+    .intro,.section-intro,.hw-intro{margin-bottom:44px!important}
+  }
+  @media(max-width:700px){
+    .hero h1,.hardware-hero h1{font-size:clamp(54px,15vw,78px)!important}
+    .lead,.hardware-lead{font-size:16px!important}
+    .section,.hw-section{padding:70px 0!important}
+  }
+</style>`;
+
 const allowedSubjects = new Set([
   "Project question",
   "Collaboration",
@@ -404,6 +432,9 @@ export default {
         .on("head", {
           element(element) {
             element.append(sharedChromeCss, { html: true });
+            if (["/hardware", "/software", "/design", "/build"].includes(url.pathname)) {
+              element.append(explorePageCss, { html: true });
+            }
           },
         })
         .transform(assetResponse);

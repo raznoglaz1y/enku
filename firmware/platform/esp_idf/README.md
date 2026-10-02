@@ -198,3 +198,32 @@ full ENKU screen
 The partial test region is 96×96 pixels and byte-aligned. The API validates bounds and region byte count before touching panel RAM.
 
 Physical validation still needs the real board so we can compare actual refresh time, ghosting and whether the vendor partial window behavior matches the panel revision shipped with the unit.
+
+
+## Input bring-up
+
+The first ESP-IDF input adapter is `EspIdfButtons`.
+
+Board inputs:
+
+```text
+Up       GPIO4
+Function GPIO5
+Down     GPIO6
+BOOT     GPIO0
+```
+
+They are configured as active-low inputs with pull-ups.
+
+The platform firmware runs a 12-second interactive smoke test after display bring-up. Serial logs show the physical control, generated press type and framework-neutral logical action.
+
+Current timing baseline:
+
+```text
+poll      5 ms
+debounce 20 ms
+long     650 ms
+repeat   700 ms initial / 180 ms interval
+```
+
+The Power button is intentionally not treated as a normal GPIO button here; it remains part of the PMU/power-control bring-up.

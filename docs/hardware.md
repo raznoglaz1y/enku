@@ -98,3 +98,21 @@ Only after that is stable, possible variants may include:
 - revised button geometry.
 
 The project will avoid fragmenting into many mechanical variants before the baseline design is proven.
+
+
+## Vendor-confirmed controls
+
+Current official Waveshare source identifies the onboard navigation inputs as active-low GPIOs with pull-ups:
+
+| Control | GPIO | Current vendor naming |
+| --- | ---: | --- |
+| Up | GPIO4 | Button_Up |
+| Function / press | GPIO5 | Button_Function |
+| Down | GPIO6 | Button_Down |
+| BOOT | GPIO0 | Boot |
+
+The official ESP-IDF example polls these controls with a 5 ms timer and a software button state machine rather than GPIO interrupts.
+
+The PWR key is handled through the AXP2101 PMU path. The current vendor example configures a 1 s power-on press and a 4 s hardware power-off press.
+
+ENKU's logical mappings are documented in [Input & Physical Controls](input-model.md). These source-derived mappings will still be physically verified on the production board when it arrives.

@@ -1,6 +1,10 @@
 #pragma once
 
 #include <atomic>
+#include <cstdint>
+#include <optional>
+#include <string>
+#include <string_view>
 
 #include "esp_event.h"
 #include "esp_netif.h"
@@ -8,6 +12,13 @@
 #include "enku/services/services.hpp"
 
 namespace enku::platform::esp_idf {
+
+enum class NetworkPolicyStatus : std::uint8_t {
+    Ok,
+    NoTrustedNetwork,
+    InvalidCredentials,
+    DriverError,
+};
 
 class EspIdfNetworkService final : public NetworkService {
 public:
@@ -19,11 +30,27 @@ public:
     bool connected() const override;
     void disconnect() override;
 
+    NetworkPolicyStatus applyPolicy(
+        WiFiPolicy policy
+    );
+
+    NetworkPolicyStatus setTrustedNetwork(
+        std::string_view ssid,
+        std::string_view password
+    );
+
+    NetworkPolicyStatus forgetTrustedNetwork();
+
+    std::optional<std::string> trustedSsid() const;
+
 private:
     std::atomic_bool connected_{false};
+    std::atomic_bool started_{false};
     bool initialized_{false};
     esp_netif_t* station_netif_{nullptr};
     esp_event_handler_instance_t wifi_handler_{nullptr};
+
+    bool ensureStarted();
 
     static void handleWifiEvent(
         void* arg,

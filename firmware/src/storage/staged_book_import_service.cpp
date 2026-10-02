@@ -44,6 +44,8 @@ StagedBookImportService::mapPreparedStatus(
     switch (status) {
         case BookImportStatus::EmptySource:
             return StagedImportStatus::EmptySource;
+        case BookImportStatus::SourceReadFailed:
+            return StagedImportStatus::StageReadFailed;
         case BookImportStatus::UnsupportedFormat:
             return StagedImportStatus::UnsupportedFormat;
         case BookImportStatus::ParseFailed:
@@ -65,28 +67,13 @@ StagedImportResult StagedBookImportService::import(
 ) {
     StagedImportResult result;
 
-    std::string bytes;
-    const auto read_status =
-        files_.read(staged_path, bytes);
-
-    if (read_status == BookFileStatus::NotFound) {
-        result.status = StagedImportStatus::StageNotFound;
-        return result;
-    }
-
-    if (read_status != BookFileStatus::Ok) {
-        result.status = StagedImportStatus::StageReadFailed;
-        return result;
-    }
-
-    BookImportSource source{
-        staged_path,
-        source_filename,
-        bytes,
-    };
-
     auto prepared =
-        importer_.prepare(source, added_order);
+        importer_.prepareStored(
+            files_,
+            staged_path,
+            source_filename,
+            added_order
+        );
 
     if (!prepared.ok()) {
         result.status =
@@ -100,11 +87,6 @@ StagedImportResult StagedBookImportService::import(
         "/books/" + result.book_id + ext;
 
     prepared.record.source_path = result.final_path;
-
-    // Parsing is complete. Release the raw book buffer before any filesystem
-    // or Library commit work so large sources do not remain live longer than
-    // necessary.
-    std::string{}.swap(bytes);
 
     const auto move_status =
         files_.move(

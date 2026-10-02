@@ -27,6 +27,22 @@ public:
         const std::string& bytes
     ) = 0;
 
+    virtual BookFileStatus append(
+        const std::string& path,
+        const std::string& bytes
+    ) {
+        std::string existing;
+        const auto status = read(path, existing);
+
+        if (status != BookFileStatus::Ok &&
+            status != BookFileStatus::NotFound) {
+            return status;
+        }
+
+        existing.append(bytes);
+        return write(path, existing);
+    }
+
     virtual BookFileStatus remove(
         const std::string& path
     ) = 0;

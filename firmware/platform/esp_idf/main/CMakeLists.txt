@@ -4,6 +4,8 @@ idf_component_register(
         "../src/esp_idf_file_store.cpp"
         "../src/esp_idf_sd_card.cpp"
         "../src/esp_idf_epaper.cpp"
+        "../src/esp_idf_buttons.cpp"
+        "../../../src/runtime/input_runtime.cpp"
     INCLUDE_DIRS
         "../include"
         "../../../include"

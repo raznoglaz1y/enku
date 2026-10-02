@@ -2,6 +2,7 @@
 #include "enku/runtime/library_runtime.hpp"
 #include "enku/runtime/library_search_runtime.hpp"
 #include "enku/runtime/book_details_runtime.hpp"
+#include "enku/runtime/book_finished_runtime.hpp"
 #include "enku/storage/cbor_boot_loop_service.hpp"
 #include "enku/runtime/storage_startup.hpp"
 #include "enku/runtime/boot_restore.hpp"
@@ -292,6 +293,14 @@ int main() {
         deleter
     );
 
+    BookFinishedRuntime book_finished(
+        app,
+        library,
+        runtime,
+        reader,
+        checkpoint
+    );
+
     // New book -> START.
     app.library.focused_book = "alpha";
     assert(
@@ -424,6 +433,139 @@ int main() {
         ReadingState::Reading
     );
     assert(restarted_beta->progress == 0.0F);
+
+    assert(
+        reader.handle(BackRequested{}) ==
+        ReaderRuntimeResult::Applied
+    );
+    assert(app.screen == Screen::Library);
+    assert(
+        runtime.handle(
+            LibraryRefreshRequested{}
+        ) == LibraryRuntimeResult::Applied
+    );
+
+    // Book Finished: reaching past the last page opens the completion
+    // state; Back returns to the final page and default Confirm returns to
+    // Library.
+    app.library.focused_book = "beta";
+    assert(
+        reader.handle(
+            OpenBookRequested{"beta"}
+        ) == ReaderRuntimeResult::Applied
+    );
+
+    while (true) {
+        const auto result =
+            reader.handle(PageNextRequested{});
+
+        if (result == ReaderRuntimeResult::EndOfBook) {
+            break;
+        }
+
+        assert(result == ReaderRuntimeResult::Applied);
+    }
+
+    assert(app.current_book_finished);
+    assert(app.reading_progress == 1.0F);
+    assert(
+        book_finished.openFromReader() ==
+        BookFinishedRuntimeResult::Applied
+    );
+    assert(app.screen == Screen::BookFinished);
+    assert(
+        app.book_finished.focus ==
+        BookFinishedFocus::BackToLibrary
+    );
+
+    assert(
+        book_finished.handle(
+            LogicalAction::Back
+        ) == BookFinishedRuntimeResult::Applied
+    );
+    assert(app.screen == Screen::Reading);
+    assert(app.current_book_finished);
+
+    assert(
+        reader.handle(PageNextRequested{}) ==
+        ReaderRuntimeResult::EndOfBook
+    );
+    assert(
+        book_finished.openFromReader() ==
+        BookFinishedRuntimeResult::Applied
+    );
+    assert(
+        book_finished.handle(
+            LogicalAction::Confirm
+        ) == BookFinishedRuntimeResult::Applied
+    );
+    assert(app.screen == Screen::Library);
+    assert(
+        app.library.focused_book ==
+        std::optional<BookId>{"beta"}
+    );
+
+    // Read again uses the same Cancel-first confirmation model and opens
+    // the book from the beginning after an explicit confirmation.
+    assert(
+        reader.handle(
+            OpenBookRequested{"beta"}
+        ) == ReaderRuntimeResult::Applied
+    );
+    assert(
+        reader.handle(PageNextRequested{}) ==
+        ReaderRuntimeResult::EndOfBook
+    );
+    assert(
+        book_finished.openFromReader() ==
+        BookFinishedRuntimeResult::Applied
+    );
+    assert(
+        book_finished.handle(
+            LogicalAction::NavigateNext
+        ) == BookFinishedRuntimeResult::Applied
+    );
+    assert(
+        app.book_finished.focus ==
+        BookFinishedFocus::ReadAgain
+    );
+    assert(
+        book_finished.handle(
+            LogicalAction::Confirm
+        ) == BookFinishedRuntimeResult::Applied
+    );
+    assert(app.book_finished.restart_confirm);
+    assert(!app.book_finished.confirm_restart);
+    assert(
+        book_finished.handle(
+            LogicalAction::NavigateNext
+        ) == BookFinishedRuntimeResult::Applied
+    );
+    assert(app.book_finished.confirm_restart);
+    assert(
+        book_finished.handle(
+            LogicalAction::Confirm
+        ) == BookFinishedRuntimeResult::Applied
+    );
+    assert(app.screen == Screen::Reading);
+    assert(!app.current_book_finished);
+
+    const auto restarted =
+        library.get("beta");
+    assert(restarted.has_value());
+    assert(
+        restarted->reading_state ==
+        ReadingState::Reading
+    );
+    assert(restarted->progress == 0.0F);
+
+    ReaderCheckpoint restarted_checkpoint;
+    assert(
+        checkpoint.load(
+            "beta",
+            restarted_checkpoint
+        ) == PersistStatus::NotFound
+    );
 
     assert(
         reader.handle(BackRequested{}) ==
@@ -621,7 +763,8 @@ int main() {
         nullptr,
         nullptr,
         &library_search,
-        &book_details
+        &book_details,
+        &book_finished
     );
 
     // Physical input also routes through the dispatcher while details

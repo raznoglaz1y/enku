@@ -29,10 +29,32 @@ public:
 
     EpaperStatus begin();
     EpaperStatus initializeFull();
+    EpaperStatus initializeFast();
+
     EpaperStatus fullRefresh(
         const std::uint8_t* framebuffer,
         std::size_t size
     );
+
+    EpaperStatus fastRefresh(
+        const std::uint8_t* framebuffer,
+        std::size_t size
+    );
+
+    EpaperStatus fastBaseRefresh(
+        const std::uint8_t* framebuffer,
+        std::size_t size
+    );
+
+    EpaperStatus partialRefresh(
+        const std::uint8_t* region,
+        std::size_t size,
+        std::uint16_t x,
+        std::uint16_t y,
+        std::uint16_t width,
+        std::uint16_t height
+    );
+
     EpaperStatus clearWhite();
     EpaperStatus sleep();
 
@@ -51,6 +73,8 @@ private:
         std::size_t size
     );
     EpaperStatus refreshFull();
+    EpaperStatus refreshFast();
+    EpaperStatus refreshPartial();
     EpaperStatus transfer(
         bool is_data,
         const std::uint8_t* bytes,

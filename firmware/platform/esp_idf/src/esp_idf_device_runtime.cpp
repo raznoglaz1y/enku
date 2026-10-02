@@ -61,7 +61,11 @@ EspIdfDeviceRuntime::EspIdfDeviceRuntime(
           power_off_,
           &reader_overlay_,
           &search_
-      ) {}
+      ) {
+    text_renderer_.bindAppState(
+        storage_.appState()
+    );
+}
 
 DeviceRuntimeInitStatus
 EspIdfDeviceRuntime::begin() {

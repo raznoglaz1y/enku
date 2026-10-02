@@ -13,7 +13,8 @@ LibraryRuntimeController::LibraryRuntimeController(
     StagedBookImportService& importer,
     BookDeleteService& deleter,
     SettingsRuntimeController& settings,
-    RefreshService& refresh
+    RefreshService& refresh,
+    LibraryPageRenderer* page_renderer
 )
     : app_state_(app_state),
       library_(library),
@@ -21,7 +22,8 @@ LibraryRuntimeController::LibraryRuntimeController(
       importer_(importer),
       deleter_(deleter),
       settings_(settings),
-      refresh_(refresh) {}
+      refresh_(refresh),
+      page_renderer_(page_renderer) {}
 
 const LibraryPage& LibraryRuntimeController::page() const {
     return page_;
@@ -138,6 +140,14 @@ LibraryRuntimeResult LibraryRuntimeController::reload(
         app_state_.screen = Screen::Library;
     }
 
+    if (page_renderer_ != nullptr &&
+        !page_renderer_->renderLibrary(
+            app_state_,
+            page_
+        )) {
+        return LibraryRuntimeResult::RenderFailed;
+    }
+
     const auto refreshed =
         submitRefresh(reason, RefreshClass::Full);
 
@@ -185,6 +195,14 @@ LibraryRuntimeResult LibraryRuntimeController::handle(
         return LibraryRuntimeResult::SettingsSaveFailed;
     }
 
+    if (page_renderer_ != nullptr &&
+        !page_renderer_->renderLibrary(
+            app_state_,
+            page_
+        )) {
+        return LibraryRuntimeResult::RenderFailed;
+    }
+
     return submitRefresh(
         RefreshReason::ScreenChanged,
         RefreshClass::Full
@@ -226,6 +244,14 @@ LibraryRuntimeResult LibraryRuntimeController::handle(
     app_state_.library.focused_book =
         page_.items[next].book_id;
 
+    if (page_renderer_ != nullptr &&
+        !page_renderer_->renderLibrary(
+            app_state_,
+            page_
+        )) {
+        return LibraryRuntimeResult::RenderFailed;
+    }
+
     return submitRefresh(
         RefreshReason::FocusChanged,
         RefreshClass::Region
@@ -252,6 +278,14 @@ LibraryRuntimeResult LibraryRuntimeController::handle(
 
     app_state_.library.focused_book =
         page_.items[previous].book_id;
+
+    if (page_renderer_ != nullptr &&
+        !page_renderer_->renderLibrary(
+            app_state_,
+            page_
+        )) {
+        return LibraryRuntimeResult::RenderFailed;
+    }
 
     return submitRefresh(
         RefreshReason::FocusChanged,

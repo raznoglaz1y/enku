@@ -789,3 +789,15 @@ The semantic text offset remains authoritative and is preserved across the reflo
 While Library is visible, the same operation persists the setting and re-renders the Library in the new logical geometry.
 
 If runtime application of the new orientation fails after persistence, ENKU performs a best-effort rollback to the previous durable setting and previous layout.
+
+## Library return-state preservation
+
+Library navigation state is intentionally preserved in-memory while opening and closing a book:
+
+- current query offset remains unchanged;
+- the focused book remains selected;
+- Grid/List view remains controlled by persisted GlobalSettings;
+- returning from Reading refreshes the same Library window instead of resetting to offset 0;
+- changing orientation while Library is visible re-renders the current window without resetting offset or focus.
+
+This applies to ordinary Library browsing and keeps the same runtime position across Reader open → Back transitions.

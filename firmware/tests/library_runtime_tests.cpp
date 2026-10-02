@@ -1,5 +1,6 @@
 #include "enku/reader/book_loader.hpp"
 #include "enku/runtime/library_runtime.hpp"
+#include "enku/runtime/library_search_runtime.hpp"
 #include "enku/runtime/settings_runtime.hpp"
 #include "enku/runtime/reader_runtime.hpp"
 #include "enku/storage/book_import_service.hpp"
@@ -230,6 +231,53 @@ int main() {
         std::optional<BookId>{"alpha"}
     );
     assert(app.library.total_matches == 2);
+
+    LibrarySearchRuntime library_search(
+        app,
+        runtime
+    );
+
+    assert(
+        library_search.open() ==
+        LibrarySearchRuntimeResult::Applied
+    );
+    assert(app.library.mode == LibraryQueryMode::Search);
+    assert(app.keyboard.open);
+
+    app.keyboard.focus_index = 10;
+    assert(
+        library_search.handle(LogicalAction::Confirm) ==
+        LibrarySearchRuntimeResult::Applied
+    );
+    app.keyboard.focus_index = 12;
+    assert(
+        library_search.handle(LogicalAction::Confirm) ==
+        LibrarySearchRuntimeResult::Applied
+    );
+    app.keyboard.focus_index = 10;
+    assert(
+        library_search.handle(LogicalAction::Confirm) ==
+        LibrarySearchRuntimeResult::Applied
+    );
+    assert(app.library.search_text == "ada");
+
+    app.keyboard.focus_index = 30;
+    assert(
+        library_search.handle(LogicalAction::Confirm) ==
+        LibrarySearchRuntimeResult::Applied
+    );
+    assert(!app.keyboard.open);
+    assert(app.library.mode == LibraryQueryMode::Search);
+    assert(runtime.page().total_matches == 1);
+    assert(runtime.page().items[0].book_id == "alpha");
+
+    assert(
+        library_search.handle(LogicalAction::Back) ==
+        LibrarySearchRuntimeResult::Applied
+    );
+    assert(app.library.mode == LibraryQueryMode::Browse);
+    assert(app.library.search_text.empty());
+    assert(runtime.page().total_matches == 2);
 
     assert(
         runtime.handle(LibraryFocusNextRequested{}) ==

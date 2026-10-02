@@ -801,3 +801,12 @@ Library navigation state is intentionally preserved in-memory while opening and 
 - changing orientation while Library is visible re-renders the current window without resetting offset or focus.
 
 This applies to ordinary Library browsing and keeps the same runtime position across Reader open → Back transitions.
+
+## Library query-state rules
+
+Library query transitions use deterministic navigation rules:
+
+- changing Filter switches to Browse mode, clears active search text, resets offset to 0, and preserves the focused book only when it remains present in the new first window; otherwise focus moves to the first valid item;
+- changing Sort or sort direction preserves Browse/Search mode and current search text, resets offset to 0, and keeps the focused book only when it is present in the new first window;
+- changing Grid/List view does not change offset, focused book, active search text, or query mode;
+- orientation changes redraw/reload the current Library window without resetting offset or focus.

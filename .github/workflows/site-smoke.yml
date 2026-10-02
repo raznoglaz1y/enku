@@ -121,6 +121,26 @@ jobs:
           curl -fsSL https://enkureader.com/status -o /tmp/status.html
           grep -q '<summary class="active">Project' /tmp/status.html
           ! grep -q '<details class="project-menu" open' /tmp/status.html
+          grep -q 'id="enku-project-system"' /tmp/status.html
+
+          curl -fsSL https://enkureader.com/about -o /tmp/about.html
+          grep -q '<title>About — ENKU</title>' /tmp/about.html
+          grep -q 'id="enku-project-system"' /tmp/about.html
+          grep -q 'class="enku-next"' /tmp/about.html
+
+          curl -fsSL https://enkureader.com/build-log -o /tmp/log.html
+          grep -q '<title>Build Log — ENKU</title>' /tmp/log.html
+          grep -q 'id="enku-project-system"' /tmp/log.html
+          grep -q 'class="enku-next"' /tmp/log.html
+
+          curl -fsSL https://enkureader.com/downloads -o /tmp/downloads.html
+          grep -q '<title>Downloads — ENKU</title>' /tmp/downloads.html
+          grep -q 'id="enku-project-system"' /tmp/downloads.html
+          grep -q 'class="enku-next"' /tmp/downloads.html
+
+          curl -fsSL https://enkureader.com/contact -o /tmp/contact-project.html
+          grep -q 'id="enku-project-system"' /tmp/contact-project.html
+          grep -q 'class="enku-next"' /tmp/contact-project.html
           grep -Eq 'href="/software"[^>]*>Software</a>' /tmp/home.html
           grep -Eq 'href="/hardware"[^>]*>Hardware</a>' /tmp/home.html
           grep -Eq 'href="/design"[^>]*>Design</a>' /tmp/home.html

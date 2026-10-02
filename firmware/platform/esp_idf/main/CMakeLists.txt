@@ -17,6 +17,7 @@ idf_component_register(
         "../../../src/runtime/power_off.cpp"
         "../../../src/runtime/sleep_wake.cpp"
         "../../../src/runtime/input_dispatcher.cpp"
+        "../../../src/runtime/reader_overlay_runtime.cpp"
         "../../../src/runtime/application_storage_runtime.cpp"
         "../../../src/runtime/application_reader_runtime.cpp"
         "../../../src/runtime/reader_runtime.cpp"

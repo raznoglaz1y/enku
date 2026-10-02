@@ -243,6 +243,7 @@ struct AppState {
     ReadingSettingsState reading_settings;
     DisplaySettingsState display_settings;
     LocaleSettingsState locale_settings;
+    WiFiSettingsState wifi_settings;
     PowerOffConfirmState power_off_confirm;
     KeyboardState keyboard;
 

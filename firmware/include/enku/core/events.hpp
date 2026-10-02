@@ -24,6 +24,14 @@ struct OpenBookRequested {
     BookId book_id;
 };
 
+struct BookOpened {
+    BookId book_id;
+};
+
+struct BookOpenFailed {
+    BookId book_id;
+};
+
 struct PageNextRequested {};
 struct PagePreviousRequested {};
 struct BackRequested {};
@@ -87,6 +95,8 @@ using AppEvent = std::variant<
     InputReceived,
     ActionRequested,
     OpenBookRequested,
+    BookOpened,
+    BookOpenFailed,
     PageNextRequested,
     PagePreviousRequested,
     BackRequested,

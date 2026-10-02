@@ -1627,18 +1627,35 @@ bool FreeTypeTextRenderer::renderWiFiSettings(
             app_state.network.status
         );
 
+    const int status_label_y =
+        orientation == Orientation::Portrait
+            ? 280
+            : 252;
+    const int status_value_y =
+        orientation == Orientation::Portrait
+            ? 308
+            : 276;
+    const int trusted_y =
+        orientation == Orientation::Portrait
+            ? 340
+            : 304;
+    const int address_y =
+        orientation == Orientation::Portrait
+            ? 366
+            : 326;
+
     if (!drawTextAt(
             "STATUS",
             12,
             28,
-            280,
+            status_label_y,
             orientation
         ) ||
         !drawTextAt(
             connection,
             15,
             36,
-            308,
+            status_value_y,
             orientation
         )) {
         return false;
@@ -1654,7 +1671,23 @@ bool FreeTypeTextRenderer::renderWiFiSettings(
             trusted,
             13,
             28,
-            340,
+            trusted_y,
+            orientation
+        )) {
+        return false;
+    }
+
+    const std::string address =
+        app_state.network.address.empty()
+            ? "WEB: NOT AVAILABLE"
+            : "WEB: http://" +
+                app_state.network.address;
+
+    if (!drawTextAt(
+            address,
+            13,
+            28,
+            address_y,
             orientation
         )) {
         return false;
@@ -1662,8 +1695,8 @@ bool FreeTypeTextRenderer::renderWiFiSettings(
 
     const int forget_top =
         orientation == Orientation::Portrait
-            ? 386
-            : 336;
+            ? 410
+            : 344;
 
     if (state.focus ==
         WiFiSettingsFocus::ForgetTrusted) {

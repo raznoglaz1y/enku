@@ -5,6 +5,7 @@
 #include "../core/app_state.hpp"
 #include "../services/services.hpp"
 #include "boot_restore.hpp"
+#include "network_lifecycle.hpp"
 
 namespace enku {
 
@@ -27,7 +28,7 @@ public:
         LibraryService& library,
         ReaderCheckpointService& checkpoint,
         AppContextService& context,
-        NetworkService& network,
+        NetworkLifecycleCoordinator& network_lifecycle,
         PowerService& power,
         BootRestoreCoordinator& boot_restore
     );
@@ -40,7 +41,7 @@ private:
     LibraryService& library_;
     ReaderCheckpointService& checkpoint_;
     AppContextService& context_;
-    NetworkService& network_;
+    NetworkLifecycleCoordinator& network_lifecycle_;
     PowerService& power_;
     BootRestoreCoordinator& boot_restore_;
 };

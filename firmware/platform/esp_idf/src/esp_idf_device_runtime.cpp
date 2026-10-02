@@ -410,10 +410,86 @@ void EspIdfDeviceRuntime::syncPlatformState() {
         battery.charging;
 }
 
+bool EspIdfDeviceRuntime::refreshStatusBarIfNeeded() {
+    auto& app = storage_.appState();
+
+    if (app.screen == Screen::Sleep) {
+        return true;
+    }
+
+    const bool changed =
+        !status_snapshot_valid_ ||
+        rendered_network_status_ !=
+            app.network.status ||
+        rendered_battery_percent_ !=
+            app.power.battery_percent ||
+        rendered_charging_ !=
+            app.power.charging ||
+        rendered_orientation_ !=
+            app.orientation;
+
+    if (!changed) {
+        return true;
+    }
+
+    if (!text_renderer_.renderStatusBar(app)) {
+        return false;
+    }
+
+    RefreshRequest request;
+    request.refresh_class =
+        RefreshClass::Region;
+    request.reason =
+        RefreshReason::StatusChanged;
+    request.generation = 0;
+    request.may_coalesce = false;
+    request.may_defer = false;
+
+    if (app.orientation == Orientation::Landscape) {
+        request.dirty_region =
+            Rect{
+                0,
+                0,
+                EspIdfEpaper::kWidth,
+                32,
+            };
+    } else {
+        request.dirty_region =
+            Rect{
+                static_cast<std::uint16_t>(
+                    EspIdfEpaper::kWidth - 32
+                ),
+                0,
+                32,
+                EspIdfEpaper::kHeight,
+            };
+    }
+
+    if (!platform_.refresh().submit(request)) {
+        return false;
+    }
+
+    rendered_network_status_ =
+        app.network.status;
+    rendered_battery_percent_ =
+        app.power.battery_percent;
+    rendered_charging_ =
+        app.power.charging;
+    rendered_orientation_ =
+        app.orientation;
+    status_snapshot_valid_ = true;
+
+    return true;
+}
+
 InputDispatchResult EspIdfDeviceRuntime::pollInput(
     std::uint32_t now_ms
 ) {
     syncPlatformState();
+
+    // Status changes are independent of user input. Keep the e-ink update
+    // constrained to the compact top bar instead of refreshing the screen.
+    refreshStatusBarIfNeeded();
 
     const auto event =
         platform_.buttons().poll(now_ms);

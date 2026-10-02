@@ -2,10 +2,12 @@
 #include "enku/runtime/boot_restore.hpp"
 #include "enku/runtime/reader_runtime.hpp"
 #include "enku/runtime/storage_startup.hpp"
+#include "enku/runtime/settings_runtime.hpp"
 #include "enku/storage/book_import_service.hpp"
 #include "enku/storage/cbor_app_context_service.hpp"
 #include "enku/storage/cbor_boot_loop_service.hpp"
 #include "enku/storage/cbor_library_service.hpp"
+#include "enku/storage/cbor_settings_service.hpp"
 #include "enku/storage/cbor_reader_checkpoint.hpp"
 #include "enku/storage/posix_book_file_store.hpp"
 #include "enku/storage/posix_state_file_store.hpp"
@@ -74,8 +76,14 @@ int main() {
     BookImportService importer(library);
 
     AppState app;
+    CborSettingsService settings_service(state_files);
+    SettingsRuntimeController settings(
+        app,
+        settings_service
+    );
     StorageStartupCoordinator storage_startup(
         app,
+        settings,
         library,
         book_files,
         importer

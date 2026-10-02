@@ -16,6 +16,7 @@ include/enku/
     power.hpp
     persistence.hpp
     localization.hpp
+    settings.hpp
     diagnostics.hpp
     boot.hpp
     refresh.hpp
@@ -35,6 +36,7 @@ include/enku/
   runtime/
     reader_runtime.hpp
     library_runtime.hpp
+    settings_runtime.hpp
     storage_startup.hpp
     boot_restore.hpp
     sleep_wake.hpp
@@ -47,6 +49,7 @@ include/enku/
     cbor_library_service.hpp
     cbor_app_context_service.hpp
     cbor_boot_loop_service.hpp
+    cbor_settings_service.hpp
     book_import_service.hpp
     staged_book_import_service.hpp
     book_delete_service.hpp
@@ -64,6 +67,7 @@ Architecture references:
 - [Input & physical controls](../docs/input-model.md)
 - [Power, sleep & wake model](../docs/power-model.md)
 - [Persistence backend](../docs/persistence-model.md)
+- [Global settings model](../docs/settings-model.md)
 - [Localization architecture](../docs/localization-model.md)
 - [Errors, logging & diagnostics](../docs/diagnostics-model.md)
 - [Boot & startup architecture](../docs/boot-model.md)
@@ -104,6 +108,7 @@ The host suite currently covers:
 - Library runtime filtering, sorting, search, focus navigation, focused-book open, staged-import flow and transactional delete;
 - CBOR A/B checkpoint generation and corruption recovery;
 - persistent CBOR Library index, queries, sorting, paging and summary updates;
+- A/B global settings persistence with safe-default recovery and cold-boot application;
 - TXT import pipeline with format detection, parse validation, content fingerprinting and duplicate rejection;
 - transactional staged-file import from `/system/tmp` into canonical `/books/book-<id>.<ext>`;
 - storage startup recovery that loads the Library, cleans stale committed tmp artifacts, and preserves ambiguous uploads;

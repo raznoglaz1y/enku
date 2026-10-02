@@ -209,6 +209,7 @@ struct AppState {
     BookFinishedState book_finished;
     ContentsBookmarksState contents_bookmarks;
     SettingsNavigationState settings_nav;
+    ReadingSettingsState reading_settings;
     KeyboardState keyboard;
 
     NetworkState network;

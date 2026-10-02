@@ -20,6 +20,7 @@ add_library(enku_core STATIC
     src/runtime/input_runtime.cpp
     src/runtime/input_dispatcher.cpp
     src/runtime/application_storage_runtime.cpp
+    src/runtime/application_reader_runtime.cpp
     src/render/owned_mono_framebuffer.cpp
     src/runtime/storage_startup.cpp
     src/runtime/boot_restore.cpp
@@ -71,6 +72,7 @@ enku_add_test(settings_persistence_tests tests/settings_persistence_tests.cpp)
 enku_add_test(input_runtime_tests tests/input_runtime_tests.cpp)
 enku_add_test(mono_framebuffer_tests tests/mono_framebuffer_tests.cpp)
 enku_add_test(application_storage_runtime_tests tests/application_storage_runtime_tests.cpp)
+enku_add_test(application_reader_runtime_tests tests/application_reader_runtime_tests.cpp)
 enku_add_test(cbor_reader_checkpoint_tests tests/cbor_reader_checkpoint_tests.cpp)
 enku_add_test(cbor_library_service_tests tests/cbor_library_service_tests.cpp)
 enku_add_test(book_import_service_tests tests/book_import_service_tests.cpp)

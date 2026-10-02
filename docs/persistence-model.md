@@ -402,3 +402,17 @@ If both settings slots are invalid/corrupt, safe defaults are persisted and boot
 True settings filesystem I/O/no-space failures remain recovery-worthy because a safe durable settings generation cannot be established.
 
 Runtime settings writes are whole-record commits. The in-memory preference change is rolled back if persistence fails.
+
+### App context v2: Library return position
+
+`AppRestoreContext` schema v2 persists the Library return position in addition to the active screen:
+
+- `library_offset`;
+- `library_focused_book`.
+
+The context is written both for Library and Reading states. This allows:
+
+- cold boot directly into Library at the previously visible window/focus;
+- Reading restore after power loss while still retaining the Library position used by a later Back action.
+
+The decoder remains backward-compatible with schema v1 payloads (`screen + current_book`); missing Library-position fields default to offset 0 and no focused book.

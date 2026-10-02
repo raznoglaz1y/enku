@@ -451,16 +451,16 @@ bool EspIdfDeviceRuntime::refreshStatusBarIfNeeded() {
                 0,
                 0,
                 EspIdfEpaper::kWidth,
-                32,
+                24,
             };
     } else {
         request.dirty_region =
             Rect{
                 static_cast<std::uint16_t>(
-                    EspIdfEpaper::kWidth - 32
+                    EspIdfEpaper::kWidth - 24
                 ),
                 0,
-                32,
+                24,
                 EspIdfEpaper::kHeight,
             };
     }

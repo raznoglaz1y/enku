@@ -68,6 +68,9 @@ Proposed layout:
   settings.a.cbor
   settings.b.cbor
 
+  context.a.cbor
+  context.b.cbor
+
 /system/state/
   <encoded-book-id>.a.cbor
   <encoded-book-id>.b.cbor
@@ -344,3 +347,19 @@ That export is not authoritative persistence and must not become required for no
 - Original book files are never deleted merely because metadata/state records are corrupt.
 - The checkpoint MVP already implements a restricted CBOR codec plus CRC32 A/B recovery.
 - The broader CBOR library and concrete ESP32 filesystem implementation remain framework/hardware decisions.
+
+
+## 23. Application restore context
+
+The first concrete global-context persistence is implemented by `CborAppContextService`.
+
+It uses the same A/B generation + CRC32 recovery pattern as the Library and per-book checkpoints, but the payload is deliberately small:
+
+```text
+safe_screen
+optional current_book
+```
+
+Only `Library` and `Reading` are valid persisted safe screens.
+
+This record answers “what safe product context should boot attempt to restore?” while per-book checkpoint files answer “where inside the book should Reading resume?”. Keeping those responsibilities separate prevents Library metadata, Reader progress and transient UI state from becoming one coupled record.

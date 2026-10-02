@@ -32,8 +32,10 @@ public:
 
     bool renderPage(
         const PageResult& page,
-        const TypographySettings&
+        const TypographySettings&,
+        Orientation orientation
     ) override {
+        last_orientation = orientation;
         ++renders;
         last_lines =
             static_cast<std::uint32_t>(
@@ -56,6 +58,7 @@ public:
 
     std::uint32_t renders{0};
     std::uint32_t last_lines{0};
+    Orientation last_orientation{Orientation::Landscape};
     std::uint32_t library_renders{0};
     std::uint32_t last_library_items{0};
 };
@@ -168,6 +171,7 @@ int main() {
     );
     assert(renderer.renders == 1);
     assert(renderer.last_lines > 0);
+    assert(renderer.last_orientation == Orientation::Portrait);
     assert(refresh.submitted > 0);
 
     const auto before =

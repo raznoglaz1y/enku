@@ -292,8 +292,10 @@ Persistent state must be sufficient to recover without relying on the framebuffe
 
 After reboot:
 
+- follow the staged startup sequence defined in [Boot & Startup Architecture](boot-model.md);
 - validate settings/state version;
 - recover or clean incomplete transactions;
+- evaluate boot-loop / Recovery Mode before automatic restore;
 - load Library index;
 - restore last safe product state when appropriate;
 - restore semantic reading position, not rendered page;

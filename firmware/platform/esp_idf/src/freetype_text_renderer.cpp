@@ -1050,6 +1050,9 @@ bool FreeTypeTextRenderer::renderWiFiSettings(
             ? 480
             : 800;
 
+    const auto& state =
+        app_state.wifi_settings;
+
     if (!drawTextAt(
             "WI-FI",
             26,
@@ -1073,7 +1076,7 @@ bool FreeTypeTextRenderer::renderWiFiSettings(
             return "UNKNOWN";
         };
 
-    if (app_state.wifi_settings.forget_confirm) {
+    if (state.forget_confirm) {
         if (!drawTextAt(
                 "FORGET TRUSTED NETWORK?",
                 20,
@@ -1093,7 +1096,7 @@ bool FreeTypeTextRenderer::renderWiFiSettings(
                 : 210;
 
         const bool forget_selected =
-            app_state.wifi_settings.confirm_forget;
+            state.confirm_forget;
 
         drawRect(
             24,
@@ -1119,11 +1122,8 @@ bool FreeTypeTextRenderer::renderWiFiSettings(
                 40,
                 top + 34,
                 orientation
-            )) {
-            return false;
-        }
-
-        if (!drawTextAt(
+            ) ||
+            !drawTextAt(
                 "FORGET",
                 17,
                 40 + button_width + gap,
@@ -1144,41 +1144,246 @@ bool FreeTypeTextRenderer::renderWiFiSettings(
         );
     }
 
+    if (app_state.keyboard.open) {
+        if (!drawTextAt(
+                state.pending_ssid,
+                18,
+                28,
+                102,
+                orientation
+            )) {
+            return false;
+        }
+
+        std::string masked(
+            state.pending_password.size(),
+            '*'
+        );
+
+        if (masked.empty()) {
+            masked = "ENTER PASSWORD";
+        }
+
+        drawRect(
+            24,
+            126,
+            logical_width - 48,
+            52,
+            orientation,
+            2
+        );
+
+        if (!drawTextAt(
+                masked,
+                16,
+                38,
+                159,
+                orientation
+            ) ||
+            !drawKeyboardGrid(
+                app_state.keyboard,
+                orientation,
+                orientation == Orientation::Portrait
+                    ? 206
+                    : 190
+            )) {
+            return false;
+        }
+
+        return drawTextAt(
+            "UP/DOWN KEY  FUNCTION SELECT  BACK NETWORKS",
+            12,
+            28,
+            orientation == Orientation::Portrait
+                ? 760
+                : 448,
+            orientation
+        );
+    }
+
+    if (state.selecting_network) {
+        if (!drawTextAt(
+                "SELECT NETWORK",
+                17,
+                28,
+                92,
+                orientation
+            )) {
+            return false;
+        }
+
+        const std::size_t visible_count =
+            orientation == Orientation::Portrait
+                ? 8U
+                : 5U;
+
+        const std::size_t focus =
+            std::min<std::size_t>(
+                state.network_focus,
+                state.scan_results.empty()
+                    ? 0U
+                    : state.scan_results.size() - 1U
+            );
+
+        const std::size_t window_start =
+            state.scan_results.empty()
+                ? 0U
+                : (focus / visible_count) *
+                    visible_count;
+
+        const auto visible =
+            std::min<std::size_t>(
+                visible_count,
+                state.scan_results.size() -
+                    window_start
+            );
+
+        const int start_y =
+            orientation == Orientation::Portrait
+                ? 116
+                : 108;
+        const int row_height =
+            orientation == Orientation::Portrait
+                ? 66
+                : 56;
+
+        for (std::size_t row = 0;
+             row < visible;
+             ++row) {
+            const auto index =
+                window_start + row;
+            const auto& network =
+                state.scan_results[index];
+            const int top =
+                start_y +
+                static_cast<int>(row) *
+                    row_height;
+
+            if (index == focus) {
+                drawRect(
+                    20,
+                    top,
+                    logical_width - 40,
+                    row_height - 6,
+                    orientation,
+                    2
+                );
+            }
+
+            if (!drawTextAt(
+                    network.ssid,
+                    16,
+                    34,
+                    top + 28,
+                    orientation
+                )) {
+                return false;
+            }
+
+            char meta[48] = {};
+            std::snprintf(
+                meta,
+                sizeof(meta),
+                "%s  %ld dBm",
+                network.secured
+                    ? "SECURED"
+                    : "OPEN",
+                static_cast<long>(
+                    network.rssi
+                )
+            );
+
+            if (!drawTextAt(
+                    meta,
+                    11,
+                    34,
+                    top + 48,
+                    orientation
+                )) {
+                return false;
+            }
+        }
+
+        if (!state.status_message.empty()) {
+            if (!drawTextAt(
+                    state.status_message,
+                    12,
+                    28,
+                    orientation == Orientation::Portrait
+                        ? 700
+                        : 408,
+                    orientation
+                )) {
+                return false;
+            }
+        }
+
+        return drawTextAt(
+            "UP/DOWN NETWORK  FUNCTION CONNECT  BACK WI-FI",
+            12,
+            28,
+            orientation == Orientation::Portrait
+                ? 760
+                : 448,
+            orientation
+        );
+    }
+
     if (!drawTextAt(
             "POLICY",
-            14,
+            13,
             28,
-            112,
+            100,
             orientation
         )) {
         return false;
     }
 
-    if (app_state.wifi_settings.focus ==
+    if (state.focus ==
         WiFiSettingsFocus::Policy) {
         drawRect(
             20,
-            128,
+            114,
             logical_width - 40,
-            66,
+            58,
             orientation,
-            app_state.wifi_settings.editing_policy
-                ? 3
-                : 2
+            state.editing_policy ? 3 : 2
         );
     }
 
     if (!drawTextAt(
             policyLabel(
-                app_state.wifi_settings.
-                    editing_policy
-                    ? app_state.wifi_settings.
-                        selected_policy
+                state.editing_policy
+                    ? state.selected_policy
                     : app_state.wifi_policy
             ),
-            17,
+            16,
             36,
-            168,
+            150,
+            orientation
+        )) {
+        return false;
+    }
+
+    const int scan_top = 192;
+
+    if (state.focus ==
+        WiFiSettingsFocus::ScanNetworks) {
+        drawRect(
+            20,
+            scan_top,
+            logical_width - 40,
+            54,
+            orientation,
+            2
+        );
+    }
+
+    if (!drawTextAt(
+            "SCAN & CONNECT",
+            16,
+            36,
+            scan_top + 34,
             orientation
         )) {
         return false;
@@ -1191,16 +1396,16 @@ bool FreeTypeTextRenderer::renderWiFiSettings(
 
     if (!drawTextAt(
             "STATUS",
-            13,
+            12,
             28,
-            226,
+            280,
             orientation
         ) ||
         !drawTextAt(
             connection,
-            16,
+            15,
             36,
-            256,
+            308,
             orientation
         )) {
         return false;
@@ -1216,7 +1421,7 @@ bool FreeTypeTextRenderer::renderWiFiSettings(
             trusted,
             13,
             28,
-            294,
+            340,
             orientation
         )) {
         return false;
@@ -1224,10 +1429,10 @@ bool FreeTypeTextRenderer::renderWiFiSettings(
 
     const int forget_top =
         orientation == Orientation::Portrait
-            ? 350
-            : 320;
+            ? 386
+            : 336;
 
-    if (app_state.wifi_settings.focus ==
+    if (state.focus ==
         WiFiSettingsFocus::ForgetTrusted) {
         drawRect(
             20,
@@ -1241,7 +1446,7 @@ bool FreeTypeTextRenderer::renderWiFiSettings(
 
     if (!drawTextAt(
             "FORGET TRUSTED NETWORK",
-            16,
+            15,
             36,
             forget_top + 34,
             orientation
@@ -1249,18 +1454,20 @@ bool FreeTypeTextRenderer::renderWiFiSettings(
         return false;
     }
 
-    if (!drawTextAt(
-            "NETWORK SCAN / NEW CONNECTION FLOW PENDING",
-            11,
-            28,
-            forget_top + 86,
-            orientation
-        )) {
-        return false;
+    if (!state.status_message.empty()) {
+        if (!drawTextAt(
+                state.status_message,
+                12,
+                28,
+                forget_top + 82,
+                orientation
+            )) {
+            return false;
+        }
     }
 
     return drawTextAt(
-        app_state.wifi_settings.editing_policy
+        state.editing_policy
             ? "UP/DOWN CHANGE  FUNCTION APPLY  BACK CANCEL"
             : "UP/DOWN MOVE  FUNCTION SELECT  BACK SETTINGS",
         12,

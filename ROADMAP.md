@@ -95,11 +95,14 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 
 - [x] Define the initial supported book format set: EPUB, FB2 and TXT; PDF deferred
 - [x] Define Library/storage data model and transactional import semantics
+- [x] Define Library records, browse/search query model and service boundary
+- [ ] Implement LibraryService and index loading
 - [ ] Implement library indexing
 - [x] Define metadata normalization and fallback rules
 - [x] Define shared parser abstraction for EPUB, FB2 and TXT
 - [ ] Implement metadata extraction
 - [ ] Implement cover extraction and fallback handling
+- [x] Define bounded Library query paging and focus-by-book-id behavior
 - [ ] Implement Grid view
 - [ ] Implement List view
 - [ ] Implement filter and sort

@@ -7,6 +7,7 @@
 #include "types.hpp"
 #include "input.hpp"
 #include "diagnostics.hpp"
+#include "boot.hpp"
 
 namespace enku {
 
@@ -63,6 +64,12 @@ struct ErrorReported {
 
 struct RecoveryModeRequested {};
 
+struct BootStageChanged {
+    BootStage stage{BootStage::Reset};
+};
+
+struct BootStable {};
+
 using AppEvent = std::variant<
     InputReceived,
     ActionRequested,
@@ -82,7 +89,9 @@ using AppEvent = std::variant<
     WiFiDisconnected,
     BatteryStateChanged,
     ErrorReported,
-    RecoveryModeRequested
+    RecoveryModeRequested,
+    BootStageChanged,
+    BootStable
 >;
 
 } // namespace enku

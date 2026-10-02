@@ -42,6 +42,9 @@ firmware/
       cbor_reader_checkpoint.hpp
       cbor_library_service.hpp
       book_import_service.hpp
+      staged_book_import_service.hpp
+      book_file_store.hpp
+      posix_book_file_store.hpp
       posix_state_file_store.hpp
 
   src/
@@ -62,6 +65,8 @@ firmware/
       cbor_reader_checkpoint.cpp
       cbor_library_service.cpp
       book_import_service.cpp
+      staged_book_import_service.cpp
+      posix_book_file_store.cpp
       posix_state_file_store.cpp
     ui/
     platform/

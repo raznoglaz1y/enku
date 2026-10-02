@@ -620,3 +620,32 @@ BookFileStore
 This means the same composition is exercised with POSIX stores in host tests and with the ESP-IDF SD/FAT stores on the real board target.
 
 The Reader controller graph is intentionally not owned here yet. Its remaining concrete dependency is a real `TextMeasurer`/render pipeline; introducing a fake device-side measurer would hide the actual integration work still required.
+
+
+## 35. Real Reader font measurement and rasterization
+
+The ESP-IDF target now has a concrete `FreeTypeTextRenderer`.
+
+It serves two roles from the same Noto Sans face:
+
+```text
+TextMeasurer
+→ exact FreeType advance/kerning metrics for pagination
+
+Page renderer
+→ FreeType monochrome glyph rasterization into OwnedMonoFramebuffer
+```
+
+The default Reader font path is:
+
+```text
+/sdcard/system/fonts/NotoSans-Regular.ttf
+```
+
+The font is intentionally loaded from the FAT filesystem rather than hidden behind a compile-time substitute. If the file is missing, initialization returns `FontNotFound`; ENKU does not silently replace Noto Sans with a different typeface.
+
+Measurements support UTF-8 code points and FreeType kerning. Line height uses the face's actual size metrics multiplied by the current Reader line-spacing setting.
+
+Rendering uses `FT_RENDER_MODE_MONO` and writes the resulting 1-bit glyph bitmaps directly into the existing 1-bit ENKU framebuffer.
+
+This aligns pagination and rendering: the same font engine and size determine both where lines wrap and where glyphs are drawn.

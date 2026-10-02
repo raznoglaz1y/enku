@@ -145,17 +145,19 @@ PreparedBookImport BookImportService::prepare(
             break;
 
         case BookFormat::Epub:
-            parsed = epub_parser_.parse(
-                source.bytes,
-                parser_source
-            );
+            parsed =
+                epub_parser_.parseMetadata(
+                    source.bytes,
+                    parser_source
+                );
             break;
 
         case BookFormat::Fb2:
-            parsed = fb2_parser_.parse(
-                source.bytes,
-                parser_source
-            );
+            parsed =
+                fb2_parser_.parseMetadata(
+                    source.bytes,
+                    parser_source
+                );
             break;
 
         default:

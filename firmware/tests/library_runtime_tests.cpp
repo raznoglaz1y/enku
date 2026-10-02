@@ -182,11 +182,19 @@ int main() {
         import_core
     );
 
+    BookDeleteService deleter(
+        library,
+        book_files,
+        checkpoint,
+        context
+    );
+
     LibraryRuntimeController runtime(
         app,
         library,
         reader,
         importer,
+        deleter,
         refresh
     );
 
@@ -339,6 +347,27 @@ int main() {
             duplicate_stage,
             staged_bytes
         ) == BookFileStatus::Ok
+    );
+
+    const auto delete_id =
+        *app.library.focused_book;
+    const auto delete_record =
+        library.get(delete_id);
+    assert(delete_record.has_value());
+
+    assert(
+        runtime.handle(
+            DeleteFocusedBookRequested{}
+        ) == LibraryRuntimeResult::Applied
+    );
+
+    assert(!library.get(delete_id).has_value());
+    assert(runtime.page().total_matches == 2);
+    assert(
+        book_files.read(
+            delete_record->source_path,
+            staged_bytes
+        ) == BookFileStatus::NotFound
     );
 
     std::filesystem::remove_all(root, ec);

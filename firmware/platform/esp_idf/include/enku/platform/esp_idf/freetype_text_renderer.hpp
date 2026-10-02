@@ -11,6 +11,7 @@
 #include "enku/render/owned_mono_framebuffer.hpp"
 #include "enku/render/reader_page_renderer.hpp"
 #include "enku/render/library_page_renderer.hpp"
+#include "enku/render/reader_overlay_renderer.hpp"
 
 namespace enku::platform::esp_idf {
 
@@ -25,7 +26,8 @@ enum class FontInitStatus : std::uint8_t {
 class FreeTypeTextRenderer final
     : public TextMeasurer,
       public ReaderPageRenderer,
-      public LibraryPageRenderer {
+      public LibraryPageRenderer,
+      public ReaderOverlayRenderer {
 public:
     FreeTypeTextRenderer(
         OwnedMonoFramebuffer& framebuffer,
@@ -59,6 +61,10 @@ public:
     bool renderLibrary(
         const AppState& app_state,
         const LibraryPage& page
+    ) override;
+
+    bool renderReaderOverlay(
+        const AppState& app_state
     ) override;
 
 private:

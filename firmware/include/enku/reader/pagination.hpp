@@ -19,13 +19,6 @@ enum class PaginationStatus : std::uint8_t {
     MeasurementFailure,
 };
 
-struct PageLine {
-    std::string text;
-    SemanticPosition position;
-    std::uint16_t x{0};
-    std::uint16_t y{0};
-};
-
 struct PaginationPage {
     std::vector<PageLine> lines;
     SemanticPosition first_position;

@@ -409,49 +409,6 @@ bool inputSmokeTest(
     return true;
 }
 
-bool routedInputSmokeTest(
-    enku::platform::esp_idf::EspIdfDeviceRuntime& device
-) {
-    ESP_LOGI(
-        kTag,
-        "Routed input test: controls now drive ENKU runtime for 12 seconds"
-    );
-
-    const std::int64_t start_us = esp_timer_get_time();
-
-    while ((esp_timer_get_time() - start_us) <
-           12LL * 1000LL * 1000LL) {
-        const auto now_ms =
-            static_cast<std::uint32_t>(
-                esp_timer_get_time() / 1000LL
-            );
-
-        const auto result =
-            device.pollInput(now_ms);
-
-        if (result != enku::InputDispatchResult::Ignored) {
-            ESP_LOGI(
-                kTag,
-                "RUNTIME INPUT result=%u screen=%u",
-                static_cast<unsigned>(result),
-                static_cast<unsigned>(
-                    device.storage().appState().screen
-                )
-            );
-        }
-
-        vTaskDelay(
-            pdMS_TO_TICKS(
-                enku::platform::esp_idf::
-                    EspIdfButtons::kPollIntervalMs
-            )
-        );
-    }
-
-    ESP_LOGI(kTag, "Routed input test complete");
-    return true;
-}
-
 [[noreturn]] void runApplicationLoop(
     enku::platform::esp_idf::EspIdfDeviceRuntime& device
 ) {

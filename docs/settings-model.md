@@ -194,3 +194,14 @@ The device runtime exposes:
 Policy changes are persisted through `SettingsRuntimeController`. If applying a newly saved policy fails at the driver level, the runtime performs a best-effort rollback to the previous persisted policy so durable settings and hardware state do not intentionally diverge.
 
 `AppState.network` and battery/charging state are refreshed from the platform during the device loop.
+
+
+## 12. Orientation behavior
+
+The persisted orientation setting now affects both Reader pagination and physical rendering.
+
+`Portrait` and `Landscape` are converted from the native panel dimensions rather than hard-coded inside the framework-neutral Reader runtime. This keeps host tests and future displays independent from the current 800×480 panel.
+
+Changing orientation through `ApplicationReaderRuntime::applyOrientation()` preserves the current semantic text position, invalidates disposable page caches, repaginates using the new logical viewport and re-renders the visible screen.
+
+The current ESP-IDF Portrait transform is clockwise. Final physical direction will be verified against the enclosure/button orientation on the real unit.

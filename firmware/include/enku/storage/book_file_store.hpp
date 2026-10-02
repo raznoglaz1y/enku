@@ -43,6 +43,28 @@ public:
         return write(path, existing);
     }
 
+    virtual BookFileStatus move(
+        const std::string& from,
+        const std::string& to
+    ) {
+        std::string bytes;
+        const auto read_status =
+            read(from, bytes);
+
+        if (read_status != BookFileStatus::Ok) {
+            return read_status;
+        }
+
+        const auto write_status =
+            write(to, bytes);
+
+        if (write_status != BookFileStatus::Ok) {
+            return write_status;
+        }
+
+        return remove(from);
+    }
+
     virtual BookFileStatus remove(
         const std::string& path
     ) = 0;

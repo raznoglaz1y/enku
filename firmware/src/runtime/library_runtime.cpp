@@ -155,6 +155,36 @@ LibraryRuntimeResult LibraryRuntimeController::reload(
         return LibraryRuntimeResult::QueryFailed;
     }
 
+    if (next_page.items.empty() &&
+        next_page.total_matches > 0U &&
+        app_state_.library.offset > 0U) {
+        const auto limit =
+            static_cast<std::uint32_t>(
+                app_state_.library.limit
+            );
+
+        const auto last_offset =
+            ((next_page.total_matches - 1U) /
+             limit) *
+            limit;
+
+        app_state_.library.offset =
+            last_offset;
+
+        LibraryPage clamped_page;
+        const auto clamped_status =
+            library_.query(
+                queryFromState(),
+                clamped_page
+            );
+
+        if (clamped_status != LibraryStatus::Ok) {
+            return LibraryRuntimeResult::QueryFailed;
+        }
+
+        next_page = std::move(clamped_page);
+    }
+
     page_ = std::move(next_page);
     normalizeFocus();
 
@@ -285,6 +315,83 @@ LibraryRuntimeResult LibraryRuntimeController::moveToOffset(
         RefreshReason::FocusChanged,
         RefreshClass::Full
     );
+}
+
+LibraryRuntimeResult LibraryRuntimeController::revealBook(
+    const BookId& book_id,
+    RefreshReason reason
+) {
+    const auto limit =
+        static_cast<std::uint32_t>(
+            app_state_.library.limit
+        );
+
+    if (limit == 0U) {
+        return LibraryRuntimeResult::QueryFailed;
+    }
+
+    std::uint32_t offset = 0U;
+
+    while (true) {
+        app_state_.library.offset = offset;
+
+        LibraryPage candidate;
+        const auto status =
+            library_.query(
+                queryFromState(),
+                candidate
+            );
+
+        if (status != LibraryStatus::Ok) {
+            return LibraryRuntimeResult::QueryFailed;
+        }
+
+        const auto found = std::find_if(
+            candidate.items.begin(),
+            candidate.items.end(),
+            [&](const BookRecord& record) {
+                return record.book_id == book_id;
+            }
+        );
+
+        if (found != candidate.items.end()) {
+            page_ = std::move(candidate);
+            app_state_.library.total_matches =
+                page_.total_matches;
+            app_state_.library.focused_book =
+                book_id;
+
+            if (page_renderer_ != nullptr &&
+                !page_renderer_->renderLibrary(
+                    app_state_,
+                    page_
+                )) {
+                return LibraryRuntimeResult::RenderFailed;
+            }
+
+            return submitRefresh(
+                reason,
+                RefreshClass::Full
+            );
+        }
+
+        const auto next_offset =
+            offset +
+            static_cast<std::uint32_t>(
+                candidate.items.size()
+            );
+
+        if (candidate.items.empty() ||
+            next_offset >= candidate.total_matches) {
+            break;
+        }
+
+        offset = next_offset;
+    }
+
+    resetQueryWindow();
+    app_state_.library.focused_book.reset();
+    return reload(reason);
 }
 
 LibraryRuntimeResult LibraryRuntimeController::handle(
@@ -458,10 +565,11 @@ LibraryRuntimeResult LibraryRuntimeController::handle(
 
     app_state_.library.mode = LibraryQueryMode::Browse;
     app_state_.library.search_text.clear();
-    resetQueryWindow();
-    app_state_.library.focused_book = imported.book_id;
 
-    return reload(RefreshReason::ScreenChanged);
+    return revealBook(
+        imported.book_id,
+        RefreshReason::ScreenChanged
+    );
 }
 
 } // namespace enku

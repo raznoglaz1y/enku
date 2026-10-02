@@ -378,7 +378,29 @@ bool displaySmokeTest() {
         ESP_LOGI(kTag, "Full refresh complete");
         vTaskDelay(pdMS_TO_TICKS(1500));
 
-        fillRect(framebuffer, 180, 338, 440, 54);
+        std::memset(
+            framebuffer,
+            0xFF,
+            EspIdfEpaper::kMonoBytes
+        );
+
+        drawRect(
+            framebuffer,
+            20,
+            20,
+            EspIdfEpaper::kWidth - 40,
+            EspIdfEpaper::kHeight - 40,
+            4
+        );
+
+        drawText(framebuffer, 226, 126, "ENKU", 18);
+        drawText(
+            framebuffer,
+            205,
+            310,
+            "DISPLAY BRING-UP",
+            4
+        );
         drawText(
             framebuffer,
             250,

@@ -13,9 +13,13 @@ namespace enku {
 enum class ReaderRuntimeResult : std::uint8_t {
     Ignored,
     Applied,
+    BookOpening,
+    BookOpenFailed,
     BeginningOfBook,
     EndOfBook,
     LayoutFailed,
+    CheckpointFailed,
+    LibraryUpdateFailed,
     RefreshRejected,
 };
 
@@ -24,11 +28,17 @@ public:
     ReaderRuntimeController(
         AppState& app_state,
         ReaderSession& session,
-        RefreshService& refresh
+        RefreshService& refresh,
+        LibraryService& library,
+        ReaderCheckpointService& checkpoint
     );
 
+    ReaderRuntimeResult handle(const OpenBookRequested&);
+    ReaderRuntimeResult handle(const BookOpened&);
+    ReaderRuntimeResult handle(const BookOpenFailed&);
     ReaderRuntimeResult handle(const PageNextRequested&);
     ReaderRuntimeResult handle(const PagePreviousRequested&);
+    ReaderRuntimeResult handle(const BackRequested&);
 
     std::uint32_t refreshGeneration() const;
 
@@ -36,13 +46,28 @@ private:
     AppState& app_state_;
     ReaderSession& session_;
     RefreshService& refresh_;
+    LibraryService& library_;
+    ReaderCheckpointService& checkpoint_;
     std::uint32_t refresh_generation_{0};
 
     ReaderRuntimeResult applySessionResult(
         ReaderSessionStatus status
     );
 
-    ReaderRuntimeResult commitVisiblePage();
+    ReaderRuntimeResult commitVisiblePage(
+        bool mark_progress_dirty = true
+    );
+
+    ReaderRuntimeResult submitRefresh(
+        RefreshReason reason,
+        bool may_coalesce = false,
+        bool may_defer = false
+    );
+
+    LibraryStatus updateLibrarySummary(
+        ReadingState reading_state,
+        float progress
+    );
 };
 
 } // namespace enku

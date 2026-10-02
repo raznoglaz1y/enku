@@ -893,14 +893,109 @@ bool FreeTypeTextRenderer::renderSearch(
         return false;
     }
 
-    if (!drawTextAt(
-            "FUNCTION: KEYBOARD",
-            13,
+    if (app_state.keyboard.open) {
+        if (!drawTextAt(
+                "KEYBOARD",
+                14,
+                30,
+                174,
+                orientation
+            )) {
+            return false;
+        }
+
+        drawRect(
+            24,
+            194,
+            logical_width - 48,
+            54,
+            orientation,
+            2
+        );
+
+        return drawTextAt(
+            app_state.keyboard.focus_index < 1000
+                ? "UP/DOWN KEY  FUNCTION SELECT  BACK CLOSE"
+                : "",
+            12,
             30,
-            178,
+            orientation == Orientation::Portrait
+                ? 760
+                : 448,
             orientation
-        )) {
-        return false;
+        );
+    }
+
+    if (app_state.search.phase == SearchPhase::Results) {
+        char count_text[48] = {};
+        std::snprintf(
+            count_text,
+            sizeof(count_text),
+            "%lu MATCHES",
+            static_cast<unsigned long>(
+                app_state.search.total_matches
+            )
+        );
+
+        if (!drawTextAt(
+                count_text,
+                14,
+                30,
+                174,
+                orientation
+            )) {
+            return false;
+        }
+
+        constexpr int kStartY = 198;
+        constexpr int kRowHeight = 62;
+        const std::size_t max_visible =
+            orientation == Orientation::Portrait
+                ? 8U
+                : 4U;
+
+        const auto visible =
+            std::min<std::size_t>(
+                app_state.search.matches.size(),
+                max_visible
+            );
+
+        for (std::size_t i = 0; i < visible; ++i) {
+            const int top =
+                kStartY +
+                static_cast<int>(i) * kRowHeight;
+
+            if (app_state.search.focus_index == i) {
+                drawRect(
+                    24,
+                    top,
+                    logical_width - 48,
+                    kRowHeight - 6,
+                    orientation,
+                    2
+                );
+            }
+
+            if (!drawTextAt(
+                    app_state.search.matches[i].preview,
+                    14,
+                    38,
+                    top + 32,
+                    orientation
+                )) {
+                return false;
+            }
+        }
+    } else {
+        if (!drawTextAt(
+                "FUNCTION: OPEN KEYBOARD",
+                13,
+                30,
+                178,
+                orientation
+            )) {
+            return false;
+        }
     }
 
     return drawTextAt(

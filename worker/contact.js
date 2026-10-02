@@ -4,7 +4,7 @@ const navItems = [
   { href: "/hardware", label: "Hardware", match: "/hardware" },
   { href: "/software", label: "Software", match: "/software" },
   { href: "/design", label: "Design", match: "/design" },
-  { href: "/#build", label: "Build" },
+  { href: "/build", label: "Build", match: "/build" },
   { href: "/about", label: "About", match: "/about" },
   { href: "/status", label: "Status", match: "/status" },
   { href: "/build-log", label: "Log", match: "/build-log" },

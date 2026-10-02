@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <string_view>
 
 #include "enku/runtime/application_reader_runtime.hpp"
 #include "enku/runtime/application_storage_runtime.hpp"
@@ -19,6 +20,14 @@ enum class DeviceRuntimeInitStatus : std::uint8_t {
     FontInitFailed,
     NetworkPolicyFailed,
     RecoveryRequired,
+};
+
+enum class DeviceNetworkUpdateStatus : std::uint8_t {
+    Ok,
+    NoTrustedNetwork,
+    InvalidCredentials,
+    SettingsSaveFailed,
+    DriverError,
 };
 
 class EspIdfDeviceRuntime {
@@ -44,6 +53,18 @@ public:
     );
 
     NetworkPolicyStatus applyNetworkPolicy();
+
+    DeviceNetworkUpdateStatus setWiFiPolicy(
+        WiFiPolicy policy
+    );
+
+    DeviceNetworkUpdateStatus setTrustedNetwork(
+        std::string_view ssid,
+        std::string_view password
+    );
+
+    DeviceNetworkUpdateStatus forgetTrustedNetwork();
+
     void syncPlatformState();
 
     const BootRestoreResult& bootResult() const;

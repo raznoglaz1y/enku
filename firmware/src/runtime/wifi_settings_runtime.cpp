@@ -27,6 +27,21 @@ std::size_t policyIndex(
     return 0;
 }
 
+const char* connectionFailureLabel(
+    NetworkPolicyStatus status
+) {
+    switch (status) {
+        case NetworkPolicyStatus::InvalidCredentials:
+            return "INVALID CREDENTIALS";
+        case NetworkPolicyStatus::ConnectionFailed:
+            return "CONNECTION FAILED";
+        case NetworkPolicyStatus::DriverError:
+            return "WI-FI DRIVER ERROR";
+        default:
+            return "CONNECTION FAILED";
+    }
+}
+
 } // namespace
 
 WiFiSettingsRuntime::WiFiSettingsRuntime(
@@ -44,7 +59,8 @@ WiFiSettingsRuntime::WiFiSettingsRuntime(
       network_settings_(network_settings),
       settings_nav_(settings_nav),
       renderer_(renderer),
-      refresh_(refresh) {}
+      refresh_(refresh),
+      keyboard_(app_state.keyboard) {}
 
 WiFiSettingsRuntimeResult
 WiFiSettingsRuntime::openFromSettings() {
@@ -56,6 +72,8 @@ WiFiSettingsRuntime::openFromSettings() {
         WiFiSettingsState{};
     app_state_.wifi_settings.selected_policy =
         app_state_.wifi_policy;
+    app_state_.keyboard.open = false;
+    app_state_.keyboard.focused_label.clear();
 
     syncNetworkState();
 
@@ -103,6 +121,9 @@ WiFiSettingsRuntime::render() {
 
 WiFiSettingsRuntimeResult
 WiFiSettingsRuntime::close() {
+    app_state_.keyboard.open = false;
+    app_state_.wifi_settings.pending_password.clear();
+
     return settings_nav_.resume() ==
         SettingsNavigationResult::Applied
         ? WiFiSettingsRuntimeResult::Applied
@@ -113,16 +134,176 @@ WiFiSettingsRuntimeResult
 WiFiSettingsRuntime::moveFocus(
     int direction
 ) {
+    constexpr int kFocusCount = 3;
+
     int focus =
         static_cast<int>(
             app_state_.wifi_settings.focus
         );
 
     focus =
-        (focus + direction + 2) % 2;
+        (focus + direction + kFocusCount) %
+        kFocusCount;
 
     app_state_.wifi_settings.focus =
         static_cast<WiFiSettingsFocus>(focus);
+
+    return render();
+}
+
+WiFiSettingsRuntimeResult
+WiFiSettingsRuntime::scanNetworks() {
+    auto& state = app_state_.wifi_settings;
+    state.status_message = "SCANNING...";
+    state.scan_results.clear();
+    state.network_focus = 0;
+
+    const auto status =
+        network_settings_.scanNetworks(
+            state.scan_results
+        );
+
+    if (status != NetworkPolicyStatus::Ok) {
+        state.status_message =
+            connectionFailureLabel(status);
+        state.selecting_network = false;
+        return render();
+    }
+
+    if (state.scan_results.empty()) {
+        state.status_message = "NO NETWORKS FOUND";
+        state.selecting_network = false;
+        return render();
+    }
+
+    state.status_message.clear();
+    state.selecting_network = true;
+    return render();
+}
+
+WiFiSettingsRuntimeResult
+WiFiSettingsRuntime::moveNetworkFocus(
+    int direction
+) {
+    auto& state = app_state_.wifi_settings;
+
+    if (state.scan_results.empty()) {
+        return WiFiSettingsRuntimeResult::Ignored;
+    }
+
+    const int count =
+        static_cast<int>(
+            state.scan_results.size()
+        );
+
+    int focus =
+        static_cast<int>(
+            state.network_focus
+        );
+
+    focus =
+        (focus + direction + count) % count;
+
+    state.network_focus =
+        static_cast<std::uint16_t>(focus);
+
+    return render();
+}
+
+WiFiSettingsRuntimeResult
+WiFiSettingsRuntime::chooseNetwork() {
+    auto& state = app_state_.wifi_settings;
+
+    if (state.scan_results.empty() ||
+        state.network_focus >=
+            state.scan_results.size()) {
+        return WiFiSettingsRuntimeResult::Ignored;
+    }
+
+    const auto& network_info =
+        state.scan_results[
+            state.network_focus
+        ];
+
+    state.pending_ssid =
+        network_info.ssid;
+    state.pending_password.clear();
+    state.status_message.clear();
+
+    if (!network_info.secured) {
+        return connectPendingNetwork();
+    }
+
+    keyboard_.open(KeyboardMode::Latin);
+    return render();
+}
+
+WiFiSettingsRuntimeResult
+WiFiSettingsRuntime::connectPendingNetwork() {
+    auto& state = app_state_.wifi_settings;
+
+    if (state.pending_ssid.empty()) {
+        return WiFiSettingsRuntimeResult::Ignored;
+    }
+
+    state.status_message = "CONNECTING...";
+
+    const auto status =
+        network_settings_.connectToNetwork(
+            state.pending_ssid,
+            state.pending_password
+        );
+
+    if (status != NetworkPolicyStatus::Ok) {
+        state.status_message =
+            connectionFailureLabel(status);
+        state.pending_password.clear();
+        state.selecting_network = true;
+        syncNetworkState();
+        return render();
+    }
+
+    // Credentials become durable only after the transient connection
+    // succeeds. This ordering is the key invariant of the flow.
+    const auto persist_status =
+        network_settings_.setTrustedNetwork(
+            state.pending_ssid,
+            state.pending_password
+        );
+
+    if (persist_status !=
+        NetworkPolicyStatus::Ok) {
+        network_.disconnect();
+        state.status_message =
+            "CONNECTED, SAVE FAILED";
+        state.pending_password.clear();
+        syncNetworkState();
+        return render();
+    }
+
+    state.status_message = "CONNECTED";
+    state.selecting_network = false;
+    state.scan_results.clear();
+    state.network_focus = 0;
+    state.pending_ssid.clear();
+    state.pending_password.clear();
+
+    syncNetworkState();
+    return render();
+}
+
+WiFiSettingsRuntimeResult
+WiFiSettingsRuntime::cancelNetworkFlow() {
+    auto& state = app_state_.wifi_settings;
+
+    app_state_.keyboard.open = false;
+    app_state_.keyboard.focused_label.clear();
+    state.selecting_network = false;
+    state.scan_results.clear();
+    state.network_focus = 0;
+    state.pending_ssid.clear();
+    state.pending_password.clear();
+    state.status_message.clear();
 
     return render();
 }
@@ -183,20 +364,11 @@ WiFiSettingsRuntime::applyPolicy() {
         network_settings_.applyPolicy(selected);
 
     if (status ==
-        NetworkPolicyStatus::DriverError) {
-        storage_.settingsRuntime().handle(
-            WiFiPolicyChanged{previous}
-        );
-        network_settings_.applyPolicy(previous);
-
-        app_state_.wifi_settings.selected_policy =
-            previous;
-        syncNetworkState();
-        return WiFiSettingsRuntimeResult::Failed;
-    }
-
-    if (status ==
-        NetworkPolicyStatus::InvalidCredentials) {
+            NetworkPolicyStatus::DriverError ||
+        status ==
+            NetworkPolicyStatus::InvalidCredentials ||
+        status ==
+            NetworkPolicyStatus::ConnectionFailed) {
         storage_.settingsRuntime().handle(
             WiFiPolicyChanged{previous}
         );
@@ -317,6 +489,51 @@ WiFiSettingsRuntime::handle(
         }
     }
 
+    if (app_state_.keyboard.open) {
+        const auto result =
+            keyboard_.handle(
+                action,
+                app_state_.wifi_settings.
+                    pending_password
+            );
+
+        switch (result) {
+            case KeyboardRuntimeResult::Changed:
+                return render();
+
+            case KeyboardRuntimeResult::Done:
+                return connectPendingNetwork();
+
+            case KeyboardRuntimeResult::Closed:
+                app_state_.wifi_settings.
+                    pending_password.clear();
+                return render();
+
+            case KeyboardRuntimeResult::Ignored:
+            default:
+                return WiFiSettingsRuntimeResult::Ignored;
+        }
+    }
+
+    if (app_state_.wifi_settings.selecting_network) {
+        switch (action) {
+            case LogicalAction::NavigatePrevious:
+                return moveNetworkFocus(-1);
+
+            case LogicalAction::NavigateNext:
+                return moveNetworkFocus(1);
+
+            case LogicalAction::Confirm:
+                return chooseNetwork();
+
+            case LogicalAction::Back:
+                return cancelNetworkFlow();
+
+            default:
+                return WiFiSettingsRuntimeResult::Ignored;
+        }
+    }
+
     switch (action) {
         case LogicalAction::NavigatePrevious:
             return moveFocus(-1);
@@ -325,11 +542,19 @@ WiFiSettingsRuntime::handle(
             return moveFocus(1);
 
         case LogicalAction::Confirm:
-            if (app_state_.wifi_settings.focus ==
-                WiFiSettingsFocus::Policy) {
-                return beginPolicyEdit();
+            switch (app_state_.wifi_settings.focus) {
+                case WiFiSettingsFocus::Policy:
+                    return beginPolicyEdit();
+
+                case WiFiSettingsFocus::ScanNetworks:
+                    return scanNetworks();
+
+                case WiFiSettingsFocus::ForgetTrusted:
+                    return enterForgetConfirm();
+
+                default:
+                    return WiFiSettingsRuntimeResult::Ignored;
             }
-            return enterForgetConfirm();
 
         case LogicalAction::Back:
             return close();

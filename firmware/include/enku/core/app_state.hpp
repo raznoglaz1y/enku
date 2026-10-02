@@ -58,9 +58,16 @@ enum class ContentsBookmarksTab : std::uint8_t {
     Bookmarks,
 };
 
+enum class ContentsBookmarksFocus : std::uint8_t {
+    ContentsTab,
+    BookmarksTab,
+    Item,
+};
+
 struct ContentsBookmarksState {
     ContentsBookmarksTab tab{ContentsBookmarksTab::Contents};
-    std::uint32_t focus_index{0};
+    ContentsBookmarksFocus focus{ContentsBookmarksFocus::ContentsTab};
+    std::uint32_t item_index{0};
     std::uint32_t window_start{0};
 };
 

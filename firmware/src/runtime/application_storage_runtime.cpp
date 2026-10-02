@@ -17,6 +17,11 @@ ApplicationStorageRuntime::ApplicationStorageRuntime(
           book_files,
           import_core_
       ),
+      web_upload_(
+          app_state_,
+          book_files,
+          staged_import_
+      ),
       checkpoints_(state_files),
       bookmarks_(state_files),
       app_context_(state_files),
@@ -64,6 +69,11 @@ ApplicationStorageRuntime::importCore() {
 StagedBookImportService&
 ApplicationStorageRuntime::stagedImport() {
     return staged_import_;
+}
+
+WebUploadIngress&
+ApplicationStorageRuntime::webUpload() {
+    return web_upload_;
 }
 
 BookDeleteService&

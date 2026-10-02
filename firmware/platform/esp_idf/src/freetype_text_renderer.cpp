@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "esp_log.h"
+#include "enku/runtime/keyboard_runtime.hpp"
 
 namespace enku::platform::esp_idf {
 namespace {
@@ -963,23 +964,132 @@ bool FreeTypeTextRenderer::renderSearch(
             return false;
         }
 
-        drawRect(
-            24,
-            194,
-            logical_width - 48,
-            54,
-            orientation,
-            2
-        );
+        const auto key_count =
+            keyboardKeyCount(
+                app_state.keyboard.mode
+            );
+        const auto character_count =
+            keyboardCharacterKeyCount(
+                app_state.keyboard.mode
+            );
 
-        if (!drawTextAt(
-                app_state.keyboard.focused_label,
-                22,
-                40,
-                230,
-                orientation
-            )) {
-            return false;
+        const int keyboard_top =
+            orientation == Orientation::Portrait
+                ? 206
+                : 198;
+        const int key_height =
+            orientation == Orientation::Portrait
+                ? 42
+                : 34;
+        const int gap = 6;
+
+        const int character_columns =
+            orientation == Orientation::Portrait
+                ? 8
+                : 10;
+        const int character_width =
+            (logical_width - 48 -
+             gap * (character_columns - 1)) /
+            character_columns;
+
+        for (std::uint16_t i = 0;
+             i < character_count;
+             ++i) {
+            const int row =
+                static_cast<int>(i) /
+                character_columns;
+            const int column =
+                static_cast<int>(i) %
+                character_columns;
+
+            const int x =
+                24 +
+                column *
+                    (character_width + gap);
+            const int y =
+                keyboard_top +
+                row *
+                    (key_height + gap);
+
+            drawRect(
+                x,
+                y,
+                character_width,
+                key_height,
+                orientation,
+                app_state.keyboard.focus_index == i
+                    ? 2
+                    : 1
+            );
+
+            const auto key =
+                keyboardKeyLabel(
+                    app_state.keyboard,
+                    i
+                );
+
+            if (!drawTextAt(
+                    key,
+                    14,
+                    x + 8,
+                    y + key_height - 11,
+                    orientation
+                )) {
+                return false;
+            }
+        }
+
+        const int character_rows =
+            (static_cast<int>(character_count) +
+             character_columns - 1) /
+            character_columns;
+        const int special_y =
+            keyboard_top +
+            character_rows *
+                (key_height + gap);
+        const int special_width =
+            (logical_width - 48 - gap * 4) /
+            5;
+
+        for (std::uint16_t i = character_count;
+             i < key_count;
+             ++i) {
+            const int column =
+                static_cast<int>(
+                    i - character_count
+                );
+            const int x =
+                24 +
+                column *
+                    (special_width + gap);
+
+            drawRect(
+                x,
+                special_y,
+                special_width,
+                key_height,
+                orientation,
+                app_state.keyboard.focus_index == i
+                    ? 2
+                    : 1
+            );
+
+            const auto key =
+                keyboardKeyLabel(
+                    app_state.keyboard,
+                    i
+                );
+
+            if (!drawTextAt(
+                    key,
+                    12,
+                    x + 6,
+                    special_y +
+                        key_height - 11,
+                    orientation
+                )) {
+                return false;
+            }
         }
 
         return drawTextAt(

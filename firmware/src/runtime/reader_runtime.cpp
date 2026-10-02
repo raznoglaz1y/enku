@@ -38,6 +38,13 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
         return ReaderRuntimeResult::Ignored;
     }
 
+    typography_.font_size_px =
+        app_state_.typography.font_size_px;
+    typography_.line_spacing =
+        app_state_.typography.line_spacing;
+    typography_.margin_px =
+        app_state_.typography.margin_px;
+
     app_state_.screen = Screen::BookOpening;
     app_state_.current_book = event.book_id;
     app_state_.current_book_finished = false;

@@ -13,6 +13,7 @@ include/enku/
   core/
     types.hpp
     input.hpp
+    power.hpp
     events.hpp
     app_state.hpp
   reader/
@@ -28,6 +29,7 @@ Architecture references:
 
 - [System architecture](../docs/architecture.md)
 - [Input & physical controls](../docs/input-model.md)
+- [Power, sleep & wake model](../docs/power-model.md)
 - [Firmware structure](../docs/firmware-structure.md)
 - [Reader runtime](../docs/runtime-state-machine.md)
 - [Pagination model](../docs/pagination-model.md)

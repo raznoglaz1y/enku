@@ -136,6 +136,11 @@ It currently provides:
 - creation of ENKU `/books` and `/system/*` directories;
 - `EspIdfFileStore` implementing both `StateFileStore` and `BookFileStore`;
 - path-traversal rejection;
-- a serial storage smoke test in `app_main`.
+- a serial storage smoke test in `app_main`;
+- a build-verified SSD1677 800×480 monochrome full-refresh driver;
+- a PSRAM-backed ENKU display smoke screen.
 
 See [ESP-IDF platform bring-up](platform/esp_idf/README.md).
+
+
+The board target is compiled separately in GitHub Actions against ESP-IDF v5.5.5. The first successful platform build covers both SDMMC storage and SSD1677 full-refresh code.

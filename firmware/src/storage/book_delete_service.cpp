@@ -120,7 +120,7 @@ BookDeleteStatus BookDeleteService::remove(
                 std::move(stored_bookmarks);
         } else if (
             bookmark_status != BookmarkStatus::NotFound) {
-            return BookDeleteStatus::SourceReadFailed;
+            return BookDeleteStatus::BookmarkLoadFailed;
         }
     }
 
@@ -203,7 +203,7 @@ BookDeleteStatus BookDeleteService::remove(
                 : std::nullopt,
             bookmarks_backup
         )
-            ? BookDeleteStatus::CheckpointRemoveFailed
+            ? BookDeleteStatus::BookmarkRemoveFailed
             : BookDeleteStatus::RollbackFailed;
     }
 

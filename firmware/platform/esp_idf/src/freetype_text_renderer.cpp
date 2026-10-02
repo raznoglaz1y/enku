@@ -702,6 +702,7 @@ bool FreeTypeTextRenderer::renderLibrary(
 
 } // namespace enku::platform::esp_idf
 
+namespace enku::platform::esp_idf {
 
 bool FreeTypeTextRenderer::renderReaderOverlay(
     const AppState& app_state
@@ -840,3 +841,5 @@ bool FreeTypeTextRenderer::renderReaderOverlay(
         orientation
     );
 }
+
+} // namespace enku::platform::esp_idf

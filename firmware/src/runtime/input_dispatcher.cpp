@@ -80,7 +80,8 @@ InputDispatcher::InputDispatcher(
     SettingsNavigationRuntime* settings_nav,
     ReadingSettingsRuntime* reading_settings,
     DisplaySettingsRuntime* display_settings,
-    LocaleSettingsRuntime* locale_settings
+    LocaleSettingsRuntime* locale_settings,
+    AboutDeviceRuntime* about_device
 )
     : app_state_(app_state),
       library_(library),
@@ -97,7 +98,8 @@ InputDispatcher::InputDispatcher(
       settings_nav_(settings_nav),
       reading_settings_(reading_settings),
       display_settings_(display_settings),
-      locale_settings_(locale_settings) {}
+      locale_settings_(locale_settings),
+      about_device_(about_device) {}
 
 InputDispatchResult InputDispatcher::handle(
     const PhysicalInputEvent& input
@@ -110,6 +112,25 @@ InputDispatchResult InputDispatcher::handle(
 
     if (!action.has_value()) {
         return InputDispatchResult::Ignored;
+    }
+
+    if (app_state_.screen == Screen::AboutDevice) {
+        if (about_device_ == nullptr) {
+            return InputDispatchResult::Unhandled;
+        }
+
+        const auto result =
+            about_device_->handle(*action);
+
+        if (result == AboutDeviceRuntimeResult::Applied) {
+            return InputDispatchResult::Applied;
+        }
+
+        if (result == AboutDeviceRuntimeResult::Failed) {
+            return InputDispatchResult::Failed;
+        }
+
+        return InputDispatchResult::Unhandled;
     }
 
     if (app_state_.screen == Screen::LocaleSettings) {
@@ -205,6 +226,15 @@ InputDispatchResult InputDispatcher::handle(
                 }
                 return locale_settings_->openFromSettings() ==
                     LocaleSettingsRuntimeResult::Applied
+                    ? InputDispatchResult::Applied
+                    : InputDispatchResult::Failed;
+
+            case SettingsNavigationResult::AboutRequested:
+                if (about_device_ == nullptr) {
+                    return InputDispatchResult::Unhandled;
+                }
+                return about_device_->openFromSettings() ==
+                    AboutDeviceRuntimeResult::Applied
                     ? InputDispatchResult::Applied
                     : InputDispatchResult::Failed;
 

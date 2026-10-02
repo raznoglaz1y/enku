@@ -34,6 +34,7 @@ include/enku/
     book_loader.hpp
   runtime/
     reader_runtime.hpp
+    storage_startup.hpp
   services/
     services.hpp
   storage/
@@ -96,6 +97,7 @@ The host suite currently covers:
 - persistent CBOR Library index, queries, sorting, paging and summary updates;
 - TXT import pipeline with format detection, parse validation, content fingerprinting and duplicate rejection;
 - transactional staged-file import from `/system/tmp` into canonical `/books/book-<id>.<ext>`;
+- storage startup recovery that loads the Library, cleans stale committed tmp artifacts, and preserves ambiguous uploads;
 - rollback of the final book file when Library commit fails;
 - POSIX filesystem persistence for book files and checkpoints.
 

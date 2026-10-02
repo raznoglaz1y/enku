@@ -89,15 +89,19 @@ The Reader Engine test covers:
 
 A fake fixed-width measurer is used only for deterministic host testing.
 
-## Next step
+## ReaderSession integration
 
-The next Reader runtime layer should add a **ReaderSession** responsible for:
+A stateful **ReaderSession** is now implemented above this Reader Engine and documented in [Reader Session MVP](reader-session-mvp.md).
 
-- current page;
-- recent page-boundary history;
-- deterministic Previous;
-- small current/next/previous page cache;
-- repagination invalidation after typography/orientation changes.
+It adds:
+
+- current page ownership;
+- deterministic visited-page history;
+- Previous navigation without character-count guessing;
+- previous/current/next page working-set cache;
+- layout invalidation after typography/viewport changes.
+
+The Reader Engine itself remains stateless with respect to navigation history.
 
 ## Decisions fixed by this MVP
 

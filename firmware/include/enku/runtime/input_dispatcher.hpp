@@ -16,6 +16,7 @@
 #include "display_settings_runtime.hpp"
 #include "locale_settings_runtime.hpp"
 #include "about_device_runtime.hpp"
+#include "power_off_confirm_runtime.hpp"
 #include "power_off.hpp"
 #include "reader_overlay_runtime.hpp"
 #include "reader_runtime.hpp"
@@ -50,7 +51,8 @@ public:
         ReadingSettingsRuntime* reading_settings = nullptr,
         DisplaySettingsRuntime* display_settings = nullptr,
         LocaleSettingsRuntime* locale_settings = nullptr,
-        AboutDeviceRuntime* about_device = nullptr
+        AboutDeviceRuntime* about_device = nullptr,
+        PowerOffConfirmRuntime* power_off_confirm = nullptr
     );
 
     InputDispatchResult handle(
@@ -75,6 +77,7 @@ private:
     DisplaySettingsRuntime* display_settings_{nullptr};
     LocaleSettingsRuntime* locale_settings_{nullptr};
     AboutDeviceRuntime* about_device_{nullptr};
+    PowerOffConfirmRuntime* power_off_confirm_{nullptr};
 };
 
 } // namespace enku

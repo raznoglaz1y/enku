@@ -4,6 +4,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "../core/types.hpp"
 #include "../core/power.hpp"
@@ -159,6 +160,13 @@ enum class NetworkPolicyStatus : std::uint8_t {
     NoTrustedNetwork,
     InvalidCredentials,
     DriverError,
+    ConnectionFailed,
+};
+
+struct WiFiNetworkInfo {
+    std::string ssid;
+    std::int32_t rssi{0};
+    bool secured{false};
 };
 
 class NetworkSettingsService {
@@ -167,6 +175,18 @@ public:
 
     virtual NetworkPolicyStatus applyPolicy(
         WiFiPolicy policy
+    ) = 0;
+
+    virtual NetworkPolicyStatus scanNetworks(
+        std::vector<WiFiNetworkInfo>& networks
+    ) = 0;
+
+    // Attempts a connection using transient credentials. Implementations
+    // must not durably persist them. Persistence is a separate explicit
+    // setTrustedNetwork() step after successful connection.
+    virtual NetworkPolicyStatus connectToNetwork(
+        std::string_view ssid,
+        std::string_view password
     ) = 0;
 
     virtual NetworkPolicyStatus setTrustedNetwork(

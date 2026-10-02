@@ -27,6 +27,10 @@ PlatformInitStatus EspIdfPlatform::begin() {
         return PlatformInitStatus::PowerInitFailed;
     }
 
+    if (!network_.begin()) {
+        return PlatformInitStatus::NetworkInitFailed;
+    }
+
     if (!buttons_.begin()) {
         return PlatformInitStatus::ButtonsInitFailed;
     }
@@ -64,6 +68,10 @@ EpaperRefreshService& EspIdfPlatform::refresh() {
 
 EspIdfPowerService& EspIdfPlatform::power() {
     return power_;
+}
+
+EspIdfNetworkService& EspIdfPlatform::network() {
+    return network_;
 }
 
 EspIdfButtons& EspIdfPlatform::buttons() {

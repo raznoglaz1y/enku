@@ -13,12 +13,28 @@
 
 namespace enku {
 
+enum class BookSourceStatus : std::uint8_t {
+    Ok,
+    Unavailable,
+    ReadFailed,
+};
+
 class StorageService {
 public:
     virtual ~StorageService() = default;
 
     virtual bool isAvailable() const = 0;
     virtual bool bookExists(const BookId& book_id) const = 0;
+};
+
+class BookSourceService {
+public:
+    virtual ~BookSourceService() = default;
+
+    virtual BookSourceStatus readSource(
+        const BookRecord& record,
+        std::string& bytes
+    ) = 0;
 };
 
 class LibraryService {

@@ -331,3 +331,20 @@ Format branching belongs in the parser/adaptation layer.
 - Internal text representation is UTF-8.
 - Parser work should be streaming/bounded-memory where practical.
 - Full browser-level EPUB/CSS fidelity is not a Reader v1 goal.
+
+
+## 17. Import integration MVP
+
+`BookImportService` now connects the first parser implementation to the Library boundary.
+
+For TXT input it:
+
+1. detects the format from the source filename;
+2. computes the provisional content fingerprint;
+3. rejects exact duplicates already indexed by the Library;
+4. runs `TxtParser` for UTF-8 validation and normalization;
+5. copies normalized parser metadata into `BookRecord`;
+6. initializes Library summary state as `New / 0%`;
+7. commits through `LibraryService::upsert()`.
+
+EPUB and FB2 detection exists, but those imports return `UnsupportedFormat` until their parser implementations are added.

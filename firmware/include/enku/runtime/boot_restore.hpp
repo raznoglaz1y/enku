@@ -44,6 +44,9 @@ private:
     LibraryService& library_;
 
     bool persistLibraryContext();
+    bool normalizeLibraryPosition(
+        bool& changed
+    );
     void settleLibrary();
     bool markBootStable();
     BootRestoreResult restoreLoadedContext(

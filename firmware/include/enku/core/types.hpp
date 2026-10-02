@@ -36,6 +36,7 @@ enum class Screen : std::uint8_t {
     LocaleSettings = 16,
     AboutDevice = 17,
     PowerOffConfirm = 18,
+    WiFiSettings = 19,
 };
 
 static_assert(

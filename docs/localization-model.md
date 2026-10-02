@@ -315,7 +315,7 @@ Changing language:
 - updates UI strings immediately after confirmation;
 - does not change keyboard input mode automatically;
 - does not change book language;
-- persists the selected `LocaleId`.
+- persists the selected `LocaleId` through `SettingsRuntimeController` / `CborSettingsService`.
 
 ## 17. Runtime language change
 

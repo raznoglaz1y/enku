@@ -18,6 +18,7 @@ firmware/
       persistence.hpp
       localization.hpp
       diagnostics.hpp
+      boot.hpp
       events.hpp
       app_state.hpp
     reader/
@@ -53,6 +54,18 @@ It must not depend on:
 - filesystem implementation details;
 - EPUB/FB2/TXT parser internals;
 - Wi-Fi implementation details.
+
+### boot
+
+Owns:
+
+- staged startup progression;
+- boot mode selection (Normal / First Start / Recovery);
+- first-usable-screen checkpoint;
+- coordination of persistence/storage/display/input readiness;
+- automatic restore eligibility.
+
+The boot coordinator does not own low-level driver initialization details; it sequences platform/service capabilities and records observable boot stages.
 
 ### diagnostics
 

@@ -79,7 +79,8 @@ InputDispatcher::InputDispatcher(
     AboutBookRuntime* about_book,
     SettingsNavigationRuntime* settings_nav,
     ReadingSettingsRuntime* reading_settings,
-    DisplaySettingsRuntime* display_settings
+    DisplaySettingsRuntime* display_settings,
+    LocaleSettingsRuntime* locale_settings
 )
     : app_state_(app_state),
       library_(library),
@@ -95,7 +96,8 @@ InputDispatcher::InputDispatcher(
       about_book_(about_book),
       settings_nav_(settings_nav),
       reading_settings_(reading_settings),
-      display_settings_(display_settings) {}
+      display_settings_(display_settings),
+      locale_settings_(locale_settings) {}
 
 InputDispatchResult InputDispatcher::handle(
     const PhysicalInputEvent& input
@@ -108,6 +110,25 @@ InputDispatchResult InputDispatcher::handle(
 
     if (!action.has_value()) {
         return InputDispatchResult::Ignored;
+    }
+
+    if (app_state_.screen == Screen::LocaleSettings) {
+        if (locale_settings_ == nullptr) {
+            return InputDispatchResult::Unhandled;
+        }
+
+        const auto result =
+            locale_settings_->handle(*action);
+
+        if (result == LocaleSettingsRuntimeResult::Applied) {
+            return InputDispatchResult::Applied;
+        }
+
+        if (result == LocaleSettingsRuntimeResult::Failed) {
+            return InputDispatchResult::Failed;
+        }
+
+        return InputDispatchResult::Unhandled;
     }
 
     if (app_state_.screen == Screen::DisplaySettings) {
@@ -175,6 +196,15 @@ InputDispatchResult InputDispatcher::handle(
                 }
                 return display_settings_->openFromSettings() ==
                     DisplaySettingsRuntimeResult::Applied
+                    ? InputDispatchResult::Applied
+                    : InputDispatchResult::Failed;
+
+            case SettingsNavigationResult::LanguageRequested:
+                if (locale_settings_ == nullptr) {
+                    return InputDispatchResult::Unhandled;
+                }
+                return locale_settings_->openFromSettings() ==
+                    LocaleSettingsRuntimeResult::Applied
                     ? InputDispatchResult::Applied
                     : InputDispatchResult::Failed;
 

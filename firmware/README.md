@@ -17,6 +17,7 @@ include/enku/
     persistence.hpp
     localization.hpp
     diagnostics.hpp
+    boot.hpp
     events.hpp
     app_state.hpp
   reader/
@@ -36,6 +37,7 @@ Architecture references:
 - [Persistence backend](../docs/persistence-model.md)
 - [Localization architecture](../docs/localization-model.md)
 - [Errors, logging & diagnostics](../docs/diagnostics-model.md)
+- [Boot & startup architecture](../docs/boot-model.md)
 - [Firmware structure](../docs/firmware-structure.md)
 - [Reader runtime](../docs/runtime-state-machine.md)
 - [Pagination model](../docs/pagination-model.md)

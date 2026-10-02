@@ -174,6 +174,14 @@ ReaderSessionStatus ReaderSession::previous() {
     return status_;
 }
 
+void ReaderSession::close() {
+    previous_page_.reset();
+    current_page_.reset();
+    next_page_.reset();
+    history_.clear();
+    status_ = ReaderSessionStatus::Closed;
+}
+
 void ReaderSession::invalidateLayout(
     const TypographySettings& typography,
     const Viewport& viewport

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cctype>
 #include <string>
+#include <utility>
 
 #include "enku/core/events.hpp"
 

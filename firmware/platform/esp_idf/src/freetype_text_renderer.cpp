@@ -862,23 +862,48 @@ bool FreeTypeTextRenderer::renderLibrary(
                 ? 10U
                 : 6U);
 
+    std::size_t focused_index = 0U;
+    bool has_focus = false;
+
+    if (app_state.library.focused_book.has_value()) {
+        for (std::size_t i = 0;
+             i < page.items.size();
+             ++i) {
+            if (page.items[i].book_id ==
+                *app_state.library.focused_book) {
+                focused_index = i;
+                has_focus = true;
+                break;
+            }
+        }
+    }
+
+    const std::size_t visible_start =
+        has_focus
+            ? (focused_index / kMaxVisible) *
+                kMaxVisible
+            : 0U;
+
     const auto visible =
         std::min<std::size_t>(
-            page.items.size(),
+            page.items.size() - visible_start,
             kMaxVisible
         );
 
-    for (std::size_t i = 0; i < visible; ++i) {
-        const auto& book = page.items[i];
+    for (std::size_t row = 0;
+         row < visible;
+         ++row) {
+        const auto index =
+            visible_start + row;
+        const auto& book = page.items[index];
         const int top =
             start_y +
-            static_cast<int>(i) *
+            static_cast<int>(row) *
                 kRowHeight;
 
         const bool focused =
-            app_state.library.focused_book.has_value() &&
-            *app_state.library.focused_book ==
-                book.book_id;
+            has_focus &&
+            focused_index == index;
 
         if (focused) {
             drawRect(

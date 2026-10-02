@@ -39,6 +39,7 @@ include/enku/
   storage/
     state_file_store.hpp
     cbor_reader_checkpoint.hpp
+    cbor_library_service.hpp
     posix_state_file_store.hpp
 ```
 
@@ -88,6 +89,7 @@ The host suite currently covers:
 - Book Loader;
 - Reader runtime open/page/back/restore lifecycle;
 - CBOR A/B checkpoint generation and corruption recovery;
+- persistent CBOR Library index, queries, sorting, paging and summary updates;
 - POSIX filesystem checkpoint persistence.
 
 GitHub Actions runs the same host suite on pushes to `main` and on pull requests.

@@ -67,7 +67,7 @@ Library
 → open normalized document
 → resolve saved semantic position
 → resolve effective typography
-→ paginate current page
+→ paginate current page through Reader Engine
 → render
 → Reading
 ```
@@ -81,8 +81,8 @@ If a saved anchor can no longer be resolved exactly, the Reader Engine should re
 When the user requests Next:
 
 1. ignore/reject duplicate input while the current page transition is not ready;
-2. obtain the next semantic anchor from the current layout result;
-3. paginate the next page;
+2. obtain the next semantic anchor from the current Reader page result;
+3. ask Reader Engine to paginate the next page;
 4. update current semantic position;
 5. mark progress as dirty;
 6. render the new page;

@@ -68,7 +68,9 @@ public:
     std::uint32_t submitted{0};
 };
 
-class FakeNetworkService final : public NetworkService {
+class FakeNetworkService final
+    : public NetworkService,
+      public NetworkSettingsService {
 public:
     bool connected() const override {
         return is_connected;
@@ -79,8 +81,72 @@ public:
         is_connected = false;
     }
 
+    NetworkPolicyStatus applyPolicy(
+        WiFiPolicy policy
+    ) override {
+        ++apply_calls;
+        last_policy = policy;
+
+        if (policy == WiFiPolicy::Off) {
+            is_connected = false;
+            return NetworkPolicyStatus::Ok;
+        }
+
+        if (policy == WiFiPolicy::Manual) {
+            is_connected = false;
+            return NetworkPolicyStatus::Ok;
+        }
+
+        if (!trusted_ssid.has_value()) {
+            is_connected = false;
+            return NetworkPolicyStatus::NoTrustedNetwork;
+        }
+
+        is_connected = auto_connect_success;
+        return auto_connect_success
+            ? NetworkPolicyStatus::Ok
+            : NetworkPolicyStatus::ConnectionFailed;
+    }
+
+    NetworkPolicyStatus scanNetworks(
+        std::vector<WiFiNetworkInfo>&
+    ) override {
+        return NetworkPolicyStatus::Ok;
+    }
+
+    NetworkPolicyStatus connectToNetwork(
+        std::string_view,
+        std::string_view
+    ) override {
+        return NetworkPolicyStatus::Ok;
+    }
+
+    NetworkPolicyStatus setTrustedNetwork(
+        std::string_view ssid,
+        std::string_view
+    ) override {
+        trusted_ssid = std::string(ssid);
+        return NetworkPolicyStatus::Ok;
+    }
+
+    NetworkPolicyStatus forgetTrustedNetwork() override {
+        trusted_ssid.reset();
+        is_connected = false;
+        return NetworkPolicyStatus::Ok;
+    }
+
+    std::optional<std::string> trustedSsid() const override {
+        return trusted_ssid;
+    }
+
     bool is_connected{true};
+    bool auto_connect_success{true};
     std::uint32_t disconnects{0};
+    std::uint32_t apply_calls{0};
+    WiFiPolicy last_policy{WiFiPolicy::AutoConnectTrusted};
+    std::optional<std::string> trusted_ssid{
+        std::string{"Home"}
+    };
 };
 
 class FakePowerService final : public PowerService {
@@ -253,13 +319,20 @@ int main() {
 
     FakeNetworkService network;
     FakePowerService power;
+    app.wifi_policy = WiFiPolicy::AutoConnectTrusted;
+
+    NetworkLifecycleCoordinator network_lifecycle(
+        app,
+        network,
+        network
+    );
 
     SleepWakeCoordinator sleep_wake(
         app,
         library,
         checkpoint,
         context,
-        network,
+        network_lifecycle,
         power,
         boot_restore
     );
@@ -334,6 +407,17 @@ int main() {
         expected_offset
     );
     assert(app.boot.stage == BootStage::Stable);
+    assert(network.apply_calls == 1);
+    assert(
+        network.last_policy ==
+        WiFiPolicy::AutoConnectTrusted
+    );
+    assert(app.network.connected);
+    assert(
+        app.network.status ==
+        NetworkRuntimeStatus::Connected
+    );
+    assert(app.network.ssid == "Home");
 
     // Sleeping from temporary Library Search persists the stable
     // Browse origin instead of the Search result window.

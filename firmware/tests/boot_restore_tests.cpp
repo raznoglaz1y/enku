@@ -12,6 +12,7 @@
 
 #include <cassert>
 #include <filesystem>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -200,12 +201,6 @@ int main() {
         // New objects model a cold reboot.
         CborLibraryService rebooted_library(state_files);
         BookImportService importer(rebooted_library);
-        StorageStartupCoordinator storage_startup(
-            *new AppState{},
-            rebooted_library,
-            book_files,
-            importer
-        );
 
         // Rebuild with one authoritative AppState for the real restore run.
         AppState boot_app;

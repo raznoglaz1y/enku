@@ -1033,6 +1033,114 @@ bool FreeTypeTextRenderer::renderLibrary(
 
 namespace enku::platform::esp_idf {
 
+bool FreeTypeTextRenderer::renderPowerOffConfirm(
+    const AppState& app_state
+) {
+    if (!ready()) {
+        return false;
+    }
+
+    framebuffer_.clearWhite();
+
+    const auto orientation =
+        app_state.orientation;
+
+    const int logical_width =
+        orientation == Orientation::Portrait
+            ? 480
+            : 800;
+
+    if (!drawTextAt(
+            "POWER OFF?",
+            28,
+            28,
+            72,
+            orientation
+        )) {
+        return false;
+    }
+
+    if (!drawTextAt(
+            "SAVE STATE AND REQUEST DEVICE POWER OFF.",
+            14,
+            28,
+            118,
+            orientation
+        )) {
+        return false;
+    }
+
+    if (!drawTextAt(
+            "WAKE BEHAVIOR REQUIRES HARDWARE VALIDATION.",
+            12,
+            28,
+            146,
+            orientation
+        )) {
+        return false;
+    }
+
+    const int gap = 16;
+    const int button_width =
+        (logical_width - 64 - gap) / 2;
+    const int top =
+        orientation == Orientation::Portrait
+            ? 250
+            : 220;
+
+    const bool power_selected =
+        app_state.power_off_confirm.focus ==
+        PowerOffConfirmFocus::PowerOff;
+
+    drawRect(
+        24,
+        top,
+        button_width,
+        54,
+        orientation,
+        power_selected ? 1 : 2
+    );
+
+    drawRect(
+        24 + button_width + gap,
+        top,
+        button_width,
+        54,
+        orientation,
+        power_selected ? 2 : 1
+    );
+
+    if (!drawTextAt(
+            "CANCEL",
+            17,
+            40,
+            top + 34,
+            orientation
+        )) {
+        return false;
+    }
+
+    if (!drawTextAt(
+            "POWER OFF",
+            17,
+            40 + button_width + gap,
+            top + 34,
+            orientation
+        )) {
+        return false;
+    }
+
+    return drawTextAt(
+        "UP/DOWN CHOOSE  FUNCTION CONFIRM  BACK CANCEL",
+        12,
+        28,
+        orientation == Orientation::Portrait
+            ? 760
+            : 448,
+        orientation
+    );
+}
+
 bool FreeTypeTextRenderer::renderAboutDevice(
     const AppState& app_state
 ) {

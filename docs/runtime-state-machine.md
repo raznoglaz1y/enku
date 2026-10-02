@@ -332,6 +332,8 @@ Examples:
 
 Raw diagnostics belong in logs, not as primary user-facing copy.
 
+The full error classification, logging and Recovery/Safe Mode behavior is defined in [Errors, Logging & Diagnostics](diagnostics-model.md).
+
 ## 21. Input locking and repeated actions
 
 Physical controls can generate repeated or rapid events.

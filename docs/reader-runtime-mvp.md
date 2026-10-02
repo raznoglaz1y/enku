@@ -103,7 +103,7 @@ The persistence/checkpoint layer later commits according to the existing debounc
 
 `OpenBookRequested` now moves the app from Library to Book Opening and records the requested `book_id`.
 
-Actual storage/parser/document construction remains a separate loader concern. After that layer opens ReaderSession it emits:
+Actual storage/parser/document construction is now implemented by the first [Book Loader / Document Provider MVP](book-loader-mvp.md). The runtime lifecycle remains event-based so loading can become asynchronous later without changing screen/state semantics. After that layer opens ReaderSession it emits:
 
 - `BookOpened` → validate current session, switch to Reading and synchronize the visible page into AppState;
 - `BookOpenFailed` → close partial session and return safely to Library.
@@ -142,7 +142,7 @@ Implemented:
 
 Not yet implemented:
 
-- concrete storage/parser book-loader service;
+- direct automatic dispatch from the concrete loader into BookOpened/BookOpenFailed;
 - structured layout/display error events;
 - typography/orientation event integration;
 - render-plan payload/framebuffer generation.

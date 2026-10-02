@@ -14,6 +14,7 @@
 #include "enku/runtime/settings_navigation_runtime.hpp"
 #include "enku/runtime/reading_settings_runtime.hpp"
 #include "enku/runtime/display_settings_runtime.hpp"
+#include "enku/runtime/locale_settings_runtime.hpp"
 #include "enku/runtime/power_off.hpp"
 #include "enku/runtime/reader_overlay_runtime.hpp"
 #include "enku/runtime/search_runtime.hpp"
@@ -61,6 +62,7 @@ public:
     SettingsNavigationRuntime& settingsNavigation();
     ReadingSettingsRuntime& readingSettings();
     DisplaySettingsRuntime& displaySettings();
+    LocaleSettingsRuntime& localeSettings();
 
     SleepWakeCoordinator& sleepWake();
     PowerOffCoordinator& powerOff();
@@ -103,6 +105,7 @@ private:
     SettingsNavigationRuntime settings_nav_;
     ReadingSettingsRuntime reading_settings_;
     DisplaySettingsRuntime display_settings_;
+    LocaleSettingsRuntime locale_settings_;
 
     SleepWakeCoordinator sleep_wake_;
     PowerOffCoordinator power_off_;

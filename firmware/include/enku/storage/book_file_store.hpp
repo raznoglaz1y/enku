@@ -27,6 +27,67 @@ public:
         const std::string& bytes
     ) = 0;
 
+    virtual BookFileStatus size(
+        const std::string& path,
+        std::uint64_t& bytes
+    ) {
+        std::string content;
+        const auto status =
+            read(path, content);
+
+        if (status != BookFileStatus::Ok) {
+            bytes = 0;
+            return status;
+        }
+
+        bytes =
+            static_cast<std::uint64_t>(
+                content.size()
+            );
+        return BookFileStatus::Ok;
+    }
+
+    virtual BookFileStatus readRange(
+        const std::string& path,
+        std::uint64_t offset,
+        std::size_t length,
+        std::string& bytes
+    ) {
+        std::string content;
+        const auto status =
+            read(path, content);
+
+        if (status != BookFileStatus::Ok) {
+            bytes.clear();
+            return status;
+        }
+
+        if (offset >
+                static_cast<std::uint64_t>(
+                    content.size()
+                ) ||
+            static_cast<std::uint64_t>(
+                length
+            ) >
+                static_cast<std::uint64_t>(
+                    content.size()
+                ) -
+                    offset) {
+            bytes.clear();
+            return BookFileStatus::IoError;
+        }
+
+        bytes.assign(
+            content,
+            static_cast<std::size_t>(
+                offset
+            ),
+            length
+        );
+
+        return BookFileStatus::Ok;
+    }
+
     virtual BookFileStatus append(
         const std::string& path,
         const std::string& bytes

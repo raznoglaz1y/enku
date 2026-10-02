@@ -396,6 +396,15 @@ int main() {
         SearchPhase::Results
     );
     assert(storage.appState().search.total_matches == 2);
+    assert(storage.appState().search.matches.size() == 2);
+    assert(
+        storage.appState().search.matches[0].preview_match_length ==
+        std::string("Привет").size()
+    );
+    assert(
+        storage.appState().search.matches[0].preview.find("Привет") !=
+        std::string::npos
+    );
 
     assert(
         search.handle(LogicalAction::Back) ==
@@ -442,6 +451,17 @@ int main() {
     assert(storage.appState().search.total_matches == 30);
     assert(storage.appState().search.matches.size() == 24);
     assert(storage.appState().search.window_start == 0);
+    assert(
+        !storage.appState().search.matches[0].section_label.empty()
+    );
+    assert(
+        storage.appState().search.matches[0].preview_match_length ==
+        4
+    );
+    assert(
+        storage.appState().search.matches[0].preview.find("beta") !=
+        std::string::npos
+    );
 
     for (int i = 0; i < 23; ++i) {
         assert(

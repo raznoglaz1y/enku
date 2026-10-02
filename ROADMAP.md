@@ -95,8 +95,10 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 - [ ] Implement EPUB parser
 - [ ] Implement FB2 parser
 - [ ] Implement TXT reader/parser
-- [ ] Define semantic reading-position representation
+- [x] Define semantic reading-position representation
+- [x] Define pagination, wrapping and rendering model
 - [ ] Implement text layout and pagination
+- [x] Define portrait/landscape repagination behavior
 - [ ] Implement portrait/landscape repagination while preserving position
 - [ ] Implement reading progress persistence
 - [ ] Implement five typography presets

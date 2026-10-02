@@ -293,138 +293,368 @@ std::string normalizePath(
     return out;
 }
 
-std::string stripXmlTags(
+std::string stripInlineTags(
     std::string_view markup
 ) {
     std::string text;
     text.reserve(markup.size());
 
     bool in_tag = false;
-    bool in_script = false;
-    bool in_style = false;
-    std::string tag;
-
-    const auto flushTag =
-        [&]() {
-            const auto lowered = lower(trim(tag));
-
-            const bool closing =
-                !lowered.empty() &&
-                lowered.front() == '/';
-
-            std::string name = lowered;
-
-            if (closing) {
-                name.erase(name.begin());
-            }
-
-            const auto space =
-                name.find_first_of(" \t\r\n/>");
-
-            if (space != std::string::npos) {
-                name.resize(space);
-            }
-
-            if (name == "script") {
-                in_script = !closing;
-            } else if (name == "style") {
-                in_style = !closing;
-            }
-
-            if (!in_script &&
-                !in_style &&
-                (name == "p" ||
-                 name == "div" ||
-                 name == "section" ||
-                 name == "article" ||
-                 name == "li" ||
-                 name == "blockquote" ||
-                 name == "br" ||
-                 name == "h1" ||
-                 name == "h2" ||
-                 name == "h3" ||
-                 name == "h4" ||
-                 name == "h5" ||
-                 name == "h6")) {
-                if (!text.empty() &&
-                    text.back() != '\n') {
-                    text.push_back('\n');
-                }
-            }
-
-            tag.clear();
-        };
 
     for (const char ch : markup) {
         if (!in_tag) {
             if (ch == '<') {
                 in_tag = true;
-                tag.clear();
-                continue;
-            }
-
-            if (!in_script && !in_style) {
+            } else {
                 text.push_back(ch);
             }
-            continue;
-        }
-
-        if (ch == '>') {
+        } else if (ch == '>') {
             in_tag = false;
-            flushTag();
-        } else {
-            tag.push_back(ch);
         }
     }
 
-    return xmlDecode(text);
-}
+    std::string decoded =
+        xmlDecode(text);
 
-std::vector<std::string> paragraphs(
-    std::string_view text
-) {
-    std::vector<std::string> out;
-    std::string current;
+    std::string normalized;
+    normalized.reserve(decoded.size());
     bool previous_space = false;
 
-    const auto flush =
-        [&]() {
-            const auto clean = trim(current);
-            current.clear();
-            previous_space = false;
-
-            if (!clean.empty()) {
-                out.push_back(clean);
-            }
-        };
-
-    for (const char ch : text) {
-        if (ch == '\n') {
-            flush();
-            continue;
-        }
-
+    for (const char ch : decoded) {
         const bool space =
             std::isspace(
-                static_cast<unsigned char>(
-                    ch
-                )
+                static_cast<unsigned char>(ch)
             );
 
         if (space) {
             if (!previous_space &&
-                !current.empty()) {
-                current.push_back(' ');
+                !normalized.empty()) {
+                normalized.push_back(' ');
             }
         } else {
-            current.push_back(ch);
+            normalized.push_back(ch);
         }
 
         previous_space = space;
     }
 
-    flush();
-    return out;
+    return trim(normalized);
+}
+
+struct ParsedBlock {
+    TextBlockType type{TextBlockType::Paragraph};
+    std::string text;
+};
+
+std::vector<ParsedBlock> parseXhtmlBlocks(
+    std::string_view markup
+) {
+    const std::string lower_markup =
+        lower(markup);
+
+    struct TagSpec {
+        const char* name;
+        TextBlockType type;
+    };
+
+    static constexpr TagSpec kTags[] = {
+        {"h1", TextBlockType::Heading},
+        {"h2", TextBlockType::Heading},
+        {"h3", TextBlockType::Heading},
+        {"h4", TextBlockType::Heading},
+        {"h5", TextBlockType::Heading},
+        {"h6", TextBlockType::Heading},
+        {"blockquote", TextBlockType::Quote},
+        {"li", TextBlockType::ListItem},
+        {"p", TextBlockType::Paragraph},
+    };
+
+    std::vector<ParsedBlock> blocks;
+    std::size_t cursor = 0;
+
+    while (cursor < markup.size()) {
+        std::optional<std::size_t> best_pos;
+        const TagSpec* best_spec = nullptr;
+
+        for (const auto& spec : kTags) {
+            const std::string needle =
+                "<" + std::string(spec.name);
+
+            const auto pos =
+                lower_markup.find(
+                    needle,
+                    cursor
+                );
+
+            if (pos == std::string::npos) {
+                continue;
+            }
+
+            const auto boundary =
+                pos + needle.size();
+
+            if (boundary < lower_markup.size() &&
+                lower_markup[boundary] != '>' &&
+                lower_markup[boundary] != '/' &&
+                !std::isspace(
+                    static_cast<unsigned char>(
+                        lower_markup[boundary]
+                    )
+                )) {
+                continue;
+            }
+
+            if (!best_pos.has_value() ||
+                pos < *best_pos) {
+                best_pos = pos;
+                best_spec = &spec;
+            }
+        }
+
+        if (!best_pos.has_value() ||
+            best_spec == nullptr) {
+            break;
+        }
+
+        const auto open_end =
+            lower_markup.find(
+                '>',
+                *best_pos
+            );
+
+        if (open_end == std::string::npos) {
+            break;
+        }
+
+        const std::string close =
+            "</" +
+            std::string(best_spec->name) +
+            ">";
+
+        const auto close_pos =
+            lower_markup.find(
+                close,
+                open_end + 1U
+            );
+
+        if (close_pos == std::string::npos) {
+            cursor = open_end + 1U;
+            continue;
+        }
+
+        const auto inner =
+            markup.substr(
+                open_end + 1U,
+                close_pos - open_end - 1U
+            );
+
+        const auto text =
+            stripInlineTags(inner);
+
+        if (!text.empty()) {
+            blocks.push_back(
+                ParsedBlock{
+                    best_spec->type,
+                    text,
+                }
+            );
+        }
+
+        cursor =
+            close_pos +
+            close.size();
+    }
+
+    if (!blocks.empty()) {
+        return blocks;
+    }
+
+    const auto fallback =
+        stripInlineTags(markup);
+
+    if (!fallback.empty()) {
+        blocks.push_back(
+            ParsedBlock{
+                TextBlockType::Paragraph,
+                fallback,
+            }
+        );
+    }
+
+    return blocks;
+}
+
+std::vector<std::string> allTagText(
+    std::string_view xml,
+    std::string_view local_name
+) {
+    std::vector<std::string> values;
+    const std::string lower_xml = lower(xml);
+    const std::string needle =
+        "<" + lower(local_name);
+    const std::string close =
+        "</" + lower(local_name) + ">";
+
+    std::size_t search = 0;
+
+    while (true) {
+        const auto open =
+            lower_xml.find(needle, search);
+
+        if (open == std::string::npos) {
+            break;
+        }
+
+        const auto name_end =
+            open + needle.size();
+
+        if (name_end < lower_xml.size() &&
+            lower_xml[name_end] != '>' &&
+            !std::isspace(
+                static_cast<unsigned char>(
+                    lower_xml[name_end]
+                )
+            )) {
+            search = name_end;
+            continue;
+        }
+
+        const auto gt =
+            lower_xml.find('>', name_end);
+
+        if (gt == std::string::npos) {
+            break;
+        }
+
+        const auto end =
+            lower_xml.find(
+                close,
+                gt + 1U
+            );
+
+        if (end == std::string::npos) {
+            break;
+        }
+
+        const auto value =
+            trim(
+                xmlDecode(
+                    xml.substr(
+                        gt + 1U,
+                        end - gt - 1U
+                    )
+                )
+            );
+
+        if (!value.empty()) {
+            values.push_back(value);
+        }
+
+        search = end + close.size();
+    }
+
+    return values;
+}
+
+std::vector<std::string> dcTexts(
+    std::string_view xml,
+    std::string_view local_name
+) {
+    auto values =
+        allTagText(
+            xml,
+            "dc:" + std::string(local_name)
+        );
+
+    if (values.empty()) {
+        values =
+            allTagText(
+                xml,
+                local_name
+            );
+    }
+
+    return values;
+}
+
+std::map<std::string, std::string>
+parseNavLabels(
+    std::string_view nav_xhtml,
+    std::string_view nav_directory
+) {
+    std::map<std::string, std::string> labels;
+    const std::string lower_nav =
+        lower(nav_xhtml);
+    std::size_t cursor = 0;
+
+    while (true) {
+        const auto anchor =
+            lower_nav.find(
+                "<a",
+                cursor
+            );
+
+        if (anchor == std::string::npos) {
+            break;
+        }
+
+        const auto open_end =
+            lower_nav.find('>', anchor);
+
+        if (open_end == std::string::npos) {
+            break;
+        }
+
+        const auto close =
+            lower_nav.find(
+                "</a>",
+                open_end + 1U
+            );
+
+        if (close == std::string::npos) {
+            break;
+        }
+
+        const auto tag =
+            nav_xhtml.substr(
+                anchor,
+                open_end - anchor + 1U
+            );
+
+        const auto href =
+            attribute(tag, "href");
+
+        if (href.has_value()) {
+            auto path = *href;
+            const auto hash = path.find('#');
+
+            if (hash != std::string::npos) {
+                path.resize(hash);
+            }
+
+            const auto label =
+                stripInlineTags(
+                    nav_xhtml.substr(
+                        open_end + 1U,
+                        close - open_end - 1U
+                    )
+                );
+
+            if (!path.empty() &&
+                !label.empty()) {
+                labels[
+                    normalizePath(
+                        nav_directory,
+                        path
+                    )
+                ] = label;
+            }
+        }
+
+        cursor = close + 4U;
+    }
+
+    return labels;
 }
 
 std::string filenameStem(

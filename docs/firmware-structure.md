@@ -40,6 +40,9 @@ firmware/
       settings_runtime.hpp
       input_runtime.hpp
       input_dispatcher.hpp
+    render/
+      mono_framebuffer.hpp
+      owned_mono_framebuffer.hpp
       storage_startup.hpp
       boot_restore.hpp
       sleep_wake.hpp
@@ -69,6 +72,8 @@ firmware/
       settings_runtime.cpp
       input_runtime.cpp
       input_dispatcher.cpp
+    render/
+      owned_mono_framebuffer.cpp
       storage_startup.cpp
       boot_restore.cpp
       sleep_wake.cpp
@@ -110,11 +115,13 @@ firmware/
           esp_idf_file_store.hpp
           esp_idf_buttons.hpp
           esp_idf_power_service.hpp
+          epaper_refresh_service.hpp
         src/
           esp_idf_sd_card.cpp
           esp_idf_file_store.cpp
           esp_idf_buttons.cpp
           esp_idf_power_service.cpp
+          epaper_refresh_service.cpp
     services/
 ```
 

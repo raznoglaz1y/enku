@@ -30,6 +30,12 @@ EspIdfDeviceRuntime::EspIdfDeviceRuntime(
           &text_renderer_,
           &platform_.refresh()
       ),
+      search_(
+          storage_,
+          reader_,
+          &text_renderer_,
+          &platform_.refresh()
+      ),
       sleep_wake_(
           storage_.appState(),
           storage_.library(),
@@ -53,7 +59,8 @@ EspIdfDeviceRuntime::EspIdfDeviceRuntime(
           reader_.reader(),
           sleep_wake_,
           power_off_,
-          &reader_overlay_
+          &reader_overlay_,
+          &search_
       ) {}
 
 DeviceRuntimeInitStatus

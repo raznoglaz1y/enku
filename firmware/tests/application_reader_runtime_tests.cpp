@@ -365,14 +365,20 @@ int main() {
     const auto library_renders_before_orientation =
         renderer.library_renders;
 
+    const auto library_orientation_target =
+        storage.appState().orientation ==
+            Orientation::Portrait
+            ? Orientation::Landscape
+            : Orientation::Portrait;
+
     assert(
         runtime.applyOrientation(
-            Orientation::Portrait
+            library_orientation_target
         ) == OrientationApplyStatus::Ok
     );
     assert(
         storage.appState().orientation ==
-        Orientation::Portrait
+        library_orientation_target
     );
     assert(
         renderer.library_renders >

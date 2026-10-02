@@ -16,6 +16,7 @@
 #include "enku/render/book_details_renderer.hpp"
 #include "enku/render/book_finished_renderer.hpp"
 #include "enku/render/contents_bookmarks_renderer.hpp"
+#include "enku/render/about_book_renderer.hpp"
 
 namespace enku::platform::esp_idf {
 
@@ -35,7 +36,8 @@ class FreeTypeTextRenderer final
       public SearchRenderer,
       public BookDetailsRenderer,
       public BookFinishedRenderer,
-      public ContentsBookmarksRenderer {
+      public ContentsBookmarksRenderer,
+      public AboutBookRenderer {
 public:
     FreeTypeTextRenderer(
         OwnedMonoFramebuffer& framebuffer,
@@ -94,6 +96,11 @@ public:
         const AppState& app_state,
         const std::vector<ContentsEntry>& contents,
         const std::vector<BookmarkRecord>& bookmarks
+    ) override;
+
+    bool renderAboutBook(
+        const AppState& app_state,
+        const BookRecord& book
     ) override;
 
 private:

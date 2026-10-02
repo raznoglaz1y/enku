@@ -752,8 +752,14 @@ bool FreeTypeTextRenderer::renderLibrary(
             ? 480
             : 800;
 
+    const bool search_mode =
+        app_state.library.mode ==
+        LibraryQueryMode::Search;
+
     if (!drawTextAt(
-            "LIBRARY",
+            search_mode
+                ? "SEARCH LIBRARY"
+                : "LIBRARY",
             28,
             32,
             48,
@@ -782,14 +788,79 @@ bool FreeTypeTextRenderer::renderLibrary(
         return false;
     }
 
-    constexpr int kStartY = 78;
+    int start_y = 78;
+
+    if (search_mode) {
+        drawRect(
+            24,
+            72,
+            logical_width - 48,
+            50,
+            orientation,
+            2
+        );
+
+        const std::string query =
+            app_state.library.search_text.empty()
+                ? "SEARCH TITLE OR AUTHOR"
+                : app_state.library.search_text;
+
+        if (!drawTextAt(
+                query,
+                17,
+                40,
+                104,
+                orientation
+            )) {
+            return false;
+        }
+
+        if (app_state.keyboard.open) {
+            if (!drawTextAt(
+                    "KEYBOARD",
+                    13,
+                    30,
+                    152,
+                    orientation
+                )) {
+                return false;
+            }
+
+            if (!drawKeyboardGrid(
+                    app_state.keyboard,
+                    orientation,
+                    orientation == Orientation::Portrait
+                        ? 184
+                        : 174
+                )) {
+                return false;
+            }
+
+            return drawTextAt(
+                "UP/DOWN KEY  FUNCTION SELECT  BACK CANCEL",
+                12,
+                30,
+                orientation == Orientation::Portrait
+                    ? 760
+                    : 448,
+                orientation
+            );
+        }
+
+        start_y = 144;
+    }
+
     constexpr int kRowHeight = 64;
     constexpr int kLeft = 24;
     const int kWidth = logical_width - 48;
     const std::size_t kMaxVisible =
-        orientation == Orientation::Portrait
-            ? 10U
-            : 6U;
+        search_mode
+            ? (orientation == Orientation::Portrait
+                ? 8U
+                : 5U)
+            : (orientation == Orientation::Portrait
+                ? 10U
+                : 6U);
 
     const auto visible =
         std::min<std::size_t>(
@@ -800,7 +871,7 @@ bool FreeTypeTextRenderer::renderLibrary(
     for (std::size_t i = 0; i < visible; ++i) {
         const auto& book = page.items[i];
         const int top =
-            kStartY +
+            start_y +
             static_cast<int>(i) *
                 kRowHeight;
 
@@ -830,7 +901,7 @@ bool FreeTypeTextRenderer::renderLibrary(
             return false;
         }
 
-        std::string meta =
+        const std::string meta =
             book.metadata.author_display.empty()
                 ? "Unknown author"
                 : book.metadata.author_display;
@@ -874,24 +945,39 @@ bool FreeTypeTextRenderer::renderLibrary(
 
     if (page.items.empty()) {
         if (!drawTextAt(
-                "NO BOOKS",
+                search_mode
+                    ? "NO RESULTS"
+                    : "NO BOOKS",
                 18,
                 32,
-                120,
+                start_y + 42,
                 orientation
             )) {
             return false;
         }
 
-        if (!drawTextAt(
+        if (!search_mode &&
+            !drawTextAt(
                 "IMPORT A TXT BOOK TO START",
                 14,
                 32,
-                150,
+                start_y + 72,
                 orientation
             )) {
             return false;
         }
+    }
+
+    if (search_mode) {
+        return drawTextAt(
+            "FUNCTION EDIT  BACK CLEAR SEARCH",
+            12,
+            30,
+            orientation == Orientation::Portrait
+                ? 760
+                : 448,
+            orientation
+        );
     }
 
     return true;

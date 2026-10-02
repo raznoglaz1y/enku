@@ -7,6 +7,7 @@
 #include "input_runtime.hpp"
 #include "library_runtime.hpp"
 #include "power_off.hpp"
+#include "reader_overlay_runtime.hpp"
 #include "reader_runtime.hpp"
 #include "sleep_wake.hpp"
 
@@ -26,7 +27,8 @@ public:
         LibraryRuntimeController& library,
         ReaderRuntimeController& reader,
         SleepWakeCoordinator& sleep_wake,
-        PowerOffCoordinator& power_off
+        PowerOffCoordinator& power_off,
+        ReaderOverlayRuntime* reader_overlay = nullptr
     );
 
     InputDispatchResult handle(
@@ -39,6 +41,7 @@ private:
     ReaderRuntimeController& reader_;
     SleepWakeCoordinator& sleep_wake_;
     PowerOffCoordinator& power_off_;
+    ReaderOverlayRuntime* reader_overlay_{nullptr};
 };
 
 } // namespace enku

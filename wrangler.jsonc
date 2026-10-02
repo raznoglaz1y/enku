@@ -1,3 +1,4 @@
+// ENKU production website
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "enku-reader",

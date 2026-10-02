@@ -30,8 +30,10 @@ class FakePageRenderer final : public ReaderPageRenderer {
 public:
     bool renderPage(
         const PageResult& page,
-        const TypographySettings&
+        const TypographySettings&,
+        Orientation orientation
     ) override {
+        last_orientation = orientation;
         ++calls;
         last_line_count =
             static_cast<std::uint32_t>(
@@ -43,6 +45,7 @@ public:
     bool accept{true};
     std::uint32_t calls{0};
     std::uint32_t last_line_count{0};
+    Orientation last_orientation{Orientation::Landscape};
 };
 
 class FakeRefreshService final : public RefreshService {
@@ -290,6 +293,7 @@ int main() {
     assert(refresh.last.reason == RefreshReason::PageTurn);
     assert(renderer.calls == 1);
     assert(renderer.last_line_count > 0);
+    assert(renderer.last_orientation == Orientation::Portrait);
 
     const auto first_offset = state.reading_position->text_offset;
 

@@ -7,7 +7,7 @@ SleepWakeCoordinator::SleepWakeCoordinator(
     LibraryService& library,
     ReaderCheckpointService& checkpoint,
     AppContextService& context,
-    NetworkService& network,
+    NetworkLifecycleCoordinator& network_lifecycle,
     PowerService& power,
     BootRestoreCoordinator& boot_restore
 )
@@ -15,7 +15,7 @@ SleepWakeCoordinator::SleepWakeCoordinator(
       library_(library),
       checkpoint_(checkpoint),
       context_(context),
-      network_(network),
+      network_lifecycle_(network_lifecycle),
       power_(power),
       boot_restore_(boot_restore) {}
 
@@ -95,9 +95,7 @@ SleepWakeStatus SleepWakeCoordinator::sleep() {
         }
     }
 
-    if (network_.connected()) {
-        network_.disconnect();
-    }
+    network_lifecycle_.disconnectForSuspend();
 
     app_state_.screen = Screen::Sleep;
 
@@ -124,6 +122,9 @@ SleepWakeStatus SleepWakeCoordinator::wake() {
             BootRestoreStatus::LibraryReady ||
         restored.status ==
             BootRestoreStatus::FallbackToLibrary) {
+        // Network recovery is best-effort: Wi-Fi failure must never trap
+        // the user on wake after the reading/library context is restored.
+        network_lifecycle_.resume();
         return SleepWakeStatus::Applied;
     }
 

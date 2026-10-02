@@ -120,11 +120,11 @@ The interface is being designed in English first and then localized. The boards 
 </tr>
 <tr>
 <td width="50%"><img src="design/screens/en/ENKU_book_details_v2.svg" alt="ENKU Book details design preview"></td>
-<td width="50%"><img src="design/screens/en/ENKU_settings_v2.svg" alt="ENKU Settings design preview"></td>
+<td width="50%"><img src="design/screens/en/ENKU_library_list_v2.svg" alt="ENKU Library list design preview"></td>
 </tr>
 <tr>
 <td align="center"><strong>Book details</strong></td>
-<td align="center"><strong>Settings</strong></td>
+<td align="center"><strong>Library / List</strong></td>
 </tr>
 </table>
 

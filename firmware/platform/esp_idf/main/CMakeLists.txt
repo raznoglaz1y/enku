@@ -6,6 +6,7 @@ idf_component_register(
         "../src/esp_idf_epaper.cpp"
         "../src/esp_idf_buttons.cpp"
         "../src/esp_idf_power_service.cpp"
+        "../src/esp_idf_network_service.cpp"
         "../src/epaper_refresh_service.cpp"
         "../src/esp_idf_platform.cpp"
         "../src/freetype_text_renderer.cpp"
@@ -40,6 +41,10 @@ idf_component_register(
         driver
         esp_timer
         esp_hw_support
+        esp_wifi
+        esp_event
+        esp_netif
+        nvs_flash
         fatfs
         sdmmc
 )

@@ -1032,6 +1032,182 @@ bool FreeTypeTextRenderer::renderLibrary(
 
 namespace enku::platform::esp_idf {
 
+bool FreeTypeTextRenderer::renderBookFinished(
+    const AppState& app_state,
+    const BookRecord& book
+) {
+    if (!ready()) {
+        return false;
+    }
+
+    framebuffer_.clearWhite();
+
+    const auto orientation =
+        app_state.orientation;
+    const int logical_width =
+        orientation == Orientation::Portrait
+            ? 480
+            : 800;
+
+    if (!drawTextAt(
+            "BOOK FINISHED",
+            28,
+            30,
+            58,
+            orientation
+        )) {
+        return false;
+    }
+
+    if (!drawTextAt(
+            book.metadata.title.empty()
+                ? "UNTITLED"
+                : book.metadata.title,
+            24,
+            30,
+            112,
+            orientation
+        )) {
+        return false;
+    }
+
+    if (!drawTextAt(
+            "100% COMPLETE",
+            16,
+            30,
+            150,
+            orientation
+        )) {
+        return false;
+    }
+
+    if (app_state.book_finished.restart_confirm) {
+        if (!drawTextAt(
+                "READ AGAIN FROM THE BEGINNING?",
+                18,
+                30,
+                212,
+                orientation
+            )) {
+            return false;
+        }
+
+        const int gap = 16;
+        const int button_width =
+            (logical_width - 64 - gap) / 2;
+        const int top =
+            orientation == Orientation::Portrait
+                ? 280
+                : 240;
+
+        drawRect(
+            24,
+            top,
+            button_width,
+            54,
+            orientation,
+            app_state.book_finished.confirm_restart
+                ? 1
+                : 2
+        );
+        drawRect(
+            24 + button_width + gap,
+            top,
+            button_width,
+            54,
+            orientation,
+            app_state.book_finished.confirm_restart
+                ? 2
+                : 1
+        );
+
+        if (!drawTextAt(
+                "CANCEL",
+                17,
+                40,
+                top + 34,
+                orientation
+            )) {
+            return false;
+        }
+
+        if (!drawTextAt(
+                "RESTART",
+                17,
+                40 + button_width + gap,
+                top + 34,
+                orientation
+            )) {
+            return false;
+        }
+
+        return drawTextAt(
+            "UP/DOWN CHOOSE  FUNCTION CONFIRM  BACK CANCEL",
+            12,
+            30,
+            orientation == Orientation::Portrait
+                ? 760
+                : 448,
+            orientation
+        );
+    }
+
+    const struct {
+        BookFinishedFocus focus;
+        const char* label;
+    } actions[] = {
+        {
+            BookFinishedFocus::BackToLibrary,
+            "BACK TO LIBRARY",
+        },
+        {
+            BookFinishedFocus::ReadAgain,
+            "READ AGAIN",
+        },
+    };
+
+    const int top =
+        orientation == Orientation::Portrait
+            ? 250
+            : 220;
+
+    for (int i = 0; i < 2; ++i) {
+        const int y = top + i * 64;
+
+        if (app_state.book_finished.focus ==
+            actions[i].focus) {
+            drawRect(
+                24,
+                y,
+                logical_width - 48,
+                54,
+                orientation,
+                2
+            );
+        }
+
+        if (!drawTextAt(
+                actions[i].label,
+                18,
+                40,
+                y + 34,
+                orientation
+            )) {
+            return false;
+        }
+    }
+
+    return drawTextAt(
+        "UP/DOWN  FUNCTION SELECT  BACK LAST PAGE",
+        12,
+        30,
+        orientation == Orientation::Portrait
+            ? 760
+            : 448,
+        orientation
+    );
+}
+
 bool FreeTypeTextRenderer::renderBookDetails(
     const AppState& app_state,
     const BookRecord& book

@@ -36,6 +36,7 @@ idf_component_register(
         "../../../src/runtime/settings_runtime.cpp"
         "../../../src/runtime/storage_startup.cpp"
         "../../../src/storage/cbor_reader_checkpoint.cpp"
+        "../../../src/storage/cbor_bookmark_service.cpp"
         "../../../src/storage/cbor_library_service.cpp"
         "../../../src/storage/cbor_app_context_service.cpp"
         "../../../src/storage/cbor_boot_loop_service.cpp"

@@ -41,6 +41,7 @@ firmware/
       state_file_store.hpp
       cbor_reader_checkpoint.hpp
       cbor_library_service.hpp
+      book_import_service.hpp
       posix_state_file_store.hpp
 
   src/
@@ -60,6 +61,7 @@ firmware/
     storage/
       cbor_reader_checkpoint.cpp
       cbor_library_service.cpp
+      book_import_service.cpp
       posix_state_file_store.cpp
     ui/
     platform/

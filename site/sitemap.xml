@@ -3,4 +3,5 @@
   <url><loc>https://enkureader.com/</loc><changefreq>weekly</changefreq></url>
   <url><loc>https://enkureader.com/about</loc><changefreq>monthly</changefreq></url>
   <url><loc>https://enkureader.com/contact</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://enkureader.com/status</loc><changefreq>weekly</changefreq></url>\n</urlset>
+  <url><loc>https://enkureader.com/status</loc><changefreq>weekly</changefreq></url>\n  <url><loc>https://enkureader.com/build-log</loc><changefreq>weekly</changefreq></url>
+</urlset>

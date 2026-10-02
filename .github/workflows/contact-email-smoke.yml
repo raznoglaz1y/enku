@@ -1,0 +1,24 @@
+name: Contact email smoke test
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/contact-email-smoke.yml"
+
+jobs:
+  contact-email:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send production contact test
+        run: |
+          set -euo pipefail
+          code="$(curl -sS -o /tmp/contact-post.txt -w '%{http_code}' \
+            -X POST https://enkureader.com/api/contact \
+            -H 'Origin: https://enkureader.com' \
+            -H 'Content-Type: application/json' \
+            --data '{"name":"Production Smoke Test","email":"raznoglaz1y@gmail.com","subject":"Project question","message":"Automated ENKU production contact-form smoke test. If this arrived, the Cloudflare email binding is working."}')"
+          cat /tmp/contact-post.txt
+          test "$code" = "200"
+          grep -q '"ok":true' /tmp/contact-post.txt

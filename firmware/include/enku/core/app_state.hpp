@@ -102,6 +102,10 @@ struct BookDetailsState {
     bool confirm_restart{false};
 };
 
+struct DisplaySettingsState {
+    Orientation selected{Orientation::Portrait};
+};
+
 enum class ReadingSettingsItem : std::uint8_t {
     Preset,
     FontSize,
@@ -210,6 +214,7 @@ struct AppState {
     ContentsBookmarksState contents_bookmarks;
     SettingsNavigationState settings_nav;
     ReadingSettingsState reading_settings;
+    DisplaySettingsState display_settings;
     KeyboardState keyboard;
 
     NetworkState network;

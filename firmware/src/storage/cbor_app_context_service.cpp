@@ -8,7 +8,8 @@
 namespace enku {
 namespace {
 
-constexpr std::uint64_t kSchemaVersion = 1;
+constexpr std::uint64_t kSchemaVersion = 2;
+constexpr std::uint64_t kLegacySchemaVersion = 1;
 constexpr std::uint64_t kRecordTypeAppContext = 3;
 
 void appendTypeValue(
@@ -221,7 +222,7 @@ std::vector<std::uint8_t> encodePayload(
     const AppRestoreContext& context
 ) {
     std::vector<std::uint8_t> out;
-    appendArray(out, 2);
+    appendArray(out, 4);
     appendUnsigned(
         out,
         static_cast<std::uint8_t>(context.screen)
@@ -229,6 +230,20 @@ std::vector<std::uint8_t> encodePayload(
 
     if (context.current_book.has_value()) {
         appendText(out, *context.current_book);
+    } else {
+        appendNull(out);
+    }
+
+    appendUnsigned(
+        out,
+        context.library_offset
+    );
+
+    if (context.library_focused_book.has_value()) {
+        appendText(
+            out,
+            *context.library_focused_book
+        );
     } else {
         appendNull(out);
     }
@@ -245,13 +260,37 @@ bool decodePayload(
     std::uint64_t screen = 0;
 
     if (!reader.array(count) ||
-        count != 2U ||
+        (count != 2U && count != 4U) ||
         !reader.unsignedValue(screen) ||
         screen > static_cast<std::uint8_t>(
             Screen::ErrorRecovery
         ) ||
-        !reader.optionalText(context.current_book) ||
-        !reader.finished()) {
+        !reader.optionalText(context.current_book)) {
+        return false;
+    }
+
+    context.library_offset = 0;
+    context.library_focused_book.reset();
+
+    if (count == 4U) {
+        std::uint64_t library_offset = 0;
+
+        if (!reader.unsignedValue(library_offset) ||
+            library_offset >
+                std::numeric_limits<std::uint32_t>::max() ||
+            !reader.optionalText(
+                context.library_focused_book
+            )) {
+            return false;
+        }
+
+        context.library_offset =
+            static_cast<std::uint32_t>(
+                library_offset
+            );
+    }
+
+    if (!reader.finished()) {
         return false;
     }
 
@@ -337,7 +376,8 @@ bool CborAppContextService::decode(
         return false;
     }
 
-    if (schema != kSchemaVersion ||
+    if ((schema != kSchemaVersion &&
+         schema != kLegacySchemaVersion) ||
         type != kRecordTypeAppContext ||
         generation >
             std::numeric_limits<std::uint32_t>::max() ||

@@ -10,6 +10,7 @@
 #include "enku/runtime/book_details_runtime.hpp"
 #include "enku/runtime/book_finished_runtime.hpp"
 #include "enku/runtime/contents_bookmarks_runtime.hpp"
+#include "enku/runtime/about_book_runtime.hpp"
 #include "enku/runtime/power_off.hpp"
 #include "enku/runtime/reader_overlay_runtime.hpp"
 #include "enku/runtime/search_runtime.hpp"
@@ -53,6 +54,7 @@ public:
     BookDetailsRuntime& bookDetails();
     BookFinishedRuntime& bookFinished();
     ContentsBookmarksRuntime& contentsBookmarks();
+    AboutBookRuntime& aboutBook();
 
     SleepWakeCoordinator& sleepWake();
     PowerOffCoordinator& powerOff();
@@ -91,6 +93,7 @@ private:
     BookDetailsRuntime book_details_;
     BookFinishedRuntime book_finished_;
     ContentsBookmarksRuntime contents_bookmarks_;
+    AboutBookRuntime about_book_;
 
     SleepWakeCoordinator sleep_wake_;
     PowerOffCoordinator power_off_;

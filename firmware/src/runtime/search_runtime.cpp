@@ -97,11 +97,22 @@ SearchRuntimeResult SearchRuntime::handle(
     }
 
     if (action == LogicalAction::Back) {
+        if (app.search.phase == SearchPhase::Results ||
+            app.search.phase == SearchPhase::NoResults) {
+            app.search.phase = SearchPhase::QueryEntry;
+            app.search.matches.clear();
+            app.search.total_matches = 0;
+            app.search.focus_index = 0;
+            app.search.window_start = 0;
+            return render();
+        }
+
         return cancel();
     }
 
     if (action == LogicalAction::Confirm &&
-        app.search.phase == SearchPhase::QueryEntry) {
+        (app.search.phase == SearchPhase::QueryEntry ||
+         app.search.phase == SearchPhase::NoResults)) {
         keyboard_.open();
         return render();
     }
@@ -257,6 +268,11 @@ SearchRuntimeResult SearchRuntime::executeSearch() {
                 );
             }
         }
+    }
+
+    if (app.search.total_matches == 0U) {
+        app.search.phase = SearchPhase::NoResults;
+        return render();
     }
 
     app.search.phase = SearchPhase::Results;

@@ -258,6 +258,8 @@ Book files and reader state are logically separate.
 
 The detailed Library/storage model is defined in [Library & Storage Model](storage-model.md).
 
+The physical persistence strategy is defined in [Persistence Backend](persistence-model.md): versioned CBOR records with generation-based recovery, separated by write frequency.
+
 Core decisions:
 
 - maintain a persistent Library index;
@@ -308,7 +310,7 @@ The following are intentionally not frozen yet:
 
 - exact firmware framework;
 - concrete parser libraries/stack;
-- exact persistence backend;
+
 - partial refresh thresholds;
 - battery model and percentage calibration;
 - hard power-off implementation;

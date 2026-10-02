@@ -284,6 +284,8 @@ Corruption must not trigger automatic deletion of original book files.
 
 ## 19. Storage abstraction requirements
 
+The framework-neutral `StateFileStore` now provides the first concrete read/write boundary used by per-book checkpoints. A POSIX implementation exists for host-side disk tests.
+
 The platform storage layer must expose enough semantics for safe commits:
 
 - open/read/write;
@@ -296,7 +298,7 @@ The platform storage layer must expose enough semantics for safe commits:
 - free-space query;
 - explicit error reporting.
 
-The persistence layer owns generation logic; the platform layer owns filesystem mechanics.
+The persistence layer owns generation logic; the platform layer owns filesystem mechanics. Host tests exercise the same checkpoint code against real files through `PosixStateFileStore`; the target ESP32 adapter will plug in below this boundary.
 
 ## 20. Memory behavior
 

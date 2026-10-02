@@ -139,7 +139,7 @@ It currently provides:
 - a serial storage smoke test in `app_main`;
 - a build-verified SSD1677 800×480 monochrome display driver with full, fast and partial refresh modes;
 - a PSRAM-backed ENKU display smoke sequence exercising all three refresh paths;
-- active-low GPIO button polling with debounce, long-press/repeat generation and screen-aware logical action mapping.
+- active-low GPIO button polling with debounce, long-press/repeat generation, screen-aware logical action mapping and runtime dispatch into Library/Reader/power flows.
 
 See [ESP-IDF platform bring-up](platform/esp_idf/README.md).
 

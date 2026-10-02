@@ -288,7 +288,8 @@ int main() {
         library,
         runtime,
         reader,
-        checkpoint
+        checkpoint,
+        deleter
     );
 
     // New book -> START.
@@ -433,6 +434,94 @@ int main() {
         runtime.handle(
             LibraryRefreshRequested{}
         ) == LibraryRuntimeResult::Applied
+    );
+
+    // Delete confirmation defaults to Cancel and only removes after
+    // explicit confirmation.
+    const auto detail_delete = makeBook(
+        "detail-delete",
+        "Delete Me",
+        "Tester",
+        "/books/detail-delete.txt",
+        "fp-detail-delete",
+        ReadingState::New,
+        3,
+        0
+    );
+    assert(
+        book_files.write(
+            detail_delete.source_path,
+            "Temporary book for Book Details deletion."
+        ) == BookFileStatus::Ok
+    );
+    assert(
+        library.upsert(detail_delete) ==
+        LibraryStatus::Ok
+    );
+    assert(
+        runtime.handle(
+            LibraryRefreshRequested{}
+        ) == LibraryRuntimeResult::Applied
+    );
+
+    app.library.focused_book = "detail-delete";
+    assert(
+        book_details.handle(
+            OpenFocusedBookDetailsRequested{}
+        ) == BookDetailsRuntimeResult::Applied
+    );
+    assert(
+        book_details.handle(
+            LogicalAction::NavigateNext
+        ) == BookDetailsRuntimeResult::Applied
+    );
+    assert(
+        app.book_details.focus ==
+        BookDetailsFocus::DeleteBook
+    );
+    assert(
+        book_details.handle(
+            LogicalAction::Confirm
+        ) == BookDetailsRuntimeResult::Applied
+    );
+    assert(
+        app.book_details.mode ==
+        BookDetailsMode::DeleteConfirm
+    );
+    assert(!app.book_details.confirm_delete);
+
+    assert(
+        book_details.handle(
+            LogicalAction::Back
+        ) == BookDetailsRuntimeResult::Applied
+    );
+    assert(library.get("detail-delete").has_value());
+
+    assert(
+        book_details.handle(
+            LogicalAction::Confirm
+        ) == BookDetailsRuntimeResult::Applied
+    );
+    assert(
+        book_details.handle(
+            LogicalAction::NavigateNext
+        ) == BookDetailsRuntimeResult::Applied
+    );
+    assert(app.book_details.confirm_delete);
+    assert(
+        book_details.handle(
+            LogicalAction::Confirm
+        ) == BookDetailsRuntimeResult::Applied
+    );
+    assert(app.screen == Screen::Library);
+    assert(!library.get("detail-delete").has_value());
+
+    std::string deleted_bytes;
+    assert(
+        book_files.read(
+            detail_delete.source_path,
+            deleted_bytes
+        ) == BookFileStatus::NotFound
     );
 
     app.library.limit = 1;

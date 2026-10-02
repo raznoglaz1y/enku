@@ -1,12 +1,22 @@
 // ENKU production website
-// Contact & support navigation enabled
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "enku-reader",
+  "main": "./worker/contact.js",
   "compatibility_date": "2026-10-02",
   "assets": {
     "directory": "./site",
     "not_found_handling": "404-page",
-    "html_handling": "auto-trailing-slash"
-  }
+    "html_handling": "auto-trailing-slash",
+    "run_worker_first": ["/api/*"]
+  },
+  "send_email": [
+    {
+      "name": "CONTACT_EMAIL",
+      "destination_address": "raznoglaz1y@gmail.com",
+      "allowed_sender_addresses": [
+        "contact@enkureader.com"
+      ]
+    }
+  ]
 }

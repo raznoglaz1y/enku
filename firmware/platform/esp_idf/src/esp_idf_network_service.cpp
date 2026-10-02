@@ -359,6 +359,17 @@ NetworkPolicyStatus EspIdfNetworkService::connectToNetwork(
         return NetworkPolicyStatus::DriverError;
     }
 
+    // Preserve the currently active trusted configuration. A RAM-backed
+    // esp_wifi_set_config() still replaces the live STA configuration, so
+    // a failed transient attempt must restore this snapshot explicitly.
+    wifi_config_t previous_config = {};
+    if (esp_wifi_get_config(
+            WIFI_IF_STA,
+            &previous_config
+        ) != ESP_OK) {
+        return NetworkPolicyStatus::DriverError;
+    }
+
     disconnect();
 
     // Use RAM storage so credentials used for this attempt cannot replace
@@ -385,28 +396,43 @@ NetworkPolicyStatus EspIdfNetworkService::connectToNetwork(
         );
     }
 
-    auto result =
+    const auto config_result =
         esp_wifi_set_config(
             WIFI_IF_STA,
             &config
         );
 
-    // Restore durable storage mode immediately. The config above remains
-    // the active RAM config; future setTrustedNetwork() can persist it.
+    // Subsequent setTrustedNetwork() calls are durable again. Switching
+    // storage does not itself persist the transient config.
     const auto storage_result =
         esp_wifi_set_storage(
             WIFI_STORAGE_FLASH
         );
 
-    if (result != ESP_OK ||
+    if (config_result != ESP_OK ||
         storage_result != ESP_OK) {
+        // Best-effort restore when the transient setup only partially
+        // succeeded. Writing the previous trusted config to FLASH is safe:
+        // it is the same durable configuration we started with.
+        if (storage_result == ESP_OK) {
+            esp_wifi_set_config(
+                WIFI_IF_STA,
+                &previous_config
+            );
+        }
         return NetworkPolicyStatus::DriverError;
     }
 
     connected_.store(false);
 
-    result = esp_wifi_connect();
-    if (result != ESP_OK) {
+    const auto connect_result =
+        esp_wifi_connect();
+
+    if (connect_result != ESP_OK) {
+        esp_wifi_set_config(
+            WIFI_IF_STA,
+            &previous_config
+        );
         return NetworkPolicyStatus::DriverError;
     }
 
@@ -429,9 +455,24 @@ NetworkPolicyStatus EspIdfNetworkService::connectToNetwork(
 
     disconnect();
 
+    const auto restore_result =
+        esp_wifi_set_config(
+            WIFI_IF_STA,
+            &previous_config
+        );
+
+    if (restore_result != ESP_OK) {
+        ESP_LOGE(
+            kTag,
+            "Failed to restore trusted Wi-Fi config: %s",
+            esp_err_to_name(restore_result)
+        );
+        return NetworkPolicyStatus::DriverError;
+    }
+
     ESP_LOGW(
         kTag,
-        "Wi-Fi connection failed for %.*s",
+        "Wi-Fi connection failed for %.*s; trusted config restored",
         static_cast<int>(ssid.size()),
         ssid.data()
     );

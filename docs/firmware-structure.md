@@ -24,6 +24,9 @@ firmware/
       events.hpp
       app_state.hpp
     reader/
+      document.hpp
+      parser.hpp
+      txt_parser.hpp
       reader_types.hpp
       reader_engine.hpp
     services/
@@ -36,13 +39,14 @@ firmware/
       epub/
       fb2/
       txt/
+        txt_parser.cpp
     storage/
     ui/
     platform/
     services/
 ```
 
-Only framework-independent interfaces are committed at this stage.
+Framework-independent interfaces are committed at this stage, plus the first host-testable TXT parser implementation.
 
 ## 2. Module ownership
 
@@ -286,7 +290,7 @@ Not selected yet:
 - Arduino vs ESP-IDF as the final firmware framework;
 - build system files;
 - exact display library;
-- parser libraries;
+- EPUB/FB2 parser libraries;
 - persistence backend;
 - task/thread model;
 - exact PSRAM allocation strategy.
@@ -304,7 +308,7 @@ Recommended order after hardware arrival:
 5. power/sleep measurements;
 6. connect verified platform drivers to service interfaces;
 7. implement AppState/event reducer;
-8. implement TXT parser first as the simplest Reader Engine path;
+8. integrate and profile the existing TXT parser MVP as the simplest Reader Engine path;
 9. validate pagination on real panel;
 10. add EPUB and FB2 adapters;
 11. add Library persistence/import;

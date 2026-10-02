@@ -33,28 +33,6 @@ std::vector<std::filesystem::path> stateFiles(
     return result;
 }
 
-std::filesystem::path newestFile(
-    const std::vector<std::filesystem::path>& files
-) {
-    assert(!files.empty());
-
-    auto newest = files.front();
-    auto newest_time =
-        std::filesystem::last_write_time(newest);
-
-    for (const auto& file : files) {
-        const auto time =
-            std::filesystem::last_write_time(file);
-
-        if (time > newest_time) {
-            newest = file;
-            newest_time = time;
-        }
-    }
-
-    return newest;
-}
-
 void corruptLastByte(
     const std::filesystem::path& path
 ) {
@@ -153,7 +131,15 @@ int main() {
     //
     // If timestamp resolution makes both equal, corrupt either slot: the
     // service must still return whichever valid generation remains.
-    const auto damaged = newestFile(files_on_disk);
+    std::filesystem::path damaged;
+    for (const auto& file : files_on_disk) {
+        if (file.filename().string().find(".b.cbor") !=
+            std::string::npos) {
+            damaged = file;
+            break;
+        }
+    }
+    assert(!damaged.empty());
     corruptLastByte(damaged);
 
     {
@@ -168,13 +154,11 @@ int main() {
             ) == PersistStatus::Ok
         );
 
-        assert(
-            restored.position.text_offset == 128 ||
-            restored.position.text_offset == 768
-        );
+        assert(restored.position.text_offset == 128);
+        assert(restored.progress == 0.20F);
 
-        // Exactly one file was damaged. The surviving generation must remain
-        // readable and internally consistent.
+        // The newest B slot was damaged, so the surviving A generation must
+        // be selected and remain internally consistent.
         assert(restored.position.book_id == "physical-book");
         assert(restored.position.section_id == "txt:body");
         assert(restored.reading_state == ReadingState::Reading);

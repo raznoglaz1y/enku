@@ -27,6 +27,7 @@ firmware/
       document.hpp
       parser.hpp
       txt_parser.hpp
+      pagination.hpp
       reader_types.hpp
       reader_engine.hpp
     services/
@@ -35,6 +36,7 @@ firmware/
   src/
     core/
     reader/
+      text_paginator.cpp
     parsers/
       epub/
       fb2/
@@ -46,7 +48,7 @@ firmware/
     services/
 ```
 
-Framework-independent interfaces are committed at this stage, plus the first host-testable TXT parser implementation.
+Framework-independent interfaces are committed at this stage, plus the first host-testable TXT parser and forward text-pagination implementations.
 
 ## 2. Module ownership
 
@@ -291,7 +293,7 @@ Not selected yet:
 - build system files;
 - exact display library;
 - EPUB/FB2 parser libraries;
-- persistence backend;
+
 - task/thread model;
 - exact PSRAM allocation strategy.
 
@@ -309,7 +311,7 @@ Recommended order after hardware arrival:
 6. connect verified platform drivers to service interfaces;
 7. implement AppState/event reducer;
 8. integrate and profile the existing TXT parser MVP as the simplest Reader Engine path;
-9. validate pagination on real panel;
+9. connect the existing paginator to real Noto Sans metrics and validate it on the panel;
 10. add EPUB and FB2 adapters;
 11. add Library persistence/import;
 12. add Wi-Fi management.

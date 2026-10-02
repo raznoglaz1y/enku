@@ -178,6 +178,27 @@ int main() {
         storage.appState().reading_position;
     assert(before.has_value());
 
+    assert(
+        runtime.applyOrientation(
+            Orientation::Landscape
+        ) == OrientationApplyStatus::Ok
+    );
+    assert(
+        storage.appState().orientation ==
+        Orientation::Landscape
+    );
+    assert(
+        renderer.last_orientation ==
+        Orientation::Landscape
+    );
+    assert(
+        storage.appState().reading_position.has_value()
+    );
+    assert(
+        storage.appState().reading_position->text_offset ==
+        before->text_offset
+    );
+
     const auto next =
         runtime.reader().handle(
             PageNextRequested{}
@@ -200,6 +221,23 @@ int main() {
     assert(
         storage.appState().screen ==
         Screen::Library
+    );
+
+    const auto library_renders_before_orientation =
+        renderer.library_renders;
+
+    assert(
+        runtime.applyOrientation(
+            Orientation::Portrait
+        ) == OrientationApplyStatus::Ok
+    );
+    assert(
+        storage.appState().orientation ==
+        Orientation::Portrait
+    );
+    assert(
+        renderer.library_renders >
+        library_renders_before_orientation
     );
 
     std::filesystem::remove_all(root, ec);

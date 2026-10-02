@@ -4,6 +4,8 @@
 
 #include "../core/input.hpp"
 #include "../core/settings.hpp"
+#include "../render/reader_overlay_renderer.hpp"
+#include "../services/services.hpp"
 #include "application_reader_runtime.hpp"
 #include "application_storage_runtime.hpp"
 
@@ -19,7 +21,9 @@ class ReaderOverlayRuntime {
 public:
     ReaderOverlayRuntime(
         ApplicationStorageRuntime& storage,
-        ApplicationReaderRuntime& reader
+        ApplicationReaderRuntime& reader,
+        ReaderOverlayRenderer* renderer = nullptr,
+        RefreshService* refresh = nullptr
     );
 
     ReaderOverlayRuntimeResult handle(
@@ -29,6 +33,8 @@ public:
 private:
     ApplicationStorageRuntime& storage_;
     ApplicationReaderRuntime& reader_;
+    ReaderOverlayRenderer* renderer_{nullptr};
+    RefreshService* refresh_{nullptr};
 
     GlobalSettings baseline_{};
     bool baseline_valid_{false};
@@ -44,6 +50,8 @@ private:
     );
 
     ReaderOverlayRuntimeResult restoreBaseline();
+    ReaderOverlayRuntimeResult renderOverlay();
+    ReaderOverlayRuntimeResult refreshCurrentFrame();
     void enterQuickTypography();
 };
 

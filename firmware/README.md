@@ -34,6 +34,7 @@ include/enku/
     book_loader.hpp
   runtime/
     reader_runtime.hpp
+    library_runtime.hpp
     storage_startup.hpp
     boot_restore.hpp
     sleep_wake.hpp
@@ -99,6 +100,7 @@ The host suite currently covers:
 - ReaderSession navigation;
 - Book Loader;
 - Reader runtime open/page/back/restore lifecycle;
+- Library runtime filtering, sorting, search, focus navigation, focused-book open and staged-import flow;
 - CBOR A/B checkpoint generation and corruption recovery;
 - persistent CBOR Library index, queries, sorting, paging and summary updates;
 - TXT import pipeline with format detection, parse validation, content fingerprinting and duplicate rejection;

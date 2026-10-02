@@ -609,7 +609,7 @@ bool FreeTypeTextRenderer::renderStatusBar(
         return false;
     }
 
-    constexpr int kBarHeight = 32;
+    constexpr int kBarHeight = 24;
     const auto orientation =
         app_state.orientation;
 

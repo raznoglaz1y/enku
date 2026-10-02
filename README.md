@@ -298,6 +298,7 @@ Firmware has not yet been published as a working reader. The planned implementat
    - first forward text-pagination MVP implemented in C++;
    - first concrete DocumentReaderEngine implemented over the paginator;
    - ReaderSession with deterministic visited-page Previous and previous/current/next working-set cache;
+   - Reader runtime integration updates AppState/progress and emits PageTurn refresh requests;
    - EPUB and FB2 parser adapters still pending;
    - normalized metadata/document model;
    - on-demand pagination using a font/text measurement abstraction;
@@ -417,6 +418,7 @@ No final mechanical dimensions will be published as authoritative until the actu
 - [x] Select Reader v1 formats: EPUB, FB2 and TXT; PDF deferred
 - [ ] Implement staged boot coordinator and first-usable-screen checkpoint
 - [ ] Implement Refresh Manager queue and render-plan pipeline
+- [x] Connect PageNext/PagePrevious runtime events to ReaderSession/AppState
 - [ ] Connect the firmware scaffold to verified platform drivers
 - [x] Add ReaderSession page history/cache and deterministic Previous
 - [ ] Expand pagination beyond TXT paragraphs and add real font metrics
@@ -490,6 +492,7 @@ Useful documents:
 - [Pagination MVP](docs/pagination-mvp.md)
 - [Reader Engine MVP](docs/reader-engine-mvp.md)
 - [Reader Session MVP](docs/reader-session-mvp.md)
+- [Reader Runtime Integration MVP](docs/reader-runtime-mvp.md)
 - [Metadata & parser model](docs/parser-model.md)
 - [Licensing model](LICENSES.md)
 - [Library & storage model](docs/storage-model.md)
@@ -531,6 +534,7 @@ docs/
   pagination-mvp.md         first TXT → BookDocument → page implementation
   reader-engine-mvp.md      first BookDocument → Reader PageResult bridge
   reader-session-mvp.md     deterministic Next/Previous session navigation
+  reader-runtime-mvp.md     page events → AppState → refresh integration
   parser-model.md           metadata normalization and parser abstraction
   storage-model.md          Library identity, state and transactional storage
   library-model.md          book records, browse/search queries and LibraryService

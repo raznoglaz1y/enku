@@ -49,6 +49,10 @@ private:
         const RefreshRequest& request
     );
 
+    bool refreshFastFull(
+        const RefreshRequest& request
+    );
+
     bool shouldEscalateRegion(
         const Rect& region
     ) const;

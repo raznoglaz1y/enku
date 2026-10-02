@@ -48,6 +48,7 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 - [ ] Measure full-refresh timing
 - [ ] Test available partial-refresh behavior
 - [ ] Characterize ghosting across realistic reader screens
+- [ ] Measure region/full refresh escalation thresholds using Refresh Manager diagnostics
 - [ ] Validate Noto Sans rendering and memory footprint
 - [x] Define product-level power states: Active, DisplayIdle, Suspended, PoweredOff
 - [ ] Measure active, panel-idle, candidate-suspend and powered-off current
@@ -79,6 +80,9 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 - [ ] Add canonical English string catalog
 - [ ] Add PL/DE/FR/ES/IT/RU translation catalogs
 - [ ] Implement generated runtime localization tables
+- [x] Define Refresh Manager, coalescing and ghosting-measurement architecture
+- [ ] Implement render-plan generation
+- [ ] Implement bounded Refresh Manager queue/coalescing
 - [ ] Implement e-paper redraw scheduling / refresh policy
 - [x] Define structured error/logging/recovery architecture
 - [ ] Implement bounded structured log ring

@@ -11,6 +11,7 @@
 #include "enku/runtime/book_finished_runtime.hpp"
 #include "enku/runtime/contents_bookmarks_runtime.hpp"
 #include "enku/runtime/about_book_runtime.hpp"
+#include "enku/runtime/settings_navigation_runtime.hpp"
 #include "enku/runtime/power_off.hpp"
 #include "enku/runtime/reader_overlay_runtime.hpp"
 #include "enku/runtime/search_runtime.hpp"
@@ -55,6 +56,7 @@ public:
     BookFinishedRuntime& bookFinished();
     ContentsBookmarksRuntime& contentsBookmarks();
     AboutBookRuntime& aboutBook();
+    SettingsNavigationRuntime& settingsNavigation();
 
     SleepWakeCoordinator& sleepWake();
     PowerOffCoordinator& powerOff();
@@ -94,6 +96,7 @@ private:
     BookFinishedRuntime book_finished_;
     ContentsBookmarksRuntime contents_bookmarks_;
     AboutBookRuntime about_book_;
+    SettingsNavigationRuntime settings_nav_;
 
     SleepWakeCoordinator sleep_wake_;
     PowerOffCoordinator power_off_;

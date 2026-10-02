@@ -333,10 +333,17 @@ int main() {
     assert(state.reading_position->text_offset == saved_offset);
 
     while (true) {
+        const auto refresh_before =
+            refresh.submitted;
+
         const auto result =
             runtime.handle(PageNextRequested{});
 
         if (result == ReaderRuntimeResult::EndOfBook) {
+            assert(
+                refresh.submitted ==
+                refresh_before
+            );
             break;
         }
 
@@ -347,7 +354,6 @@ int main() {
     assert(state.reading_progress == 1.0F);
     assert(state.progress_dirty);
     assert(library.record->reading_state == ReadingState::Finished);
-    assert(refresh.last.reason == RefreshReason::StatusChanged);
 
     assert(
         runtime.handle(BackRequested{}) ==

@@ -408,6 +408,49 @@ bool inputSmokeTest(
     return true;
 }
 
+bool routedInputSmokeTest(
+    enku::platform::esp_idf::EspIdfDeviceRuntime& device
+) {
+    ESP_LOGI(
+        kTag,
+        "Routed input test: controls now drive ENKU runtime for 12 seconds"
+    );
+
+    const std::int64_t start_us = esp_timer_get_time();
+
+    while ((esp_timer_get_time() - start_us) <
+           12LL * 1000LL * 1000LL) {
+        const auto now_ms =
+            static_cast<std::uint32_t>(
+                esp_timer_get_time() / 1000LL
+            );
+
+        const auto result =
+            device.pollInput(now_ms);
+
+        if (result != enku::InputDispatchResult::Ignored) {
+            ESP_LOGI(
+                kTag,
+                "RUNTIME INPUT result=%u screen=%u",
+                static_cast<unsigned>(result),
+                static_cast<unsigned>(
+                    device.storage().appState().screen
+                )
+            );
+        }
+
+        vTaskDelay(
+            pdMS_TO_TICKS(
+                enku::platform::esp_idf::
+                    EspIdfButtons::kPollIntervalMs
+            )
+        );
+    }
+
+    ESP_LOGI(kTag, "Routed input test complete");
+    return true;
+}
+
 bool displaySmokeTest(
     EspIdfEpaper& display
 ) {
@@ -692,14 +735,6 @@ extern "C" void app_main(void) {
         return;
     }
 
-    if (!inputSmokeTest(platform.buttons())) {
-        ESP_LOGE(
-            kTag,
-            "Platform input verification failed"
-        );
-        return;
-    }
-
     enku::platform::esp_idf::EspIdfDeviceRuntime device(
         platform,
         enku::TypographySettings{18, 1.35F, 24},
@@ -717,6 +752,14 @@ extern "C" void app_main(void) {
             kTag,
             "Application runtime skipped: copy /system/fonts/NotoSans-Regular.ttf to the TF card"
         );
+
+        if (!inputSmokeTest(platform.buttons())) {
+            ESP_LOGE(
+                kTag,
+                "Platform input verification failed"
+            );
+            return;
+        }
     } else if (device_status !=
         enku::platform::esp_idf::DeviceRuntimeInitStatus::Ok) {
         ESP_LOGE(
@@ -733,6 +776,34 @@ extern "C" void app_main(void) {
                 device.storage().appState().screen
             )
         );
+
+        if (device.storage().appState().screen ==
+            enku::Screen::Library) {
+            const auto library_result =
+                device.reader().library().handle(
+                    enku::LibraryRefreshRequested{}
+                );
+
+            if (library_result !=
+                    enku::LibraryRuntimeResult::Applied &&
+                library_result !=
+                    enku::LibraryRuntimeResult::Empty) {
+                ESP_LOGE(
+                    kTag,
+                    "Initial Library render failed with status %u",
+                    static_cast<unsigned>(library_result)
+                );
+                return;
+            }
+        }
+
+        if (!routedInputSmokeTest(device)) {
+            ESP_LOGE(
+                kTag,
+                "Routed input verification failed"
+            );
+            return;
+        }
     }
 
     ESP_LOGI(

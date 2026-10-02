@@ -190,6 +190,9 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
 ReaderRuntimeResult ReaderRuntimeController::handle(
     const PageNextRequested&
 ) {
+    app_state_.search_highlight =
+        ReaderSearchHighlight{};
+
     auto* active_session = session();
 
     if (app_state_.screen != Screen::Reading ||
@@ -204,6 +207,9 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
 ReaderRuntimeResult ReaderRuntimeController::handle(
     const PagePreviousRequested&
 ) {
+    app_state_.search_highlight =
+        ReaderSearchHighlight{};
+
     auto* active_session = session();
 
     if (app_state_.screen != Screen::Reading ||

@@ -28,6 +28,7 @@ struct OpenBookRequested {
 };
 
 struct LibraryRefreshRequested {};
+struct OpenLibrarySearchRequested {};
 
 struct LibraryFilterChanged {
     LibraryFilter filter{LibraryFilter::All};
@@ -156,6 +157,7 @@ using AppEvent = std::variant<
     ActionRequested,
     OpenBookRequested,
     LibraryRefreshRequested,
+    OpenLibrarySearchRequested,
     LibraryFilterChanged,
     LibrarySortChanged,
     LibraryViewChanged,

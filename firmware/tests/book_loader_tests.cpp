@@ -373,6 +373,7 @@ int main() {
     assert(loader.session() == nullptr);
 
     source.status = BookSourceStatus::Ok;
+    request.saved_position.reset();
     library.record->format = BookFormat::Epub;
     source.content = sampleStoredEpub();
     source.whole_reads = 0;

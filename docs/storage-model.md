@@ -341,3 +341,16 @@ The final filename is content-identity based rather than source-filename based:
 This avoids collisions between unrelated uploads that happen to share a filename.
 
 The POSIX implementation is exercised by host integration tests using real temporary files. The target ESP32/SD adapter will implement the same `BookFileStore` contract.
+
+
+## 18. Startup transaction recovery
+
+`BookFileStore` now exposes bounded directory listing so startup can inspect `/system/tmp` without bypassing the storage abstraction.
+
+`StorageStartupCoordinator` uses the same `BookImportService::prepare()` validation path as normal import to classify staged files:
+
+- `Duplicate` means equivalent content is already committed in Library, so the tmp artifact is stale and removable;
+- any other result is preserved as pending/ambiguous state;
+- no original or canonical book file is deleted merely to make boot succeed.
+
+Host integration tests cover clean startup, stale tmp cleanup, pending upload preservation, and corrupt Library recovery.

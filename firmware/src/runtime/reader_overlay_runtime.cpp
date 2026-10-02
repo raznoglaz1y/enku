@@ -39,10 +39,14 @@ ReaderOverlayRuntimeResult toOverlayResult(
 
 ReaderOverlayRuntime::ReaderOverlayRuntime(
     ApplicationStorageRuntime& storage,
-    ApplicationReaderRuntime& reader
+    ApplicationReaderRuntime& reader,
+    ReaderOverlayRenderer* renderer,
+    RefreshService* refresh
 )
     : storage_(storage),
-      reader_(reader) {}
+      reader_(reader),
+      renderer_(renderer),
+      refresh_(refresh) {}
 
 ReaderOverlayRuntimeResult
 ReaderOverlayRuntime::handle(
@@ -99,7 +103,7 @@ ReaderOverlayRuntime::openMenu() {
         app.typography.preset;
     app.screen = Screen::ReaderOverlay;
 
-    return ReaderOverlayRuntimeResult::Applied;
+    return renderOverlay();
 }
 
 ReaderOverlayRuntimeResult
@@ -117,7 +121,7 @@ ReaderOverlayRuntime::openQuickTypography() {
     app.screen = Screen::ReaderOverlay;
     enterQuickTypography();
 
-    return ReaderOverlayRuntimeResult::Applied;
+    return renderOverlay();
 }
 
 void ReaderOverlayRuntime::enterQuickTypography() {
@@ -159,7 +163,7 @@ ReaderOverlayRuntime::navigate(int direction) {
         overlay.focus_index =
             static_cast<std::uint8_t>(next);
 
-        return ReaderOverlayRuntimeResult::Applied;
+        return renderOverlay();
     }
 
     int next =
@@ -234,7 +238,7 @@ ReaderOverlayRuntime::previewPreset(
             presetIndex(preset)
         );
 
-    return ReaderOverlayRuntimeResult::Applied;
+    return renderOverlay();
 }
 
 ReaderOverlayRuntimeResult
@@ -250,7 +254,7 @@ ReaderOverlayRuntime::confirm() {
 
         if (item == ReaderMenuItem::Typography) {
             enterQuickTypography();
-            return ReaderOverlayRuntimeResult::Applied;
+            return renderOverlay();
         }
 
         return ReaderOverlayRuntimeResult::Ignored;
@@ -277,7 +281,7 @@ ReaderOverlayRuntime::confirm() {
     baseline_valid_ = false;
     app.screen = Screen::Reading;
 
-    return ReaderOverlayRuntimeResult::Applied;
+    return refreshCurrentFrame();
 }
 
 ReaderOverlayRuntimeResult
@@ -302,6 +306,36 @@ ReaderOverlayRuntime::restoreBaseline() {
 }
 
 ReaderOverlayRuntimeResult
+ReaderOverlayRuntime::renderOverlay() {
+    if (renderer_ != nullptr &&
+        !renderer_->renderReaderOverlay(
+            storage_.appState()
+        )) {
+        return ReaderOverlayRuntimeResult::Failed;
+    }
+
+    return refreshCurrentFrame();
+}
+
+ReaderOverlayRuntimeResult
+ReaderOverlayRuntime::refreshCurrentFrame() {
+    if (refresh_ == nullptr) {
+        return ReaderOverlayRuntimeResult::Applied;
+    }
+
+    RefreshRequest request;
+    request.refresh_class = RefreshClass::Full;
+    request.reason = RefreshReason::OverlayChanged;
+    request.generation = 0;
+    request.may_coalesce = false;
+    request.may_defer = false;
+
+    return refresh_->submit(request)
+        ? ReaderOverlayRuntimeResult::Applied
+        : ReaderOverlayRuntimeResult::Failed;
+}
+
+ReaderOverlayRuntimeResult
 ReaderOverlayRuntime::close() {
     auto& app = storage_.appState();
 
@@ -309,20 +343,42 @@ ReaderOverlayRuntime::close() {
         return ReaderOverlayRuntimeResult::Ignored;
     }
 
-    if (app.reader_overlay.mode ==
-        ReaderOverlayMode::QuickTypography) {
+    const bool quick_typography =
+        app.reader_overlay.mode ==
+        ReaderOverlayMode::QuickTypography;
+
+    app.screen = Screen::Reading;
+
+    if (quick_typography) {
         const auto restored =
             restoreBaseline();
 
         if (restored !=
             ReaderOverlayRuntimeResult::Applied) {
+            app.screen = Screen::ReaderOverlay;
             return restored;
+        }
+    } else {
+        const auto current =
+            storage_.settingsRuntime().current();
+
+        const auto redraw =
+            reader_.reader().handle(
+                TypographyDefaultsChanged{
+                    current.reading_preset,
+                    current.font_size_px,
+                    current.line_spacing,
+                    current.margin_px,
+                }
+            );
+
+        if (redraw != ReaderRuntimeResult::Applied) {
+            app.screen = Screen::ReaderOverlay;
+            return ReaderOverlayRuntimeResult::Failed;
         }
     }
 
     baseline_valid_ = false;
-    app.screen = Screen::Reading;
-
     return ReaderOverlayRuntimeResult::Applied;
 }
 

@@ -6,6 +6,7 @@
 
 #include "../core/types.hpp"
 #include "../core/power.hpp"
+#include "../core/persistence.hpp"
 
 namespace enku {
 
@@ -15,6 +16,14 @@ public:
 
     virtual bool isAvailable() const = 0;
     virtual bool bookExists(const BookId& book_id) const = 0;
+};
+
+class PersistenceService {
+public:
+    virtual ~PersistenceService() = default;
+
+    virtual PersistStatus loadLatest(PersistRecordType type) = 0;
+    virtual PersistStatus commit(PersistRecordType type) = 0;
 };
 
 class RefreshService {

@@ -100,6 +100,7 @@ public:
 private:
     bool refreshStatusBarIfNeeded();
     bool syncWebUploadServer();
+    void refreshLibraryAfterUploadIfNeeded();
 
 
     EspIdfPlatform& platform_;
@@ -142,6 +143,7 @@ private:
     Orientation rendered_orientation_{
         Orientation::Portrait
     };
+    bool library_refresh_pending_{false};
 };
 
 } // namespace enku::platform::esp_idf

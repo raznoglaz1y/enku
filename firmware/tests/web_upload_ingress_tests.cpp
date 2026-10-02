@@ -64,7 +64,13 @@ int main() {
         WebUploadStatus::PayloadTooLarge
     );
 
-    ingress.active() = true;
+    assert(
+        ingress.begin(
+            "first.txt",
+            5
+        ).ok()
+    );
+    assert(ingress.active());
     assert(
         ingress.upload(
             "busy.txt",
@@ -73,7 +79,8 @@ int main() {
         ).status ==
         WebUploadStatus::Busy
     );
-    ingress.active() = false;
+    ingress.cancel();
+    assert(!ingress.active());
 
     const auto uploaded =
         ingress.upload(

@@ -258,21 +258,19 @@ The exact rescan strategy will be chosen after storage performance is measured.
 
 ## 15. Persistence backend
 
-The logical model above is fixed; the physical persistence backend is still open.
+Reader v1 uses **versioned CBOR records with A/B generation recovery**.
 
-Candidates may include:
+The detailed persistence strategy is defined in [Persistence Backend](persistence-model.md).
 
-- compact binary records;
-- a lightweight embedded database;
-- structured files per subsystem.
+Key decisions:
 
-The implementation should prioritize:
-
-- crash tolerance;
-- low write amplification;
-- simple recovery;
-- bounded memory use;
-- easy migration between firmware versions.
+- no SQLite dependency in Reader v1;
+- JSON is reserved for optional debug/export tooling rather than authoritative runtime storage;
+- Library index, global settings and per-book state are separate persistence domains;
+- progress checkpoints do not rewrite the full Library index;
+- each critical record carries schema/generation/integrity metadata;
+- recovery chooses the newest valid generation;
+- cover cache remains disposable.
 
 ## 16. Decisions fixed by this document
 
@@ -285,3 +283,4 @@ The implementation should prioritize:
 - Import and replacement are transactional.
 - Incomplete imports never appear as valid Library entries.
 - Per-book settings are separate from global settings and raw book files.
+- Runtime persistence uses versioned CBOR records with generation-based recovery.

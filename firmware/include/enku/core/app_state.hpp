@@ -46,6 +46,7 @@ struct AppState {
     std::optional<BookId> current_book;
     std::optional<SemanticPosition> reading_position;
     float reading_progress{0.0F};
+    bool current_book_finished{false};
     TypographyState typography;
 
     NetworkState network;

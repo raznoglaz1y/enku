@@ -1,0 +1,211 @@
+# ENKU multi-variant BOM architecture
+
+Status: **pre-schematic cost architecture**
+
+This document defines what should be shared across ENKU variants before individual manufacturer part numbers are frozen.
+
+## Design objective
+
+Use one core mainboard wherever practical.
+
+Different products should be created mainly by:
+- display choice;
+- component population / DNP;
+- enclosure;
+- cover;
+- wireless coil;
+- frontlight optical stack.
+
+Avoid maintaining independent Base and Pro compute boards unless panel integration proves it unavoidable.
+
+## Shared core — all reader variants
+
+Target blocks:
+
+- ESP32-S3-WROOM-1-N16R8;
+- native USB-C;
+- protected charge / system-power path;
+- 1S Li-Po connector;
+- hard hardware power-off control;
+- microSD connector accessible from enclosure edge;
+- e-paper logic interface;
+- EPD HV/analog power section based on validated Good Display reference;
+- Previous / Next rocker electrical switches;
+- Select / Menu;
+- Back;
+- BMI270;
+- low-power Hall sensor footprint;
+- battery measurement;
+- Dock pogo pads;
+- protected dock-input OR / power mux;
+- DOCK_DETECT / accessory ID;
+- debug / factory pads;
+- frontlight control / connector footprint reserved where routing allows;
+- Qi interface / keepout reserved where it does not compromise RF, EPD or mechanical design.
+
+## Variant population matrix
+
+| Block | Electronics | Base | Cover | Pro | Pro Wireless |
+| --- | --- | --- | --- | --- | --- |
+| ESP32-S3 core | yes | yes | yes | yes | yes |
+| microSD | yes | yes | yes | yes | yes |
+| BMI270 | yes | yes | yes | yes | yes |
+| USB-C | yes | yes | yes | yes | yes |
+| Dock pogo | yes | yes | yes | yes | yes |
+| Dock detect / mux | yes | yes | yes | yes | yes |
+| Hall sensor | optional | optional / preferred | yes | yes | yes |
+| Frontlight driver | DNP | DNP | DNP | yes | yes |
+| Frontlight connector | reserve | reserve | reserve | yes | yes |
+| Qi receiver / matching | DNP | DNP | DNP | DNP | yes |
+| Qi coil | no | no | no | no | yes |
+| Magnetic cover | no | no | yes | optional | optional / yes |
+| Display | Base | Base | Base | Pro FL | Pro FL |
+
+## Display mapping
+
+### Base family
+
+GDEY0397T81P
+
+Used by:
+- Electronics Kit;
+- Base;
+- Cover.
+
+### Pro family
+
+GDEY0426T82-FL01C
+
+Used by:
+- Pro;
+- Pro Wireless.
+
+The custom board should aim to support both SSD1677-based panels through the same logical display interface, but final FPC pinout and HV requirements must be verified before this is treated as electrically interchangeable.
+
+## Cost envelopes
+
+Landed BOM ceilings:
+
+- Electronics Kit: PLN 155
+- Base: PLN 180
+- Cover: PLN 200
+- Pro: PLN 230
+- Pro Wireless: PLN 260
+- Dock: PLN 40
+
+These include the intent to leave room for:
+- assembly losses / rework;
+- packaging-level small parts;
+- small-batch sourcing inefficiency.
+
+They are not final accounting COGS.
+
+## Cost priority by block
+
+### Protect aggressively
+
+These blocks must be cost-optimized early:
+- display;
+- ESP32 module;
+- PCB + assembly;
+- battery;
+- microSD connector;
+- EPD HV section;
+- enclosure.
+
+### Spend where UX justifies it
+
+Do not cost-cut below acceptable user experience on:
+- page switches / rocker tactile quality;
+- USB-C mechanical robustness;
+- power-path safety;
+- battery protection;
+- frontlight optical quality;
+- Dock contact reliability.
+
+### Keep optional
+
+Cost-heavy or mechanically risky features:
+- frontlight;
+- Qi;
+- premium cover;
+- optional encoder footprint;
+- higher-end battery gauge.
+
+## BOM decision gates before final routing
+
+### Gate 1 — Displays
+
+Need:
+- Good Display pinout/reference circuit;
+- quantity pricing 10 / 25 / 50 / 100;
+- long-term availability;
+- mechanical drawing;
+- frontlight electrical requirements for Pro.
+
+### Gate 2 — Power
+
+Resolve:
+- system regulator current margin;
+- charger versus charger + true power-path;
+- USB and Dock simultaneous-input behavior;
+- hard-OFF charging;
+- Qi interaction with wired charger.
+
+### Gate 3 — EPD HV
+
+No fabrication until:
+- official reference circuit is integrated;
+- component ratings and land patterns are verified.
+
+### Gate 4 — Input mechanics
+
+Choose actual tact switches after:
+- actuation force comparison;
+- noise comparison;
+- enclosure rocker geometry;
+- cycle life and sourcing review.
+
+### Gate 5 — microSD
+
+Choose connector only after:
+- side-entry geometry is frozen;
+- push-push versus push-pull cost is compared;
+- card accessibility is verified with enclosure wall thickness.
+
+### Gate 6 — Dock
+
+Choose:
+- pogo pitch/contact geometry;
+- alignment strategy;
+- input OR/mux IC;
+- accessory ID scheme.
+
+### Gate 7 — Pro frontlight
+
+Verify:
+- frontlight driver topology;
+- warm/cool channel current;
+- PWM behavior;
+- minimum usable night brightness;
+- thermal rise.
+
+### Gate 8 — Qi
+
+Only for Pro Wireless:
+- receiver IC / module decision;
+- coil size;
+- ferrite;
+- keepout;
+- thermal test;
+- Qi interoperability/certification strategy.
+
+## BOM freeze rule
+
+The schematic may progress before exact supplier pricing is final.
+
+The PCB **must not** be declared production-ready until:
+- each MUST component has an exact MPN;
+- each variant has a complete populated/DNP BOM;
+- supplier or assembly pricing demonstrates that the cost ceilings are realistic;
+- no BLOCKER item remains in the EPD/power path.

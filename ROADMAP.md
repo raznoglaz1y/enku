@@ -58,6 +58,7 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 - [ ] Create the firmware project structure
 - [ ] Add reproducible build instructions
 - [ ] Implement hardware abstraction for display, input, storage and power
+- [x] Define reader runtime/state-machine behavior
 - [ ] Implement application state model
 - [ ] Implement persistent settings storage
 - [ ] Implement reusable UI component layer
@@ -109,6 +110,7 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 - [ ] Implement in-book search
 - [ ] Implement search match navigation/highlighting
 - [ ] Implement finished-book state
+- [x] Define sleep/wake and recovery state behavior
 - [ ] Restore exact logical reading position after reboot/sleep
 
 ## 7. Wi-Fi and local management

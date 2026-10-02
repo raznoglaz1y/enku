@@ -24,6 +24,7 @@ jobs:
             contact_ok=0
             software_ok=0
             design_ok=0
+            build_ok=0
             home_ok=0
 
             if curl -fsSL https://enkureader.com/contact -o /tmp/contact.html &&
@@ -44,6 +45,12 @@ jobs:
               design_ok=1
             fi
 
+            if curl -fsSL https://enkureader.com/build -o /tmp/build.html &&
+               grep -q '<title>Build — ENKU</title>' /tmp/build.html &&
+               grep -q 'href="/build" class="active"' /tmp/build.html; then
+              build_ok=1
+            fi
+
             if curl -fsSL https://enkureader.com/ -o /tmp/home.html &&
                grep -Eq 'href="/software"[^>]*>Software</a>' /tmp/home.html &&
                grep -Eq 'href="/hardware"[^>]*>Hardware</a>' /tmp/home.html; then
@@ -53,12 +60,13 @@ jobs:
             if [ "$contact_ok" = 1 ] &&
                [ "$software_ok" = 1 ] &&
                [ "$design_ok" = 1 ] &&
+               [ "$build_ok" = 1 ] &&
                [ "$home_ok" = 1 ]; then
               echo "Expected site revision is live."
               exit 0
             fi
 
-            echo "contact=$contact_ok software=$software_ok design=$design_ok home=$home_ok"
+            echo "contact=$contact_ok software=$software_ok design=$design_ok build=$build_ok home=$home_ok"
             sleep 10
           done
 
@@ -74,6 +82,8 @@ jobs:
           grep -q 'href="/software" class="active"' /tmp/software.html
           grep -q '<title>Design — ENKU</title>' /tmp/design.html
           grep -q 'href="/design" class="active"' /tmp/design.html
+          grep -q '<title>Build — ENKU</title>' /tmp/build.html
+          grep -q 'href="/build" class="active"' /tmp/build.html
           grep -Eq 'href="/software"[^>]*>Software</a>' /tmp/home.html
           grep -Eq 'href="/hardware"[^>]*>Hardware</a>' /tmp/home.html
 

@@ -1,6 +1,12 @@
 #include "enku/reader/book_loader.hpp"
 #include "enku/runtime/library_runtime.hpp"
 #include "enku/runtime/library_search_runtime.hpp"
+#include "enku/storage/cbor_boot_loop_service.hpp"
+#include "enku/runtime/storage_startup.hpp"
+#include "enku/runtime/boot_restore.hpp"
+#include "enku/runtime/sleep_wake.hpp"
+#include "enku/runtime/power_off.hpp"
+#include "enku/runtime/input_dispatcher.hpp"
 #include "enku/runtime/settings_runtime.hpp"
 #include "enku/runtime/reader_runtime.hpp"
 #include "enku/storage/book_import_service.hpp"
@@ -66,6 +72,50 @@ public:
     RefreshRequest last;
     std::uint32_t submitted{0};
 };
+
+class FakeNetworkService final : public NetworkService {
+public:
+    bool connected() const override {
+        return connected_;
+    }
+
+    void disconnect() override {
+        connected_ = false;
+    }
+
+    bool connected_{false};
+};
+
+class FakePowerService final : public PowerService {
+public:
+    BatteryState batteryState() const override {
+        return {};
+    }
+
+    bool canSuspend() const override {
+        return true;
+    }
+
+    DevicePowerState powerState() const override {
+        return state_;
+    }
+
+    WakeReason wakeReason() const override {
+        return WakeReason::NavigationInput;
+    }
+
+    bool requestSuspend() override {
+        state_ = DevicePowerState::Suspended;
+        return true;
+    }
+
+    void requestPowerOff() override {
+        state_ = DevicePowerState::PoweredOff;
+    }
+
+    DevicePowerState state_{DevicePowerState::Active};
+};
+
 
 BookRecord makeBook(
     std::string id,
@@ -283,6 +333,52 @@ int main() {
         app,
         runtime
     );
+    CborBootLoopService boot_loop(state_files);
+    StorageStartupCoordinator storage_startup(
+        app,
+        settings,
+        library,
+        book_files,
+        import_core
+    );
+    BootRestoreCoordinator boot_restore(
+        app,
+        storage_startup,
+        context,
+        boot_loop,
+        reader,
+        library
+    );
+    FakeNetworkService network;
+    FakePowerService power;
+    SleepWakeCoordinator sleep_wake(
+        app,
+        library,
+        checkpoint,
+        context,
+        network,
+        power,
+        boot_restore
+    );
+    PowerOffCoordinator power_off(
+        app,
+        library,
+        checkpoint,
+        context,
+        network,
+        power
+    );
+    InputDispatcher dispatcher(
+        app,
+        runtime,
+        reader,
+        sleep_wake,
+        power_off,
+        nullptr,
+        nullptr,
+        &library_search
+    );
+
 
     assert(
         library_search.open() ==
@@ -290,6 +386,26 @@ int main() {
     );
     assert(app.library.mode == LibraryQueryMode::Search);
     assert(app.keyboard.open);
+
+    assert(
+        dispatcher.handle(
+            PhysicalInputEvent{
+                PhysicalControl::Down,
+                PressType::Click,
+            }
+        ) == InputDispatchResult::Applied
+    );
+    assert(app.keyboard.focus_index == 1);
+
+    assert(
+        dispatcher.handle(
+            PhysicalInputEvent{
+                PhysicalControl::Up,
+                PressType::Click,
+            }
+        ) == InputDispatchResult::Applied
+    );
+    assert(app.keyboard.focus_index == 0);
 
     app.keyboard.focus_index = 10;
     assert(
@@ -319,10 +435,22 @@ int main() {
     assert(runtime.page().items[0].book_id == "alpha");
 
     assert(
-        library_search.handle(LogicalAction::Back) ==
-        LibrarySearchRuntimeResult::Applied
+        library_search.handle(
+            OpenLibrarySearchRequested{}
+        ) == LibrarySearchRuntimeResult::Applied
+    );
+    assert(app.keyboard.open);
+
+    assert(
+        dispatcher.handle(
+            PhysicalInputEvent{
+                PhysicalControl::Boot,
+                PressType::Click,
+            }
+        ) == InputDispatchResult::Applied
     );
     assert(app.library.mode == LibraryQueryMode::Browse);
+    assert(!app.keyboard.open);
     assert(app.library.search_text.empty());
     assert(runtime.page().total_matches == 2);
 

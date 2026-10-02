@@ -701,3 +701,142 @@ bool FreeTypeTextRenderer::renderLibrary(
 }
 
 } // namespace enku::platform::esp_idf
+
+
+bool FreeTypeTextRenderer::renderReaderOverlay(
+    const AppState& app_state
+) {
+    if (!ready()) {
+        return false;
+    }
+
+    framebuffer_.clearWhite();
+
+    const Orientation orientation =
+        app_state.orientation;
+
+    const int logical_width =
+        orientation == Orientation::Portrait
+            ? 480
+            : 800;
+
+    const auto& overlay =
+        app_state.reader_overlay;
+
+    const bool typography =
+        overlay.mode ==
+        ReaderOverlayMode::QuickTypography;
+
+    if (!drawTextAt(
+            typography ? "TYPOGRAPHY" : "READER MENU",
+            26,
+            30,
+            52,
+            orientation
+        )) {
+        return false;
+    }
+
+    if (typography) {
+        constexpr const char* labels[] = {
+            "SPACIOUS",
+            "COMFORTABLE",
+            "STANDARD",
+            "COMPACT",
+            "DENSE",
+        };
+
+        constexpr int kStartY = 94;
+        constexpr int kRowHeight = 58;
+        constexpr int kLeft = 24;
+
+        for (int i = 0; i < 5; ++i) {
+            const int top =
+                kStartY + i * kRowHeight;
+
+            if (overlay.focus_index ==
+                static_cast<std::uint8_t>(i)) {
+                drawRect(
+                    kLeft,
+                    top,
+                    logical_width - 48,
+                    kRowHeight - 8,
+                    orientation,
+                    2
+                );
+            }
+
+            if (!drawTextAt(
+                    labels[i],
+                    18,
+                    kLeft + 16,
+                    top + 31,
+                    orientation
+                )) {
+                return false;
+            }
+        }
+
+        if (!drawTextAt(
+                "UP/DOWN PREVIEW  FUNCTION APPLY  BACK CANCEL",
+                12,
+                30,
+                orientation == Orientation::Portrait
+                    ? 760
+                    : 448,
+                orientation
+            )) {
+            return false;
+        }
+
+        return true;
+    }
+
+    constexpr const char* labels[] = {
+        "TYPOGRAPHY",
+        "ORIENTATION",
+        "SEARCH",
+        "SLEEP",
+    };
+
+    constexpr int kStartY = 98;
+    constexpr int kRowHeight = 64;
+    constexpr int kLeft = 24;
+
+    for (int i = 0; i < 4; ++i) {
+        const int top =
+            kStartY + i * kRowHeight;
+
+        if (overlay.focus_index ==
+            static_cast<std::uint8_t>(i)) {
+            drawRect(
+                kLeft,
+                top,
+                logical_width - 48,
+                kRowHeight - 8,
+                orientation,
+                2
+            );
+        }
+
+        if (!drawTextAt(
+                labels[i],
+                18,
+                kLeft + 16,
+                top + 34,
+                orientation
+            )) {
+            return false;
+        }
+    }
+
+    return drawTextAt(
+        "UP/DOWN  FUNCTION SELECT  BACK CLOSE",
+        12,
+        30,
+        orientation == Orientation::Portrait
+            ? 760
+            : 448,
+        orientation
+    );
+}

@@ -65,6 +65,9 @@ struct LibrarySearchChanged {
 struct LibraryFocusNextRequested {};
 struct LibraryFocusPreviousRequested {};
 struct OpenFocusedBookRequested {};
+struct OpenFocusedBookDetailsRequested {};
+struct RestartFocusedBookRequested {};
+struct RemoveFocusedBookRequested {};
 struct DeleteFocusedBookRequested {};
 
 struct ImportRequested {
@@ -168,6 +171,9 @@ using AppEvent = std::variant<
     LibraryFocusNextRequested,
     LibraryFocusPreviousRequested,
     OpenFocusedBookRequested,
+    OpenFocusedBookDetailsRequested,
+    RestartFocusedBookRequested,
+    RemoveFocusedBookRequested,
     DeleteFocusedBookRequested,
     ImportRequested,
     ImportStarted,

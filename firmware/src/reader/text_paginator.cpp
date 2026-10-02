@@ -8,6 +8,37 @@
 namespace enku {
 namespace {
 
+PageLineKind pageLineKind(
+    TextBlockType type
+) {
+    switch (type) {
+        case TextBlockType::Heading:
+            return PageLineKind::Heading;
+        case TextBlockType::Quote:
+            return PageLineKind::Quote;
+        case TextBlockType::ListItem:
+            return PageLineKind::ListItem;
+        case TextBlockType::Separator:
+            return PageLineKind::Separator;
+        case TextBlockType::Paragraph:
+        default:
+            return PageLineKind::Paragraph;
+    }
+}
+
+std::uint16_t lineIndent(
+    PageLineKind kind
+) {
+    switch (kind) {
+        case PageLineKind::Quote:
+            return 18U;
+        case PageLineKind::ListItem:
+            return 22U;
+        default:
+            return 0U;
+    }
+}
+
 bool isContinuation(unsigned char ch) {
     return (ch & 0xC0U) == 0x80U;
 }
@@ -193,6 +224,8 @@ PaginationResult TextPaginator::paginate(
         for (const auto& block : section.blocks) {
             const auto block_start = block.text_offset;
             const auto block_end = block.text_offset + block.text.size();
+            const auto kind =
+                pageLineKind(block.type);
 
             if (s == section_index && start_offset >= block_end) {
                 continue;
@@ -205,6 +238,51 @@ PaginationResult TextPaginator::paginate(
 
             if (local > block.text.size()) {
                 continue;
+            }
+
+            // Give structural headings one blank line before them when they
+            // don't start the page. This keeps EPUB/FB2 chapter transitions
+            // readable without changing the base typography scale.
+            if (kind == PageLineKind::Heading &&
+                local == 0U &&
+                line_index > 0U) {
+                if (line_index + 1U >= max_lines) {
+                    result.page.next_anchor = SemanticPosition{
+                        document.book_id,
+                        section.id,
+                        block_start,
+                    };
+                    result.status = PaginationStatus::Ok;
+                    const auto absolute =
+                        result.page.last_position.text_offset;
+                    result.page.progress =
+                        document.total_text_length == 0
+                            ? 0.0F
+                            : std::min(
+                                1.0F,
+                                static_cast<float>(absolute) /
+                                    static_cast<float>(
+                                        document.total_text_length
+                                    )
+                            );
+                    return result;
+                }
+                ++line_index;
+            }
+
+            const auto indent =
+                lineIndent(kind);
+            const auto line_width =
+                content_width > indent
+                    ? static_cast<std::uint16_t>(
+                        content_width - indent
+                    )
+                    : 0U;
+
+            if (line_width == 0U) {
+                result.status =
+                    PaginationStatus::ViewportTooSmall;
+                return result;
             }
 
             while (local < block.text.size()) {
@@ -229,7 +307,7 @@ PaginationResult TextPaginator::paginate(
                 const auto wrapped = makeLine(
                     block.text,
                     local,
-                    content_width,
+                    line_width,
                     request.typography,
                     measurer
                 );
@@ -246,10 +324,14 @@ PaginationResult TextPaginator::paginate(
                     section.id,
                     block_start + wrapped.start,
                 };
-                line.x = margin;
+                line.x =
+                    static_cast<std::uint16_t>(
+                        margin + indent
+                    );
                 line.y = static_cast<std::uint16_t>(
                     margin + line_index * line_height
                 );
+                line.kind = kind;
 
                 if (first_line) {
                     result.page.first_position = line.position;

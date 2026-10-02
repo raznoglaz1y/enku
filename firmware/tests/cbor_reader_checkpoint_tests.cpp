@@ -44,6 +44,15 @@ public:
         return StateFileStatus::Ok;
     }
 
+    StateFileStatus remove(
+        const std::string& path
+    ) override {
+        const auto erased = files.erase(path);
+        return erased > 0
+            ? StateFileStatus::Ok
+            : StateFileStatus::NotFound;
+    }
+
     std::map<std::string, std::vector<std::uint8_t>> files;
     StateFileStatus write_status{StateFileStatus::Ok};
     bool read_error{false};

@@ -5,6 +5,7 @@
 #include "enku/runtime/about_book_runtime.hpp"
 #include "enku/runtime/settings_navigation_runtime.hpp"
 #include "enku/runtime/reading_settings_runtime.hpp"
+#include "enku/runtime/display_settings_runtime.hpp"
 #include "enku/storage/posix_book_file_store.hpp"
 #include "enku/storage/posix_state_file_store.hpp"
 
@@ -873,6 +874,12 @@ int main() {
         settings_nav
     );
 
+    DisplaySettingsRuntime display_settings(
+        storage.appState(),
+        runtime,
+        settings_nav
+    );
+
     const auto typography_before_settings =
         storage.appState().typography;
 
@@ -996,6 +1003,90 @@ int main() {
     assert(
         storage.appState().settings_nav.focus ==
         SettingsItem::Reading
+    );
+
+    assert(
+        settings_nav.handle(
+            LogicalAction::NavigateNext
+        ) == SettingsNavigationResult::Applied
+    );
+    assert(
+        storage.appState().settings_nav.focus ==
+        SettingsItem::Display
+    );
+
+    assert(
+        display_settings.openFromSettings() ==
+        DisplaySettingsRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().screen ==
+        Screen::DisplaySettings
+    );
+    assert(
+        storage.appState().display_settings.selected ==
+        storage.appState().orientation
+    );
+
+    const auto orientation_before_display =
+        storage.appState().orientation;
+
+    assert(
+        display_settings.handle(
+            LogicalAction::NavigateNext
+        ) == DisplaySettingsRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().display_settings.selected !=
+        orientation_before_display
+    );
+
+    assert(
+        display_settings.handle(
+            LogicalAction::Confirm
+        ) == DisplaySettingsRuntimeResult::Applied
+    );
+    const auto applied_display_orientation =
+        storage.appState().orientation;
+    assert(
+        applied_display_orientation !=
+        orientation_before_display
+    );
+
+    GlobalSettings persisted_display;
+    assert(
+        storage.settingsStore().load(
+            persisted_display
+        ) == PersistStatus::Ok
+    );
+    assert(
+        persisted_display.orientation ==
+        applied_display_orientation
+    );
+
+    assert(
+        display_settings.handle(
+            LogicalAction::NavigateNext
+        ) == DisplaySettingsRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().display_settings.selected ==
+        orientation_before_display
+    );
+
+    assert(
+        display_settings.handle(
+            LogicalAction::Back
+        ) == DisplaySettingsRuntimeResult::Applied
+    );
+    assert(storage.appState().screen == Screen::Settings);
+    assert(
+        storage.appState().settings_nav.focus ==
+        SettingsItem::Display
+    );
+    assert(
+        storage.appState().orientation ==
+        applied_display_orientation
     );
 
     assert(

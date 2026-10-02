@@ -124,6 +124,10 @@ bool EspIdfWebUploadServer::running() const {
     return server_ != nullptr;
 }
 
+bool EspIdfWebUploadServer::takeUploadCompleted() {
+    return upload_completed_.exchange(false);
+}
+
 bool EspIdfWebUploadServer::sync(bool online) {
     if (online) {
         return running() || start();
@@ -454,6 +458,8 @@ esp_err_t EspIdfWebUploadServer::upload(
         );
         return ESP_OK;
     }
+
+    upload_completed_.store(true);
 
     sendJson(
         request,

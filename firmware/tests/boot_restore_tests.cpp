@@ -160,6 +160,9 @@ int main() {
 
             AppState app;
             app.screen = Screen::Library;
+            app.library.offset = 24;
+            app.library.focused_book =
+                BookId{"book-restore"};
 
             ReaderRuntimeController runtime(
                 app,
@@ -272,6 +275,11 @@ int main() {
         );
         assert(boot_app.boot.stage == BootStage::Stable);
         assert(!boot_app.boot.boot_in_progress);
+        assert(boot_app.library.offset == 24);
+        assert(
+            boot_app.library.focused_book ==
+            std::optional<BookId>{"book-restore"}
+        );
 
         removeRoot(root);
     }

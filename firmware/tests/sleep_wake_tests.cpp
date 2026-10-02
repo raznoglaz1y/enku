@@ -335,6 +335,41 @@ int main() {
     );
     assert(app.boot.stage == BootStage::Stable);
 
+    // Sleeping from temporary Library Search persists the stable
+    // Browse origin instead of the Search result window.
+    app.screen = Screen::Library;
+    app.library.mode = LibraryQueryMode::Search;
+    app.library.offset = 0;
+    app.library.focused_book = "sleep-wake-book";
+    app.library.search_origin_valid = true;
+    app.library.search_origin_offset = 5;
+    app.library.search_origin_focused_book =
+        BookId{"sleep-wake-book"};
+    power.suspend_available = true;
+    power.suspend_success = true;
+
+    assert(
+        sleep_wake.sleep() ==
+        SleepWakeStatus::Applied
+    );
+
+    AppRestoreContext search_sleep_context;
+    assert(
+        context.load(search_sleep_context) ==
+        PersistStatus::Ok
+    );
+    assert(
+        search_sleep_context.screen ==
+        Screen::Library
+    );
+    assert(
+        search_sleep_context.library_offset == 5
+    );
+    assert(
+        search_sleep_context.library_focused_book ==
+        std::optional<BookId>{"sleep-wake-book"}
+    );
+
     // Unsafe import activity blocks automatic/user Sleep before any power
     // transition is attempted.
     app.screen = Screen::Library;

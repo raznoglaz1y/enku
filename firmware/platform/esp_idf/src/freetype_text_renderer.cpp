@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <limits>
+#include <cstdio>
 #include <utility>
 
 #include "esp_log.h"
@@ -309,6 +310,118 @@ void FreeTypeTextRenderer::drawMonoBitmap(
     }
 }
 
+bool FreeTypeTextRenderer::drawTextAt(
+    std::string_view text,
+    std::uint16_t size_px,
+    int x,
+    int baseline
+) {
+    if (!ensureSize(size_px)) {
+        return false;
+    }
+
+    FT_UInt previous_glyph = 0;
+    std::size_t offset = 0;
+    std::uint32_t codepoint = 0;
+    int pen_x = x;
+
+    while (nextCodepoint(
+        text,
+        offset,
+        codepoint
+    )) {
+        const FT_UInt glyph =
+            FT_Get_Char_Index(
+                face_,
+                static_cast<FT_ULong>(codepoint)
+            );
+
+        if (FT_HAS_KERNING(face_) &&
+            previous_glyph != 0 &&
+            glyph != 0) {
+            FT_Vector kerning = {};
+            if (FT_Get_Kerning(
+                    face_,
+                    previous_glyph,
+                    glyph,
+                    FT_KERNING_DEFAULT,
+                    &kerning
+                ) == 0) {
+                pen_x +=
+                    static_cast<int>(
+                        kerning.x >> 6
+                    );
+            }
+        }
+
+        if (FT_Load_Glyph(
+                face_,
+                glyph,
+                FT_LOAD_DEFAULT
+            ) != 0 ||
+            FT_Render_Glyph(
+                face_->glyph,
+                FT_RENDER_MODE_MONO
+            ) != 0) {
+            previous_glyph = 0;
+            continue;
+        }
+
+        const auto& slot = *face_->glyph;
+
+        drawMonoBitmap(
+            slot.bitmap,
+            pen_x + slot.bitmap_left,
+            baseline - slot.bitmap_top
+        );
+
+        pen_x +=
+            static_cast<int>(
+                slot.advance.x >> 6
+            );
+
+        previous_glyph = glyph;
+    }
+
+    return true;
+}
+
+void FreeTypeTextRenderer::drawRect(
+    int x,
+    int y,
+    int width,
+    int height,
+    int thickness
+) {
+    if (width <= 0 ||
+        height <= 0 ||
+        thickness <= 0) {
+        return;
+    }
+
+    for (int t = 0; t < thickness; ++t) {
+        for (int px = x + t;
+             px < x + width - t;
+             ++px) {
+            framebuffer_.setBlack(px, y + t);
+            framebuffer_.setBlack(
+                px,
+                y + height - 1 - t
+            );
+        }
+
+        for (int py = y + t;
+             py < y + height - t;
+             ++py) {
+            framebuffer_.setBlack(x + t, py);
+            framebuffer_.setBlack(
+                x + width - 1 - t,
+                py
+            );
+        }
+    }
+}
+
 bool FreeTypeTextRenderer::renderPage(
     const PageResult& page,
     const TypographySettings& typography
@@ -392,6 +505,150 @@ bool FreeTypeTextRenderer::renderPage(
                 );
 
             previous_glyph = glyph;
+        }
+    }
+
+    return true;
+}
+
+bool FreeTypeTextRenderer::renderLibrary(
+    const AppState& app_state,
+    const LibraryPage& page
+) {
+    if (!ready()) {
+        return false;
+    }
+
+    framebuffer_.clearWhite();
+
+    if (!drawTextAt(
+            "LIBRARY",
+            28,
+            32,
+            48
+        )) {
+        return false;
+    }
+
+    char count_text[48] = {};
+    std::snprintf(
+        count_text,
+        sizeof(count_text),
+        "%lu BOOKS",
+        static_cast<unsigned long>(
+            page.total_matches
+        )
+    );
+
+    if (!drawTextAt(
+            count_text,
+            14,
+            650,
+            42
+        )) {
+        return false;
+    }
+
+    constexpr int kStartY = 78;
+    constexpr int kRowHeight = 64;
+    constexpr int kLeft = 32;
+    constexpr int kWidth = 736;
+    constexpr std::size_t kMaxVisible = 6;
+
+    const auto visible =
+        std::min<std::size_t>(
+            page.items.size(),
+            kMaxVisible
+        );
+
+    for (std::size_t i = 0; i < visible; ++i) {
+        const auto& book = page.items[i];
+        const int top =
+            kStartY +
+            static_cast<int>(i) *
+                kRowHeight;
+
+        const bool focused =
+            app_state.library.focused_book.has_value() &&
+            *app_state.library.focused_book ==
+                book.book_id;
+
+        if (focused) {
+            drawRect(
+                kLeft,
+                top,
+                kWidth,
+                kRowHeight - 6,
+                2
+            );
+        }
+
+        if (!drawTextAt(
+                book.metadata.title,
+                18,
+                kLeft + 14,
+                top + 25
+            )) {
+            return false;
+        }
+
+        std::string meta =
+            book.metadata.author_display.empty()
+                ? "Unknown author"
+                : book.metadata.author_display;
+
+        if (!drawTextAt(
+                meta,
+                13,
+                kLeft + 14,
+                top + 46
+            )) {
+            return false;
+        }
+
+        char progress[16] = {};
+        std::snprintf(
+            progress,
+            sizeof(progress),
+            "%u%%",
+            static_cast<unsigned>(
+                std::min(
+                    100.0F,
+                    std::max(
+                        0.0F,
+                        book.progress * 100.0F
+                    )
+                )
+            )
+        );
+
+        if (!drawTextAt(
+                progress,
+                13,
+                kLeft + kWidth - 62,
+                top + 35
+            )) {
+            return false;
+        }
+    }
+
+    if (page.items.empty()) {
+        if (!drawTextAt(
+                "NO BOOKS",
+                18,
+                32,
+                120
+            )) {
+            return false;
+        }
+
+        if (!drawTextAt(
+                "IMPORT A TXT BOOK TO START",
+                14,
+                32,
+                150
+            )) {
+            return false;
         }
     }
 

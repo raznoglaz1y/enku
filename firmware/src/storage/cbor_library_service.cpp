@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <cstring>
 #include <limits>
+#include <string_view>
 #include <utility>
 
 namespace enku {
@@ -521,17 +522,79 @@ LibraryStatus mapFileStatus(StateFileStatus status) {
     }
 }
 
-std::string asciiFold(std::string value) {
-    for (auto& ch : value) {
-        const auto byte =
-            static_cast<unsigned char>(ch);
-        if (byte < 0x80U) {
-            ch = static_cast<char>(
-                std::tolower(byte)
+std::string simpleUtf8Fold(
+    std::string_view value
+) {
+    std::string out;
+    out.reserve(value.size());
+
+    std::size_t offset = 0;
+
+    while (offset < value.size()) {
+        const auto first =
+            static_cast<unsigned char>(
+                value[offset]
             );
+
+        if (first < 0x80U) {
+            char ch =
+                static_cast<char>(first);
+
+            if (ch >= 'A' && ch <= 'Z') {
+                ch = static_cast<char>(
+                    ch - 'A' + 'a'
+                );
+            }
+
+            out.push_back(ch);
+            ++offset;
+            continue;
         }
+
+        if (offset + 1U < value.size() &&
+            (first & 0xE0U) == 0xC0U) {
+            const auto second =
+                static_cast<unsigned char>(
+                    value[offset + 1U]
+                );
+
+            if ((second & 0xC0U) == 0x80U) {
+                std::uint32_t codepoint =
+                    ((first & 0x1FU) << 6U) |
+                    (second & 0x3FU);
+
+                if (codepoint >= 0x0410U &&
+                    codepoint <= 0x042FU) {
+                    codepoint += 0x20U;
+                } else if (codepoint == 0x0401U) {
+                    codepoint = 0x0451U;
+                }
+
+                out.push_back(
+                    static_cast<char>(
+                        0xC0U |
+                        ((codepoint >> 6U) &
+                         0x1FU)
+                    )
+                );
+                out.push_back(
+                    static_cast<char>(
+                        0x80U |
+                        (codepoint & 0x3FU)
+                    )
+                );
+                offset += 2U;
+                continue;
+            }
+        }
+
+        out.push_back(
+            static_cast<char>(first)
+        );
+        ++offset;
     }
-    return value;
+
+    return out;
 }
 
 bool containsSearch(
@@ -543,19 +606,19 @@ bool containsSearch(
     }
 
     const auto title =
-        asciiFold(record.metadata.title);
+        simpleUtf8Fold(record.metadata.title);
     if (title.find(needle) != std::string::npos) {
         return true;
     }
 
     const auto display =
-        asciiFold(record.metadata.author_display);
+        simpleUtf8Fold(record.metadata.author_display);
     if (display.find(needle) != std::string::npos) {
         return true;
     }
 
     for (const auto& author : record.metadata.authors) {
-        if (asciiFold(author).find(needle) !=
+        if (simpleUtf8Fold(author).find(needle) !=
             std::string::npos) {
             return true;
         }
@@ -873,7 +936,7 @@ LibraryStatus CborLibraryService::query(
     matches.reserve(records_.size());
 
     const auto needle =
-        asciiFold(query_request.search_text);
+        simpleUtf8Fold(query_request.search_text);
 
     for (const auto& record : records_) {
         const bool include =

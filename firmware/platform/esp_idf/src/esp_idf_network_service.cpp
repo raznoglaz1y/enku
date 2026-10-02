@@ -7,6 +7,8 @@
 #include "esp_log.h"
 #include "esp_wifi.h"
 #include "nvs_flash.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 namespace enku::platform::esp_idf {
 namespace {
@@ -227,6 +229,214 @@ NetworkPolicyStatus EspIdfNetworkService::applyPolicy(
         default:
             return NetworkPolicyStatus::DriverError;
     }
+}
+
+NetworkPolicyStatus EspIdfNetworkService::scanNetworks(
+    std::vector<WiFiNetworkInfo>& networks
+) {
+    networks.clear();
+
+    if (!initialized_ || !ensureStarted()) {
+        return NetworkPolicyStatus::DriverError;
+    }
+
+    wifi_scan_config_t scan_config = {};
+
+    const auto scan_result =
+        esp_wifi_scan_start(
+            &scan_config,
+            true
+        );
+
+    if (scan_result != ESP_OK) {
+        ESP_LOGE(
+            kTag,
+            "Wi-Fi scan failed: %s",
+            esp_err_to_name(scan_result)
+        );
+        return NetworkPolicyStatus::DriverError;
+    }
+
+    std::uint16_t count = 0;
+    if (esp_wifi_scan_get_ap_num(&count) != ESP_OK) {
+        return NetworkPolicyStatus::DriverError;
+    }
+
+    if (count == 0) {
+        return NetworkPolicyStatus::Ok;
+    }
+
+    std::vector<wifi_ap_record_t> records(count);
+    auto requested = count;
+
+    if (esp_wifi_scan_get_ap_records(
+            &requested,
+            records.data()
+        ) != ESP_OK) {
+        return NetworkPolicyStatus::DriverError;
+    }
+
+    records.resize(requested);
+
+    for (const auto& record : records) {
+        const auto* raw_ssid =
+            reinterpret_cast<const char*>(
+                record.ssid
+            );
+
+        const auto length =
+            strnlen(
+                raw_ssid,
+                sizeof(record.ssid)
+            );
+
+        if (length == 0U) {
+            continue;
+        }
+
+        const std::string ssid(
+            raw_ssid,
+            length
+        );
+
+        const auto duplicate =
+            std::find_if(
+                networks.begin(),
+                networks.end(),
+                [&](const WiFiNetworkInfo& item) {
+                    return item.ssid == ssid;
+                }
+            );
+
+        if (duplicate != networks.end()) {
+            if (record.rssi > duplicate->rssi) {
+                duplicate->rssi = record.rssi;
+            }
+            continue;
+        }
+
+        WiFiNetworkInfo info;
+        info.ssid = ssid;
+        info.rssi = record.rssi;
+        info.secured =
+            record.authmode != WIFI_AUTH_OPEN;
+
+        networks.push_back(
+            std::move(info)
+        );
+    }
+
+    std::sort(
+        networks.begin(),
+        networks.end(),
+        [](const WiFiNetworkInfo& lhs,
+           const WiFiNetworkInfo& rhs) {
+            return lhs.rssi > rhs.rssi;
+        }
+    );
+
+    ESP_LOGI(
+        kTag,
+        "Wi-Fi scan completed: %u network(s)",
+        static_cast<unsigned>(networks.size())
+    );
+
+    return NetworkPolicyStatus::Ok;
+}
+
+NetworkPolicyStatus EspIdfNetworkService::connectToNetwork(
+    std::string_view ssid,
+    std::string_view password
+) {
+    if (!initialized_ ||
+        ssid.empty() ||
+        ssid.size() > 32U ||
+        password.size() > 64U) {
+        return NetworkPolicyStatus::InvalidCredentials;
+    }
+
+    if (!ensureStarted()) {
+        return NetworkPolicyStatus::DriverError;
+    }
+
+    disconnect();
+
+    // Use RAM storage so credentials used for this attempt cannot replace
+    // the trusted network before the connection has actually succeeded.
+    if (esp_wifi_set_storage(
+            WIFI_STORAGE_RAM
+        ) != ESP_OK) {
+        return NetworkPolicyStatus::DriverError;
+    }
+
+    wifi_config_t config = {};
+
+    std::memcpy(
+        config.sta.ssid,
+        ssid.data(),
+        ssid.size()
+    );
+
+    if (!password.empty()) {
+        std::memcpy(
+            config.sta.password,
+            password.data(),
+            password.size()
+        );
+    }
+
+    auto result =
+        esp_wifi_set_config(
+            WIFI_IF_STA,
+            &config
+        );
+
+    // Restore durable storage mode immediately. The config above remains
+    // the active RAM config; future setTrustedNetwork() can persist it.
+    const auto storage_result =
+        esp_wifi_set_storage(
+            WIFI_STORAGE_FLASH
+        );
+
+    if (result != ESP_OK ||
+        storage_result != ESP_OK) {
+        return NetworkPolicyStatus::DriverError;
+    }
+
+    connected_.store(false);
+
+    result = esp_wifi_connect();
+    if (result != ESP_OK) {
+        return NetworkPolicyStatus::DriverError;
+    }
+
+    constexpr int kConnectPolls = 100;
+    for (int i = 0; i < kConnectPolls; ++i) {
+        if (connected_.load()) {
+            ESP_LOGI(
+                kTag,
+                "Wi-Fi connected to %.*s",
+                static_cast<int>(ssid.size()),
+                ssid.data()
+            );
+            return NetworkPolicyStatus::Ok;
+        }
+
+        vTaskDelay(
+            pdMS_TO_TICKS(100)
+        );
+    }
+
+    disconnect();
+
+    ESP_LOGW(
+        kTag,
+        "Wi-Fi connection failed for %.*s",
+        static_cast<int>(ssid.size()),
+        ssid.data()
+    );
+
+    return NetworkPolicyStatus::ConnectionFailed;
 }
 
 NetworkPolicyStatus EspIdfNetworkService::setTrustedNetwork(

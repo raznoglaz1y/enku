@@ -34,6 +34,26 @@ The project is being developed as a complete product system rather than only a f
 
 > **Current status:** design system, UX specification and project architecture are actively being developed. Firmware bring-up begins after the target hardware is in hand. Features listed below are planned unless explicitly marked as completed.
 
+### We are looking for contributors
+
+ENKU is actively looking for contributors who want to help turn the current product/UI foundation into a working reader.
+
+The most useful areas right now are:
+
+- ESP32-S3 firmware and low-power work;
+- e-paper driver and refresh behavior;
+- embedded UI architecture and physical-control navigation;
+- EPUB/FB2/text parsing, pagination and search;
+- font rendering / Unicode;
+- local web management on embedded devices;
+- localization;
+- CAD and 3D-printable enclosure development;
+- technical documentation and testing.
+
+You do not need to take ownership of a whole subsystem. A focused review, experiment, measurement, driver fix, parser prototype or enclosure contribution is useful.
+
+See [Project Status](docs/status.md) and [Contributing](CONTRIBUTING.md), or open an issue describing where you would like to help.
+
 ## Why ENKU?
 
 ### Reading first
@@ -310,6 +330,9 @@ Key rules:
 
 Useful documents:
 
+- [Project status](docs/status.md)
+- [Architecture](docs/architecture.md)
+- [Hardware baseline](docs/hardware.md)
 - [UI specification](docs/ui-spec.md)
 - [UI audit](docs/ui-audit.md)
 - [UI revision plan](docs/ui-revision-plan.md)
@@ -327,6 +350,9 @@ design/
   renders/          project diagrams and visual references
 
 docs/
+  architecture.md    system architecture
+  hardware.md        verified/planned hardware baseline
+  status.md          current project status
   UI and interaction specifications
 
 README.md           project overview
@@ -355,7 +381,7 @@ The interface language is independent from book content and keyboard input mode.
 
 ## Contributing
 
-ENKU is still early, so contributions are most useful when they are focused and testable.
+**ENKU is actively looking for contributors.** The project is still early, so contributions are most useful when they are focused and testable.
 
 Good contribution areas include:
 

@@ -18,6 +18,7 @@
 #include "enku/runtime/input_runtime.hpp"
 #include "enku/platform/esp_idf/esp_idf_epaper.hpp"
 #include "enku/platform/esp_idf/esp_idf_file_store.hpp"
+#include "enku/platform/esp_idf/esp_idf_power_service.hpp"
 #include "enku/platform/esp_idf/esp_idf_sd_card.hpp"
 
 namespace {
@@ -329,6 +330,33 @@ const char* actionName(enku::LogicalAction action) {
         case enku::LogicalAction::PowerOff: return "PowerOff";
         default: return "Unknown";
     }
+}
+
+bool powerSmokeTest() {
+    enku::platform::esp_idf::EspIdfPowerService power;
+
+    if (!power.begin()) {
+        ESP_LOGE(kTag, "AXP2101 initialization failed");
+        return false;
+    }
+
+    const auto battery = power.batteryState();
+
+    ESP_LOGI(
+        kTag,
+        "POWER battery=%u%% charging=%s external=%s voltage=%umV",
+        static_cast<unsigned>(battery.percent),
+        battery.charging ? "yes" : "no",
+        battery.external_power ? "yes" : "no",
+        static_cast<unsigned>(power.batteryVoltageMv())
+    );
+
+    ESP_LOGI(
+        kTag,
+        "Power smoke test passed (shutdown not triggered automatically)"
+    );
+
+    return true;
 }
 
 bool inputSmokeTest() {
@@ -680,6 +708,14 @@ extern "C" void app_main(void) {
         return;
     }
 
+    if (!powerSmokeTest()) {
+        ESP_LOGE(
+            kTag,
+            "Platform power verification failed"
+        );
+        return;
+    }
+
     if (!inputSmokeTest()) {
         ESP_LOGE(
             kTag,
@@ -690,6 +726,6 @@ extern "C" void app_main(void) {
 
     ESP_LOGI(
         kTag,
-        "ENKU storage + display + input bring-up complete"
+        "ENKU storage + display + power + input bring-up complete"
     );
 }

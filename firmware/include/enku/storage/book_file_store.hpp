@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 namespace enku {
 
@@ -28,6 +29,11 @@ public:
 
     virtual BookFileStatus remove(
         const std::string& path
+    ) = 0;
+
+    virtual BookFileStatus list(
+        const std::string& directory,
+        std::vector<std::string>& paths
     ) = 0;
 };
 

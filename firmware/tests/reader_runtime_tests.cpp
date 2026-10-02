@@ -1,6 +1,4 @@
-#include "enku/reader/document_reader_engine.hpp"
-#include "enku/reader/reader_session.hpp"
-#include "enku/reader/txt_parser.hpp"
+#include "enku/reader/book_loader.hpp"
 #include "enku/runtime/reader_runtime.hpp"
 
 #include <cassert>
@@ -99,6 +97,22 @@ public:
     std::uint32_t updates{0};
 };
 
+class FakeBookSourceService final : public BookSourceService {
+public:
+    BookSourceStatus readSource(
+        const BookRecord&,
+        std::string& bytes
+    ) override {
+        ++calls;
+        bytes = content;
+        return status;
+    }
+
+    BookSourceStatus status{BookSourceStatus::Ok};
+    std::string content;
+    std::uint32_t calls{0};
+};
+
 class FakeCheckpointService final : public ReaderCheckpointService {
 public:
     PersistStatus checkpoint(
@@ -126,71 +140,58 @@ public:
 } // namespace
 
 int main() {
-    TxtParser parser;
     FixedWidthMeasurer measurer;
     FakeRefreshService refresh;
     FakeLibraryService library;
+    FakeBookSourceService source;
     FakeCheckpointService checkpoint;
-
-    ParserSourceInfo source{
-        "runtime-test",
-        "/books/runtime.txt",
-        "runtime.txt",
-    };
 
     const std::string text =
         "Alpha beta gamma delta epsilon zeta eta theta iota kappa lambda "
         "mu nu xi omicron pi rho sigma tau upsilon phi chi psi omega.";
 
-    const auto parsed = parser.parse(text, source);
-    assert(parsed.ok());
-
-    DocumentReaderEngine engine(parsed.document, measurer);
-    ReaderSession session(engine);
-
-    LayoutRequest request{
-        "runtime-test",
-        SemanticPosition{"runtime-test", "txt:body", 0},
-        TypographySettings{16, 1.0F, 10},
-        Viewport{140, 80},
-    };
-
     BookRecord record;
     record.book_id = "runtime-test";
     record.format = BookFormat::Txt;
+    record.source_path = "/books/runtime.txt";
+    record.source_filename = "runtime.txt";
     record.metadata.title = "runtime";
     record.last_opened_order = 10;
     library.record = record;
+    source.content = text;
+
+    ReaderBookLoader loader(library, source, measurer);
 
     AppState state;
     state.screen = Screen::Library;
 
+    const TypographySettings typography{16, 1.0F, 10};
+    const Viewport viewport{140, 80};
+
     ReaderRuntimeController runtime(
         state,
-        session,
+        loader,
         refresh,
         library,
-        checkpoint
+        checkpoint,
+        typography,
+        viewport
     );
 
+    // OpenBookRequested now performs the loader step itself and immediately
+    // completes through the BookOpened lifecycle on success.
     assert(
         runtime.handle(OpenBookRequested{"runtime-test"}) ==
-        ReaderRuntimeResult::BookOpening
-    );
-    assert(state.screen == Screen::BookOpening);
-    assert(state.current_book == "runtime-test");
-    assert(refresh.last.reason == RefreshReason::ScreenChanged);
-
-    // Simulates the book-loader layer completing parse/open before BookOpened.
-    assert(session.open(request) == ReaderSessionStatus::Ready);
-
-    assert(
-        runtime.handle(BookOpened{"runtime-test"}) ==
         ReaderRuntimeResult::Applied
     );
+    assert(source.calls == 1);
+    assert(loader.session() != nullptr);
+    assert(loader.session()->isOpen());
     assert(state.screen == Screen::Reading);
+    assert(state.current_book == "runtime-test");
     assert(state.reading_position.has_value());
     assert(!state.progress_dirty);
+    assert(refresh.last.reason == RefreshReason::PageTurn);
 
     const auto first_offset = state.reading_position->text_offset;
 
@@ -216,19 +217,16 @@ int main() {
     assert(state.screen == Screen::Library);
     assert(state.library.focused_book == "runtime-test");
     assert(!state.current_book.has_value());
-    assert(!session.isOpen());
+    assert(loader.session() == nullptr);
     assert(refresh.last.reason == RefreshReason::ScreenChanged);
 
-    // Open again and advance to end.
+    // Open again and advance to end. No external BookOpened event is needed.
     assert(
         runtime.handle(OpenBookRequested{"runtime-test"}) ==
-        ReaderRuntimeResult::BookOpening
-    );
-    assert(session.open(request) == ReaderSessionStatus::Ready);
-    assert(
-        runtime.handle(BookOpened{"runtime-test"}) ==
         ReaderRuntimeResult::Applied
     );
+    assert(source.calls == 2);
+    assert(state.screen == Screen::Reading);
 
     while (true) {
         const auto result =
@@ -254,17 +252,19 @@ int main() {
     assert(checkpoint.last_state == ReadingState::Finished);
     assert(state.screen == Screen::Library);
 
-    // Book-open failure returns safely to Library.
+    // Loader failure automatically completes through BookOpenFailed and
+    // returns safely to Library.
+    source.status = BookSourceStatus::Unavailable;
+
     assert(
         runtime.handle(OpenBookRequested{"runtime-test"}) ==
-        ReaderRuntimeResult::BookOpening
-    );
-    assert(
-        runtime.handle(BookOpenFailed{"runtime-test"}) ==
         ReaderRuntimeResult::BookOpenFailed
     );
+    assert(source.calls == 3);
     assert(state.screen == Screen::Library);
+    assert(state.library.focused_book == "runtime-test");
     assert(!state.current_book.has_value());
+    assert(loader.session() == nullptr);
     assert(refresh.last.reason == RefreshReason::ErrorRecovery);
 
     return 0;

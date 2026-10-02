@@ -1,12 +1,18 @@
 # Third-party assets and release prerequisites
 
-ENKU is intended to become an open-source project, but the final code, design and mechanical licenses have not yet been selected.
+ENKU now has a defined licensing model for original project material. See [LICENSES.md](LICENSES.md).
+
+- firmware/software: Apache-2.0;
+- project documentation: CC BY 4.0;
+- future project-owned hardware/mechanical source: CERN-OHL-P-2.0.
+
+Branding, historical design boards and third-party assets remain separately scoped as described below.
 
 ## ENKU branding
 
 The ENKU logo in `assets/branding/enku-logo.svg` is a project-owned asset supplied by the project creator.
 
-Its presence in this repository does not automatically define the license for the firmware, UI design or future enclosure files.
+The ENKU name and logo are branding assets and are not included in the blanket Apache-2.0 / CC BY 4.0 / CERN-OHL-P-2.0 grants unless explicitly stated otherwise.
 
 ## Fonts and icons
 
@@ -32,9 +38,9 @@ These boards are design references and should not be interpreted as redistributa
 
 Before the first tagged open-source release:
 
-- select a firmware/code license;
-- select a design/mechanical license;
 - verify third-party asset provenance;
+- complete the design-asset licensing audit;
 - add required attribution files;
 - remove or replace any unlicensed illustrative content;
-- document licenses for any bundled dependencies/assets.
+- document licenses for bundled dependencies/assets;
+- add per-directory/per-file license notices where needed.

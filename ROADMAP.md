@@ -69,7 +69,7 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 
 ## 5. Library and storage
 
-- [ ] Define the initial supported book format set
+- [x] Define the initial supported book format set: EPUB, FB2 and TXT; PDF deferred
 - [ ] Implement library indexing
 - [ ] Implement metadata extraction
 - [ ] Implement cover extraction and fallback handling
@@ -85,7 +85,9 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 
 ## 6. Reader engine
 
-- [ ] Implement the first book parser
+- [ ] Implement EPUB parser
+- [ ] Implement FB2 parser
+- [ ] Implement TXT reader/parser
 - [ ] Define semantic reading-position representation
 - [ ] Implement text layout and pagination
 - [ ] Implement portrait/landscape repagination while preserving position
@@ -174,7 +176,8 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 - [ ] Add firmware build and flash documentation
 - [ ] Add hardware assembly documentation
 - [ ] Add enclosure assembly documentation
-- [ ] Add supported-format documentation
+- [ ] Finalize supported-format documentation and known limitations
+- [ ] Re-evaluate PDF support after the reflowable reader is stable
 - [ ] Publish known limitations
 - [ ] Publish reproducible release artifacts
 - [ ] Tag the first public ENKU reader release

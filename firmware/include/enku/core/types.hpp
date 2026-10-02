@@ -14,18 +14,21 @@ enum class Orientation : std::uint8_t {
 };
 
 enum class Screen : std::uint8_t {
-    Boot,
-    Library,
-    BookDetails,
-    BookOpening,
-    Reading,
-    BookFinished,
-    ReaderOverlay,
-    Search,
-    Settings,
-    ImportTransfer,
-    Sleep,
-    ErrorRecovery,
+    Boot = 0,
+    Library = 1,
+    BookOpening = 2,
+    Reading = 3,
+    ReaderOverlay = 4,
+    Search = 5,
+    Settings = 6,
+    ImportTransfer = 7,
+    Sleep = 8,
+    ErrorRecovery = 9,
+
+    // Transient UI screens are appended so persisted legacy values remain
+    // stable across firmware upgrades.
+    BookDetails = 10,
+    BookFinished = 11,
 };
 
 enum class ReadingState : std::uint8_t {

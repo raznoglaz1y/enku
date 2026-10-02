@@ -1283,12 +1283,12 @@ int main() {
 
     assert(
         wifi_settings.handle(
-            LogicalAction::NavigateNext
+            LogicalAction::NavigatePrevious
         ) == WiFiSettingsRuntimeResult::Applied
     );
     assert(
         storage.appState().wifi_settings.selected_policy ==
-        WiFiPolicy::Off
+        WiFiPolicy::Manual
     );
 
     assert(
@@ -1297,8 +1297,8 @@ int main() {
         ) == WiFiSettingsRuntimeResult::Applied
     );
     assert(!storage.appState().wifi_settings.editing_policy);
-    assert(storage.appState().wifi_policy == WiFiPolicy::Off);
-    assert(wifi_network.applied_policy == WiFiPolicy::Off);
+    assert(storage.appState().wifi_policy == WiFiPolicy::Manual);
+    assert(wifi_network.applied_policy == WiFiPolicy::Manual);
 
     GlobalSettings persisted_wifi;
     assert(
@@ -1308,7 +1308,7 @@ int main() {
     );
     assert(
         persisted_wifi.wifi_policy ==
-        WiFiPolicy::Off
+        WiFiPolicy::Manual
     );
 
     // Scan -> secure network -> shared keyboard -> successful transient

@@ -18,9 +18,11 @@ constexpr const char* kTag = "ENKU_FONT";
 } // namespace
 
 FreeTypeTextRenderer::FreeTypeTextRenderer(
+    OwnedMonoFramebuffer& framebuffer,
     std::string font_path
 )
-    : font_path_(std::move(font_path)) {}
+    : framebuffer_(framebuffer),
+      font_path_(std::move(font_path)) {}
 
 FreeTypeTextRenderer::~FreeTypeTextRenderer() {
     if (face_ != nullptr) {
@@ -272,7 +274,6 @@ std::uint16_t FreeTypeTextRenderer::lineHeightPx(
 }
 
 void FreeTypeTextRenderer::drawMonoBitmap(
-    OwnedMonoFramebuffer& framebuffer,
     const FT_Bitmap& bitmap,
     int x,
     int y
@@ -300,7 +301,7 @@ void FreeTypeTextRenderer::drawMonoBitmap(
                 continue;
             }
 
-            framebuffer.setBlack(
+            framebuffer_.setBlack(
                 x + static_cast<int>(column),
                 y + static_cast<int>(row)
             );
@@ -310,14 +311,13 @@ void FreeTypeTextRenderer::drawMonoBitmap(
 
 bool FreeTypeTextRenderer::renderPage(
     const PageResult& page,
-    const TypographySettings& typography,
-    OwnedMonoFramebuffer& framebuffer
-) const {
+    const TypographySettings& typography
+) {
     if (!ensureSize(typography.font_size_px)) {
         return false;
     }
 
-    framebuffer.clearWhite();
+    framebuffer_.clearWhite();
 
     const int ascender =
         static_cast<int>(
@@ -381,7 +381,6 @@ bool FreeTypeTextRenderer::renderPage(
             const auto& slot = *face_->glyph;
 
             drawMonoBitmap(
-                framebuffer,
                 slot.bitmap,
                 pen_x + slot.bitmap_left,
                 baseline - slot.bitmap_top

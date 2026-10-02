@@ -118,12 +118,18 @@ jobs:
           grep -q 'href="/build" class="active"' /tmp/build.html
           grep -q 'class="enku-next"' /tmp/build.html
           grep -q 'href="/status"' /tmp/build.html
+          curl -fsSL https://enkureader.com/status -o /tmp/status.html
+          grep -q '<summary class="active">Project' /tmp/status.html
+          ! grep -q '<details class="project-menu" open' /tmp/status.html
           grep -Eq 'href="/software"[^>]*>Software</a>' /tmp/home.html
           grep -Eq 'href="/hardware"[^>]*>Hardware</a>' /tmp/home.html
           grep -Eq 'href="/design"[^>]*>Design</a>' /tmp/home.html
           grep -Eq 'href="/build"[^>]*>Build</a>' /tmp/home.html
           grep -q 'class="project-menu"' /tmp/home.html
           grep -q 'class="enku-home"' /tmp/home.html
+          grep -q 'class="enku-home-render"' /tmp/home.html
+          grep -q 'src="/assets/enku-reader-approved.webp"' /tmp/home.html
+          grep -q 'class="project-chevron"' /tmp/home.html
           grep -q 'One reader. Four connected layers.' /tmp/home.html
           grep -Eq 'class="[^"]*enku-footer-grid[^"]*"' /tmp/home.html
           ! grep -q 'href="/#hardware"' /tmp/home.html

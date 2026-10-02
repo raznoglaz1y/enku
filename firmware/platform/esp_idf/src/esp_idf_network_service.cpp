@@ -7,6 +7,7 @@
 #include "esp_log.h"
 #include "esp_wifi.h"
 #include "esp_netif.h"
+#include "esp_netif_ip_addr.h"
 #include "nvs_flash.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -218,6 +219,33 @@ bool EspIdfNetworkService::connected() const {
 NetworkLinkState
 EspIdfNetworkService::connectionState() const {
     return link_state_.load();
+}
+
+std::optional<std::string>
+EspIdfNetworkService::localAddress() const {
+    if (!connected_.load() ||
+        station_netif_ == nullptr) {
+        return std::nullopt;
+    }
+
+    esp_netif_ip_info_t info = {};
+    if (esp_netif_get_ip_info(
+            station_netif_,
+            &info
+        ) != ESP_OK ||
+        info.ip.addr == 0) {
+        return std::nullopt;
+    }
+
+    char address[16] = {};
+    std::snprintf(
+        address,
+        sizeof(address),
+        IPSTR,
+        IP2STR(&info.ip)
+    );
+
+    return std::string(address);
 }
 
 void EspIdfNetworkService::disconnect() {

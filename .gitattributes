@@ -1,0 +1,16 @@
+# GitHub Linguist configuration
+# Keep the repository language bar focused on implementation source.
+
+*.hpp linguist-language=C++
+*.cpp linguist-language=C++
+*.c linguist-language=C
+*.h linguist-language=C
+
+docs/** linguist-documentation
+*.md linguist-documentation
+
+design/** linguist-documentation
+assets/** linguist-documentation
+
+# Locale source catalogs are data, not generated/vendor code.
+locales/*.json linguist-language=JSON

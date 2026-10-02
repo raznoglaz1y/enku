@@ -32,6 +32,7 @@ firmware/
       reader_engine.hpp
       document_reader_engine.hpp
       reader_session.hpp
+      book_loader.hpp
     runtime/
       reader_runtime.hpp
     services/
@@ -45,6 +46,7 @@ firmware/
       text_paginator.cpp
       document_reader_engine.cpp
       reader_session.cpp
+      book_loader.cpp
     parsers/
       epub/
       fb2/
@@ -161,7 +163,8 @@ Owns:
 - Reader Engine interface;
 - stateful ReaderSession navigation;
 - deterministic visited-page history;
-- disposable previous/current/next page working-set cache.
+- disposable previous/current/next page working-set cache;
+- normalized book-loader/document-provider ownership for parser → document → engine → session.
 
 It consumes normalized document content rather than raw source-format structures.
 
@@ -224,6 +227,7 @@ Defines cross-cutting service contracts used by application/runtime code.
 Examples:
 
 - storage service;
+- book source service;
 - reader checkpoint service;
 - display/refresh service;
 - network service;

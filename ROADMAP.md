@@ -48,10 +48,12 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 - [ ] Test available partial-refresh behavior
 - [ ] Characterize ghosting across realistic reader screens
 - [ ] Validate Noto Sans rendering and memory footprint
-- [ ] Measure active, idle and sleep current
+- [x] Define product-level power states: Active, DisplayIdle, Suspended, PoweredOff
+- [ ] Measure active, panel-idle, candidate-suspend and powered-off current
 - [ ] Verify battery charging behavior
 - [ ] Select and validate the final battery pack
-- [ ] Verify wake sources and hard power-off semantics
+- [x] Verify current vendor PMU shutdown and panel-sleep behavior from official source
+- [ ] Verify actual suspend/wake sources and hard power-off semantics on hardware
 - [ ] Document the verified hardware baseline
 
 ## 4. Firmware foundation
@@ -136,6 +138,7 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 
 ## 8. Sleep and power management
 
+- [x] Define Sleep / suspend / power-off architecture
 - [ ] Implement manual Sleep
 - [ ] Implement configurable auto-sleep
 - [ ] Suspend auto-sleep during writes/imports/transfers

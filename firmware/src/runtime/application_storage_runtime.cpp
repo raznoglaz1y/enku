@@ -25,7 +25,8 @@ ApplicationStorageRuntime::ApplicationStorageRuntime(
           library_,
           book_files,
           checkpoints_,
-          app_context_
+          app_context_,
+          &bookmarks_
       ),
       book_source_(book_files),
       storage_startup_(

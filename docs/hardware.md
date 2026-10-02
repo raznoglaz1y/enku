@@ -130,3 +130,40 @@ The current official Waveshare application distinguishes panel sleep from full P
 ENKU therefore treats **DisplayIdle**, **Suspended** and **PoweredOff** as separate product states.
 
 The final suspend mechanism and wake sources remain pending real-board measurements. See [Power, Sleep & Wake Model](power-model.md).
+
+
+## First ESP-IDF bring-up target
+
+ENKU now has an isolated board target under `firmware/platform/esp_idf`.
+
+The first milestone deliberately covers TF storage only.
+
+The board constants currently used by the target are taken from Waveshare's official ESP32-S3-ePaper-3.97 documentation/examples:
+
+### TF / SDMMC
+
+| Signal | GPIO |
+| --- | ---: |
+| CLK | 43 |
+| CMD | 44 |
+| D0 | 39 |
+| D1 | 40 |
+| D2 | 41 |
+| D3 | 42 |
+
+The first target uses 4-bit SDMMC and mounts FAT at `/sdcard`.
+
+### E-paper constants reserved for display bring-up
+
+| Signal | GPIO |
+| --- | ---: |
+| BUSY | 3 |
+| DC | 9 |
+| CS | 10 |
+| SCLK | 11 |
+| MOSI | 12 |
+| RST | 46 |
+
+These display pins are recorded in the board layer but the current smoke firmware does not initialize the SSD1677 panel yet.
+
+The storage adapter implements the same `StateFileStore` and `BookFileStore` contracts already used by the tested host persistence/runtime code. This is the first direct bridge from framework-neutral ENKU storage architecture to the physical Waveshare board.

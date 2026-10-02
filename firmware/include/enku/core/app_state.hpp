@@ -5,6 +5,7 @@
 #include <string>
 
 #include "types.hpp"
+#include "library.hpp"
 #include "localization.hpp"
 #include "boot.hpp"
 
@@ -20,8 +21,14 @@ struct TypographyState {
 
 struct LibraryState {
     LibraryView view{LibraryView::Grid};
-    std::string filter;
-    std::string sort;
+    LibraryQueryMode mode{LibraryQueryMode::Browse};
+    LibraryFilter filter{LibraryFilter::All};
+    LibrarySort sort{LibrarySort::RecentlyOpened};
+    SortDirection direction{SortDirection::Descending};
+    std::string search_text;
+    std::uint32_t offset{0};
+    std::uint16_t limit{24};
+    std::uint32_t total_matches{0};
     std::optional<BookId> focused_book;
 };
 

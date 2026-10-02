@@ -504,3 +504,19 @@ ImportRequested
 ```
 
 This connects the import activity flag already consumed by Sleep and Power Off policy to a real runtime operation rather than leaving it as a passive field.
+
+
+## 30. Delete focused book
+
+Library runtime now accepts `DeleteFocusedBookRequested` only while the Library screen is active and no import transaction is running.
+
+```text
+DeleteFocusedBookRequested
+→ BookDeleteService
+→ remove Library/source/checkpoint/context safely
+→ re-run active Library query
+→ normalize focus by book_id
+→ refresh Library
+```
+
+A failed delete returns `LibraryRuntimeResult::DeleteFailed` and does not masquerade as an empty Library or successful removal.

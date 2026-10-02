@@ -33,83 +33,86 @@ BookLoadResult ReaderBookLoader::open(
         };
     }
 
-    std::string bytes;
-    const auto source_status =
-        source_.readSource(*record, bytes);
+    {
+        std::string bytes;
+        const auto source_status =
+            source_.readSource(*record, bytes);
 
-    if (source_status == BookSourceStatus::Unavailable) {
-        return {
-            BookLoadStatus::SourceUnavailable,
-            ReaderSessionStatus::Closed,
-        };
-    }
-
-    if (source_status != BookSourceStatus::Ok) {
-        return {
-            BookLoadStatus::SourceReadFailed,
-            ReaderSessionStatus::Closed,
-        };
-    }
-
-    ParseResult parsed;
-
-    switch (record->format) {
-        case BookFormat::Txt: {
-            ParserSourceInfo source_info{
-                record->book_id,
-                record->source_path,
-                record->source_filename,
-            };
-
-            parsed = txt_parser_.parse(bytes, source_info);
-            break;
-        }
-
-        case BookFormat::Epub: {
-            ParserSourceInfo source_info{
-                record->book_id,
-                record->source_path,
-                record->source_filename,
-            };
-
-            parsed =
-                epub_parser_.parse(
-                    bytes,
-                    source_info
-                );
-            break;
-        }
-
-        case BookFormat::Fb2: {
-            ParserSourceInfo source_info{
-                record->book_id,
-                record->source_path,
-                record->source_filename,
-            };
-
-            parsed =
-                fb2_parser_.parse(
-                    bytes,
-                    source_info
-                );
-            break;
-        }
-
-        default:
+        if (source_status == BookSourceStatus::Unavailable) {
             return {
-                BookLoadStatus::UnsupportedFormat,
+                BookLoadStatus::SourceUnavailable,
                 ReaderSessionStatus::Closed,
             };
-    }
+        }
 
-    if (!parsed.ok()) {
-        return {
-            BookLoadStatus::ParseFailed,
-            ReaderSessionStatus::Closed,
-        };
-    }
+        if (source_status != BookSourceStatus::Ok) {
+            return {
+                BookLoadStatus::SourceReadFailed,
+                ReaderSessionStatus::Closed,
+            };
+        }
 
-    document_ = std::move(parsed.document);
+        ParseResult parsed;
+
+        switch (record->format) {
+            case BookFormat::Txt: {
+                ParserSourceInfo source_info{
+                    record->book_id,
+                    record->source_path,
+                    record->source_filename,
+                };
+
+                parsed = txt_parser_.parse(bytes, source_info);
+                break;
+            }
+
+            case BookFormat::Epub: {
+                ParserSourceInfo source_info{
+                    record->book_id,
+                    record->source_path,
+                    record->source_filename,
+                };
+
+                parsed =
+                    epub_parser_.parse(
+                        bytes,
+                        source_info
+                    );
+                break;
+            }
+
+            case BookFormat::Fb2: {
+                ParserSourceInfo source_info{
+                    record->book_id,
+                    record->source_path,
+                    record->source_filename,
+                };
+
+                parsed =
+                    fb2_parser_.parse(
+                        bytes,
+                        source_info
+                    );
+                break;
+            }
+
+            default:
+                return {
+                    BookLoadStatus::UnsupportedFormat,
+                    ReaderSessionStatus::Closed,
+                };
+        }
+
+        if (!parsed.ok()) {
+            return {
+                BookLoadStatus::ParseFailed,
+                ReaderSessionStatus::Closed,
+            };
+        }
+
+        document_ = std::move(parsed.document);
+
+    }
 
     engine_ = std::make_unique<DocumentReaderEngine>(
         *document_,

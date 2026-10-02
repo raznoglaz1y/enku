@@ -37,6 +37,7 @@ include/enku/
     storage_startup.hpp
     boot_restore.hpp
     sleep_wake.hpp
+    power_off.hpp
   services/
     services.hpp
   storage/
@@ -104,6 +105,7 @@ The host suite currently covers:
 - storage startup recovery that loads the Library, cleans stale committed tmp artifacts, and preserves ambiguous uploads;
 - persisted last-safe app context and automatic cold-boot restore into Reading at the saved semantic checkpoint;
 - Sleep checkpointing plus fast context-only Wake restore without repeating the full storage recovery path;
+- graceful Power Off persistence before the platform PMU shutdown request;
 - rollback of the final book file when Library commit fails;
 - POSIX filesystem persistence for book files and checkpoints.
 

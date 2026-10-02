@@ -9,9 +9,9 @@ This document tracks the current hardware target and separates **verified facts*
 | Main board | Waveshare ESP32-S3-ePaper-3.97 | Selected / ordered |
 | MCU | ESP32-S3 | Platform-defined |
 | Display | 3.97″ e-paper, 800 × 480 | Platform-defined |
-| Input | Physical controls, non-touch UI | Product direction fixed; mapping to verify |
-| Storage | microSD / local file workflow | To verify on real board |
-| Connectivity | Wi-Fi / BLE capability | Platform-defined; ENKU Wi-Fi behavior planned |
+| Input | Physical controls, non-touch UI | GPIO mapping implemented; physical feel to verify |
+| Storage | microSD / local file workflow | SDMMC/FAT platform adapter implemented; hardware timing to verify |
+| Connectivity | Wi-Fi / BLE capability | Wi-Fi STA lifecycle implemented; BLE deferred |
 | Battery | ~2000 mAh Li-Po target | Final pack TBD |
 | Charging | Board-integrated behavior | To verify |
 | Enclosure | Custom 3D-printable case | Starts after measurement |
@@ -136,24 +136,26 @@ The final suspend mechanism and wake sources remain pending real-board measureme
 
 ENKU now has an isolated board target under `firmware/platform/esp_idf`.
 
-The first milestone deliberately covers TF storage only.
+The board-specific target now covers storage, display, input, PMU, Wi-Fi and the first application runtime.
 
-The board constants currently used by the target are taken from Waveshare's official ESP32-S3-ePaper-3.97 documentation/examples:
+The current board mapping follows Waveshare's **complete board application reference** rather than the earlier minimal e-paper example.
 
 ### TF / SDMMC
 
 | Signal | GPIO |
 | --- | ---: |
-| CLK | 43 |
-| CMD | 44 |
-| D0 | 39 |
-| D1 | 40 |
-| D2 | 41 |
-| D3 | 42 |
+| CLK | 16 |
+| CMD | 17 |
+| D0 | 15 |
+| D1 | 7 |
+| D2 | 8 |
+| D3 | 18 |
 
-The first target uses 4-bit SDMMC and mounts FAT at `/sdcard`.
+The target uses 4-bit SDMMC and mounts FAT at `/sdcard`.
 
-### E-paper constants reserved for display bring-up
+The earlier minimal Waveshare example used GPIO39–44 for SDMMC; ENKU does **not** use that mapping because the complete board reference reserves GPIO41/42 for I²C/AXP2101.
+
+### E-paper pins
 
 | Signal | GPIO |
 | --- | ---: |
@@ -166,7 +168,7 @@ The first target uses 4-bit SDMMC and mounts FAT at `/sdcard`.
 
 These display pins are now used by the first ENKU SSD1677 driver. The current milestone implements vendor-aligned SPI3 full-refresh initialization, monochrome framebuffer transfer, BUSY timeout handling and panel deep sleep.
 
-The storage adapter implements the same `StateFileStore` and `BookFileStore` contracts already used by the tested host persistence/runtime code. This is the first direct bridge from framework-neutral ENKU storage architecture to the physical Waveshare board.
+The storage adapter implements the same `StateFileStore` and `BookFileStore` contracts used by the host-tested persistence/runtime code. The current ESP-IDF target now links that application persistence layer directly against the physical SD-backed adapters.
 
 
 ## SSD1677 full-refresh baseline
@@ -258,3 +260,34 @@ The SSD1677 driver is now wrapped by `EpaperRefreshService`, which implements th
 This is the first point where application runtime refresh requests are translated into physical panel behavior.
 
 The renderer/display boundary uses a 1-bit `MonoFramebufferSource`; the current owned implementation stores the full 800×480 frame and can extract byte-aligned dirty regions for partial updates.
+
+
+## Current integrated device runtime
+
+The ESP-IDF board target now composes:
+
+```text
+SDMMC/FAT
+→ state + book stores
+→ CBOR settings/library/checkpoints/context
+→ storage startup/recovery
+→ Noto Sans / FreeType measurement + rendering
+→ Library + Reader runtime
+→ 1-bit framebuffer
+→ EpaperRefreshService
+→ SSD1677
+```
+
+Physical controls are polled every 5 ms and flow through:
+
+```text
+GPIO
+→ PhysicalInputEvent
+→ LogicalAction
+→ InputDispatcher
+→ Library / Reader / Sleep-Wake / Power-Off
+```
+
+The application path is persistent rather than a finite smoke script. With the Reader font provisioned on the TF card, firmware renders the initial Library and then remains in the device input loop.
+
+Hardware smoke tests remain available behind `CONFIG_ENKU_BRINGUP_SMOKE_TESTS` while the first physical unit is being validated.

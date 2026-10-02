@@ -129,6 +129,44 @@ int main() {
         TextBlockType::Heading
     );
 
+    const std::string nested_fb2 = R"(<?xml version="1.0" encoding="utf-8"?>
+<FictionBook>
+ <description>
+  <title-info>
+   <book-title>Nested FB2</book-title>
+  </title-info>
+ </description>
+ <body>
+  <section>
+   <title><p>Part One</p></title>
+   <section>
+    <title><p>Nested Chapter</p></title>
+    <p>Nested body.</p>
+   </section>
+  </section>
+ </body>
+</FictionBook>)";
+
+    const auto nested =
+        parser.parse(
+            nested_fb2,
+            source
+        );
+
+    assert(nested.ok());
+    assert(nested.document.sections.size() == 1);
+    assert(
+        nested.document.sections[0].title ==
+        std::optional<std::string>{
+            "Nested Chapter"
+        }
+    );
+    assert(
+        nested.document.sections[0].
+            blocks[0].text ==
+        "Nested body."
+    );
+
     const auto unsupported_encoding =
         parser.parse(
             "<?xml version=\"1.0\" encoding=\"windows-1251\"?><FictionBook/>",

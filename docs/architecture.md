@@ -136,6 +136,8 @@ Runtime transitions for opening, reading, search, sleep/wake and recovery are de
 
 The initial source/module layout and framework-neutral interfaces are defined in [Firmware Project Structure](firmware-structure.md).
 
+The hardware-grounded button mapping and logical input actions are defined in [Input & Physical Controls](input-model.md).
+
 ### Reader v1 format scope
 
 The first ENKU reader release targets three reflowable/text-oriented formats:

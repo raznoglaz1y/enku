@@ -6,6 +6,7 @@ namespace {
 
 InputDispatchResult dispatchOverlay(
     ReaderOverlayRuntime* overlay,
+    SearchRuntime* search,
     SleepWakeCoordinator& sleep_wake,
     LogicalAction action
 ) {
@@ -16,6 +17,15 @@ InputDispatchResult dispatchOverlay(
     switch (overlay->handle(action)) {
         case ReaderOverlayRuntimeResult::Applied:
             return InputDispatchResult::Applied;
+
+        case ReaderOverlayRuntimeResult::SearchRequested:
+            if (search == nullptr) {
+                return InputDispatchResult::Unhandled;
+            }
+            return search->openFromReader() ==
+                SearchRuntimeResult::Applied
+                ? InputDispatchResult::Applied
+                : InputDispatchResult::Failed;
 
         case ReaderOverlayRuntimeResult::SleepRequested:
             return sleep_wake.sleep() ==
@@ -40,14 +50,16 @@ InputDispatcher::InputDispatcher(
     ReaderRuntimeController& reader,
     SleepWakeCoordinator& sleep_wake,
     PowerOffCoordinator& power_off,
-    ReaderOverlayRuntime* reader_overlay
+    ReaderOverlayRuntime* reader_overlay,
+    SearchRuntime* search
 )
     : app_state_(app_state),
       library_(library),
       reader_(reader),
       sleep_wake_(sleep_wake),
       power_off_(power_off),
-      reader_overlay_(reader_overlay) {}
+      reader_overlay_(reader_overlay),
+      search_(search) {}
 
 InputDispatchResult InputDispatcher::handle(
     const PhysicalInputEvent& input
@@ -68,6 +80,7 @@ InputDispatchResult InputDispatcher::handle(
                 Screen::ReaderOverlay) {
                 return dispatchOverlay(
                     reader_overlay_,
+                    search_,
                     sleep_wake_,
                     *action
                 );
@@ -89,6 +102,7 @@ InputDispatchResult InputDispatcher::handle(
                 Screen::ReaderOverlay) {
                 return dispatchOverlay(
                     reader_overlay_,
+                    search_,
                     sleep_wake_,
                     *action
                 );
@@ -110,6 +124,7 @@ InputDispatchResult InputDispatcher::handle(
                 Screen::ReaderOverlay) {
                 return dispatchOverlay(
                     reader_overlay_,
+                    search_,
                     sleep_wake_,
                     *action
                 );
@@ -154,10 +169,22 @@ InputDispatchResult InputDispatcher::handle(
         }
 
         case LogicalAction::Back: {
+            if (app_state_.screen == Screen::Search) {
+                if (search_ == nullptr) {
+                    return InputDispatchResult::Unhandled;
+                }
+
+                return search_->handle(*action) ==
+                    SearchRuntimeResult::Applied
+                    ? InputDispatchResult::Applied
+                    : InputDispatchResult::Failed;
+            }
+
             if (app_state_.screen ==
                 Screen::ReaderOverlay) {
                 return dispatchOverlay(
                     reader_overlay_,
+                    search_,
                     sleep_wake_,
                     *action
                 );
@@ -182,6 +209,7 @@ InputDispatchResult InputDispatcher::handle(
         case LogicalAction::OpenQuickTypography:
             return dispatchOverlay(
                 reader_overlay_,
+                search_,
                 sleep_wake_,
                 *action
             );

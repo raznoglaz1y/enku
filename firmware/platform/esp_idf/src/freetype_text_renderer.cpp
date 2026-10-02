@@ -1032,6 +1032,228 @@ bool FreeTypeTextRenderer::renderLibrary(
 
 namespace enku::platform::esp_idf {
 
+bool FreeTypeTextRenderer::renderContentsBookmarks(
+    const AppState& app_state,
+    const std::vector<ContentsEntry>& contents,
+    const std::vector<BookmarkRecord>& bookmarks
+) {
+    if (!ready()) {
+        return false;
+    }
+
+    framebuffer_.clearWhite();
+
+    const auto orientation =
+        app_state.orientation;
+
+    const int logical_width =
+        orientation == Orientation::Portrait
+            ? 480
+            : 800;
+
+    const auto& state =
+        app_state.contents_bookmarks;
+
+    if (!drawTextAt(
+            "CONTENTS & BOOKMARKS",
+            24,
+            28,
+            48,
+            orientation
+        )) {
+        return false;
+    }
+
+    const int tab_top = 72;
+    const int tab_gap = 12;
+    const int tab_width =
+        (logical_width - 56 - tab_gap) / 2;
+
+    const bool contents_active =
+        state.tab == ContentsBookmarksTab::Contents;
+
+    drawRect(
+        24,
+        tab_top,
+        tab_width,
+        48,
+        orientation,
+        state.focus ==
+                ContentsBookmarksFocus::ContentsTab
+            ? 2
+            : 1
+    );
+
+    drawRect(
+        24 + tab_width + tab_gap,
+        tab_top,
+        tab_width,
+        48,
+        orientation,
+        state.focus ==
+                ContentsBookmarksFocus::BookmarksTab
+            ? 2
+            : 1
+    );
+
+    if (!drawTextAt(
+            contents_active
+                ? "CONTENTS *"
+                : "CONTENTS",
+            15,
+            38,
+            tab_top + 30,
+            orientation
+        )) {
+        return false;
+    }
+
+    if (!drawTextAt(
+            contents_active
+                ? "BOOKMARKS"
+                : "BOOKMARKS *",
+            15,
+            38 + tab_width + tab_gap,
+            tab_top + 30,
+            orientation
+        )) {
+        return false;
+    }
+
+    const std::size_t count =
+        contents_active
+            ? contents.size()
+            : bookmarks.size();
+
+    const std::uint32_t visible =
+        orientation == Orientation::Portrait
+            ? 8U
+            : 5U;
+
+    const auto start =
+        std::min<std::size_t>(
+            state.window_start,
+            count
+        );
+
+    const auto end =
+        std::min<std::size_t>(
+            count,
+            start + visible
+        );
+
+    const int list_top = 142;
+    const int row_height =
+        orientation == Orientation::Portrait
+            ? 62
+            : 54;
+
+    if (count == 0U) {
+        if (!drawTextAt(
+                contents_active
+                    ? "NO CONTENTS"
+                    : "NO BOOKMARKS",
+                18,
+                34,
+                list_top + 40,
+                orientation
+            )) {
+            return false;
+        }
+
+        if (!drawTextAt(
+                contents_active
+                    ? "THIS BOOK HAS NO STRUCTURED CONTENTS."
+                    : "ADD A BOOKMARK FROM THE READER MENU.",
+                13,
+                34,
+                list_top + 70,
+                orientation
+            )) {
+            return false;
+        }
+    } else {
+        for (std::size_t i = start;
+             i < end;
+             ++i) {
+            const int row =
+                static_cast<int>(i - start);
+
+            const int top =
+                list_top + row * row_height;
+
+            const bool focused =
+                state.focus ==
+                    ContentsBookmarksFocus::Item &&
+                state.item_index == i;
+
+            if (focused) {
+                drawRect(
+                    24,
+                    top,
+                    logical_width - 48,
+                    row_height - 6,
+                    orientation,
+                    2
+                );
+            }
+
+            std::string label;
+
+            if (contents_active) {
+                label = contents[i].label;
+            } else {
+                label = bookmarks[i].label.empty()
+                    ? "Bookmark"
+                    : bookmarks[i].label;
+            }
+
+            if (!drawTextAt(
+                    label,
+                    16,
+                    40,
+                    top + 30,
+                    orientation
+                )) {
+                return false;
+            }
+
+            if (!contents_active) {
+                char offset[40] = {};
+                std::snprintf(
+                    offset,
+                    sizeof(offset),
+                    "POSITION %llu",
+                    static_cast<unsigned long long>(
+                        bookmarks[i].
+                            position.text_offset
+                    )
+                );
+
+                if (!drawTextAt(
+                        offset,
+                        11,
+                        40,
+                        top + 47,
+                        orientation
+                    )) {
+                    return false;
+                }
+            }
+        }
+    }
+
+    return drawTextAt(
+        "UP/DOWN MOVE  FUNCTION SELECT  BACK READING",
+        12,
+        28,
+        orientation == Orientation::Portrait
+            ? 760
+            : 448,
+        orientation
+    );
+}
+
 bool FreeTypeTextRenderer::renderBookFinished(
     const AppState& app_state,
     const BookRecord& book

@@ -272,8 +272,6 @@ BootRestoreResult BootRestoreCoordinator::restoreLoadedContext(
             };
         }
 
-        app_state_.library.focused_book =
-            restore.current_book;
         settleLibrary();
         if (finalize_boot_marker &&
             !markBootStable()) {
@@ -327,8 +325,6 @@ BootRestoreResult BootRestoreCoordinator::restoreLoadedContext(
         };
     }
 
-    app_state_.library.focused_book =
-        restore.current_book;
     settleLibrary();
 
     if (!markBootStable()) {

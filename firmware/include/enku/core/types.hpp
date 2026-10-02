@@ -34,6 +34,7 @@ enum class Screen : std::uint8_t {
     ReadingSettings = 14,
     DisplaySettings = 15,
     LocaleSettings = 16,
+    AboutDevice = 17,
 };
 
 static_assert(

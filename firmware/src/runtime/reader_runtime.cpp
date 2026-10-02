@@ -216,6 +216,62 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
 }
 
 ReaderRuntimeResult ReaderRuntimeController::handle(
+    const OrientationChanged&
+) {
+    auto* active_session = session();
+
+    if (app_state_.screen != Screen::Reading ||
+        active_session == nullptr ||
+        !active_session->isOpen()) {
+        return ReaderRuntimeResult::Ignored;
+    }
+
+    const bool was_dirty =
+        app_state_.progress_dirty;
+
+    viewport_ = orientedViewport();
+
+    active_session->invalidateLayout(
+        typography_,
+        viewport_
+    );
+
+    if (active_session->status() !=
+        ReaderSessionStatus::Ready) {
+        return ReaderRuntimeResult::LayoutFailed;
+    }
+
+    const auto* current =
+        &active_session->currentPage();
+
+    if (current == nullptr ||
+        !current->has_value()) {
+        return ReaderRuntimeResult::LayoutFailed;
+    }
+
+    app_state_.current_book =
+        (*current)->first_position.book_id;
+    app_state_.reading_position =
+        (*current)->first_position;
+    app_state_.reading_progress =
+        (*current)->progress;
+    app_state_.progress_dirty = was_dirty;
+
+    if (page_renderer_ != nullptr &&
+        !page_renderer_->renderPage(
+            **current,
+            typography_,
+            app_state_.orientation
+        )) {
+        return ReaderRuntimeResult::RenderFailed;
+    }
+
+    return submitRefresh(
+        RefreshReason::ScreenChanged
+    );
+}
+
+ReaderRuntimeResult ReaderRuntimeController::handle(
     const BackRequested&
 ) {
     if (app_state_.screen != Screen::Reading ||

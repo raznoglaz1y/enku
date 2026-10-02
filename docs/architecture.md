@@ -244,18 +244,20 @@ This layer is also where board-revision differences should be isolated.
 
 Book files and reader state are logically separate.
 
-Examples:
+The detailed Library/storage model is defined in [Library & Storage Model](storage-model.md).
 
-- raw book file;
-- normalized metadata;
-- cover cache;
-- semantic reading position;
-- progress;
-- bookmarks;
-- global settings;
-- per-book typography overrides.
+Core decisions:
 
-Safe import/replace operations should be transactional so a failed write never turns a valid Library item into a broken one.
+- maintain a persistent Library index;
+- never use filename alone as book identity;
+- assign a stable internal `book_id` backed by a content-derived fingerprint;
+- keep raw book files separate from metadata, progress, bookmarks and per-book settings;
+- store progress/bookmarks as semantic positions rather than rendered page numbers;
+- cache normalized cover assets;
+- use transactional import and replacement;
+- keep incomplete imports outside the valid Library.
+
+Safe import/replace operations must never turn a previously valid Library item into a broken one.
 
 ## 10. Local web management
 

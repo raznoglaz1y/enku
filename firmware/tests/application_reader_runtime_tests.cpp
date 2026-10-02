@@ -316,13 +316,15 @@ int main() {
             LogicalAction::OpenReaderMenu
         ) == ReaderOverlayRuntimeResult::Applied
     );
+    for (int i = 0; i < 4; ++i) {
+        assert(
+            overlay.handle(
+                LogicalAction::NavigateNext
+            ) == ReaderOverlayRuntimeResult::Applied
+        );
+    }
     assert(
-        overlay.handle(
-            LogicalAction::NavigateNext
-        ) == ReaderOverlayRuntimeResult::Applied
-    );
-    assert(
-        storage.appState().reader_overlay.focus_index == 1
+        storage.appState().reader_overlay.focus_index == 4
     );
     assert(
         overlay.handle(
@@ -359,18 +361,15 @@ int main() {
             LogicalAction::OpenReaderMenu
         ) == ReaderOverlayRuntimeResult::Applied
     );
+    for (int i = 0; i < 3; ++i) {
+        assert(
+            overlay.handle(
+                LogicalAction::NavigateNext
+            ) == ReaderOverlayRuntimeResult::Applied
+        );
+    }
     assert(
-        overlay.handle(
-            LogicalAction::NavigateNext
-        ) == ReaderOverlayRuntimeResult::Applied
-    );
-    assert(
-        overlay.handle(
-            LogicalAction::NavigateNext
-        ) == ReaderOverlayRuntimeResult::Applied
-    );
-    assert(
-        storage.appState().reader_overlay.focus_index == 2
+        storage.appState().reader_overlay.focus_index == 3
     );
     assert(
         overlay.handle(
@@ -553,16 +552,13 @@ int main() {
             LogicalAction::OpenReaderMenu
         ) == ReaderOverlayRuntimeResult::Applied
     );
-    assert(
-        overlay.handle(
-            LogicalAction::NavigateNext
-        ) == ReaderOverlayRuntimeResult::Applied
-    );
-    assert(
-        overlay.handle(
-            LogicalAction::NavigateNext
-        ) == ReaderOverlayRuntimeResult::Applied
-    );
+    for (int i = 0; i < 3; ++i) {
+        assert(
+            overlay.handle(
+                LogicalAction::NavigateNext
+            ) == ReaderOverlayRuntimeResult::Applied
+        );
+    }
     assert(
         overlay.handle(
             LogicalAction::Confirm
@@ -584,23 +580,15 @@ int main() {
             LogicalAction::OpenReaderMenu
         ) == ReaderOverlayRuntimeResult::Applied
     );
+    for (int i = 0; i < 6; ++i) {
+        assert(
+            overlay.handle(
+                LogicalAction::NavigateNext
+            ) == ReaderOverlayRuntimeResult::Applied
+        );
+    }
     assert(
-        overlay.handle(
-            LogicalAction::NavigateNext
-        ) == ReaderOverlayRuntimeResult::Applied
-    );
-    assert(
-        overlay.handle(
-            LogicalAction::NavigateNext
-        ) == ReaderOverlayRuntimeResult::Applied
-    );
-    assert(
-        overlay.handle(
-            LogicalAction::NavigateNext
-        ) == ReaderOverlayRuntimeResult::Applied
-    );
-    assert(
-        storage.appState().reader_overlay.focus_index == 3
+        storage.appState().reader_overlay.focus_index == 6
     );
     assert(
         overlay.handle(

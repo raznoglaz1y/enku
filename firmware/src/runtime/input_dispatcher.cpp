@@ -51,7 +51,8 @@ InputDispatcher::InputDispatcher(
     SleepWakeCoordinator& sleep_wake,
     PowerOffCoordinator& power_off,
     ReaderOverlayRuntime* reader_overlay,
-    SearchRuntime* search
+    SearchRuntime* search,
+    LibrarySearchRuntime* library_search
 )
     : app_state_(app_state),
       library_(library),
@@ -59,7 +60,8 @@ InputDispatcher::InputDispatcher(
       sleep_wake_(sleep_wake),
       power_off_(power_off),
       reader_overlay_(reader_overlay),
-      search_(search) {}
+      search_(search),
+      library_search_(library_search) {}
 
 InputDispatchResult InputDispatcher::handle(
     const PhysicalInputEvent& input
@@ -89,6 +91,37 @@ InputDispatchResult InputDispatcher::handle(
         return InputDispatchResult::Unhandled;
     }
 
+    if (app_state_.screen == Screen::Library &&
+        app_state_.library.mode == LibraryQueryMode::Search) {
+        if (library_search_ == nullptr) {
+            return InputDispatchResult::Unhandled;
+        }
+
+        const auto result =
+            library_search_->handle(*action);
+
+        if (result == LibrarySearchRuntimeResult::Applied) {
+            return InputDispatchResult::Applied;
+        }
+
+        if (result == LibrarySearchRuntimeResult::Failed) {
+            return InputDispatchResult::Failed;
+        }
+
+        // Once the keyboard is closed, result navigation falls
+        // through to normal Library focus/open handling.
+        if (app_state_.library.mode ==
+                LibraryQueryMode::Search &&
+            !app_state_.keyboard.open &&
+            (*action == LogicalAction::NavigatePrevious ||
+             *action == LogicalAction::NavigateNext ||
+             *action == LogicalAction::Confirm)) {
+            // Continue through the standard Library switch below.
+        } else {
+            return InputDispatchResult::Unhandled;
+        }
+    }
+
     switch (*action) {
         case LogicalAction::NavigatePrevious: {
             if (app_state_.screen ==
@@ -107,7 +140,8 @@ InputDispatchResult InputDispatcher::handle(
                 );
 
             return result == LibraryRuntimeResult::Applied ||
-                   result == LibraryRuntimeResult::Ignored
+                   result == LibraryRuntimeResult::Ignored ||
+                   result == LibraryRuntimeResult::Empty
                 ? InputDispatchResult::Applied
                 : InputDispatchResult::Failed;
         }
@@ -129,7 +163,8 @@ InputDispatchResult InputDispatcher::handle(
                 );
 
             return result == LibraryRuntimeResult::Applied ||
-                   result == LibraryRuntimeResult::Ignored
+                   result == LibraryRuntimeResult::Ignored ||
+                   result == LibraryRuntimeResult::Empty
                 ? InputDispatchResult::Applied
                 : InputDispatchResult::Failed;
         }

@@ -53,6 +53,17 @@ struct LibraryState {
     }
 };
 
+enum class ContentsBookmarksTab : std::uint8_t {
+    Contents,
+    Bookmarks,
+};
+
+struct ContentsBookmarksState {
+    ContentsBookmarksTab tab{ContentsBookmarksTab::Contents};
+    std::uint32_t focus_index{0};
+    std::uint32_t window_start{0};
+};
+
 enum class BookDetailsMode : std::uint8_t {
     Details,
     DeleteConfirm,
@@ -161,6 +172,7 @@ struct AppState {
     ReaderSearchHighlight search_highlight;
     BookDetailsState book_details;
     BookFinishedState book_finished;
+    ContentsBookmarksState contents_bookmarks;
     KeyboardState keyboard;
 
     NetworkState network;

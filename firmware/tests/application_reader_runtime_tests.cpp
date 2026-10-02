@@ -141,6 +141,8 @@ int main() {
             "beta beta beta beta beta beta beta beta beta beta "
             "beta beta beta beta beta beta beta beta beta beta "
             "beta beta beta beta beta beta beta beta beta. "
+            "абвгдежзийклмнопрстуфхцчшщъыьэюя "
+            "абвгдежзийклмнопрстуфхцчшщъыьэюя "
             "Привет мир привет."
         ) == BookFileStatus::Ok
     );
@@ -404,6 +406,17 @@ int main() {
     assert(
         storage.appState().search.matches[0].preview.find("Привет") !=
         std::string::npos
+    );
+    assert(
+        (static_cast<unsigned char>(
+            storage.appState().search.matches[0].preview[0]
+        ) & 0xC0U) != 0x80U
+    );
+    assert(
+        storage.appState().search.matches[0].preview.substr(
+            storage.appState().search.matches[0].preview_match_start,
+            storage.appState().search.matches[0].preview_match_length
+        ) == "Привет"
     );
 
     assert(

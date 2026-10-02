@@ -246,17 +246,23 @@ The exact debounce interval remains an implementation detail.
 
 ## 16. Sleep
 
-Canonical sleep flow:
+The detailed product/hardware split is defined in [Power, Sleep & Wake Model](power-model.md).
+
+Canonical user-facing Sleep flow:
 
 ```text
 active state
 → SleepRequested
 → finish/abort unsafe operation according to subsystem rules
 → persist dirty reader/app state
+→ stop Wi-Fi / quiesce peripherals
 → prepare static sleep screen
 → final display update
-→ enter low-power state
+→ e-paper sleep
+→ enter verified system suspend mechanism
 ```
+
+Panel-only sleep is not considered full ENKU Sleep.
 
 No animation or live clock is maintained in Sleep.
 

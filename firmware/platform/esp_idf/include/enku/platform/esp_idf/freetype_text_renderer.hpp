@@ -44,6 +44,7 @@ public:
     );
 
     bool ready() const;
+    void bindAppState(const AppState& app_state);
 
     std::uint16_t measureWidthPx(
         std::string_view utf8,
@@ -75,6 +76,7 @@ public:
 
 private:
     OwnedMonoFramebuffer& framebuffer_;
+    const AppState* app_state_{nullptr};
     std::string font_path_;
 
     mutable FT_Library library_{nullptr};

@@ -4,6 +4,7 @@
 
 #include "../core/input.hpp"
 #include "../render/search_renderer.hpp"
+#include "../reader/document_search.hpp"
 #include "../services/services.hpp"
 #include "application_reader_runtime.hpp"
 #include "keyboard_runtime.hpp"
@@ -36,6 +37,7 @@ private:
     SearchRenderer* renderer_{nullptr};
     RefreshService* refresh_{nullptr};
     KeyboardRuntime keyboard_;
+    DocumentSearch document_search_;
 
     SearchRuntimeResult cancel();
     SearchRuntimeResult executeSearch();

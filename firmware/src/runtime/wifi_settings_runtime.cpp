@@ -49,6 +49,7 @@ WiFiSettingsRuntime::WiFiSettingsRuntime(
     ApplicationStorageRuntime& storage,
     NetworkService& network,
     NetworkSettingsService& network_settings,
+    NetworkLifecycleCoordinator& network_lifecycle,
     SettingsNavigationRuntime& settings_nav,
     WiFiSettingsRenderer* renderer,
     RefreshService* refresh
@@ -57,6 +58,7 @@ WiFiSettingsRuntime::WiFiSettingsRuntime(
       storage_(storage),
       network_(network),
       network_settings_(network_settings),
+      network_lifecycle_(network_lifecycle),
       settings_nav_(settings_nav),
       renderer_(renderer),
       refresh_(refresh),
@@ -82,16 +84,7 @@ WiFiSettingsRuntime::openFromSettings() {
 }
 
 void WiFiSettingsRuntime::syncNetworkState() {
-    app_state_.network.connected =
-        network_.connected();
-
-    const auto trusted =
-        network_settings_.trustedSsid();
-
-    app_state_.network.ssid =
-        trusted.has_value()
-            ? *trusted
-            : std::string{};
+    network_lifecycle_.sync();
 }
 
 WiFiSettingsRuntimeResult
@@ -369,8 +362,9 @@ WiFiSettingsRuntime::applyPolicy() {
         return WiFiSettingsRuntimeResult::Failed;
     }
 
+    network_lifecycle_.applyPolicy();
     const auto status =
-        network_settings_.applyPolicy(selected);
+        network_lifecycle_.lastPolicyStatus();
 
     if (status ==
             NetworkPolicyStatus::DriverError ||
@@ -381,7 +375,7 @@ WiFiSettingsRuntime::applyPolicy() {
         storage_.settingsRuntime().handle(
             WiFiPolicyChanged{previous}
         );
-        network_settings_.applyPolicy(previous);
+        network_lifecycle_.applyPolicy();
 
         app_state_.wifi_settings.selected_policy =
             previous;

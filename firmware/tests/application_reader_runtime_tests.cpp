@@ -6,6 +6,7 @@
 #include "enku/runtime/settings_navigation_runtime.hpp"
 #include "enku/runtime/reading_settings_runtime.hpp"
 #include "enku/runtime/display_settings_runtime.hpp"
+#include "enku/runtime/locale_settings_runtime.hpp"
 #include "enku/storage/posix_book_file_store.hpp"
 #include "enku/storage/posix_state_file_store.hpp"
 
@@ -880,6 +881,12 @@ int main() {
         settings_nav
     );
 
+    LocaleSettingsRuntime locale_settings(
+        storage.appState(),
+        storage,
+        settings_nav
+    );
+
     const auto typography_before_settings =
         storage.appState().typography;
 
@@ -1087,6 +1094,68 @@ int main() {
     assert(
         storage.appState().orientation ==
         applied_display_orientation
+    );
+
+    assert(
+        settings_nav.handle(
+            LogicalAction::NavigateNext
+        ) == SettingsNavigationResult::Applied
+    );
+    assert(
+        settings_nav.handle(
+            LogicalAction::NavigateNext
+        ) == SettingsNavigationResult::Applied
+    );
+    assert(
+        storage.appState().settings_nav.focus ==
+        SettingsItem::Language
+    );
+
+    assert(
+        locale_settings.openFromSettings() ==
+        LocaleSettingsRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().screen ==
+        Screen::LocaleSettings
+    );
+    assert(
+        storage.appState().locale_settings.focus_index == 0
+    );
+
+    assert(
+        locale_settings.handle(
+            LogicalAction::NavigateNext
+        ) == LocaleSettingsRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().locale_settings.focus_index == 1
+    );
+
+    assert(
+        locale_settings.handle(
+            LogicalAction::Confirm
+        ) == LocaleSettingsRuntimeResult::Applied
+    );
+    assert(storage.appState().ui_locale == LocaleId::Ru);
+
+    GlobalSettings persisted_locale;
+    assert(
+        storage.settingsStore().load(
+            persisted_locale
+        ) == PersistStatus::Ok
+    );
+    assert(persisted_locale.locale == LocaleId::Ru);
+
+    assert(
+        locale_settings.handle(
+            LogicalAction::Back
+        ) == LocaleSettingsRuntimeResult::Applied
+    );
+    assert(storage.appState().screen == Screen::Settings);
+    assert(
+        storage.appState().settings_nav.focus ==
+        SettingsItem::Language
     );
 
     assert(

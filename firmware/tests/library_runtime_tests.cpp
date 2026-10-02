@@ -232,6 +232,53 @@ int main() {
     );
     assert(app.library.total_matches == 2);
 
+    app.library.limit = 1;
+    app.library.offset = 0;
+    app.library.focused_book.reset();
+
+    assert(
+        runtime.handle(LibraryRefreshRequested{}) ==
+        LibraryRuntimeResult::Applied
+    );
+    assert(runtime.page().items.size() == 1);
+    assert(runtime.page().offset == 0);
+    assert(runtime.page().items[0].book_id == "alpha");
+    assert(
+        app.library.focused_book ==
+        std::optional<BookId>{"alpha"}
+    );
+
+    assert(
+        runtime.handle(LibraryFocusNextRequested{}) ==
+        LibraryRuntimeResult::Applied
+    );
+    assert(runtime.page().offset == 1);
+    assert(runtime.page().items.size() == 1);
+    assert(runtime.page().items[0].book_id == "beta");
+    assert(
+        app.library.focused_book ==
+        std::optional<BookId>{"beta"}
+    );
+
+    assert(
+        runtime.handle(LibraryFocusPreviousRequested{}) ==
+        LibraryRuntimeResult::Applied
+    );
+    assert(runtime.page().offset == 0);
+    assert(runtime.page().items[0].book_id == "alpha");
+    assert(
+        app.library.focused_book ==
+        std::optional<BookId>{"alpha"}
+    );
+
+    app.library.limit = 24;
+    app.library.offset = 0;
+    app.library.focused_book.reset();
+    assert(
+        runtime.handle(LibraryRefreshRequested{}) ==
+        LibraryRuntimeResult::Applied
+    );
+
     LibrarySearchRuntime library_search(
         app,
         runtime
@@ -278,6 +325,40 @@ int main() {
     assert(app.library.mode == LibraryQueryMode::Browse);
     assert(app.library.search_text.empty());
     assert(runtime.page().total_matches == 2);
+
+    app.library.limit = 1;
+    assert(
+        runtime.handle(
+            LibrarySearchChanged{"a"}
+        ) == LibraryRuntimeResult::Applied
+    );
+    assert(app.library.mode == LibraryQueryMode::Search);
+    assert(runtime.page().total_matches == 2);
+    assert(runtime.page().items.size() == 1);
+    assert(runtime.page().offset == 0);
+    assert(runtime.page().items[0].book_id == "alpha");
+
+    assert(
+        runtime.handle(LibraryFocusNextRequested{}) ==
+        LibraryRuntimeResult::Applied
+    );
+    assert(runtime.page().offset == 1);
+    assert(runtime.page().items[0].book_id == "beta");
+
+    assert(
+        runtime.handle(LibraryFocusPreviousRequested{}) ==
+        LibraryRuntimeResult::Applied
+    );
+    assert(runtime.page().offset == 0);
+    assert(runtime.page().items[0].book_id == "alpha");
+
+    app.library.limit = 24;
+    assert(
+        runtime.handle(
+            LibrarySearchChanged{""}
+        ) == LibraryRuntimeResult::Applied
+    );
+    assert(app.library.mode == LibraryQueryMode::Browse);
 
     assert(
         runtime.handle(LibraryFocusNextRequested{}) ==

@@ -1,6 +1,8 @@
 #include "enku/runtime/storage_startup.hpp"
+#include "enku/runtime/settings_runtime.hpp"
 #include "enku/storage/book_import_service.hpp"
 #include "enku/storage/cbor_library_service.hpp"
+#include "enku/storage/cbor_settings_service.hpp"
 #include "enku/storage/posix_book_file_store.hpp"
 #include "enku/storage/posix_state_file_store.hpp"
 
@@ -75,9 +77,15 @@ int main() {
 
         AppState app;
         app.screen = Screen::Boot;
+        CborSettingsService settings_service(state_files);
+        SettingsRuntimeController settings(
+            app,
+            settings_service
+        );
 
         StorageStartupCoordinator startup(
             app,
+            settings,
             library,
             book_files,
             importer
@@ -126,8 +134,14 @@ int main() {
         );
 
         AppState app;
+        CborSettingsService settings_service(state_files);
+        SettingsRuntimeController settings(
+            app,
+            settings_service
+        );
         StorageStartupCoordinator startup(
             app,
+            settings,
             library,
             book_files,
             importer
@@ -174,8 +188,14 @@ int main() {
         );
 
         AppState app;
+        CborSettingsService settings_service(state_files);
+        SettingsRuntimeController settings(
+            app,
+            settings_service
+        );
         StorageStartupCoordinator startup(
             app,
+            settings,
             library,
             book_files,
             importer

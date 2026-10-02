@@ -536,3 +536,54 @@ ESP-IDF GPIO polling
 ```
 
 This prevents board GPIO semantics from leaking into application controllers and makes the same runtime path testable with synthetic physical events on the host.
+
+
+## 32. Concrete e-paper refresh service
+
+The first physical `RefreshService` implementation is now `EpaperRefreshService`.
+
+Its input remains the framework-neutral `RefreshRequest`.
+
+Policy:
+
+```text
+RefreshClass::Full
+→ true SSD1677 full refresh
+
+RefreshClass::Region + valid small dirty_region + established base frame
+→ partial refresh
+
+RefreshClass::Region + missing/invalid/large dirty_region
+→ escalate to fast full-screen refresh
+
+RefreshClass::Deferred
+→ fast full-screen refresh
+```
+
+A region larger than one third of the panel area is currently escalated.
+
+The service also tracks:
+
+- total requests;
+- region refreshes;
+- full-screen refreshes;
+- escalations;
+- coalesced generations;
+- obsolete generations;
+- failures.
+
+`cancelObsolete(min_generation)` does not interrupt an in-flight physical panel transaction; it prevents older queued/subsequent requests from being applied.
+
+## 33. Mono framebuffer boundary
+
+`MonoFramebufferSource` separates rendering from display transport.
+
+The e-paper service only knows:
+
+- framebuffer dimensions;
+- full 1-bit buffer;
+- extraction of a dirty region.
+
+`OwnedMonoFramebuffer` is the first concrete implementation and supports byte-aligned region extraction for SSD1677 partial windows.
+
+The eventual Library/Reader renderer can write into this buffer without depending on ESP-IDF or SSD1677 APIs.

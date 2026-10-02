@@ -26,6 +26,7 @@ public:
     bool connected() const override;
     void disconnect() override;
     NetworkLinkState connectionState() const override;
+    std::optional<std::string> localAddress() const override;
 
     NetworkPolicyStatus applyPolicy(
         WiFiPolicy policy

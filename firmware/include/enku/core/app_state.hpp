@@ -9,6 +9,7 @@
 #include "localization.hpp"
 #include "boot.hpp"
 #include "settings.hpp"
+#include "reader_overlay.hpp"
 
 namespace enku {
 
@@ -56,6 +57,7 @@ struct AppState {
     float reading_progress{0.0F};
     bool current_book_finished{false};
     TypographyState typography;
+    ReaderOverlayState reader_overlay;
 
     NetworkState network;
     WiFiPolicy wifi_policy{WiFiPolicy::AutoConnectTrusted};

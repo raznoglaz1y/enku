@@ -768,11 +768,25 @@ bool FreeTypeTextRenderer::renderLibrary(
         return false;
     }
 
-    char count_text[48] = {};
+    char count_text[64] = {};
+    const auto page_end =
+        page.offset +
+        static_cast<std::uint32_t>(
+            page.items.size()
+        );
+
     std::snprintf(
         count_text,
         sizeof(count_text),
-        "%lu BOOKS",
+        page.total_matches == 0U
+            ? "0 BOOKS"
+            : "%lu-%lu OF %lu",
+        static_cast<unsigned long>(
+            page.total_matches == 0U
+                ? 0U
+                : page.offset + 1U
+        ),
+        static_cast<unsigned long>(page_end),
         static_cast<unsigned long>(
             page.total_matches
         )

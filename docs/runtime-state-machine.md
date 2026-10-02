@@ -61,16 +61,16 @@ Canonical flow:
 
 ```text
 Library
-→ BookOpenRequested
-→ validate Library entry
-→ load effective metadata/state
-→ open normalized document
-→ resolve saved semantic position
-→ resolve effective typography
-→ paginate current page through Reader Engine
-→ render
+→ OpenBookRequested
+→ Book Opening
+→ loader validates Library/storage and opens ReaderSession
+→ BookOpened
+→ synchronize AppState from current Reader page
+→ render first/current page
 → Reading
 ```
+
+If book loading fails, `BookOpenFailed` closes any partial session and returns safely to Library with the requested book focused.
 
 If no saved position exists, reading begins at the first valid content position.
 
@@ -110,7 +110,9 @@ When no next readable content exists:
 - preserve the final semantic position;
 - mark the book Finished only through the defined completion behavior.
 
-Restarting a finished book changes its Library state back to Reading.
+On EndOfBook, runtime marks the current book Finished, sets logical progress to 1.0, updates the Library summary and emits a visible status refresh. It does not wrap to the beginning.
+
+Restarting a finished book changes its Library state back to Reading through an explicit product action.
 
 ## 8. Reader chrome / overlay
 
@@ -210,6 +212,8 @@ Search highlighting is temporary UI state and does not alter book content.
 ## 14. Back behavior
 
 Back is deterministic and context-sensitive.
+
+When Back is pressed from Reading, runtime checkpoints dirty semantic position/progress before closing ReaderSession and returning to Library. If checkpointing fails, the Reader remains open so unsaved progress is not silently discarded.
 
 Examples:
 

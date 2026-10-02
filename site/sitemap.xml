@@ -2,4 +2,5 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://enkureader.com/</loc><changefreq>weekly</changefreq></url>
   <url><loc>https://enkureader.com/about</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://enkureader.com/contact</loc><changefreq>monthly</changefreq></url>
 </urlset>

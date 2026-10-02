@@ -26,9 +26,6 @@ BookSourceStatus StoredBookSourceService::readSource(
     }
 }
 
-} // namespace enku
-
-
 std::optional<std::uint64_t>
 StoredBookSourceService::sourceSize(
     const BookRecord& record
@@ -76,3 +73,6 @@ StoredBookSourceService::readSourceRange(
             return BookSourceStatus::ReadFailed;
     }
 }
+
+
+} // namespace enku

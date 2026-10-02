@@ -109,10 +109,12 @@ firmware/
           esp_idf_sd_card.hpp
           esp_idf_file_store.hpp
           esp_idf_buttons.hpp
+          esp_idf_power_service.hpp
         src/
           esp_idf_sd_card.cpp
           esp_idf_file_store.cpp
           esp_idf_buttons.cpp
+          esp_idf_power_service.cpp
     services/
 ```
 

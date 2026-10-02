@@ -8,6 +8,13 @@
 
 namespace enku {
 
+std::uint16_t keyboardCharacterKeyCount(KeyboardMode mode);
+std::uint16_t keyboardKeyCount(KeyboardMode mode);
+std::string keyboardKeyLabel(
+    const KeyboardState& state,
+    std::uint16_t index
+);
+
 enum class KeyboardRuntimeResult : std::uint8_t {
     Ignored,
     Changed,

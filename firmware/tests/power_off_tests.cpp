@@ -249,6 +249,34 @@ int main() {
         ReadingState::Reading
     );
 
+    // Powering off from temporary Library Search persists the stable
+    // Browse origin, not the current Search result window.
+    app.screen = Screen::Library;
+    app.library.mode = LibraryQueryMode::Search;
+    app.library.offset = 0;
+    app.library.focused_book = "power-off-book";
+    app.library.search_origin_valid = true;
+    app.library.search_origin_offset = 7;
+    app.library.search_origin_focused_book =
+        BookId{"power-off-book"};
+
+    assert(
+        coordinator.powerOff() ==
+        PowerOffStatus::Applied
+    );
+
+    AppRestoreContext search_restore;
+    assert(
+        context.load(search_restore) ==
+        PersistStatus::Ok
+    );
+    assert(search_restore.screen == Screen::Library);
+    assert(search_restore.library_offset == 7);
+    assert(
+        search_restore.library_focused_book ==
+        std::optional<BookId>{"power-off-book"}
+    );
+
     // Destructive import activity blocks graceful shutdown before PMU power
     // off can be requested.
     app.screen = Screen::Library;

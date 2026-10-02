@@ -16,6 +16,15 @@ LibrarySearchRuntime::open() {
         return LibrarySearchRuntimeResult::Ignored;
     }
 
+    if (app_state_.library.mode !=
+        LibraryQueryMode::Search) {
+        origin_valid_ = true;
+        origin_offset_ =
+            app_state_.library.offset;
+        origin_focused_book_ =
+            app_state_.library.focused_book;
+    }
+
     app_state_.library.mode =
         LibraryQueryMode::Search;
     keyboard_.open();
@@ -127,11 +136,27 @@ LibrarySearchRuntimeResult
 LibrarySearchRuntime::cancel() {
     app_state_.keyboard = KeyboardState{};
     app_state_.library.search_text.clear();
+    app_state_.library.mode =
+        LibraryQueryMode::Browse;
+
+    if (origin_valid_) {
+        app_state_.library.offset =
+            origin_offset_;
+        app_state_.library.focused_book =
+            origin_focused_book_;
+    } else {
+        app_state_.library.offset = 0;
+        app_state_.library.focused_book.reset();
+    }
 
     const auto result =
         library_.handle(
-            LibrarySearchChanged{""}
+            LibraryRefreshRequested{}
         );
+
+    origin_valid_ = false;
+    origin_offset_ = 0;
+    origin_focused_book_.reset();
 
     return result == LibraryRuntimeResult::Applied ||
            result == LibraryRuntimeResult::Empty

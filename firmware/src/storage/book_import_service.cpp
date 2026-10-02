@@ -89,15 +89,15 @@ BookFormat BookImportService::detectFormat(
     return BookFormat::Txt;
 }
 
-BookImportResult BookImportService::import(
+PreparedBookImport BookImportService::prepare(
     const BookImportSource& source,
     std::uint64_t added_order
 ) {
-    BookImportResult result;
+    PreparedBookImport prepared;
 
     if (source.bytes.empty()) {
-        result.status = BookImportStatus::EmptySource;
-        return result;
+        prepared.status = BookImportStatus::EmptySource;
+        return prepared;
     }
 
     bool supported = false;
@@ -105,28 +105,29 @@ BookImportResult BookImportService::import(
         detectFormat(source.source_filename, supported);
 
     if (!supported) {
-        result.status = BookImportStatus::UnsupportedFormat;
-        return result;
+        prepared.status = BookImportStatus::UnsupportedFormat;
+        return prepared;
     }
 
-    result.fingerprint = fingerprint(source.bytes);
+    const auto content_fingerprint =
+        fingerprint(source.bytes);
 
     if (library_.findByFingerprint(
-            result.fingerprint
+            content_fingerprint
         ).has_value()) {
-        result.status = BookImportStatus::Duplicate;
-        return result;
+        prepared.status = BookImportStatus::Duplicate;
+        return prepared;
     }
 
     const auto id_suffix =
-        result.fingerprint.substr(
-            result.fingerprint.find(':') + 1,
+        content_fingerprint.substr(
+            content_fingerprint.find(':') + 1,
             16
         );
-    result.book_id = "book-" + id_suffix;
+    const BookId book_id = "book-" + id_suffix;
 
     ParserSourceInfo parser_source{
-        result.book_id,
+        book_id,
         source.source_path,
         source.source_filename,
     };
@@ -144,33 +145,49 @@ BookImportResult BookImportService::import(
         case BookFormat::Epub:
         case BookFormat::Fb2:
         default:
-            result.status =
+            prepared.status =
                 BookImportStatus::UnsupportedFormat;
-            return result;
+            return prepared;
     }
 
     if (!parsed.ok()) {
-        result.status = BookImportStatus::ParseFailed;
-        return result;
+        prepared.status = BookImportStatus::ParseFailed;
+        return prepared;
     }
 
     BookRecord record;
-    record.book_id = result.book_id;
+    record.book_id = book_id;
     record.format = format;
     record.metadata = std::move(parsed.document.metadata);
     record.source_path = source.source_path;
     record.source_filename = source.source_filename;
     record.file_size = source.bytes.size();
-    record.fingerprint = result.fingerprint;
+    record.fingerprint = content_fingerprint;
     record.reading_state = ReadingState::New;
     record.progress = 0.0F;
     record.added_order = added_order;
     record.last_opened_order = 0;
 
-    const auto library_status =
-        library_.upsert(record);
+    prepared.status = BookImportStatus::Ok;
+    prepared.record = std::move(record);
+    return prepared;
+}
 
-    if (library_status != LibraryStatus::Ok) {
+BookImportResult BookImportService::commit(
+    const PreparedBookImport& prepared
+) {
+    BookImportResult result;
+    result.status = prepared.status;
+
+    if (!prepared.ok()) {
+        return result;
+    }
+
+    result.book_id = prepared.record.book_id;
+    result.fingerprint = prepared.record.fingerprint;
+
+    if (library_.upsert(prepared.record) !=
+        LibraryStatus::Ok) {
         result.status =
             BookImportStatus::LibraryCommitFailed;
         return result;
@@ -178,6 +195,13 @@ BookImportResult BookImportService::import(
 
     result.status = BookImportStatus::Ok;
     return result;
+}
+
+BookImportResult BookImportService::import(
+    const BookImportSource& source,
+    std::uint64_t added_order
+) {
+    return commit(prepare(source, added_order));
 }
 
 } // namespace enku

@@ -6,6 +6,8 @@
 #include <utility>
 #include <vector>
 
+#include <zlib.h>
+
 using namespace enku;
 
 namespace {
@@ -45,8 +47,52 @@ void u32(
 struct StoredEntry {
     std::string name;
     std::string bytes;
+    bool deflate{false};
     std::uint32_t local_offset{0};
+    std::string compressed;
 };
+
+std::string rawDeflate(
+    const std::string& bytes
+) {
+    z_stream stream = {};
+
+    assert(
+        deflateInit2(
+            &stream,
+            Z_BEST_SPEED,
+            Z_DEFLATED,
+            -MAX_WBITS,
+            8,
+            Z_DEFAULT_STRATEGY
+        ) == Z_OK
+    );
+
+    std::string out;
+    out.resize(
+        compressBound(bytes.size())
+    );
+
+    stream.next_in =
+        reinterpret_cast<Bytef*>(
+            const_cast<char*>(bytes.data())
+        );
+    stream.avail_in =
+        static_cast<uInt>(bytes.size());
+    stream.next_out =
+        reinterpret_cast<Bytef*>(out.data());
+    stream.avail_out =
+        static_cast<uInt>(out.size());
+
+    assert(
+        deflate(&stream, Z_FINISH) ==
+        Z_STREAM_END
+    );
+
+    out.resize(stream.total_out);
+    deflateEnd(&stream);
+    return out;
+}
 
 std::string makeStoredZip(
     std::vector<StoredEntry> entries
@@ -58,18 +104,22 @@ std::string makeStoredZip(
             static_cast<std::uint32_t>(
                 out.size()
             );
+        entry.compressed =
+            entry.deflate
+                ? rawDeflate(entry.bytes)
+                : entry.bytes;
 
         u32(out, 0x04034B50U);
         u16(out, 20);
         u16(out, 0);
-        u16(out, 0);
+        u16(out, entry.deflate ? 8 : 0);
         u16(out, 0);
         u16(out, 0);
         u32(out, 0);
         u32(
             out,
             static_cast<std::uint32_t>(
-                entry.bytes.size()
+                entry.compressed.size()
             )
         );
         u32(
@@ -86,7 +136,7 @@ std::string makeStoredZip(
         );
         u16(out, 0);
         out += entry.name;
-        out += entry.bytes;
+        out += entry.compressed;
     }
 
     const auto central_offset =
@@ -99,14 +149,14 @@ std::string makeStoredZip(
         u16(out, 20);
         u16(out, 20);
         u16(out, 0);
-        u16(out, 0);
+        u16(out, entry.deflate ? 8 : 0);
         u16(out, 0);
         u16(out, 0);
         u32(out, 0);
         u32(
             out,
             static_cast<std::uint32_t>(
-                entry.bytes.size()
+                entry.compressed.size()
             )
         );
         u32(
@@ -162,6 +212,7 @@ std::string sampleEpub() {
         {
             "mimetype",
             "application/epub+zip",
+            false,
         },
         {
             "META-INF/container.xml",
@@ -172,6 +223,7 @@ std::string sampleEpub() {
       media-type="application/oebps-package+xml"/>
   </rootfiles>
 </container>)",
+            true,
         },
         {
             "OEBPS/content.opf",
@@ -181,7 +233,11 @@ std::string sampleEpub() {
  <metadata>
   <dc:title>ENKU &amp; EPUB</dc:title>
   <dc:creator>Alex Example</dc:creator>
+  <dc:creator>Second Author</dc:creator>
   <dc:language>en</dc:language>
+  <dc:description>Compact reader test book.</dc:description>
+  <dc:publisher>ENKU Project</dc:publisher>
+  <dc:date>2026-10-03</dc:date>
   <dc:identifier>urn:enku:test</dc:identifier>
  </metadata>
  <manifest>
@@ -198,20 +254,37 @@ std::string sampleEpub() {
   <itemref idref="c2"/>
  </spine>
 </package>)",
+            true,
+        },
+        {
+            "OEBPS/nav.xhtml",
+            R"(<html><body>
+<nav epub:type="toc">
+<ol>
+<li><a href="Text/ch1.xhtml">The First Chapter</a></li>
+<li><a href="Text/ch2.xhtml#start">The Second Chapter</a></li>
+</ol>
+</nav>
+</body></html>)",
+            true,
         },
         {
             "OEBPS/Text/ch1.xhtml",
             R"(<html><body>
 <h1>Chapter One</h1>
 <p>First &amp; important paragraph.</p>
+<blockquote>A short quotation.</blockquote>
+<ul><li>A list item.</li></ul>
 <p>Second paragraph.</p>
 </body></html>)",
+            true,
         },
         {
             "OEBPS/Text/ch2.xhtml",
             R"(<html><body>
 <p>Chapter two text.</p>
 </body></html>)",
+            true,
         },
     });
 }
@@ -244,7 +317,29 @@ int main() {
     );
     assert(
         result.document.metadata.author_display ==
-        "Alex Example"
+        "Alex Example, Second Author"
+    );
+    assert(
+        result.document.metadata.authors.size() ==
+        2
+    );
+    assert(
+        result.document.metadata.description ==
+        std::optional<std::string>{
+            "Compact reader test book."
+        }
+    );
+    assert(
+        result.document.metadata.publisher ==
+        std::optional<std::string>{
+            "ENKU Project"
+        }
+    );
+    assert(
+        result.document.metadata.published_date ==
+        std::optional<std::string>{
+            "2026-10-03"
+        }
     );
     assert(
         result.document.metadata.language ==
@@ -265,8 +360,25 @@ int main() {
         "OEBPS/Text/ch1.xhtml"
     );
     assert(
+        result.document.sections[0].title ==
+        std::optional<std::string>{
+            "The First Chapter"
+        }
+    );
+    assert(
+        result.document.sections[1].title ==
+        std::optional<std::string>{
+            "The Second Chapter"
+        }
+    );
+    assert(
         result.document.sections[0].blocks.size() ==
-        3
+        5
+    );
+    assert(
+        result.document.sections[0].
+            blocks[0].type ==
+        TextBlockType::Heading
     );
     assert(
         result.document.sections[0].
@@ -275,8 +387,23 @@ int main() {
     );
     assert(
         result.document.sections[0].
+            blocks[1].type ==
+        TextBlockType::Paragraph
+    );
+    assert(
+        result.document.sections[0].
             blocks[1].text ==
         "First & important paragraph."
+    );
+    assert(
+        result.document.sections[0].
+            blocks[2].type ==
+        TextBlockType::Quote
+    );
+    assert(
+        result.document.sections[0].
+            blocks[3].type ==
+        TextBlockType::ListItem
     );
     assert(
         result.document.sections[1].

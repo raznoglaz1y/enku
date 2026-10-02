@@ -209,3 +209,22 @@ The PCB **must not** be declared production-ready until:
 - each variant has a complete populated/DNP BOM;
 - supplier or assembly pricing demonstrates that the cost ceilings are realistic;
 - no BLOCKER item remains in the EPD/power path.
+
+
+## R0.1 power candidate
+
+The first power-path candidate is now **TI BQ25185**.
+
+Reason:
+- real power-path management is now required by USB-C + Dock + hard-OFF charging;
+- low battery-only quiescent current;
+- up to 1 A charging;
+- system-load support while charging;
+- wider input tolerance than the earlier simple charger placeholder.
+
+The earlier MCP73831 should no longer be treated as the preferred production architecture.
+
+USB-C and Dock inputs will be combined through protected OR-ing / source selection before the charger. Pro Wireless should preferably use a Qi receiver that supplies the same common charger path rather than introducing an independent second battery charger.
+
+Detailed rationale:
+[Custom mainboard power R0.1](custom-mainboard-power-r01.md)

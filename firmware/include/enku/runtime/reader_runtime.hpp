@@ -6,6 +6,7 @@
 #include "../core/events.hpp"
 #include "../core/refresh.hpp"
 #include "../reader/book_loader.hpp"
+#include "../render/reader_page_renderer.hpp"
 #include "../services/services.hpp"
 
 namespace enku {
@@ -23,6 +24,7 @@ enum class ReaderRuntimeResult : std::uint8_t {
     ContextSaveFailed,
     LibraryUpdateFailed,
     RefreshRejected,
+    RenderFailed,
 };
 
 class ReaderRuntimeController {
@@ -35,7 +37,8 @@ public:
         ReaderCheckpointService& checkpoint,
         AppContextService& context,
         TypographySettings typography,
-        Viewport viewport
+        Viewport viewport,
+        ReaderPageRenderer* page_renderer = nullptr
     );
 
     ReaderRuntimeResult handle(const OpenBookRequested&);
@@ -56,6 +59,7 @@ private:
     AppContextService& context_;
     TypographySettings typography_;
     Viewport viewport_;
+    ReaderPageRenderer* page_renderer_{nullptr};
     std::uint32_t refresh_generation_{0};
 
     ReaderSession* session();

@@ -9,6 +9,7 @@
 #include "reader_session.hpp"
 #include "txt_parser.hpp"
 #include "epub_parser.hpp"
+#include "fb2_parser.hpp"
 
 namespace enku {
 
@@ -61,6 +62,7 @@ private:
 
     TxtParser txt_parser_;
     EpubParser epub_parser_;
+    Fb2Parser fb2_parser_;
 
     std::optional<BookDocument> document_;
     std::unique_ptr<DocumentReaderEngine> engine_;

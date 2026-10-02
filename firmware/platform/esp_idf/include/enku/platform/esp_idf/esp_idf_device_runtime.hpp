@@ -6,6 +6,7 @@
 #include "enku/runtime/application_reader_runtime.hpp"
 #include "enku/runtime/application_storage_runtime.hpp"
 #include "enku/runtime/input_dispatcher.hpp"
+#include "enku/runtime/library_search_runtime.hpp"
 #include "enku/runtime/power_off.hpp"
 #include "enku/runtime/reader_overlay_runtime.hpp"
 #include "enku/runtime/search_runtime.hpp"
@@ -45,6 +46,7 @@ public:
     ApplicationStorageRuntime& storage();
     ApplicationReaderRuntime& reader();
     FreeTypeTextRenderer& textRenderer();
+    LibrarySearchRuntime& librarySearch();
 
     SleepWakeCoordinator& sleepWake();
     PowerOffCoordinator& powerOff();
@@ -79,6 +81,7 @@ private:
     ApplicationReaderRuntime reader_;
     ReaderOverlayRuntime reader_overlay_;
     SearchRuntime search_;
+    LibrarySearchRuntime library_search_;
 
     SleepWakeCoordinator sleep_wake_;
     PowerOffCoordinator power_off_;

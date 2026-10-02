@@ -205,7 +205,16 @@ The runtime-facing `ReaderCheckpointService` exposes both save and load semantic
 
 ## 12. Global settings
 
-Global settings use their own A/B CBOR record.
+Global settings now have a concrete backend: `CborSettingsService`.
+
+It uses:
+
+```text
+/system/settings.a.cbor
+/system/settings.b.cbor
+```
+
+with the same generation + CRC32 recovery envelope as other critical records.
 
 Examples:
 
@@ -380,3 +389,16 @@ stable
 ```
 
 The marker is written at cold-boot start and after reaching the first stable usable screen. Fast Wake does not participate in this counter.
+
+
+## 25. Settings runtime recovery
+
+`SettingsRuntimeController` applies persisted settings into `AppState` during the Persistence boot stage.
+
+Missing settings create a new default generation.
+
+If both settings slots are invalid/corrupt, safe defaults are persisted and boot continues. This failure domain is deliberately independent from the Library: preference corruption must not make valid books inaccessible.
+
+True settings filesystem I/O/no-space failures remain recovery-worthy because a safe durable settings generation cannot be established.
+
+Runtime settings writes are whole-record commits. The in-memory preference change is rolled back if persistence fails.

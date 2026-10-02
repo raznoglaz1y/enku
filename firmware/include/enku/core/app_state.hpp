@@ -68,6 +68,7 @@ struct KeyboardState {
 enum class SearchPhase : std::uint8_t {
     QueryEntry,
     Results,
+    NoResults,
 };
 
 struct SearchMatch {

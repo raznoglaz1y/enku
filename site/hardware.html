@@ -125,21 +125,21 @@
     <section class="hardware-hero">
       <div class="shell hardware-hero-grid">
         <div><p class="eyebrow">HARDWARE</p><h1>A small reader, built around known parts.</h1></div>
-        <p class="hardware-lead">ENKU uses a ready ESP32-S3 + 3.97″ e-paper platform as the reference hardware, then builds a reproducible reader around it. Source-derived electrical details are documented now; physical claims wait for the actual board.</p>
+        <p class="hardware-lead">ENKU uses a ready ESP32-S3 + 3.97″ e-paper platform for reference validation while a dedicated portrait-first ENKU mainboard is developed in parallel. The goal is a reproducible open hardware platform that can support DIY builds, small batches and future kits without hiding the engineering record.</p>
       </div>
     </section>
 
     <div class="shell hardware-state">
       <div><div class="hardware-label">REFERENCE BOARD</div><div class="hardware-value">Waveshare ESP32-S3 ePaper 3.97″</div></div>
       <div><div class="hardware-label">DISPLAY</div><div class="hardware-value">800 × 480 · monochrome E Ink</div></div>
-      <div><div class="hardware-label">PHYSICAL STATUS</div><div class="hardware-value">Selected · ordered · validation pending</div></div>
+      <div><div class="hardware-label">CUSTOM MAINBOARD</div><div class="hardware-value">R0.1 · portrait-first · in design</div></div>
     </div>
 
     <section class="hw-section">
       <div class="shell">
         <div class="hw-intro">
           <div><p class="eyebrow">REFERENCE PLATFORM</p><h2>The hardware baseline.</h2></div>
-          <p>The first ENKU version deliberately avoids a custom PCB. The reference board already provides the MCU, e-paper interface, storage path, wireless connectivity and power-management hardware needed to prove the product before introducing unnecessary board-level complexity.</p>
+          <p>The Waveshare board remains the reference platform for firmware and electrical bring-up, but ENKU is no longer limited to a development board. A dedicated portrait-first mainboard is now being designed to improve ergonomics, reduce small-batch cost, integrate physical controls and sensors, and create a clean path toward reproducible kits.</p>
         </div>
         <div class="spec-grid">
           <div class="spec"><small>MCU</small><strong>ESP32-S3</strong><span>Application, storage, rendering and connectivity.</span></div>
@@ -165,6 +165,38 @@
           <div class="verify-row"><span class="flag pending">PHYSICAL TEST</span><h3>Refresh quality</h3><p>Full, fast and partial refresh code exists, but timing, orientation, ghosting and escalation thresholds must be observed on the real panel.</p></div>
           <div class="verify-row"><span class="flag pending">PHYSICAL TEST</span><h3>Battery & sleep</h3><p>Final battery size, charge behavior, practical runtime, suspend current and wake semantics remain deliberately unclaimed until measured.</p></div>
           <div class="verify-row"><span class="flag pending">PHYSICAL TEST</span><h3>Mechanical envelope</h3><p>The enclosure starts from real measurements of the board, display stack, buttons, connectors and battery — not from catalog dimensions alone.</p></div>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="hw-section">
+      <div class="shell">
+        <div class="hw-intro">
+          <div><p class="eyebrow">CUSTOM HARDWARE</p><h2>From reference board to an ENKU mainboard.</h2></div>
+          <p>The custom board is being designed around the actual reader UX: portrait orientation, bottom-center USB-C, a real hard power switch, right-side page controls, BMI270 motion/orientation sensing, Hall-cover wake and population options for future frontlight hardware.</p>
+        </div>
+        <div class="spec-grid">
+          <div class="spec"><small>BASE</small><strong>One core PCB</strong><span>ESP32-S3, e-paper, microSD, USB-C, battery, buttons, BMI270 and service pads.</span></div>
+          <div class="spec"><small>DOCK</small><strong>Magnetic pogo option</strong><span>Reserved low-profile secondary 5 V charging interface for a stand or cable accessory.</span></div>
+          <div class="spec"><small>PRO</small><strong>Wireless-ready</strong><span>Coil/receiver space can be reserved without forcing wireless-charging cost into every Base unit.</span></div>
+          <div class="spec"><small>OPEN HARDWARE</small><strong>Reproducible BOM</strong><span>Design files, assembly data and bring-up notes are intended to stay public and versioned.</span></div>
+          <div class="spec"><small>KITS</small><strong>Future small batches</strong><span>Possible electronics, Base, Cover and Pro kits after hardware validation.</span></div>
+          <div class="spec"><small>STATUS</small><strong>Engineering in progress</strong><span>Kit availability is a roadmap item, not a current product claim.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hw-section">
+      <div class="shell">
+        <div class="hw-intro">
+          <div><p class="eyebrow">CHARGING</p><h2>USB-C first, optional dock and wireless power.</h2></div>
+          <p>USB-C remains the universal charge/data connection. ENKU also reserves room for lower-friction charging options where they make sense, while keeping Base cost under control.</p>
+        </div>
+        <div class="verify-list">
+          <div class="verify-row"><span class="flag verified">PRIMARY</span><h3>USB-C</h3><p>Bottom-center USB-C stays standard across the enclosure family for charging, flashing and service.</p></div>
+          <div class="verify-row"><span class="flag pending">OPTION</span><h3>Magnetic pogo dock</h3><p>A keyed four-contact charging interface is being considered for a dock or magnetic cable. Its 5 V input would be isolated from USB VBUS before the charger stage.</p></div>
+          <div class="verify-row"><span class="flag pending">PRO / DNP</span><h3>Wireless charging</h3><p>Wireless charging is treated as a Pro or optional population feature. Coil position, shielding, heat and certification need physical validation before it can be called a finished feature.</p></div>
         </div>
       </div>
     </section>

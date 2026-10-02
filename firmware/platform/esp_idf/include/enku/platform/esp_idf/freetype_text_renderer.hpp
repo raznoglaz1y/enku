@@ -20,6 +20,7 @@
 #include "enku/render/settings_screen_renderer.hpp"
 #include "enku/render/reading_settings_renderer.hpp"
 #include "enku/render/display_settings_renderer.hpp"
+#include "enku/render/locale_settings_renderer.hpp"
 
 namespace enku::platform::esp_idf {
 
@@ -43,7 +44,8 @@ class FreeTypeTextRenderer final
       public AboutBookRenderer,
       public SettingsScreenRenderer,
       public ReadingSettingsRenderer,
-      public DisplaySettingsRenderer {
+      public DisplaySettingsRenderer,
+      public LocaleSettingsRenderer {
 public:
     FreeTypeTextRenderer(
         OwnedMonoFramebuffer& framebuffer,
@@ -118,6 +120,10 @@ public:
     ) override;
 
     bool renderDisplaySettings(
+        const AppState& app_state
+    ) override;
+
+    bool renderLocaleSettings(
         const AppState& app_state
     ) override;
 

@@ -31,9 +31,7 @@ int main() {
         importer
     );
 
-    AppState app;
     WebUploadIngress ingress(
-        app,
         book_files,
         staged,
         1024
@@ -66,7 +64,7 @@ int main() {
         WebUploadStatus::PayloadTooLarge
     );
 
-    app.import_active = true;
+    ingress.active() = true;
     assert(
         ingress.upload(
             "busy.txt",
@@ -75,7 +73,7 @@ int main() {
         ).status ==
         WebUploadStatus::Busy
     );
-    app.import_active = false;
+    ingress.active() = false;
 
     const auto uploaded =
         ingress.upload(
@@ -85,7 +83,7 @@ int main() {
         );
 
     assert(uploaded.ok());
-    assert(!app.import_active);
+    assert(!ingress.active());
     assert(!uploaded.book_id.empty());
 
     const auto record =
@@ -124,7 +122,7 @@ int main() {
             11
         ).ok()
     );
-    assert(app.import_active);
+    assert(ingress.active());
     assert(
         ingress.appendChunk("hello ").ok()
     );
@@ -136,7 +134,7 @@ int main() {
         ingress.finish(44);
 
     assert(chunked.ok());
-    assert(!app.import_active);
+    assert(!ingress.active());
 
     const auto chunked_record =
         library.get(chunked.book_id);
@@ -164,7 +162,7 @@ int main() {
         ingress.finish(45).status ==
         WebUploadStatus::PayloadLengthMismatch
     );
-    assert(!app.import_active);
+    assert(!ingress.active());
 
     assert(
         ingress.begin(
@@ -176,7 +174,7 @@ int main() {
         ingress.appendChunk("cancel").ok()
     );
     ingress.cancel();
-    assert(!app.import_active);
+    assert(!ingress.active());
     assert(
         book_files.read(
             "/system/incoming/web-upload.tmp",
@@ -199,7 +197,7 @@ int main() {
         duplicate.import_status ==
         StagedImportStatus::Duplicate
     );
-    assert(!app.import_active);
+    assert(!ingress.active());
 
     assert(
         book_files.read(

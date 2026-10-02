@@ -257,6 +257,29 @@ ReaderOverlayRuntime::confirm() {
             return renderOverlay();
         }
 
+        if (item == ReaderMenuItem::Orientation) {
+            const auto previous_screen = app.screen;
+            const auto target =
+                app.orientation == Orientation::Portrait
+                    ? Orientation::Landscape
+                    : Orientation::Portrait;
+
+            // Orientation reflow is a Reader operation, so temporarily
+            // return to Reading while applying the durable setting.
+            app.screen = Screen::Reading;
+
+            const auto status =
+                reader_.applyOrientation(target);
+
+            if (status != OrientationApplyStatus::Ok) {
+                app.screen = previous_screen;
+                return ReaderOverlayRuntimeResult::Failed;
+            }
+
+            baseline_valid_ = false;
+            return ReaderOverlayRuntimeResult::Applied;
+        }
+
         return ReaderOverlayRuntimeResult::Ignored;
     }
 

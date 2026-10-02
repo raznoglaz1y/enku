@@ -810,3 +810,13 @@ Library query transitions use deterministic navigation rules:
 - changing Sort or sort direction preserves Browse/Search mode and current search text, resets offset to 0, and keeps the focused book only when it is present in the new first window;
 - changing Grid/List view does not change offset, focused book, active search text, or query mode;
 - orientation changes redraw/reload the current Library window without resetting offset or focus.
+
+## Library mutation pagination rules
+
+Library mutations keep pagination valid and deterministic:
+
+- deleting the last visible book on the last query window clamps offset to the last valid window and focuses a valid remaining book;
+- deleting the final book in the Library leaves an empty page with no focused book;
+- successful import exits Search mode and clears the active search text;
+- after import, the runtime reveals and focuses the imported book in whatever query window contains it, including Recently Added with ascending order;
+- import reveal respects the current page limit and sort direction instead of assuming the imported book is in the first window.

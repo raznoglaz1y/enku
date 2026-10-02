@@ -16,6 +16,7 @@ public:
 
     LibraryStatus load();
     LibraryStatus upsert(const BookRecord& record) override;
+    LibraryStatus remove(const BookId& book_id) override;
 
     std::optional<BookRecord> get(
         const BookId& book_id

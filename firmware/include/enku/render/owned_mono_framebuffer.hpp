@@ -29,6 +29,9 @@ public:
 
     std::uint8_t* mutableData();
 
+    void setBlack(int x, int y);
+    void setWhite(int x, int y);
+
     void clearWhite();
     void clearBlack();
 

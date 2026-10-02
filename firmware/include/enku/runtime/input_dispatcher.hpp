@@ -10,6 +10,7 @@
 #include "book_details_runtime.hpp"
 #include "book_finished_runtime.hpp"
 #include "contents_bookmarks_runtime.hpp"
+#include "about_book_runtime.hpp"
 #include "power_off.hpp"
 #include "reader_overlay_runtime.hpp"
 #include "reader_runtime.hpp"
@@ -38,7 +39,8 @@ public:
         LibrarySearchRuntime* library_search = nullptr,
         BookDetailsRuntime* book_details = nullptr,
         BookFinishedRuntime* book_finished = nullptr,
-        ContentsBookmarksRuntime* contents_bookmarks = nullptr
+        ContentsBookmarksRuntime* contents_bookmarks = nullptr,
+        AboutBookRuntime* about_book = nullptr
     );
 
     InputDispatchResult handle(
@@ -57,6 +59,7 @@ private:
     BookDetailsRuntime* book_details_{nullptr};
     BookFinishedRuntime* book_finished_{nullptr};
     ContentsBookmarksRuntime* contents_bookmarks_{nullptr};
+    AboutBookRuntime* about_book_{nullptr};
 };
 
 } // namespace enku

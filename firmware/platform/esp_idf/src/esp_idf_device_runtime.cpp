@@ -446,14 +446,42 @@ void EspIdfDeviceRuntime::processWebDeleteRequests() {
     if (app.screen == Screen::Reading &&
         app.current_book ==
             std::optional<BookId>{book_id}) {
+        web_upload_server_.completeDelete(
+            book_id,
+            "active_book"
+        );
         return;
     }
 
-    if (storage_.deleteService().remove(
+    const auto status =
+        storage_.deleteService().remove(
             book_id
-        ) == BookDeleteStatus::Ok) {
+        );
+
+    if (status == BookDeleteStatus::Ok) {
         library_refresh_pending_ = true;
+        web_upload_server_.completeDelete(
+            book_id,
+            "ok"
+        );
+        return;
     }
+
+    if (status == BookDeleteStatus::NotFound) {
+        web_upload_server_.completeDelete(
+            book_id,
+            "not_found"
+        );
+        return;
+    }
+
+    web_upload_server_.completeDelete(
+        book_id,
+        "failed_" +
+            std::to_string(
+                static_cast<unsigned>(status)
+            )
+    );
 }
 
 void EspIdfDeviceRuntime::refreshLibraryAfterUploadIfNeeded() {

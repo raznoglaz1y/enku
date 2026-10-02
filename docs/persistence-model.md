@@ -416,3 +416,14 @@ The context is written both for Library and Reading states. This allows:
 - Reading restore after power loss while still retaining the Library position used by a later Back action.
 
 The decoder remains backward-compatible with schema v1 payloads (`screen + current_book`); missing Library-position fields default to offset 0 and no focused book.
+
+### Temporary Library Search and durable Library position
+
+Library Search is a transient UI state. While Search is active, AppState keeps the pre-search Browse origin separately:
+
+- `search_origin_offset`;
+- `search_origin_focused_book`.
+
+Durable app-context writes use that Browse origin rather than the current Search result window. Therefore Sleep, PowerOff, Reader context saves, and reboot recovery never restore a half-open Library Search as ordinary Browse state.
+
+Within the same live session, Library Search remains temporary and Back restores the captured Browse origin.

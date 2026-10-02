@@ -71,7 +71,9 @@ ENKU is developed in the open. You can help the project without spending money:
 - **Contribute** code, documentation, translations, UI feedback, hardware notes or enclosure work — see [CONTRIBUTING.md](CONTRIBUTING.md).
 - **Share ENKU** with people interested in open hardware, e-paper and compact readers.
 
-GitHub Sponsors is the project's primary funding channel. Sponsorships help cover development hardware, prototype boards, batteries, enclosure iterations and other direct project costs.\n\n**Sponsor ENKU:** https://github.com/sponsors/raznoglaz1y
+GitHub Sponsors is the project's primary funding channel. Sponsorships help cover development hardware, prototype boards, batteries, enclosure iterations and other direct project costs.
+
+**Sponsor ENKU:** https://github.com/sponsors/raznoglaz1y
 
 Project contact and support page: **https://enkureader.com/contact**
 

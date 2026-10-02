@@ -51,6 +51,23 @@ int main() {
  </body>
 </FictionBook>)";
 
+    const auto metadata_only =
+        parser.parseMetadata(
+            fb2,
+            source
+        );
+
+    assert(metadata_only.ok());
+    assert(metadata_only.document.sections.empty());
+    assert(
+        metadata_only.document.metadata.title ==
+        "ENKU FB2"
+    );
+    assert(
+        metadata_only.document.metadata.authors.size() ==
+        2
+    );
+
     const auto result =
         parser.parse(fb2, source);
 

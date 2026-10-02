@@ -58,6 +58,7 @@ private:
     ReaderCheckpointService& checkpoint_;
     AppContextService& context_;
     TypographySettings typography_;
+    Viewport native_viewport_;
     Viewport viewport_;
     ReaderPageRenderer* page_renderer_{nullptr};
     std::uint32_t refresh_generation_{0};
@@ -78,6 +79,8 @@ private:
         bool may_coalesce = false,
         bool may_defer = false
     );
+
+    Viewport orientedViewport() const;
 
     LibraryStatus updateLibrarySummary(
         ReadingState reading_state,

@@ -109,6 +109,7 @@ enum class PowerOffConfirmFocus : std::uint8_t {
 
 enum class WiFiSettingsFocus : std::uint8_t {
     Policy,
+    ScanNetworks,
     ForgetTrusted,
 };
 
@@ -118,6 +119,13 @@ struct WiFiSettingsState {
     WiFiPolicy selected_policy{WiFiPolicy::AutoConnectTrusted};
     bool forget_confirm{false};
     bool confirm_forget{false};
+
+    bool selecting_network{false};
+    std::vector<WiFiNetworkInfo> scan_results;
+    std::uint16_t network_focus{0};
+    std::string pending_ssid;
+    std::string pending_password;
+    std::string status_message;
 };
 
 struct PowerOffConfirmState {

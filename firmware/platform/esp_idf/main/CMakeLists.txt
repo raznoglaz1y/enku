@@ -15,6 +15,7 @@ idf_component_register(
         "../../../src/render/owned_mono_framebuffer.cpp"
         "../../../src/runtime/input_runtime.cpp"
         "../../../src/runtime/power_off.cpp"
+        "../../../src/runtime/power_off_confirm_runtime.cpp"
         "../../../src/runtime/sleep_wake.cpp"
         "../../../src/runtime/input_dispatcher.cpp"
         "../../../src/runtime/keyboard_runtime.cpp"

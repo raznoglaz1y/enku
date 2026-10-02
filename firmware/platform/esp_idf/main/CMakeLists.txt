@@ -8,6 +8,7 @@ idf_component_register(
         "../src/esp_idf_buttons.cpp"
         "../src/esp_idf_power_service.cpp"
         "../src/esp_idf_network_service.cpp"
+        "../src/esp_idf_web_upload_server.cpp"
         "../src/epaper_refresh_service.cpp"
         "../src/esp_idf_platform.cpp"
         "../src/freetype_text_renderer.cpp"
@@ -67,6 +68,7 @@ idf_component_register(
         esp_wifi
         esp_event
         esp_netif
+        esp_http_server
         nvs_flash
         fatfs
         sdmmc

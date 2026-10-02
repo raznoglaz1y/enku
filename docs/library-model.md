@@ -378,6 +378,7 @@ Implemented behavior:
 - deterministic `book_id` tie-breaking;
 - bounded offset/limit paging;
 - concrete `upsert()` for committed import integration;
+- concrete `remove()` for delete/rollback workflows;
 - summary state/progress updates with persistence rollback if commit fails.
 
 The current MVP commits Library index changes immediately. A later debounce/batching layer may reduce index write frequency after real storage profiling without changing the LibraryService query semantics.

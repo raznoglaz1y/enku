@@ -141,6 +141,7 @@ EspIdfDeviceRuntime::EspIdfDeviceRuntime(
           storage_,
           platform_.network(),
           platform_.network(),
+          network_lifecycle_,
           settings_nav_,
           &text_renderer_,
           &platform_.refresh()

@@ -15,6 +15,7 @@
 #include "enku/runtime/reading_settings_runtime.hpp"
 #include "enku/runtime/display_settings_runtime.hpp"
 #include "enku/runtime/locale_settings_runtime.hpp"
+#include "enku/runtime/about_device_runtime.hpp"
 #include "enku/runtime/power_off.hpp"
 #include "enku/runtime/reader_overlay_runtime.hpp"
 #include "enku/runtime/search_runtime.hpp"
@@ -63,6 +64,7 @@ public:
     ReadingSettingsRuntime& readingSettings();
     DisplaySettingsRuntime& displaySettings();
     LocaleSettingsRuntime& localeSettings();
+    AboutDeviceRuntime& aboutDevice();
 
     SleepWakeCoordinator& sleepWake();
     PowerOffCoordinator& powerOff();
@@ -106,6 +108,7 @@ private:
     ReadingSettingsRuntime reading_settings_;
     DisplaySettingsRuntime display_settings_;
     LocaleSettingsRuntime locale_settings_;
+    AboutDeviceRuntime about_device_;
 
     SleepWakeCoordinator sleep_wake_;
     PowerOffCoordinator power_off_;

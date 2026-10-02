@@ -80,7 +80,21 @@ BookLoadResult ReaderBookLoader::open(
             break;
         }
 
-        case BookFormat::Fb2:
+        case BookFormat::Fb2: {
+            ParserSourceInfo source_info{
+                record->book_id,
+                record->source_path,
+                record->source_filename,
+            };
+
+            parsed =
+                fb2_parser_.parse(
+                    bytes,
+                    source_info
+                );
+            break;
+        }
+
         default:
             return {
                 BookLoadStatus::UnsupportedFormat,

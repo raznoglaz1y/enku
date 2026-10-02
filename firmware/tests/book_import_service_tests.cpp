@@ -153,6 +153,43 @@ int main() {
         BookImportStatus::ParseFailed
     );
 
+    const BookImportSource valid_fb2{
+        "/incoming/reader.fb2",
+        "reader.fb2",
+        R"(<?xml version="1.0" encoding="utf-8"?>
+<FictionBook>
+ <description>
+  <title-info>
+   <book-title>Imported FB2</book-title>
+   <author>
+    <first-name>Test</first-name>
+    <last-name>Author</last-name>
+   </author>
+  </title-info>
+ </description>
+ <body>
+  <section>
+   <title><p>Chapter</p></title>
+   <p>Imported body.</p>
+  </section>
+ </body>
+</FictionBook>)"
+    };
+
+    const auto fb2_import =
+        importer.import(valid_fb2, 46);
+
+    assert(fb2_import.ok());
+    assert(library.record.has_value());
+    assert(
+        library.record->format ==
+        BookFormat::Fb2
+    );
+    assert(
+        library.record->metadata.title ==
+        "Imported FB2"
+    );
+
     const BookImportSource invalid_epub{
         "/incoming/book.epub",
         "book.epub",
@@ -160,7 +197,7 @@ int main() {
     };
 
     assert(
-        importer.import(invalid_epub, 46).status ==
+        importer.import(invalid_epub, 47).status ==
         BookImportStatus::ParseFailed
     );
 
@@ -171,7 +208,7 @@ int main() {
     };
 
     assert(
-        importer.import(empty, 47).status ==
+        importer.import(empty, 48).status ==
         BookImportStatus::EmptySource
     );
 
@@ -185,7 +222,7 @@ int main() {
     };
 
     assert(
-        importer.import(commit_fail, 48).status ==
+        importer.import(commit_fail, 49).status ==
         BookImportStatus::LibraryCommitFailed
     );
 

@@ -454,6 +454,205 @@ void FreeTypeTextRenderer::drawRect(
     }
 }
 
+void FreeTypeTextRenderer::clearLogicalRegion(
+    int x,
+    int y,
+    int width,
+    int height,
+    Orientation orientation
+) {
+    for (int py = y; py < y + height; ++py) {
+        for (int px = x; px < x + width; ++px) {
+            if (orientation == Orientation::Landscape) {
+                framebuffer_.setWhite(px, py);
+            } else {
+                framebuffer_.setWhite(
+                    static_cast<int>(framebuffer_.width()) - 1 - py,
+                    px
+                );
+            }
+        }
+    }
+}
+
+void FreeTypeTextRenderer::drawWiFiStatusIcon(
+    NetworkRuntimeStatus status,
+    int x,
+    int y,
+    Orientation orientation
+) {
+    const auto pixel =
+        [&](int px, int py) {
+            setLogicalBlack(
+                x + px,
+                y + py,
+                orientation
+            );
+        };
+
+    const auto slash =
+        [&]() {
+            for (int i = 1; i < 14; ++i) {
+                pixel(i, 14 - i);
+                if (i < 13) {
+                    pixel(i + 1, 14 - i);
+                }
+            }
+        };
+
+    if (status == NetworkRuntimeStatus::Error) {
+        for (int i = 2; i < 13; ++i) {
+            pixel(i, i);
+            pixel(14 - i, i);
+        }
+        return;
+    }
+
+    // Center dot.
+    for (int py = 12; py <= 14; ++py) {
+        for (int px = 7; px <= 9; ++px) {
+            pixel(px, py);
+        }
+    }
+
+    if (status == NetworkRuntimeStatus::Connecting ||
+        status == NetworkRuntimeStatus::Connected) {
+        for (int i = 0; i < 5; ++i) {
+            pixel(4 + i, 9 - i / 2);
+            pixel(12 - i, 9 - i / 2);
+        }
+    }
+
+    if (status == NetworkRuntimeStatus::Connected) {
+        for (int i = 0; i < 7; ++i) {
+            pixel(2 + i, 5 - i / 3);
+            pixel(14 - i, 5 - i / 3);
+        }
+        for (int i = 0; i < 8; ++i) {
+            pixel(i, 1 + i / 4);
+            pixel(16 - i, 1 + i / 4);
+        }
+    }
+
+    if (status == NetworkRuntimeStatus::Off ||
+        status == NetworkRuntimeStatus::NoTrustedNetwork) {
+        slash();
+    }
+}
+
+void FreeTypeTextRenderer::drawBatteryStatusIcon(
+    std::uint8_t percent,
+    bool charging,
+    int x,
+    int y,
+    Orientation orientation
+) {
+    constexpr int kBodyWidth = 24;
+    constexpr int kBodyHeight = 12;
+
+    drawRect(
+        x,
+        y,
+        kBodyWidth,
+        kBodyHeight,
+        orientation,
+        1
+    );
+
+    for (int py = 4; py < 8; ++py) {
+        setLogicalBlack(
+            x + kBodyWidth,
+            y + py,
+            orientation
+        );
+        setLogicalBlack(
+            x + kBodyWidth + 1,
+            y + py,
+            orientation
+        );
+    }
+
+    const int fill =
+        std::max(
+            0,
+            std::min(
+                kBodyWidth - 4,
+                static_cast<int>(
+                    percent
+                ) * (kBodyWidth - 4) / 100
+            )
+        );
+
+    for (int py = 3; py < kBodyHeight - 3; ++py) {
+        for (int px = 2; px < 2 + fill; ++px) {
+            setLogicalBlack(
+                x + px,
+                y + py,
+                orientation
+            );
+        }
+    }
+
+    if (charging) {
+        // Small lightning-like marker above the battery body.
+        setLogicalBlack(x + 10, y - 2, orientation);
+        setLogicalBlack(x + 9, y - 1, orientation);
+        setLogicalBlack(x + 10, y - 1, orientation);
+        setLogicalBlack(x + 11, y, orientation);
+    }
+}
+
+bool FreeTypeTextRenderer::renderStatusBar(
+    const AppState& app_state
+) {
+    if (!ready()) {
+        return false;
+    }
+
+    constexpr int kBarHeight = 32;
+    const auto orientation =
+        app_state.orientation;
+
+    const int logical_width =
+        orientation == Orientation::Portrait
+            ? 480
+            : 800;
+
+    clearLogicalRegion(
+        0,
+        0,
+        logical_width,
+        kBarHeight,
+        orientation
+    );
+
+    drawWiFiStatusIcon(
+        app_state.network.status,
+        12,
+        8,
+        orientation
+    );
+
+    drawBatteryStatusIcon(
+        app_state.power.battery_percent,
+        app_state.power.charging,
+        logical_width - 38,
+        9,
+        orientation
+    );
+
+    for (int x = 0; x < logical_width; ++x) {
+        setLogicalBlack(
+            x,
+            kBarHeight - 1,
+            orientation
+        );
+    }
+
+    return true;
+}
+
+
 bool FreeTypeTextRenderer::drawKeyboardGrid(
     const KeyboardState& keyboard,
     Orientation orientation,
@@ -602,6 +801,11 @@ bool FreeTypeTextRenderer::renderPage(
 
     framebuffer_.clearWhite();
 
+    if (app_state_ != nullptr &&
+        !renderStatusBar(*app_state_)) {
+        return false;
+    }
+
     const int ascender =
         static_cast<int>(
             face_->size->metrics.ascender >> 6
@@ -744,6 +948,11 @@ bool FreeTypeTextRenderer::renderLibrary(
     }
 
     framebuffer_.clearWhite();
+
+    if (app_state_ != nullptr &&
+        !renderStatusBar(*app_state_)) {
+        return false;
+    }
 
     const Orientation orientation =
         app_state.orientation;
@@ -1041,6 +1250,11 @@ bool FreeTypeTextRenderer::renderWiFiSettings(
     }
 
     framebuffer_.clearWhite();
+
+    if (app_state_ != nullptr &&
+        !renderStatusBar(*app_state_)) {
+        return false;
+    }
 
     const auto orientation =
         app_state.orientation;
@@ -1507,6 +1721,11 @@ bool FreeTypeTextRenderer::renderPowerOffConfirm(
 
     framebuffer_.clearWhite();
 
+    if (app_state_ != nullptr &&
+        !renderStatusBar(*app_state_)) {
+        return false;
+    }
+
     const auto orientation =
         app_state.orientation;
 
@@ -1615,6 +1834,11 @@ bool FreeTypeTextRenderer::renderAboutDevice(
 
     framebuffer_.clearWhite();
 
+    if (app_state_ != nullptr &&
+        !renderStatusBar(*app_state_)) {
+        return false;
+    }
+
     const auto orientation =
         app_state.orientation;
 
@@ -1717,6 +1941,11 @@ bool FreeTypeTextRenderer::renderLocaleSettings(
     }
 
     framebuffer_.clearWhite();
+
+    if (app_state_ != nullptr &&
+        !renderStatusBar(*app_state_)) {
+        return false;
+    }
 
     const auto orientation =
         app_state.orientation;
@@ -1860,6 +2089,11 @@ bool FreeTypeTextRenderer::renderDisplaySettings(
     }
 
     framebuffer_.clearWhite();
+
+    if (app_state_ != nullptr &&
+        !renderStatusBar(*app_state_)) {
+        return false;
+    }
 
     const auto orientation =
         app_state.orientation;
@@ -2014,6 +2248,11 @@ bool FreeTypeTextRenderer::renderReadingSettings(
     }
 
     framebuffer_.clearWhite();
+
+    if (app_state_ != nullptr &&
+        !renderStatusBar(*app_state_)) {
+        return false;
+    }
 
     const auto orientation =
         app_state.orientation;
@@ -2197,6 +2436,11 @@ bool FreeTypeTextRenderer::renderSettingsScreen(
 
     framebuffer_.clearWhite();
 
+    if (app_state_ != nullptr &&
+        !renderStatusBar(*app_state_)) {
+        return false;
+    }
+
     const auto orientation =
         app_state.orientation;
 
@@ -2370,6 +2614,11 @@ bool FreeTypeTextRenderer::renderAboutBook(
 
     framebuffer_.clearWhite();
 
+    if (app_state_ != nullptr &&
+        !renderStatusBar(*app_state_)) {
+        return false;
+    }
+
     const auto orientation =
         app_state.orientation;
 
@@ -2530,6 +2779,11 @@ bool FreeTypeTextRenderer::renderContentsBookmarks(
     }
 
     framebuffer_.clearWhite();
+
+    if (app_state_ != nullptr &&
+        !renderStatusBar(*app_state_)) {
+        return false;
+    }
 
     const auto orientation =
         app_state.orientation;
@@ -2752,6 +3006,11 @@ bool FreeTypeTextRenderer::renderBookFinished(
 
     framebuffer_.clearWhite();
 
+    if (app_state_ != nullptr &&
+        !renderStatusBar(*app_state_)) {
+        return false;
+    }
+
     const auto orientation =
         app_state.orientation;
     const int logical_width =
@@ -2927,6 +3186,11 @@ bool FreeTypeTextRenderer::renderBookDetails(
     }
 
     framebuffer_.clearWhite();
+
+    if (app_state_ != nullptr &&
+        !renderStatusBar(*app_state_)) {
+        return false;
+    }
 
     const auto orientation =
         app_state.orientation;
@@ -3228,6 +3492,11 @@ bool FreeTypeTextRenderer::renderReaderOverlay(
 
     framebuffer_.clearWhite();
 
+    if (app_state_ != nullptr &&
+        !renderStatusBar(*app_state_)) {
+        return false;
+    }
+
     const Orientation orientation =
         app_state.orientation;
 
@@ -3381,6 +3650,11 @@ bool FreeTypeTextRenderer::renderSearch(
     }
 
     framebuffer_.clearWhite();
+
+    if (app_state_ != nullptr &&
+        !renderStatusBar(*app_state_)) {
+        return false;
+    }
 
     const Orientation orientation =
         app_state.orientation;

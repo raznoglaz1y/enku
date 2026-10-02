@@ -357,7 +357,6 @@ docs/
 
 README.md           project overview
 ROADMAP.md          implementation roadmap
-CONTRIBUTING.md     contribution guidance
 NOTICE.md           third-party asset and release notes
 ```
 
@@ -379,21 +378,6 @@ Planned first localization wave:
 
 The interface language is independent from book content and keyboard input mode.
 
-## Contributing
-
-**ENKU is actively looking for contributors.** The project is still early, so contributions are most useful when they are focused and testable.
-
-Good contribution areas include:
-
-- ESP32-S3 / e-paper driver experience;
-- low-power measurements;
-- text layout and pagination;
-- book format parsing;
-- physical-control UX;
-- localization;
-- mechanical/enclosure engineering.
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
 
 ## Open-source status
 

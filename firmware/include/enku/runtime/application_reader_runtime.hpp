@@ -17,6 +17,12 @@ enum class OrientationApplyStatus : std::uint8_t {
     RuntimeFailed,
 };
 
+enum class TypographyApplyStatus : std::uint8_t {
+    Ok,
+    SettingsSaveFailed,
+    RuntimeFailed,
+};
+
 class ApplicationReaderRuntime {
 public:
     ApplicationReaderRuntime(
@@ -36,6 +42,10 @@ public:
 
     OrientationApplyStatus applyOrientation(
         Orientation orientation
+    );
+
+    TypographyApplyStatus applyTypographyPreset(
+        ReadingPreset preset
     );
 
 private:

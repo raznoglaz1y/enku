@@ -41,6 +41,7 @@ class LibraryService {
 public:
     virtual ~LibraryService() = default;
 
+    virtual LibraryStatus upsert(const BookRecord& record) = 0;
     virtual std::optional<BookRecord> get(const BookId& book_id) const = 0;
     virtual LibraryStatus query(const LibraryQuery& query, LibraryPage& page) const = 0;
     virtual std::optional<BookId> findByFingerprint(const std::string& fingerprint) const = 0;

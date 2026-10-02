@@ -12,7 +12,9 @@
 
 #include <cassert>
 #include <filesystem>
+#include <optional>
 #include <string>
+#include <utility>
 #include <string_view>
 
 using namespace enku;

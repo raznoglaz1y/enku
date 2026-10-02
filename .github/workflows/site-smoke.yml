@@ -92,6 +92,8 @@ jobs:
           grep -q 'href="/design" class="active"' /tmp/design.html
           grep -q '<title>Build — ENKU</title>' /tmp/build.html
           grep -q 'href="/build" class="active"' /tmp/build.html
+          grep -q 'class="enku-next"' /tmp/build.html
+          grep -q 'href="/status"' /tmp/build.html
           grep -Eq 'href="/software"[^>]*>Software</a>' /tmp/home.html
           grep -Eq 'href="/hardware"[^>]*>Hardware</a>' /tmp/home.html
           grep -Eq 'href="/design"[^>]*>Design</a>' /tmp/home.html

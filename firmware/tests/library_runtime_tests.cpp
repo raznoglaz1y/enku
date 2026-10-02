@@ -1,10 +1,12 @@
 #include "enku/reader/book_loader.hpp"
 #include "enku/runtime/library_runtime.hpp"
+#include "enku/runtime/settings_runtime.hpp"
 #include "enku/runtime/reader_runtime.hpp"
 #include "enku/storage/book_import_service.hpp"
 #include "enku/storage/cbor_app_context_service.hpp"
 #include "enku/storage/cbor_library_service.hpp"
 #include "enku/storage/cbor_reader_checkpoint.hpp"
+#include "enku/storage/cbor_settings_service.hpp"
 #include "enku/storage/posix_book_file_store.hpp"
 #include "enku/storage/posix_state_file_store.hpp"
 #include "enku/storage/staged_book_import_service.hpp"
@@ -189,12 +191,23 @@ int main() {
         context
     );
 
+    CborSettingsService settings_service(state_files);
+    SettingsRuntimeController settings(
+        app,
+        settings_service
+    );
+    assert(
+        settings.loadAndApply() ==
+        SettingsRuntimeStatus::DefaultsCreated
+    );
+
     LibraryRuntimeController runtime(
         app,
         library,
         reader,
         importer,
         deleter,
+        settings,
         refresh
     );
 
@@ -226,8 +239,25 @@ int main() {
             LibraryFilterChanged{LibraryFilter::Reading}
         ) == LibraryRuntimeResult::Applied
     );
+
+    GlobalSettings persisted_settings;
+    assert(
+        settings_service.load(persisted_settings) ==
+        PersistStatus::Ok
+    );
+    assert(
+        persisted_settings.library_filter ==
+        LibraryFilter::Reading
+    );
     assert(runtime.page().total_matches == 1);
     assert(runtime.page().items[0].book_id == "beta");
+
+    assert(
+        runtime.handle(
+            LibraryViewChanged{LibraryView::List}
+        ) == LibraryRuntimeResult::Applied
+    );
+    assert(app.library.view == LibraryView::List);
 
     assert(
         runtime.handle(

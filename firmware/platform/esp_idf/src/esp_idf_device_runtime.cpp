@@ -112,6 +112,10 @@ EspIdfDeviceRuntime::EspIdfDeviceRuntime(
           platform_.network(),
           platform_.network()
       ),
+      web_upload_server_(
+          storage_.webUpload(),
+          storage_.library()
+      ),
       sleep_wake_(
           storage_.appState(),
           storage_.library(),
@@ -205,6 +209,7 @@ EspIdfDeviceRuntime::begin() {
     }
 
     syncPlatformState();
+    syncWebUploadServer();
 
     return DeviceRuntimeInitStatus::Ok;
 }
@@ -410,6 +415,17 @@ void EspIdfDeviceRuntime::syncPlatformState() {
         battery.charging;
 }
 
+bool EspIdfDeviceRuntime::syncWebUploadServer() {
+    const auto& app = storage_.appState();
+
+    const bool online =
+        app.network.status ==
+            NetworkRuntimeStatus::Connected &&
+        app.screen != Screen::Sleep;
+
+    return web_upload_server_.sync(online);
+}
+
 bool EspIdfDeviceRuntime::refreshStatusBarIfNeeded() {
     auto& app = storage_.appState();
 
@@ -486,6 +502,10 @@ InputDispatchResult EspIdfDeviceRuntime::pollInput(
     std::uint32_t now_ms
 ) {
     syncPlatformState();
+
+    // Network services follow the same authoritative lifecycle state as
+    // the UI. The uploader exists only while the reader is online and awake.
+    syncWebUploadServer();
 
     // Status changes are independent of user input. Keep the e-ink update
     // constrained to the compact top bar instead of refreshing the screen.

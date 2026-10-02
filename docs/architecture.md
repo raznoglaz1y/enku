@@ -132,6 +132,8 @@ The format adapter and metadata normalization rules are defined in [Metadata & P
 
 The text layout, pagination and rendering rules are defined in [Pagination & Rendering Model](pagination-model.md).
 
+The first concrete bridge from an opened normalized document to Reader-level page results is defined in [Reader Engine MVP](reader-engine-mvp.md).
+
 Runtime transitions for opening, reading, search, sleep/wake and recovery are defined in [Reader Runtime & State Machine](runtime-state-machine.md).
 
 The initial source/module layout and framework-neutral interfaces are defined in [Firmware Project Structure](firmware-structure.md).

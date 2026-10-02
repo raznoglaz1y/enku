@@ -26,7 +26,9 @@ EspIdfDeviceRuntime::EspIdfDeviceRuntime(
       ),
       reader_overlay_(
           storage_,
-          reader_
+          reader_,
+          &text_renderer_,
+          &platform_.refresh()
       ),
       sleep_wake_(
           storage_.appState(),

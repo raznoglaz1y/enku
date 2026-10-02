@@ -121,7 +121,8 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 - [x] Define format-independent normalized document model
 - [ ] Implement EPUB parser
 - [ ] Implement FB2 parser
-- [ ] Implement TXT reader/parser
+- [x] Add framework-neutral TXT parser MVP (UTF-8 validation, normalization, paragraph blocks)
+- [ ] Integrate TXT parser with storage/Reader Engine and expand encoding support
 - [x] Define semantic reading-position representation
 - [x] Define pagination, wrapping and rendering model
 - [ ] Implement text layout and pagination
@@ -209,8 +210,10 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 
 ## 11. Open-source release
 
-- [ ] Select final firmware license
-- [ ] Select final design/mechanical license
+- [x] Select Apache-2.0 for original firmware/software
+- [x] Select CC BY 4.0 for original project documentation
+- [x] Select CERN-OHL-P-2.0 for future project-owned hardware/mechanical source
+- [ ] Complete design-asset/third-party licensing audit
 - [ ] Verify third-party asset licenses and attribution
 - [ ] Add firmware build and flash documentation
 - [ ] Add hardware assembly documentation

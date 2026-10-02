@@ -41,6 +41,7 @@ add_library(enku_core STATIC
     src/runtime/boot_restore.cpp
     src/runtime/sleep_wake.cpp
     src/runtime/network_lifecycle.cpp
+    src/runtime/web_upload_ingress.cpp
     src/runtime/power_off.cpp
     src/runtime/power_off_confirm_runtime.cpp
     src/runtime/wifi_settings_runtime.cpp
@@ -105,5 +106,6 @@ enku_add_test(boot_restore_tests tests/boot_restore_tests.cpp)
 enku_add_test(boot_loop_tests tests/boot_loop_tests.cpp)
 enku_add_test(sleep_wake_tests tests/sleep_wake_tests.cpp)
 enku_add_test(network_lifecycle_tests tests/network_lifecycle_tests.cpp)
+enku_add_test(web_upload_ingress_tests tests/web_upload_ingress_tests.cpp)
 enku_add_test(power_off_tests tests/power_off_tests.cpp)
 enku_add_test(posix_checkpoint_integration_tests tests/posix_checkpoint_integration_tests.cpp)

@@ -14,8 +14,9 @@ public:
         std::string& bytes
     ) override;
 
-    std::optional<std::uint64_t> sourceSize(
-        const BookRecord& record
+    BookSourceStatus sourceSize(
+        const BookRecord& record,
+        std::uint64_t& size_bytes
     ) override;
 
     BookSourceStatus readSourceRange(

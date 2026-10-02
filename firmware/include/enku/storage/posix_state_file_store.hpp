@@ -21,6 +21,10 @@ public:
         const std::vector<std::uint8_t>& bytes
     ) override;
 
+    StateFileStatus remove(
+        const std::string& path
+    ) override;
+
     const std::filesystem::path& root() const;
 
 private:

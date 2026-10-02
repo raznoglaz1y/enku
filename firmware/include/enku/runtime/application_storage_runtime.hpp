@@ -13,6 +13,7 @@
 #include "../storage/stored_book_source_service.hpp"
 #include "settings_runtime.hpp"
 #include "storage_startup.hpp"
+#include "web_upload_ingress.hpp"
 
 namespace enku {
 
@@ -31,6 +32,7 @@ public:
     CborLibraryService& library();
     BookImportService& importCore();
     StagedBookImportService& stagedImport();
+    WebUploadIngress& webUpload();
     BookDeleteService& deleteService();
 
     CborReaderCheckpointService& checkpoints();
@@ -50,6 +52,7 @@ private:
     CborLibraryService library_;
     BookImportService import_core_;
     StagedBookImportService staged_import_;
+    WebUploadIngress web_upload_;
 
     CborReaderCheckpointService checkpoints_;
     CborBookmarkService bookmarks_;

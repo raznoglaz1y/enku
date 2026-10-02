@@ -184,7 +184,7 @@ int main() {
         state_files
     );
     CborAppContextService context(state_files);
-        CborBootLoopService boot_loop(state_files);
+    CborBootLoopService boot_loop(state_files);
     FakeRefreshService refresh;
 
     AppState app;
@@ -229,8 +229,14 @@ int main() {
     assert(app.progress_dirty);
 
     BookImportService importer(library);
+    CborSettingsService settings_service(state_files);
+    SettingsRuntimeController settings(
+        app,
+        settings_service
+    );
     StorageStartupCoordinator storage_startup(
         app,
+        settings,
         library,
         book_files,
         importer

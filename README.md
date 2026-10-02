@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/raznoglaz1y/enku/main/assets/branding/enku_eink_refresh_compact.gif" alt="ENKU animated e-paper logo" width="420">
+  <img src="./assets/branding/enku_eink_refresh_compact.gif" alt="ENKU animated e-paper logo" width="420">
 </p>
 
 <h1 align="center">ENKU</h1>
@@ -299,6 +299,7 @@ Firmware has not yet been published as a working reader. The planned implementat
    - first concrete DocumentReaderEngine implemented over the paginator;
    - ReaderSession with deterministic visited-page Previous and previous/current/next working-set cache;
    - Reader runtime integration updates AppState/progress and emits PageTurn refresh requests;
+   - Open → Reading, Back → Library checkpoint and Finished transitions are now modeled in runtime;
    - EPUB and FB2 parser adapters still pending;
    - normalized metadata/document model;
    - on-demand pagination using a font/text measurement abstraction;
@@ -419,6 +420,7 @@ No final mechanical dimensions will be published as authoritative until the actu
 - [ ] Implement staged boot coordinator and first-usable-screen checkpoint
 - [ ] Implement Refresh Manager queue and render-plan pipeline
 - [x] Connect PageNext/PagePrevious runtime events to ReaderSession/AppState
+- [x] Implement Reader open/back/finished runtime transitions
 - [ ] Connect the firmware scaffold to verified platform drivers
 - [x] Add ReaderSession page history/cache and deterministic Previous
 - [ ] Expand pagination beyond TXT paragraphs and add real font metrics

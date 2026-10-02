@@ -134,7 +134,13 @@ KeyboardRuntimeResult KeyboardRuntime::activate(
 
         case 1:
             if (!text.empty()) {
-                text.pop_back();
+                auto pos = text.size() - 1U;
+                while (pos > 0U &&
+                       (static_cast<unsigned char>(text[pos]) & 0xC0U) ==
+                           0x80U) {
+                    --pos;
+                }
+                text.erase(pos);
             }
             return KeyboardRuntimeResult::Changed;
 

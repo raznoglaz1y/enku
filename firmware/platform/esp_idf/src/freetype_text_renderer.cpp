@@ -1104,11 +1104,25 @@ bool FreeTypeTextRenderer::renderSearch(
     }
 
     if (app_state.search.phase == SearchPhase::Results) {
-        char count_text[48] = {};
+        char count_text[64] = {};
+        const auto visible_end =
+            app_state.search.window_start +
+            static_cast<std::uint32_t>(
+                app_state.search.matches.size()
+            );
+
         std::snprintf(
             count_text,
             sizeof(count_text),
-            "%lu MATCHES",
+            "%lu-%lu OF %lu",
+            static_cast<unsigned long>(
+                app_state.search.matches.empty()
+                    ? 0U
+                    : app_state.search.window_start + 1U
+            ),
+            static_cast<unsigned long>(
+                visible_end
+            ),
             static_cast<unsigned long>(
                 app_state.search.total_matches
             )

@@ -81,8 +81,8 @@ If a saved anchor can no longer be resolved exactly, the Reader Engine should re
 When the user requests Next:
 
 1. ignore/reject duplicate input while the current page transition is not ready;
-2. obtain the next semantic anchor from the current Reader page result;
-3. ask Reader Engine to paginate the next page;
+2. ask ReaderSession to advance using the current page's next semantic anchor;
+3. reuse prefetched next page or ask Reader Engine to paginate it;
 4. update current semantic position;
 5. mark progress as dirty;
 6. render the new page;
@@ -92,15 +92,11 @@ The UI must not advance stored progress before a valid next page exists.
 
 ## 6. Page Previous
 
-Previous must return to a deterministic prior logical page.
+Previous returns to a deterministic prior logical page through ReaderSession.
 
-Possible implementation support may include:
+The current MVP stores page-start semantic anchors actually visited during the session and keeps a disposable previous/current/next working set. If an adjacent page is not cached, it is rebuilt from the stored page-start anchor.
 
-- cached previous page;
-- cached page-boundary checkpoints;
-- reverse layout inside the current section.
-
-The runtime must not approximate Previous by subtracting an arbitrary number of characters.
+The runtime never approximates Previous by subtracting an arbitrary number of characters.
 
 ## 7. End of book
 

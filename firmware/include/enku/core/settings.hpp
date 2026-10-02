@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 
 #include "library.hpp"
 #include "localization.hpp"
@@ -21,6 +22,12 @@ enum class WiFiPolicy : std::uint8_t {
     Off,
     Manual,
     AutoConnectTrusted,
+};
+
+struct WiFiNetworkInfo {
+    std::string ssid;
+    std::int32_t rssi{0};
+    bool secured{false};
 };
 
 struct GlobalSettings {

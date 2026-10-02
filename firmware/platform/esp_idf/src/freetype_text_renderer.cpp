@@ -91,6 +91,12 @@ bool FreeTypeTextRenderer::ready() const {
            face_ != nullptr;
 }
 
+void FreeTypeTextRenderer::bindAppState(
+    const AppState& app_state
+) {
+    app_state_ = &app_state;
+}
+
 bool FreeTypeTextRenderer::ensureSize(
     std::uint16_t size_px
 ) const {
@@ -531,6 +537,59 @@ bool FreeTypeTextRenderer::renderPage(
                 );
 
             previous_glyph = glyph;
+        }
+
+        if (app_state_ != nullptr &&
+            app_state_->search_highlight.position.has_value() &&
+            !app_state_->search_highlight.query.empty()) {
+            const auto& highlight =
+                *app_state_->search_highlight.position;
+
+            if (highlight.book_id == line.position.book_id &&
+                highlight.section_id == line.position.section_id &&
+                highlight.text_offset >= line.position.text_offset) {
+                const auto local =
+                    highlight.text_offset -
+                    line.position.text_offset;
+
+                if (local <= line.text.size() &&
+                    local + app_state_->search_highlight.query.size() <=
+                        line.text.size()) {
+                    const auto prefix =
+                        line.text.substr(
+                            0,
+                            static_cast<std::size_t>(local)
+                        );
+
+                    const int highlight_x =
+                        static_cast<int>(line.x) +
+                        static_cast<int>(
+                            measureWidthPx(
+                                prefix,
+                                typography
+                            )
+                        );
+
+                    const int highlight_width =
+                        static_cast<int>(
+                            measureWidthPx(
+                                app_state_->search_highlight.query,
+                                typography
+                            )
+                        );
+
+                    if (highlight_width > 0) {
+                        drawRect(
+                            highlight_x,
+                            baseline + 2,
+                            highlight_width,
+                            2,
+                            orientation,
+                            1
+                        );
+                    }
+                }
+            }
         }
     }
 

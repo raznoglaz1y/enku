@@ -105,6 +105,8 @@ The persistence/checkpoint layer later commits according to the existing debounc
 
 Actual storage/parser/document construction is implemented by the first [Book Loader / Document Provider MVP](book-loader-mvp.md). `ReaderRuntimeController` now invokes that loader directly when it receives `OpenBookRequested`.
 
+Before opening, the runtime asks `ReaderCheckpointService` for the latest per-book checkpoint. If one exists and belongs to the requested book, its semantic position becomes the loader restore anchor. If no checkpoint exists, opening starts from the beginning.
+
 The completion semantics remain expressed through the existing lifecycle handlers:
 
 - successful load → `BookOpened` path validates the loader-owned session, switches to Reading and synchronizes the visible page into AppState;
@@ -139,11 +141,13 @@ Implemented:
 - PageTurn refresh submission;
 - EndOfBook → Finished summary transition;
 - Back-to-Library checkpoint and session close;
+- checkpoint restore on subsequent OpenBookRequested;
 - non-Reading page-event ignore behavior;
 - no logical rollback on refresh rejection.
 
 Not yet implemented:
 
+- concrete CBOR/filesystem implementation of ReaderCheckpointService;
 - structured layout/display error events;
 - typography/orientation event integration;
 - render-plan payload/framebuffer generation.

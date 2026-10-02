@@ -53,6 +53,26 @@ struct LibraryState {
     }
 };
 
+enum class BookDetailsMode : std::uint8_t {
+    Details,
+    DeleteConfirm,
+    RestartConfirm,
+};
+
+enum class BookDetailsFocus : std::uint8_t {
+    Primary,
+    RestartReading,
+    DeleteBook,
+};
+
+struct BookDetailsState {
+    std::optional<BookId> book_id;
+    BookDetailsMode mode{BookDetailsMode::Details};
+    BookDetailsFocus focus{BookDetailsFocus::Primary};
+    bool confirm_delete{false};
+    bool confirm_restart{false};
+};
+
 struct NetworkState {
     bool connected{false};
     std::string ssid;
@@ -128,6 +148,7 @@ struct AppState {
     ReaderOverlayState reader_overlay;
     ReaderSearchState search;
     ReaderSearchHighlight search_highlight;
+    BookDetailsState book_details;
     KeyboardState keyboard;
 
     NetworkState network;

@@ -64,6 +64,8 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 - [ ] Implement hardware abstraction for display, input, storage and power
 - [x] Define reader runtime/state-machine behavior
 - [ ] Implement application state model
+- [x] Define persistence backend and crash-recovery model
+- [ ] Implement CBOR persistence codec and generation recovery
 - [ ] Implement persistent settings storage
 - [ ] Implement reusable UI component layer
 - [x] Define physical-to-logical input mapping and press semantics
@@ -106,6 +108,7 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 - [ ] Implement text layout and pagination
 - [x] Define portrait/landscape repagination behavior
 - [ ] Implement portrait/landscape repagination while preserving position
+- [x] Define debounced per-book progress persistence layout
 - [ ] Implement reading progress persistence
 - [ ] Implement five typography presets
 - [ ] Implement Custom typography

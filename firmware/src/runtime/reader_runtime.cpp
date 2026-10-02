@@ -4,16 +4,28 @@ namespace enku {
 
 ReaderRuntimeController::ReaderRuntimeController(
     AppState& app_state,
-    ReaderSession& session,
+    ReaderBookLoader& loader,
     RefreshService& refresh,
     LibraryService& library,
-    ReaderCheckpointService& checkpoint
+    ReaderCheckpointService& checkpoint,
+    TypographySettings typography,
+    Viewport viewport
 )
     : app_state_(app_state),
-      session_(session),
+      loader_(loader),
       refresh_(refresh),
       library_(library),
-      checkpoint_(checkpoint) {}
+      checkpoint_(checkpoint),
+      typography_(typography),
+      viewport_(viewport) {}
+
+ReaderSession* ReaderRuntimeController::session() {
+    return loader_.session();
+}
+
+const ReaderSession* ReaderRuntimeController::session() const {
+    return loader_.session();
+}
 
 ReaderRuntimeResult ReaderRuntimeController::handle(
     const OpenBookRequested& event
@@ -33,20 +45,41 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
         return refresh_result;
     }
 
-    return ReaderRuntimeResult::BookOpening;
+    std::optional<SemanticPosition> saved_position;
+    if (app_state_.reading_position.has_value() &&
+        app_state_.reading_position->book_id == event.book_id) {
+        saved_position = app_state_.reading_position;
+    }
+
+    const BookLoadRequest request{
+        event.book_id,
+        saved_position,
+        typography_,
+        viewport_,
+    };
+
+    const auto load_result = loader_.open(request);
+    if (!load_result.ok()) {
+        return handle(BookOpenFailed{event.book_id});
+    }
+
+    return handle(BookOpened{event.book_id});
 }
 
 ReaderRuntimeResult ReaderRuntimeController::handle(
     const BookOpened& event
 ) {
+    const auto* active_session = session();
+
     if (app_state_.screen != Screen::BookOpening ||
         !app_state_.current_book.has_value() ||
         *app_state_.current_book != event.book_id ||
-        !session_.isOpen()) {
+        active_session == nullptr ||
+        !active_session->isOpen()) {
         return ReaderRuntimeResult::Ignored;
     }
 
-    const auto& current = session_.currentPage();
+    const auto& current = active_session->currentPage();
     if (!current.has_value() ||
         current->first_position.book_id != event.book_id) {
         return ReaderRuntimeResult::LayoutFailed;
@@ -73,7 +106,7 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
         return ReaderRuntimeResult::Ignored;
     }
 
-    session_.close();
+    loader_.close();
     app_state_.library.focused_book = event.book_id;
     app_state_.screen = Screen::Library;
     app_state_.current_book.reset();
@@ -95,23 +128,29 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
 ReaderRuntimeResult ReaderRuntimeController::handle(
     const PageNextRequested&
 ) {
+    auto* active_session = session();
+
     if (app_state_.screen != Screen::Reading ||
-        !session_.isOpen()) {
+        active_session == nullptr ||
+        !active_session->isOpen()) {
         return ReaderRuntimeResult::Ignored;
     }
 
-    return applySessionResult(session_.next());
+    return applySessionResult(active_session->next());
 }
 
 ReaderRuntimeResult ReaderRuntimeController::handle(
     const PagePreviousRequested&
 ) {
+    auto* active_session = session();
+
     if (app_state_.screen != Screen::Reading ||
-        !session_.isOpen()) {
+        active_session == nullptr ||
+        !active_session->isOpen()) {
         return ReaderRuntimeResult::Ignored;
     }
 
-    return applySessionResult(session_.previous());
+    return applySessionResult(active_session->previous());
 }
 
 ReaderRuntimeResult ReaderRuntimeController::handle(
@@ -151,7 +190,7 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
         return ReaderRuntimeResult::LibraryUpdateFailed;
     }
 
-    session_.close();
+    loader_.close();
     app_state_.library.focused_book = book_id;
     app_state_.screen = Screen::Library;
     app_state_.current_book.reset();
@@ -214,7 +253,12 @@ ReaderRuntimeResult ReaderRuntimeController::applySessionResult(
 ReaderRuntimeResult ReaderRuntimeController::commitVisiblePage(
     bool mark_progress_dirty
 ) {
-    const auto& current = session_.currentPage();
+    const auto* active_session = session();
+    if (active_session == nullptr) {
+        return ReaderRuntimeResult::LayoutFailed;
+    }
+
+    const auto& current = active_session->currentPage();
     if (!current.has_value()) {
         return ReaderRuntimeResult::LayoutFailed;
     }

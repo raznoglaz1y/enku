@@ -36,6 +36,7 @@ include/enku/
     reader_runtime.hpp
     storage_startup.hpp
     boot_restore.hpp
+    sleep_wake.hpp
   services/
     services.hpp
   storage/
@@ -102,6 +103,7 @@ The host suite currently covers:
 - transactional staged-file import from `/system/tmp` into canonical `/books/book-<id>.<ext>`;
 - storage startup recovery that loads the Library, cleans stale committed tmp artifacts, and preserves ambiguous uploads;
 - persisted last-safe app context and automatic cold-boot restore into Reading at the saved semantic checkpoint;
+- Sleep checkpointing plus fast context-only Wake restore without repeating the full storage recovery path;
 - rollback of the final book file when Library commit fails;
 - POSIX filesystem persistence for book files and checkpoints.
 

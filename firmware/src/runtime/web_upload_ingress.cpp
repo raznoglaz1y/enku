@@ -8,21 +8,6 @@ namespace {
 constexpr const char* kWebUploadStagePath =
     "/system/incoming/web-upload.tmp";
 
-class ImportActivityGuard {
-public:
-    explicit ImportActivityGuard(AppState& app_state)
-        : app_state_(app_state) {
-        app_state_.import_active = true;
-    }
-
-    ~ImportActivityGuard() {
-        app_state_.import_active = false;
-    }
-
-private:
-    AppState& app_state_;
-};
-
 } // namespace
 
 WebUploadIngress::WebUploadIngress(
@@ -58,14 +43,28 @@ bool WebUploadIngress::validFilename(
     return true;
 }
 
-WebUploadResult WebUploadIngress::upload(
+void WebUploadIngress::resetSession(
+    bool remove_stage
+) {
+    if (remove_stage) {
+        files_.remove(kWebUploadStagePath);
+    }
+
+    session_active_ = false;
+    source_filename_.clear();
+    expected_bytes_ = 0;
+    received_bytes_ = 0;
+    app_state_.import_active = false;
+}
+
+WebUploadResult WebUploadIngress::begin(
     std::string_view source_filename,
-    std::string_view bytes,
-    std::uint64_t added_order
+    std::size_t content_length
 ) {
     WebUploadResult result;
 
-    if (app_state_.import_active) {
+    if (app_state_.import_active ||
+        session_active_) {
         result.status = WebUploadStatus::Busy;
         return result;
     }
@@ -76,35 +75,102 @@ WebUploadResult WebUploadIngress::upload(
         return result;
     }
 
-    if (bytes.empty()) {
+    if (content_length == 0) {
         result.status =
             WebUploadStatus::EmptyPayload;
         return result;
     }
 
-    if (bytes.size() > max_payload_bytes_) {
+    if (content_length > max_payload_bytes_) {
         result.status =
             WebUploadStatus::PayloadTooLarge;
         return result;
     }
 
-    ImportActivityGuard activity(app_state_);
-
-    const std::string payload(bytes);
-
     if (files_.write(
             kWebUploadStagePath,
-            payload
+            {}
         ) != BookFileStatus::Ok) {
         result.status =
             WebUploadStatus::StageWriteFailed;
         return result;
     }
 
+    source_filename_ =
+        std::string(source_filename);
+    expected_bytes_ = content_length;
+    received_bytes_ = 0;
+    session_active_ = true;
+    app_state_.import_active = true;
+
+    result.status = WebUploadStatus::Ok;
+    return result;
+}
+
+WebUploadResult WebUploadIngress::appendChunk(
+    std::string_view bytes
+) {
+    WebUploadResult result;
+
+    if (!session_active_) {
+        result.status =
+            WebUploadStatus::NoActiveUpload;
+        return result;
+    }
+
+    if (bytes.empty()) {
+        result.status = WebUploadStatus::Ok;
+        return result;
+    }
+
+    if (received_bytes_ + bytes.size() >
+        expected_bytes_) {
+        resetSession(true);
+        result.status =
+            WebUploadStatus::PayloadLengthMismatch;
+        return result;
+    }
+
+    if (files_.append(
+            kWebUploadStagePath,
+            std::string(bytes)
+        ) != BookFileStatus::Ok) {
+        resetSession(true);
+        result.status =
+            WebUploadStatus::StageWriteFailed;
+        return result;
+    }
+
+    received_bytes_ += bytes.size();
+    result.status = WebUploadStatus::Ok;
+    return result;
+}
+
+WebUploadResult WebUploadIngress::finish(
+    std::uint64_t added_order
+) {
+    WebUploadResult result;
+
+    if (!session_active_) {
+        result.status =
+            WebUploadStatus::NoActiveUpload;
+        return result;
+    }
+
+    if (received_bytes_ != expected_bytes_) {
+        resetSession(true);
+        result.status =
+            WebUploadStatus::PayloadLengthMismatch;
+        return result;
+    }
+
+    const auto source_filename =
+        source_filename_;
+
     const auto imported =
         staged_import_.import(
             kWebUploadStagePath,
-            std::string(source_filename),
+            source_filename,
             added_order
         );
 
@@ -112,18 +178,46 @@ WebUploadResult WebUploadIngress::upload(
     result.book_id = imported.book_id;
 
     if (!imported.ok()) {
-        // The staged importer intentionally preserves failed stages for
-        // storage-level recovery. Web uploads are single-shot requests, so
-        // remove the ingress temp file best-effort to avoid blocking the next
-        // upload with stale bytes.
-        files_.remove(kWebUploadStagePath);
+        resetSession(true);
         result.status =
             WebUploadStatus::ImportFailed;
         return result;
     }
 
+    resetSession(false);
     result.status = WebUploadStatus::Ok;
     return result;
+}
+
+void WebUploadIngress::cancel() {
+    if (!session_active_) {
+        return;
+    }
+
+    resetSession(true);
+}
+
+WebUploadResult WebUploadIngress::upload(
+    std::string_view source_filename,
+    std::string_view bytes,
+    std::uint64_t added_order
+) {
+    auto result =
+        begin(
+            source_filename,
+            bytes.size()
+        );
+
+    if (!result.ok()) {
+        return result;
+    }
+
+    result = appendChunk(bytes);
+    if (!result.ok()) {
+        return result;
+    }
+
+    return finish(added_order);
 }
 
 } // namespace enku

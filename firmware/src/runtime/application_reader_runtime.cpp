@@ -67,4 +67,63 @@ ApplicationReaderRuntime::bootRestore() {
     return boot_restore_;
 }
 
+OrientationApplyStatus
+ApplicationReaderRuntime::applyOrientation(
+    Orientation orientation
+) {
+    auto& app = storage_.appState();
+
+    if (app.orientation == orientation) {
+        return OrientationApplyStatus::Ok;
+    }
+
+    const auto previous = app.orientation;
+
+    if (storage_.settingsRuntime().handle(
+            OrientationChanged{orientation}
+        ) != PersistStatus::Ok) {
+        return OrientationApplyStatus::SettingsSaveFailed;
+    }
+
+    bool applied = true;
+
+    if (app.screen == Screen::Reading) {
+        applied =
+            reader_.handle(
+                OrientationChanged{orientation}
+            ) == ReaderRuntimeResult::Applied;
+    } else if (app.screen == Screen::Library) {
+        const auto result =
+            library_.handle(
+                LibraryRefreshRequested{}
+            );
+
+        applied =
+            result == LibraryRuntimeResult::Applied ||
+            result == LibraryRuntimeResult::Empty;
+    }
+
+    if (applied) {
+        return OrientationApplyStatus::Ok;
+    }
+
+    // Roll back the durable setting and restore the previous layout.
+    storage_.settingsRuntime().handle(
+        OrientationChanged{previous}
+    );
+
+    if (app.screen == Screen::Reading) {
+        reader_.handle(
+            OrientationChanged{previous}
+        );
+    } else if (app.screen == Screen::Library) {
+        library_.handle(
+            LibraryRefreshRequested{}
+        );
+    }
+
+    return OrientationApplyStatus::RuntimeFailed;
+}
+
+
 } // namespace enku

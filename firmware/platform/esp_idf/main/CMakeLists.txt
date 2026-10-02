@@ -10,6 +10,7 @@ idf_component_register(
         "../src/esp_idf_platform.cpp"
         "../../../src/render/owned_mono_framebuffer.cpp"
         "../../../src/runtime/input_runtime.cpp"
+        "../../../src/runtime/application_storage_runtime.cpp"
     INCLUDE_DIRS
         "../include"
         "../../../include"

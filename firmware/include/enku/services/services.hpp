@@ -8,6 +8,7 @@
 #include "../core/power.hpp"
 #include "../core/persistence.hpp"
 #include "../core/diagnostics.hpp"
+#include "../core/refresh.hpp"
 
 namespace enku {
 
@@ -32,7 +33,9 @@ public:
     virtual ~RefreshService() = default;
 
     virtual bool busy() const = 0;
-    virtual void requestFullRefresh() = 0;
+    virtual bool submit(const RefreshRequest& request) = 0;
+    virtual void cancelObsolete(std::uint32_t minimum_generation) = 0;
+    virtual RefreshStats stats() const = 0;
 };
 
 class NetworkService {

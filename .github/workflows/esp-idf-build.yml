@@ -4,9 +4,15 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "firmware/**"
+      - ".github/workflows/esp-idf-build.yml"
   pull_request:
     branches:
       - main
+    paths:
+      - "firmware/**"
+      - ".github/workflows/esp-idf-build.yml"
 
 permissions:
   contents: read

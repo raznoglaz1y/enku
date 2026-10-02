@@ -78,17 +78,19 @@
           </div>
         </div>
 
-        <form class="contact-form" id="contact-form" novalidate>
-          <div class="field"><label for="name">Name</label><input id="name" name="name" autocomplete="name" required></div>
-          <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" required></div>
-          <div class="field full"><label for="subject">Subject</label><select id="subject" name="subject" required><option value="">Choose a subject</option><option>Project question</option><option>Collaboration</option><option>Hardware / firmware</option><option>Design / UI</option><option>Documentation</option><option>Other</option></select></div>
-          <div class="field full"><label for="message">Message</label><textarea id="message" name="message" required></textarea></div>
-          <div class="form-bottom">
-            <p class="form-note">The delivery endpoint is being connected. The form is already structured so it can be wired without changing the page.</p>
-            <button class="button" type="submit">Send message <span>→</span></button>
+        <div class="contact-form" aria-label="Contact options">
+          <div class="field full">
+            <h3 style="margin:0 0 10px">Project questions & public feedback</h3>
+            <p style="margin:0;color:#625d55;line-height:1.65">For now, the best way to reach me about ENKU is through GitHub. Use an issue for bugs, build questions, documentation feedback or feature ideas.</p>
           </div>
-          <p class="form-status" id="form-status" aria-live="polite"></p>
-        </form>
+          <div class="form-bottom">
+            <p class="form-note">A private contact form will be added next, after we choose the delivery and privacy setup.</p>
+            <div style="display:flex;gap:12px;flex-wrap:wrap">
+              <a class="button" href="https://github.com/raznoglaz1y/enku/issues/new" target="_blank" rel="noreferrer">Open an issue <span>↗</span></a>
+              <a class="button button-secondary" href="https://github.com/raznoglaz1y" target="_blank" rel="noreferrer">GitHub profile <span>↗</span></a>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -140,13 +142,6 @@
   <script>
     const menu=document.querySelector('.menu-button'),mobileNav=document.querySelector('.mobile-nav');
     menu?.addEventListener('click',()=>{const open=mobileNav.classList.toggle('open');menu.setAttribute('aria-expanded',String(open));});
-    mobileNav?.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{mobileNav.classList.remove('open');menu?.setAttribute('aria-expanded','false');}));
-    const form=document.querySelector('#contact-form'),status=document.querySelector('#form-status');
-    form?.addEventListener('submit',e=>{
-      e.preventDefault();
-      if(!form.checkValidity()){form.reportValidity();return;}
-      status.textContent='Message delivery is not connected yet — the form itself is ready.';
-    });
-  </script>
+    mobileNav?.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{mobileNav.classList.remove('open');menu?.setAttribute('aria-expanded','false');}));</script>
 </body>
 </html>

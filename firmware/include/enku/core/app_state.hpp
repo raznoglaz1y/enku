@@ -44,6 +44,19 @@ struct PowerState {
     bool charging{false};
 };
 
+enum class SearchPhase : std::uint8_t {
+    QueryEntry,
+    Results,
+};
+
+struct ReaderSearchState {
+    SearchPhase phase{SearchPhase::QueryEntry};
+    std::optional<SemanticPosition> origin_position;
+    std::string query;
+    std::uint32_t total_matches{0};
+    std::uint32_t focus_index{0};
+};
+
 struct AppState {
     Screen screen{Screen::Boot};
     BootState boot;
@@ -58,6 +71,7 @@ struct AppState {
     bool current_book_finished{false};
     TypographyState typography;
     ReaderOverlayState reader_overlay;
+    ReaderSearchState search;
 
     NetworkState network;
     WiFiPolicy wifi_policy{WiFiPolicy::AutoConnectTrusted};

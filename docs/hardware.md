@@ -116,3 +116,17 @@ The official ESP-IDF example polls these controls with a 5 ms timer and a softwa
 The PWR key is handled through the AXP2101 PMU path. The current vendor example configures a 1 s power-on press and a 4 s hardware power-off press.
 
 ENKU's logical mappings are documented in [Input & Physical Controls](input-model.md). These source-derived mappings will still be physically verified on the production board when it arrives.
+
+
+## Vendor-confirmed power behavior
+
+The current official Waveshare application distinguishes panel sleep from full PMU shutdown:
+
+- `EPD_Sleep()` sends the e-paper controller into deep sleep, but the ESP32 application continues running;
+- the current full vendor application does not use ESP32 deep sleep as its normal product sleep flow;
+- full software power-off calls the AXP2101 shutdown path;
+- the vendor PMU setup uses approximately 1 s PWR hold for power-on and 4 s for hardware power-off.
+
+ENKU therefore treats **DisplayIdle**, **Suspended** and **PoweredOff** as separate product states.
+
+The final suspend mechanism and wake sources remain pending real-board measurements. See [Power, Sleep & Wake Model](power-model.md).

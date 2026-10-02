@@ -35,9 +35,6 @@ private:
     AppState& app_state_;
     LibraryRuntimeController& library_;
     KeyboardRuntime keyboard_;
-    bool origin_valid_{false};
-    std::uint32_t origin_offset_{0};
-    std::optional<BookId> origin_focused_book_;
 
     LibrarySearchRuntimeResult applyQuery();
     LibrarySearchRuntimeResult cancel();

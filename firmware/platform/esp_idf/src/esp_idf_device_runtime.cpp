@@ -107,12 +107,17 @@ EspIdfDeviceRuntime::EspIdfDeviceRuntime(
           &text_renderer_,
           &platform_.refresh()
       ),
+      network_lifecycle_(
+          storage_.appState(),
+          platform_.network(),
+          platform_.network()
+      ),
       sleep_wake_(
           storage_.appState(),
           storage_.library(),
           storage_.checkpoints(),
           storage_.appContext(),
-          platform_.network(),
+          network_lifecycle_,
           platform_.power(),
           reader_.bootRestore()
       ),
@@ -295,14 +300,11 @@ EspIdfDeviceRuntime::input() {
 
 NetworkPolicyStatus
 EspIdfDeviceRuntime::applyNetworkPolicy() {
-    const auto status =
-        platform_.network().applyPolicy(
-            storage_.appState().wifi_policy
-        );
-
-    network_policy_status_ = status;
+    network_lifecycle_.applyPolicy();
+    network_policy_status_ =
+        network_lifecycle_.lastPolicyStatus();
     syncPlatformState();
-    return status;
+    return network_policy_status_;
 }
 
 DeviceNetworkUpdateStatus
@@ -318,15 +320,19 @@ EspIdfDeviceRuntime::setWiFiPolicy(
         return DeviceNetworkUpdateStatus::SettingsSaveFailed;
     }
 
+    const auto lifecycle_result =
+        network_lifecycle_.applyPolicy();
     const auto status =
-        platform_.network().applyPolicy(policy);
+        network_lifecycle_.lastPolicyStatus();
 
-    if (status == NetworkPolicyStatus::DriverError) {
+    if (lifecycle_result ==
+            NetworkLifecycleResult::Failed ||
+        status == NetworkPolicyStatus::DriverError) {
         // Best-effort rollback keeps durable policy aligned with hardware.
         storage_.settingsRuntime().handle(
             WiFiPolicyChanged{previous}
         );
-        platform_.network().applyPolicy(previous);
+        network_lifecycle_.applyPolicy();
         syncPlatformState();
         return DeviceNetworkUpdateStatus::DriverError;
     }
@@ -364,11 +370,9 @@ EspIdfDeviceRuntime::setTrustedNetwork(
     if (storage_.appState().wifi_policy ==
         WiFiPolicy::AutoConnectTrusted) {
         const auto applied =
-            platform_.network().applyPolicy(
-                WiFiPolicy::AutoConnectTrusted
-            );
+            network_lifecycle_.applyPolicy();
 
-        if (applied == NetworkPolicyStatus::DriverError) {
+        if (applied == NetworkLifecycleResult::Failed) {
             return DeviceNetworkUpdateStatus::DriverError;
         }
     }
@@ -386,6 +390,7 @@ EspIdfDeviceRuntime::forgetTrustedNetwork() {
         return DeviceNetworkUpdateStatus::DriverError;
     }
 
+    network_lifecycle_.sync();
     syncPlatformState();
     return DeviceNetworkUpdateStatus::Ok;
 }
@@ -393,16 +398,7 @@ EspIdfDeviceRuntime::forgetTrustedNetwork() {
 void EspIdfDeviceRuntime::syncPlatformState() {
     auto& app = storage_.appState();
 
-    app.network.connected =
-        platform_.network().connected();
-
-    const auto ssid =
-        platform_.network().trustedSsid();
-
-    app.network.ssid =
-        ssid.has_value()
-            ? *ssid
-            : std::string{};
+    network_lifecycle_.sync();
 
     const auto battery =
         platform_.power().batteryState();

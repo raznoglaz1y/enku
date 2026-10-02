@@ -29,6 +29,7 @@ enum class Screen : std::uint8_t {
     // stable across firmware upgrades.
     BookDetails = 10,
     BookFinished = 11,
+    ContentsBookmarks = 12,
 };
 
 static_assert(

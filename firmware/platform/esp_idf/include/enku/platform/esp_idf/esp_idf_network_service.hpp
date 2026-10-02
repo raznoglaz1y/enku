@@ -25,6 +25,7 @@ public:
 
     bool connected() const override;
     void disconnect() override;
+    NetworkLinkState connectionState() const override;
 
     NetworkPolicyStatus applyPolicy(
         WiFiPolicy policy
@@ -50,6 +51,7 @@ public:
 
 private:
     std::atomic_bool connected_{false};
+    std::atomic<NetworkLinkState> link_state_{NetworkLinkState::Disconnected};
     std::atomic_bool started_{false};
     std::atomic_bool manual_disconnect_{false};
     std::atomic<WiFiPolicy> active_policy_{WiFiPolicy::Off};

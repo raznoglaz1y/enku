@@ -254,8 +254,14 @@ int main() {
         BookImportService reopened_importer(reopened);
 
         AppState app;
+        CborSettingsService settings_service(state_files);
+        SettingsRuntimeController settings(
+            app,
+            settings_service
+        );
         StorageStartupCoordinator startup(
             app,
+            settings,
             reopened,
             book_files,
             reopened_importer

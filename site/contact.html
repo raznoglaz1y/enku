@@ -78,19 +78,41 @@
           </div>
         </div>
 
-        <div class="contact-form" aria-label="Contact options">
+        <form class="contact-form" id="contact-form" novalidate>
+          <div style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden" aria-hidden="true">
+            <label for="website">Website</label>
+            <input id="website" name="website" tabindex="-1" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="name">Name</label>
+            <input id="name" name="name" autocomplete="name" maxlength="120" required>
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" autocomplete="email" maxlength="254" required>
+          </div>
           <div class="field full">
-            <h3 style="margin:0 0 10px">Project questions & public feedback</h3>
-            <p style="margin:0;color:#625d55;line-height:1.65">For now, the best way to reach me about ENKU is through GitHub. Use an issue for bugs, build questions, documentation feedback or feature ideas.</p>
+            <label for="subject">Subject</label>
+            <select id="subject" name="subject" required>
+              <option value="">Choose a subject</option>
+              <option>Project question</option>
+              <option>Collaboration</option>
+              <option>Hardware / firmware</option>
+              <option>Design / UI</option>
+              <option>Documentation</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" minlength="10" maxlength="6000" required></textarea>
           </div>
           <div class="form-bottom">
-            <p class="form-note">A private contact form will be added next, after we choose the delivery and privacy setup.</p>
-            <div style="display:flex;gap:12px;flex-wrap:wrap">
-              <a class="button" href="https://github.com/raznoglaz1y/enku/issues/new" target="_blank" rel="noreferrer">Open an issue <span>↗</span></a>
-              <a class="button button-secondary" href="https://github.com/raznoglaz1y" target="_blank" rel="noreferrer">GitHub profile <span>↗</span></a>
-            </div>
+            <p class="form-note">Your message goes directly to the ENKU project inbox. Your email address is used only so I can reply.</p>
+            <button class="button" type="submit">Send message <span>→</span></button>
           </div>
-        </div>
+          <p class="form-status" id="form-status" aria-live="polite"></p>
+        </form>
       </div>
     </section>
 
@@ -142,6 +164,47 @@
   <script>
     const menu=document.querySelector('.menu-button'),mobileNav=document.querySelector('.mobile-nav');
     menu?.addEventListener('click',()=>{const open=mobileNav.classList.toggle('open');menu.setAttribute('aria-expanded',String(open));});
-    mobileNav?.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{mobileNav.classList.remove('open');menu?.setAttribute('aria-expanded','false');}));</script>
+    mobileNav?.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{mobileNav.classList.remove('open');menu?.setAttribute('aria-expanded','false');}));
+
+    const form=document.querySelector('#contact-form'),status=document.querySelector('#form-status');
+    const startedAt=Date.now();
+
+    form?.addEventListener('submit',async e=>{
+      e.preventDefault();
+      if(!form.checkValidity()){form.reportValidity();return;}
+
+      const button=form.querySelector('button[type="submit"]');
+      const original=button.innerHTML;
+      button.disabled=true;
+      button.textContent='Sending…';
+      status.textContent='';
+
+      const payload={
+        name:form.elements.name.value,
+        email:form.elements.email.value,
+        subject:form.elements.subject.value,
+        message:form.elements.message.value,
+        website:form.elements.website.value,
+        startedAt
+      };
+
+      try{
+        const response=await fetch('/api/contact',{
+          method:'POST',
+          headers:{'content-type':'application/json'},
+          body:JSON.stringify(payload)
+        });
+        const data=await response.json().catch(()=>({}));
+        if(!response.ok||!data.ok) throw new Error(data.error||'Message could not be sent.');
+        form.reset();
+        status.textContent='Message sent. Thank you — I’ll get back to you as soon as I can.';
+      }catch(error){
+        status.textContent=error.message||'Message could not be sent. Please try again later.';
+      }finally{
+        button.disabled=false;
+        button.innerHTML=original;
+      }
+    });
+  </script>
 </body>
 </html>

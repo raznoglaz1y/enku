@@ -57,6 +57,7 @@ void KeyboardRuntime::open(KeyboardMode mode) {
     state_.mode = mode;
     state_.shift = KeyboardShiftState::Lowercase;
     state_.focus_index = 0;
+    state_.focused_label = focusedLabel();
 }
 
 KeyboardRuntimeResult KeyboardRuntime::handle(
@@ -76,6 +77,7 @@ KeyboardRuntimeResult KeyboardRuntime::handle(
             return activate(text);
         case LogicalAction::Back:
             state_.open = false;
+            state_.focused_label.clear();
             return KeyboardRuntimeResult::Closed;
         default:
             return KeyboardRuntimeResult::Ignored;
@@ -98,6 +100,7 @@ KeyboardRuntimeResult KeyboardRuntime::navigate(
 
     state_.focus_index =
         static_cast<std::uint16_t>(next);
+    state_.focused_label = focusedLabel();
 
     return KeyboardRuntimeResult::Changed;
 }
@@ -168,10 +171,12 @@ KeyboardRuntimeResult KeyboardRuntime::activate(
                 state_.mode = KeyboardMode::Latin;
             }
             state_.focus_index = 0;
+            state_.focused_label = focusedLabel();
             return KeyboardRuntimeResult::Changed;
 
         case 4:
             state_.open = false;
+            state_.focused_label.clear();
             return KeyboardRuntimeResult::Done;
 
         default:

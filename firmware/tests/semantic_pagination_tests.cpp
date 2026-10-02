@@ -36,7 +36,7 @@ int main() {
 
     std::uint64_t offset = 0;
 
-    const auto add =
+    auto add =
         [&](TextBlockType type,
             const char* text) mutable {
             TextBlock block;

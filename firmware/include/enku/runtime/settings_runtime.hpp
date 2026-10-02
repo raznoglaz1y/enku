@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include "../core/app_state.hpp"
+#include "../core/events.hpp"
 #include "../services/services.hpp"
 
 namespace enku {
@@ -23,6 +24,14 @@ public:
 
     SettingsRuntimeStatus loadAndApply();
     PersistStatus saveCurrent();
+
+    PersistStatus handle(const LocaleChanged&);
+    PersistStatus handle(const OrientationChanged&);
+    PersistStatus handle(const LibraryViewChanged&);
+    PersistStatus handle(const LibraryFilterChanged&);
+    PersistStatus handle(const LibrarySortChanged&);
+    PersistStatus handle(const TypographyDefaultsChanged&);
+    PersistStatus handle(const WiFiPolicyChanged&);
 
     GlobalSettings current() const;
     void apply(const GlobalSettings& settings);

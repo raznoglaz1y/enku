@@ -456,3 +456,12 @@ At cold boot, `BootRestoreCoordinator` reuses the ordinary `OpenBookRequested` r
 When Sleeping from Reading, the semantic position is checkpointed even if the normal page-turn debounce has not fired yet. This makes Sleep an explicit persistence boundary.
 
 Fast Wake does not create a special reader-opening path. It calls the same persisted-context restore logic used by cold boot, which in turn uses `OpenBookRequested`, checkpoint restore and `ReaderBookLoader`. The difference is that Wake skips the full storage transaction scan when the suspended runtime still has mounted/valid storage.
+
+
+## 28. Graceful Power Off
+
+Power Off is a separate runtime lifecycle from Sleep.
+
+`PowerOffCoordinator` treats shutdown as a persistence boundary: Reading position, Library summary and last-safe app context must commit before `PowerService::requestPowerOff()` is called. Network is disconnected only after those writes succeed.
+
+The next boot restores through the normal cold-boot path, so a powered-off device does not depend on retained RAM or framebuffer state.

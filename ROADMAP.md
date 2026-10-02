@@ -276,7 +276,7 @@ Reproducible build, documentation, case files and first tagged version.
 - [x] Define Base display candidate: GDEY0397T81P
 - [x] Define Pro display candidate: GDEY0426T82-FL01C
 - [x] Define multi-variant BOM ceilings and competitive stop limits
-- [ ] Receive Good Display pricing / reference circuitry for Base and Pro panels
+- [ ] Receive Good Display pricing / current reference circuitry for Base and Pro panels; SSD1677 family baseline documented
 - [x] Select charger / power-path baseline: BQ25185; thermal validation still required
 - [x] Select Dock power-mux quality baseline: TPS2121; discrete cost-down comparison still required
 - [ ] Select exact microSD connector after enclosure-edge test
@@ -286,6 +286,7 @@ Reproducible build, documentation, case files and first tagged version.
 - [ ] Complete per-variant populated / DNP BOM
 - [ ] Obtain PCBWay / assembly quotes at 10 / 25 / 50 / 100 units
 - [ ] Re-run competitive pricing after real quotes
+- [ ] Verify current GDEY0397T81P / GDEY0426T82-FL01C FPC pin tables and Pro 6-pin frontlight pinout
 - [ ] Freeze schematic only after all EPD/power BLOCKER items are closed
 
 ### Cost ceilings

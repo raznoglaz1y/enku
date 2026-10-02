@@ -74,7 +74,6 @@ ApplicationReaderRuntime::applyTypographyPreset(
     const auto values =
         readingPresetValues(preset);
 
-    auto& app = storage_.appState();
     const auto previous =
         storage_.settingsRuntime().current();
 

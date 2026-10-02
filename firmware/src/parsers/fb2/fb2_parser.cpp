@@ -597,6 +597,67 @@ std::vector<std::string> authors(
     return result;
 }
 
+std::optional<std::size_t> matchingSectionClose(
+    std::string_view lower_xml,
+    std::size_t open_start
+) {
+    const auto open_end =
+        lower_xml.find('>', open_start);
+
+    if (open_end == std::string_view::npos) {
+        return std::nullopt;
+    }
+
+    std::size_t cursor = open_end + 1U;
+    std::uint32_t depth = 1U;
+
+    while (cursor < lower_xml.size()) {
+        const auto next_open =
+            lower_xml.find(
+                "<section",
+                cursor
+            );
+        const auto next_close =
+            lower_xml.find(
+                "</section>",
+                cursor
+            );
+
+        if (next_close == std::string_view::npos) {
+            return std::nullopt;
+        }
+
+        if (next_open != std::string_view::npos &&
+            next_open < next_close) {
+            const auto boundary =
+                next_open + 8U;
+
+            if (boundary >= lower_xml.size() ||
+                lower_xml[boundary] == '>' ||
+                std::isspace(
+                    static_cast<unsigned char>(
+                        lower_xml[boundary]
+                    )
+                )) {
+                ++depth;
+            }
+
+            cursor = boundary;
+            continue;
+        }
+
+        --depth;
+
+        if (depth == 0U) {
+            return next_close;
+        }
+
+        cursor = next_close + 10U;
+    }
+
+    return std::nullopt;
+}
+
 struct BodyBlock {
     TextBlockType type;
     std::string text;
@@ -847,24 +908,42 @@ ParseResult Fb2Parser::parse(
 
         const auto gt =
             lower_body.find('>', begin);
-        const auto end =
-            gt == std::string::npos
-                ? std::string::npos
-                : lower_body.find(
-                      "</section>",
-                      gt + 1U
-                  );
 
-        if (gt == std::string::npos ||
-            end == std::string::npos) {
+        if (gt == std::string::npos) {
             break;
         }
+
+        const auto matched_end =
+            matchingSectionClose(
+                lower_body,
+                begin
+            );
+
+        if (!matched_end.has_value()) {
+            break;
+        }
+
+        const auto end =
+            *matched_end;
 
         const auto section_xml =
             body->substr(
                 gt + 1U,
                 end - gt - 1U
             );
+
+        const bool has_nested_sections =
+            lower(section_xml).find(
+                "<section"
+            ) != std::string::npos;
+
+        if (has_nested_sections) {
+            // Parent sections are structural containers. Advance only past
+            // the opening tag so nested leaf sections are emitted as the
+            // actual reading units.
+            cursor = gt + 1U;
+            continue;
+        }
 
         std::string section_content(
             section_xml

@@ -107,10 +107,8 @@ export default {
       const contentType = assetResponse.headers.get("content-type") || "";
       if (!contentType.includes("text/html")) return assetResponse;
 
-      const headerSelector = url.pathname === "/" ? "header" : "header.site-header";
-
       return new HTMLRewriter()
-        .on(headerSelector, {
+        .on("header.site-header", {
           element(element) {
             element.replace(headerHtml(url.pathname), { html: true });
           },

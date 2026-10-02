@@ -342,3 +342,25 @@ mapped logical action
 ```
 
 This allows real-board tuning without changing Library/Reader code.
+
+
+## 21. Runtime dispatch bridge
+
+`InputDispatcher` now connects logical actions to the existing application controllers.
+
+Current routed actions:
+
+```text
+NavigatePrevious → LibraryFocusPreviousRequested
+NavigateNext     → LibraryFocusNextRequested
+Confirm          → OpenFocusedBookRequested in Library
+PagePrevious     → Reader PagePreviousRequested
+PageNext         → Reader PageNextRequested
+Back             → Reader BackRequested while Reading
+Wake             → SleepWakeCoordinator::wake()
+PowerOff         → PowerOffCoordinator::powerOff()
+```
+
+`OpenReaderMenu`, `OpenQuickTypography` and software `Sleep` remain explicit unhandled actions until their overlay/quick-menu runtime layers are implemented.
+
+This keeps physical input translation independent from screen/controller implementations while providing one central dispatch point for the first device runtime graph.

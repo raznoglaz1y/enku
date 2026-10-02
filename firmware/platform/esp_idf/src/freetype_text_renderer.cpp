@@ -1032,6 +1032,166 @@ bool FreeTypeTextRenderer::renderLibrary(
 
 namespace enku::platform::esp_idf {
 
+bool FreeTypeTextRenderer::renderAboutBook(
+    const AppState& app_state,
+    const BookRecord& book
+) {
+    if (!ready()) {
+        return false;
+    }
+
+    framebuffer_.clearWhite();
+
+    const auto orientation =
+        app_state.orientation;
+
+    if (!drawTextAt(
+            "ABOUT BOOK",
+            26,
+            28,
+            50,
+            orientation
+        )) {
+        return false;
+    }
+
+    if (!drawTextAt(
+            book.metadata.title.empty()
+                ? "UNTITLED"
+                : book.metadata.title,
+            24,
+            30,
+            104,
+            orientation
+        )) {
+        return false;
+    }
+
+    if (!drawTextAt(
+            book.metadata.author_display.empty()
+                ? "UNKNOWN AUTHOR"
+                : book.metadata.author_display,
+            15,
+            30,
+            136,
+            orientation
+        )) {
+        return false;
+    }
+
+    const char* state = "NEW";
+
+    if (book.reading_state ==
+        ReadingState::Reading) {
+        state = "READING";
+    } else if (
+        book.reading_state ==
+        ReadingState::Finished) {
+        state = "FINISHED";
+    }
+
+    char progress[64] = {};
+    std::snprintf(
+        progress,
+        sizeof(progress),
+        "%s  %u%%",
+        state,
+        static_cast<unsigned>(
+            std::min(
+                100.0F,
+                std::max(
+                    0.0F,
+                    book.progress * 100.0F
+                )
+            )
+        )
+    );
+
+    if (!drawTextAt(
+            progress,
+            14,
+            30,
+            176,
+            orientation
+        )) {
+        return false;
+    }
+
+    const std::string language =
+        book.metadata.language.has_value()
+            ? "LANGUAGE: " + *book.metadata.language
+            : "LANGUAGE: UNKNOWN";
+
+    if (!drawTextAt(
+            language,
+            13,
+            30,
+            206,
+            orientation
+        )) {
+        return false;
+    }
+
+    if (book.metadata.series.has_value() &&
+        !book.metadata.series->empty()) {
+        std::string series =
+            "SERIES: " + *book.metadata.series;
+
+        if (book.metadata.series_index.has_value()) {
+            series += " #" +
+                std::to_string(
+                    *book.metadata.series_index
+                );
+        }
+
+        if (!drawTextAt(
+                series,
+                13,
+                30,
+                236,
+                orientation
+            )) {
+            return false;
+        }
+    }
+
+    std::string description =
+        book.metadata.description.has_value() &&
+        !book.metadata.description->empty()
+            ? *book.metadata.description
+            : "NO DESCRIPTION";
+
+    const std::size_t limit =
+        orientation == Orientation::Portrait
+            ? 160U
+            : 240U;
+
+    if (description.size() > limit) {
+        description.resize(limit);
+        description += "...";
+    }
+
+    if (!drawTextAt(
+            description,
+            13,
+            30,
+            286,
+            orientation
+        )) {
+        return false;
+    }
+
+    return drawTextAt(
+        "FUNCTION OR BACK  RETURN TO READING",
+        12,
+        28,
+        orientation == Orientation::Portrait
+            ? 760
+            : 448,
+        orientation
+    );
+}
+
 bool FreeTypeTextRenderer::renderContentsBookmarks(
     const AppState& app_state,
     const std::vector<ContentsEntry>& contents,

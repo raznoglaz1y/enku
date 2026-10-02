@@ -99,9 +99,9 @@ Not yet implemented:
 - asynchronous loading;
 - loader progress events;
 - structured parser error details;
-- automatic runtime dispatch of BookOpened/BookOpenFailed.
+- asynchronous loading / progress reporting.
 
-The existing Reader runtime already has those lifecycle events; the next integration step can wire this loader directly into that event path.
+The Reader runtime now invokes this loader directly for `OpenBookRequested` and completes through the existing `BookOpened` / `BookOpenFailed` lifecycle paths. No external/manual loader event is required for the synchronous MVP.
 
 ## Decisions fixed by this MVP
 

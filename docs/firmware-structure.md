@@ -40,6 +40,7 @@ firmware/
       settings_runtime.hpp
       input_runtime.hpp
       input_dispatcher.hpp
+      application_storage_runtime.hpp
     render/
       mono_framebuffer.hpp
       owned_mono_framebuffer.hpp
@@ -72,6 +73,7 @@ firmware/
       settings_runtime.cpp
       input_runtime.cpp
       input_dispatcher.cpp
+      application_storage_runtime.cpp
     render/
       owned_mono_framebuffer.cpp
       storage_startup.cpp

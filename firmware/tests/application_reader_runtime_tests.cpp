@@ -1,4 +1,5 @@
 #include "enku/runtime/application_reader_runtime.hpp"
+#include "enku/runtime/reader_overlay_runtime.hpp"
 #include "enku/storage/posix_book_file_store.hpp"
 #include "enku/storage/posix_state_file_store.hpp"
 
@@ -198,6 +199,104 @@ int main() {
         storage.appState().reading_position->text_offset ==
         before->text_offset
     );
+
+    ReaderOverlayRuntime overlay(
+        storage,
+        runtime
+    );
+
+    const auto overlay_position =
+        storage.appState().reading_position;
+    assert(overlay_position.has_value());
+
+    assert(
+        overlay.handle(
+            LogicalAction::OpenQuickTypography
+        ) == ReaderOverlayRuntimeResult::Applied
+    );
+    assert(storage.appState().screen == Screen::ReaderOverlay);
+
+    assert(
+        overlay.handle(
+            LogicalAction::NavigateNext
+        ) == ReaderOverlayRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().typography.preset ==
+        ReadingPreset::Compact
+    );
+    assert(
+        storage.appState().reading_position.has_value()
+    );
+    assert(
+        storage.appState().reading_position->text_offset ==
+        overlay_position->text_offset
+    );
+
+    assert(
+        overlay.handle(
+            LogicalAction::Back
+        ) == ReaderOverlayRuntimeResult::Applied
+    );
+    assert(storage.appState().screen == Screen::Reading);
+    assert(
+        storage.appState().typography.preset ==
+        ReadingPreset::Standard
+    );
+    assert(
+        storage.appState().reading_position->text_offset ==
+        overlay_position->text_offset
+    );
+
+    assert(
+        overlay.handle(
+            LogicalAction::OpenQuickTypography
+        ) == ReaderOverlayRuntimeResult::Applied
+    );
+    assert(
+        overlay.handle(
+            LogicalAction::NavigateNext
+        ) == ReaderOverlayRuntimeResult::Applied
+    );
+    assert(
+        overlay.handle(
+            LogicalAction::Confirm
+        ) == ReaderOverlayRuntimeResult::Applied
+    );
+    assert(storage.appState().screen == Screen::Reading);
+    assert(
+        storage.appState().typography.preset ==
+        ReadingPreset::Compact
+    );
+    assert(
+        storage.appState().reading_position->text_offset ==
+        overlay_position->text_offset
+    );
+
+    assert(
+        overlay.handle(
+            LogicalAction::OpenReaderMenu
+        ) == ReaderOverlayRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().reader_overlay.mode ==
+        ReaderOverlayMode::Menu
+    );
+    assert(
+        overlay.handle(
+            LogicalAction::Confirm
+        ) == ReaderOverlayRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().reader_overlay.mode ==
+        ReaderOverlayMode::QuickTypography
+    );
+    assert(
+        overlay.handle(
+            LogicalAction::Back
+        ) == ReaderOverlayRuntimeResult::Applied
+    );
+    assert(storage.appState().screen == Screen::Reading);
 
     const auto next =
         runtime.reader().handle(

@@ -323,6 +323,111 @@ EpaperStatus EspIdfEpaper::refreshFull() {
     return waitReady();
 }
 
+EpaperStatus EspIdfEpaper::refreshFast() {
+    if (command(0x22) != EpaperStatus::Ok ||
+        data(0xD7) != EpaperStatus::Ok ||
+        command(0x20) != EpaperStatus::Ok) {
+        return EpaperStatus::TransferFailed;
+    }
+
+    return waitReady();
+}
+
+EpaperStatus EspIdfEpaper::refreshPartial() {
+    if (command(0x22) != EpaperStatus::Ok ||
+        data(0xFF) != EpaperStatus::Ok ||
+        command(0x20) != EpaperStatus::Ok) {
+        return EpaperStatus::TransferFailed;
+    }
+
+    return waitReady();
+}
+
+EpaperStatus EspIdfEpaper::initializeFast() {
+    vTaskDelay(pdMS_TO_TICKS(500));
+
+    if (reset() != EpaperStatus::Ok ||
+        waitReady() != EpaperStatus::Ok) {
+        return EpaperStatus::BusyTimeout;
+    }
+
+    auto send = [&](std::uint8_t cmd,
+                    std::initializer_list<std::uint8_t> values)
+        -> EpaperStatus {
+        if (command(cmd) != EpaperStatus::Ok) {
+            return EpaperStatus::TransferFailed;
+        }
+
+        for (const auto value : values) {
+            if (data(value) != EpaperStatus::Ok) {
+                return EpaperStatus::TransferFailed;
+            }
+        }
+
+        return EpaperStatus::Ok;
+    };
+
+    if (command(0x12) != EpaperStatus::Ok ||
+        waitReady() != EpaperStatus::Ok ||
+        send(0x0C, {0xAE, 0xC7, 0xC3, 0xC0, 0x80}) !=
+            EpaperStatus::Ok) {
+        return EpaperStatus::TransferFailed;
+    }
+
+    const std::uint16_t height_end = kHeight - 1U;
+    const std::uint16_t width_end = kWidth - 1U;
+
+    if (send(
+            0x01,
+            {
+                static_cast<std::uint8_t>(
+                    height_end & 0xFFU
+                ),
+                static_cast<std::uint8_t>(
+                    height_end >> 8U
+                ),
+                0x02,
+            }
+        ) != EpaperStatus::Ok ||
+        send(0x11, {0x01}) != EpaperStatus::Ok ||
+        send(
+            0x44,
+            {
+                0x00,
+                0x00,
+                static_cast<std::uint8_t>(
+                    width_end & 0xFFU
+                ),
+                static_cast<std::uint8_t>(
+                    width_end >> 8U
+                ),
+            }
+        ) != EpaperStatus::Ok ||
+        send(
+            0x45,
+            {
+                static_cast<std::uint8_t>(
+                    height_end & 0xFFU
+                ),
+                static_cast<std::uint8_t>(
+                    height_end >> 8U
+                ),
+                0x00,
+                0x00,
+            }
+        ) != EpaperStatus::Ok ||
+        send(0x4E, {0x00, 0x00}) != EpaperStatus::Ok ||
+        send(0x4F, {0x00, 0x00}) != EpaperStatus::Ok ||
+        waitReady() != EpaperStatus::Ok ||
+        send(0x3C, {0x01}) != EpaperStatus::Ok ||
+        send(0x18, {0x80}) != EpaperStatus::Ok ||
+        send(0x1A, {0x6A}) != EpaperStatus::Ok) {
+        return EpaperStatus::TransferFailed;
+    }
+
+    return EpaperStatus::Ok;
+}
+
 EpaperStatus EspIdfEpaper::fullRefresh(
     const std::uint8_t* framebuffer,
     std::size_t size
@@ -339,6 +444,182 @@ EpaperStatus EspIdfEpaper::fullRefresh(
     }
 
     return refreshFull();
+}
+
+EpaperStatus EspIdfEpaper::fastRefresh(
+    const std::uint8_t* framebuffer,
+    std::size_t size
+) {
+    if (framebuffer == nullptr ||
+        size != kMonoBytes) {
+        return EpaperStatus::TransferFailed;
+    }
+
+    if (command(0x24) != EpaperStatus::Ok ||
+        dataBuffer(framebuffer, size) !=
+            EpaperStatus::Ok) {
+        return EpaperStatus::TransferFailed;
+    }
+
+    return refreshFast();
+}
+
+EpaperStatus EspIdfEpaper::fastBaseRefresh(
+    const std::uint8_t* framebuffer,
+    std::size_t size
+) {
+    if (framebuffer == nullptr ||
+        size != kMonoBytes) {
+        return EpaperStatus::TransferFailed;
+    }
+
+    if (command(0x24) != EpaperStatus::Ok ||
+        dataBuffer(framebuffer, size) !=
+            EpaperStatus::Ok ||
+        command(0x26) != EpaperStatus::Ok ||
+        dataBuffer(framebuffer, size) !=
+            EpaperStatus::Ok) {
+        return EpaperStatus::TransferFailed;
+    }
+
+    return refreshFast();
+}
+
+EpaperStatus EspIdfEpaper::partialRefresh(
+    const std::uint8_t* region,
+    std::size_t size,
+    std::uint16_t x,
+    std::uint16_t y,
+    std::uint16_t width,
+    std::uint16_t height
+) {
+    if (region == nullptr ||
+        width == 0 ||
+        height == 0 ||
+        x >= kWidth ||
+        y >= kHeight ||
+        static_cast<std::uint32_t>(x) + width > kWidth ||
+        static_cast<std::uint32_t>(y) + height > kHeight) {
+        return EpaperStatus::TransferFailed;
+    }
+
+    const std::uint16_t x_start_byte = x / 8U;
+    const std::uint16_t x_end_byte =
+        static_cast<std::uint16_t>(
+            (static_cast<std::uint32_t>(x) + width + 7U) /
+            8U
+        );
+
+    const std::uint16_t width_bytes =
+        static_cast<std::uint16_t>(
+            x_end_byte - x_start_byte
+        );
+
+    const std::size_t expected_size =
+        static_cast<std::size_t>(width_bytes) *
+        static_cast<std::size_t>(height);
+
+    if (size != expected_size) {
+        return EpaperStatus::TransferFailed;
+    }
+
+    const std::uint16_t x_start =
+        static_cast<std::uint16_t>(
+            x_start_byte * 8U
+        );
+    const std::uint16_t x_end =
+        static_cast<std::uint16_t>(
+            (x_end_byte - 1U) * 8U
+        );
+    const std::uint16_t y_end =
+        static_cast<std::uint16_t>(
+            y + height - 1U
+        );
+
+    if (reset() != EpaperStatus::Ok) {
+        return EpaperStatus::TransferFailed;
+    }
+
+    auto send = [&](std::uint8_t cmd,
+                    std::initializer_list<std::uint8_t> values)
+        -> EpaperStatus {
+        if (command(cmd) != EpaperStatus::Ok) {
+            return EpaperStatus::TransferFailed;
+        }
+
+        for (const auto value : values) {
+            if (data(value) != EpaperStatus::Ok) {
+                return EpaperStatus::TransferFailed;
+            }
+        }
+
+        return EpaperStatus::Ok;
+    };
+
+    if (send(0x18, {0x80}) != EpaperStatus::Ok ||
+        send(0x3C, {0x80}) != EpaperStatus::Ok ||
+        send(
+            0x44,
+            {
+                static_cast<std::uint8_t>(
+                    x_start & 0xFFU
+                ),
+                static_cast<std::uint8_t>(
+                    x_start >> 8U
+                ),
+                static_cast<std::uint8_t>(
+                    x_end & 0xFFU
+                ),
+                static_cast<std::uint8_t>(
+                    x_end >> 8U
+                ),
+            }
+        ) != EpaperStatus::Ok ||
+        send(
+            0x45,
+            {
+                static_cast<std::uint8_t>(
+                    y_end & 0xFFU
+                ),
+                static_cast<std::uint8_t>(
+                    y_end >> 8U
+                ),
+                static_cast<std::uint8_t>(
+                    y & 0xFFU
+                ),
+                static_cast<std::uint8_t>(
+                    y >> 8U
+                ),
+            }
+        ) != EpaperStatus::Ok ||
+        send(
+            0x4E,
+            {
+                static_cast<std::uint8_t>(
+                    x_start & 0xFFU
+                ),
+                static_cast<std::uint8_t>(
+                    x_start >> 8U
+                ),
+            }
+        ) != EpaperStatus::Ok ||
+        send(
+            0x4F,
+            {
+                static_cast<std::uint8_t>(
+                    y & 0xFFU
+                ),
+                static_cast<std::uint8_t>(
+                    y >> 8U
+                ),
+            }
+        ) != EpaperStatus::Ok ||
+        command(0x24) != EpaperStatus::Ok ||
+        dataBuffer(region, size) != EpaperStatus::Ok) {
+        return EpaperStatus::TransferFailed;
+    }
+
+    return refreshPartial();
 }
 
 EpaperStatus EspIdfEpaper::clearWhite() {

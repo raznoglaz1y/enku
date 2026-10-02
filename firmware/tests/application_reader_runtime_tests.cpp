@@ -383,6 +383,20 @@ int main() {
         search_origin->text_offset
     );
     assert(
+        search.submitQuery("beta") ==
+        SearchRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().search.phase ==
+        SearchPhase::Results
+    );
+    assert(storage.appState().search.total_matches == 1);
+    assert(storage.appState().search.matches.size() == 1);
+    assert(
+        storage.appState().search.matches[0].position.book_id ==
+        *storage.appState().current_book
+    );
+    assert(
         search.handle(LogicalAction::Back) ==
         SearchRuntimeResult::Applied
     );

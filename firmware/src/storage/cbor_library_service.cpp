@@ -798,6 +798,32 @@ LibraryStatus CborLibraryService::upsert(
     return status;
 }
 
+LibraryStatus CborLibraryService::remove(
+    const BookId& book_id
+) {
+    const auto it = std::find_if(
+        records_.begin(),
+        records_.end(),
+        [&](const BookRecord& record) {
+            return record.book_id == book_id;
+        }
+    );
+
+    if (it == records_.end()) {
+        return LibraryStatus::NotFound;
+    }
+
+    const auto previous = records_;
+    records_.erase(it);
+
+    const auto status = commit();
+    if (status != LibraryStatus::Ok) {
+        records_ = previous;
+    }
+
+    return status;
+}
+
 std::optional<BookRecord> CborLibraryService::get(
     const BookId& book_id
 ) const {

@@ -69,7 +69,6 @@ idf_component_register(
         esp_event
         esp_netif
         esp_http_server
-        mdns
         nvs_flash
         fatfs
         sdmmc

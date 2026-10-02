@@ -4,6 +4,7 @@
 #include "enku/runtime/book_details_runtime.hpp"
 #include "enku/runtime/book_finished_runtime.hpp"
 #include "enku/storage/cbor_boot_loop_service.hpp"
+#include "enku/storage/cbor_bookmark_service.hpp"
 #include "enku/runtime/storage_startup.hpp"
 #include "enku/runtime/boot_restore.hpp"
 #include "enku/runtime/sleep_wake.hpp"
@@ -212,6 +213,7 @@ int main() {
     CborReaderCheckpointService checkpoint(
         state_files
     );
+    CborBookmarkService bookmarks(state_files);
     CborAppContextService context(state_files);
     FakeRefreshService refresh;
 
@@ -241,7 +243,8 @@ int main() {
         library,
         book_files,
         checkpoint,
-        context
+        context,
+        &bookmarks
     );
 
     CborSettingsService settings_service(state_files);
@@ -345,6 +348,19 @@ int main() {
 
     // Finished book -> READ AGAIN -> confirmation defaults to Cancel.
     assert(
+        bookmarks.add(
+            BookmarkRecord{
+                SemanticPosition{
+                    "beta",
+                    "txt",
+                    4,
+                },
+                "Keep me",
+            }
+        ) == BookmarkStatus::Ok
+    );
+
+    assert(
         checkpoint.checkpoint(
             "beta",
             SemanticPosition{
@@ -433,6 +449,16 @@ int main() {
         ReadingState::Reading
     );
     assert(restarted_beta->progress == 0.0F);
+
+    std::vector<BookmarkRecord> beta_bookmarks;
+    assert(
+        bookmarks.load(
+            "beta",
+            beta_bookmarks
+        ) == BookmarkStatus::Ok
+    );
+    assert(beta_bookmarks.size() == 1);
+    assert(beta_bookmarks[0].label == "Keep me");
 
     assert(
         reader.handle(BackRequested{}) ==
@@ -601,6 +627,18 @@ int main() {
         LibraryStatus::Ok
     );
     assert(
+        bookmarks.add(
+            BookmarkRecord{
+                SemanticPosition{
+                    "detail-delete",
+                    "txt",
+                    1,
+                },
+                "Delete with book",
+            }
+        ) == BookmarkStatus::Ok
+    );
+    assert(
         runtime.handle(
             LibraryRefreshRequested{}
         ) == LibraryRuntimeResult::Applied
@@ -664,6 +702,14 @@ int main() {
             detail_delete.source_path,
             deleted_bytes
         ) == BookFileStatus::NotFound
+    );
+
+    std::vector<BookmarkRecord> deleted_bookmarks;
+    assert(
+        bookmarks.load(
+            "detail-delete",
+            deleted_bookmarks
+        ) == BookmarkStatus::NotFound
     );
 
     app.library.limit = 1;

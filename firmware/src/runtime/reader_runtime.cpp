@@ -126,6 +126,21 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
                 event.book_id,
             }
         ) != PersistStatus::Ok) {
+        loader_.close();
+        app_state_.library.focused_book = event.book_id;
+        app_state_.screen = Screen::Library;
+        app_state_.current_book.reset();
+        app_state_.reading_position.reset();
+        app_state_.reading_progress = 0.0F;
+        app_state_.current_book_finished = false;
+        app_state_.progress_dirty = false;
+
+        const auto recovery_refresh =
+            submitRefresh(RefreshReason::ErrorRecovery);
+        if (recovery_refresh == ReaderRuntimeResult::RefreshRejected) {
+            return recovery_refresh;
+        }
+
         return ReaderRuntimeResult::ContextSaveFailed;
     }
 

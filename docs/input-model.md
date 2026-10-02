@@ -333,15 +333,9 @@ All four inputs use internal pull-ups and are active-low.
 
 The driver emits at most one event per poll and rotates its starting scan position after an emitted event so simultaneous inputs do not permanently privilege one GPIO.
 
-The firmware smoke test opens a 12-second diagnostic window after storage/display bring-up and logs:
+In normal application mode, the button driver feeds `EspIdfDeviceRuntime::pollInput()` continuously at the 5 ms platform cadence, so events are dispatched into the real Library/Reader/power graph.
 
-```text
-control
-press type
-mapped logical action
-```
-
-This allows real-board tuning without changing Library/Reader code.
+A finite raw-input diagnostic remains available during bring-up when the Reader font is missing and `CONFIG_ENKU_RAW_INPUT_DIAGNOSTIC` is enabled. This preserves hardware button verification without pretending the application renderer is available.
 
 
 ## 21. Runtime dispatch bridge
@@ -364,3 +358,24 @@ PowerOff         → PowerOffCoordinator::powerOff()
 `OpenReaderMenu`, `OpenQuickTypography` and software `Sleep` remain explicit unhandled actions until their overlay/quick-menu runtime layers are implemented.
 
 This keeps physical input translation independent from screen/controller implementations while providing one central dispatch point for the first device runtime graph.
+
+
+## 22. Persistent device input loop
+
+Once platform initialization, Reader font initialization and boot restore succeed, `app_main()` enters the persistent ENKU application loop.
+
+Each iteration:
+
+```text
+read current platform state
+→ poll physical buttons
+→ debounce / classify press
+→ map to LogicalAction
+→ dispatch into application runtime
+→ execute synchronous render/refresh when visible state changes
+→ delay to the 5 ms input cadence
+```
+
+This replaces the earlier finite routed-input smoke test as the normal execution path.
+
+Bring-up smoke tests are now compile-time configurable and no longer define the product runtime lifecycle.

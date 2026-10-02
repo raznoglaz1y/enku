@@ -138,6 +138,17 @@ A failed write therefore leaves the older generation recoverable.
 
 ## 9. Library index
 
+The first concrete Library index backend is now implemented as `CborLibraryService`.
+
+It uses:
+
+```text
+/system/library.a.cbor
+/system/library.b.cbor
+```
+
+with the same schema / record-type / generation / payload / CRC32 envelope pattern used by per-book checkpoint persistence.
+
 The Library index changes relatively infrequently.
 
 It contains:

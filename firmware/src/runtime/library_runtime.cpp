@@ -11,12 +11,14 @@ LibraryRuntimeController::LibraryRuntimeController(
     LibraryService& library,
     ReaderRuntimeController& reader,
     StagedBookImportService& importer,
+    BookDeleteService& deleter,
     RefreshService& refresh
 )
     : app_state_(app_state),
       library_(library),
       reader_(reader),
       importer_(importer),
+      deleter_(deleter),
       refresh_(refresh) {}
 
 const LibraryPage& LibraryRuntimeController::page() const {
@@ -257,6 +259,27 @@ LibraryRuntimeResult LibraryRuntimeController::handle(
     return result == ReaderRuntimeResult::Applied
         ? LibraryRuntimeResult::Applied
         : LibraryRuntimeResult::OpenFailed;
+}
+
+LibraryRuntimeResult LibraryRuntimeController::handle(
+    const DeleteFocusedBookRequested&
+) {
+    if (app_state_.screen != Screen::Library ||
+        !app_state_.library.focused_book.has_value() ||
+        app_state_.import_active) {
+        return LibraryRuntimeResult::Ignored;
+    }
+
+    const auto deleting =
+        *app_state_.library.focused_book;
+
+    const auto status = deleter_.remove(deleting);
+    if (status != BookDeleteStatus::Ok) {
+        return LibraryRuntimeResult::DeleteFailed;
+    }
+
+    app_state_.library.focused_book.reset();
+    return reload(RefreshReason::ScreenChanged);
 }
 
 LibraryRuntimeResult LibraryRuntimeController::handle(

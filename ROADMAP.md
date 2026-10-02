@@ -125,6 +125,9 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 - [ ] Integrate TXT parser with storage/Reader Engine and expand encoding support
 - [x] Define semantic reading-position representation
 - [x] Define pagination, wrapping and rendering model
+- [x] Add first host-testable forward text-pagination MVP
+- [ ] Add real font metrics and production text shaping/measurement
+- [ ] Implement paragraph spacing, block styles and deterministic previous-page reconstruction
 - [ ] Implement text layout and pagination
 - [x] Define portrait/landscape repagination behavior
 - [ ] Implement portrait/landscape repagination while preserving position

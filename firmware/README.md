@@ -45,6 +45,7 @@ include/enku/
     cbor_reader_checkpoint.hpp
     cbor_library_service.hpp
     cbor_app_context_service.hpp
+    cbor_boot_loop_service.hpp
     book_import_service.hpp
     staged_book_import_service.hpp
     book_file_store.hpp
@@ -106,6 +107,7 @@ The host suite currently covers:
 - persisted last-safe app context and automatic cold-boot restore into Reading at the saved semantic checkpoint;
 - Sleep checkpointing plus fast context-only Wake restore without repeating the full storage recovery path;
 - graceful Power Off persistence before the platform PMU shutdown request;
+- persistent boot-loop protection that enters Recovery before a third consecutive incomplete cold boot can auto-restore again;
 - rollback of the final book file when Library commit fails;
 - POSIX filesystem persistence for book files and checkpoints.
 

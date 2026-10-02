@@ -577,6 +577,134 @@ std::vector<std::string> dcTexts(
     return values;
 }
 
+std::optional<std::string> spineTocId(
+    std::string_view opf
+) {
+    const std::string lower_opf = lower(opf);
+    const auto pos =
+        lower_opf.find("<spine");
+
+    if (pos == std::string::npos) {
+        return std::nullopt;
+    }
+
+    const auto end =
+        lower_opf.find('>', pos);
+
+    if (end == std::string::npos) {
+        return std::nullopt;
+    }
+
+    return attribute(
+        opf.substr(
+            pos,
+            end - pos + 1U
+        ),
+        "toc"
+    );
+}
+
+std::map<std::string, std::string>
+parseNcxLabels(
+    std::string_view ncx,
+    std::string_view ncx_directory
+) {
+    std::map<std::string, std::string> labels;
+    const std::string lower_ncx = lower(ncx);
+    std::size_t cursor = 0;
+
+    while (true) {
+        const auto point =
+            lower_ncx.find(
+                "<navpoint",
+                cursor
+            );
+
+        if (point == std::string::npos) {
+            break;
+        }
+
+        const auto point_end =
+            lower_ncx.find(
+                "</navpoint>",
+                point
+            );
+
+        if (point_end == std::string::npos) {
+            break;
+        }
+
+        const auto segment =
+            std::string_view(ncx).substr(
+                point,
+                point_end - point
+            );
+
+        const auto label =
+            firstTagText(
+                segment,
+                "text"
+            );
+
+        const std::string lower_segment =
+            lower(segment);
+
+        const auto content_pos =
+            lower_segment.find(
+                "<content"
+            );
+
+        if (content_pos !=
+            std::string::npos) {
+            const auto content_end =
+                lower_segment.find(
+                    '>',
+                    content_pos
+                );
+
+            if (content_end !=
+                std::string::npos) {
+                const auto tag =
+                    segment.substr(
+                        content_pos,
+                        content_end -
+                            content_pos + 1U
+                    );
+
+                const auto src =
+                    attribute(tag, "src");
+
+                if (src.has_value() &&
+                    label.has_value() &&
+                    !label->empty()) {
+                    auto path = *src;
+                    const auto hash =
+                        path.find('#');
+
+                    if (hash !=
+                        std::string::npos) {
+                        path.resize(hash);
+                    }
+
+                    if (!path.empty()) {
+                        labels[
+                            normalizePath(
+                                ncx_directory,
+                                path
+                            )
+                        ] = *label;
+                    }
+                }
+            }
+        }
+
+        cursor =
+            point_end + 11U;
+    }
+
+    return labels;
+}
+
 std::map<std::string, std::string>
 parseNavLabels(
     std::string_view nav_xhtml,
@@ -1002,7 +1130,7 @@ ParseResult EpubParser::parse(
     }
 
     result.document.metadata.toc_available =
-        has_nav;
+        false;
 
     const auto opf_directory =
         directoryOf(*opf_path);
@@ -1044,6 +1172,40 @@ ParseResult EpubParser::parse(
             }
         }
     }
+
+    if (nav_labels.empty()) {
+        const auto toc_id =
+            spineTocId(opf);
+
+        if (toc_id.has_value()) {
+            const auto toc_item =
+                manifest.find(*toc_id);
+
+            if (toc_item != manifest.end()) {
+                const auto ncx_path =
+                    normalizePath(
+                        opf_directory,
+                        toc_item->second.href
+                    );
+
+                std::string ncx;
+
+                if (archive.read(
+                        ncx_path,
+                        ncx
+                    ) == ZipArchiveStatus::Ok) {
+                    nav_labels =
+                        parseNcxLabels(
+                            ncx,
+                            directoryOf(ncx_path)
+                        );
+                }
+            }
+        }
+    }
+
+    result.document.metadata.toc_available =
+        !nav_labels.empty() || has_nav;
 
     std::uint64_t global_offset = 0;
 

@@ -36,9 +36,12 @@ include/enku/
     reader_runtime.hpp
   services/
     services.hpp
+  storage/
+    state_file_store.hpp
+    cbor_reader_checkpoint.hpp
 ```
 
-The first framework-neutral implementations now include the TXT parser, paginator, DocumentReaderEngine, ReaderSession and reader runtime lifecycle (open/page/back/finished), with host-side assertion tests under `tests/`. Hardware-specific implementation directories will grow after board bring-up.
+The first framework-neutral implementations now include the TXT parser, paginator, DocumentReaderEngine, ReaderSession, reader runtime lifecycle (open/page/back/finished), and the first concrete A/B CBOR per-book checkpoint backend with CRC32 recovery, with host-side assertion tests under `tests/`. Hardware-specific filesystem adapters will be added after board bring-up.
 
 Architecture references:
 

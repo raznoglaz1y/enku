@@ -441,6 +441,33 @@ int main() {
     assert(storage.appState().search.window_start == 24);
     assert(storage.appState().search.focus_index == 0);
     assert(storage.appState().search.matches.size() == 6);
+
+    assert(
+        search.handle(LogicalAction::Back) ==
+        SearchRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().search.phase ==
+        SearchPhase::QueryEntry
+    );
+    assert(storage.appState().search.query == "beta");
+    assert(storage.appState().search.matches.empty());
+    assert(
+        storage.appState().search.origin_position->text_offset ==
+        search_origin->text_offset
+    );
+
+    assert(
+        search.submitQuery("beta") ==
+        SearchRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().search.phase ==
+        SearchPhase::Results
+    );
+    assert(storage.appState().search.window_start == 0);
+    assert(storage.appState().search.focus_index == 0);
+    assert(storage.appState().search.matches.size() == 24);
     assert(
         storage.appState().search.matches[0].position.book_id ==
         *storage.appState().current_book

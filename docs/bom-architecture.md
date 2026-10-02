@@ -253,3 +253,24 @@ See:
 - [Power architecture R0.1](custom-mainboard-power-r01.md)
 - [Power cost pass R0.1](power-cost-pass-r01.md)
 - [Open-source commercialization](open-source-commercialization.md)
+
+
+## Schematic-level power baseline
+
+Current preferred R0.1 implementation:
+
+- BQ25185 charger / PowerPath;
+- initial 4.2 V / 500 mA input-limit configuration;
+- initial 300 mA fast-charge target for prototype thermal validation;
+- TPS2121 as the USB/Dock quality-baseline source mux;
+- TPS63031 fixed 3.3 V buck-boost as the first system-regulator candidate;
+- physical hard OFF drives the switched system rail off while leaving charging available;
+- BQ51013C-family Qi receiver only for Pro Wireless;
+- Pro frontlight prototype reserves two independent boost LED channels, with TPS61165 as the quality-baseline reference candidate.
+
+Detailed implementation:
+- [Power schematic R0.1](power-schematic-r01.md)
+- [Pro frontlight R0.1](frontlight-r01.md)
+- [Power cost pass](power-cost-pass-r01.md)
+
+EPD-HV remains a BLOCKER until the official panel reference circuit is verified.

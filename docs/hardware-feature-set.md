@@ -287,3 +287,60 @@ While docked, ENKU may enter a configurable low-refresh dashboard mode with opti
 The first dock should stay passive: pogo contacts, alignment magnets/mechanics and USB-C power input. No dock MCU is required.
 
 See [Dock and Dock Mode](dock-mode.md) for the electrical, firmware and validation plan.
+
+
+## Display family strategy
+
+### Base / Electronics / Cover
+
+Primary display candidate: **Good Display GDEY0397T81P**
+
+- 3.97-inch
+- 800 × 480
+- approximately 235 ppi
+- SSD1677
+- no frontlight
+- 24-pin 0.5 mm FPC
+
+Source:
+https://www.good-display.com/product/613.html
+
+### Pro / Pro Wireless
+
+Primary display candidate: **Good Display GDEY0426T82-FL01C**
+
+- 4.26-inch
+- 800 × 480
+- approximately 218 ppi
+- SSD1677
+- bonded warm/cool frontlight
+- 24-pin EPD FPC + separate frontlight FPC
+
+Source:
+https://www.good-display.com/product/880.html
+
+The older GDEQ0426T82-FL01C is treated as legacy/EOL and should not be the new design target.
+
+Replacement reference:
+https://www.good-display.com/product/1208.html
+
+The design goal is to keep one core mainboard for both display families where the verified FPC pinout, HV requirements and mechanics allow it.
+
+## Variant BOM ceilings
+
+Internal design stop-limits:
+
+| Variant | Landed BOM ceiling |
+| --- | ---: |
+| Electronics Kit | PLN 155 |
+| Base | PLN 180 |
+| Cover | PLN 200 |
+| Pro | PLN 230 |
+| Pro Wireless | PLN 260 |
+| Dock | PLN 40 |
+
+These values are not announced retail prices. They are engineering constraints used before final routing.
+
+See:
+- [Competitive analysis](competitive-analysis-2026-10.md)
+- [Multi-variant BOM architecture](bom-architecture.md)

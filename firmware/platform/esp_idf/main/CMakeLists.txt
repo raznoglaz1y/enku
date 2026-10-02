@@ -58,6 +58,8 @@ idf_component_register(
         "../../../src/storage/book_delete_service.cpp"
         "../../../src/storage/stored_book_source_service.cpp"
         "../../../src/parsers/txt/txt_parser.cpp"
+        "../../../src/parsers/epub/zip_archive.cpp"
+        "../../../src/parsers/epub/epub_parser.cpp"
     INCLUDE_DIRS
         "../include"
         "../../../include"

@@ -20,6 +20,7 @@ enum class ReaderRuntimeResult : std::uint8_t {
     LayoutFailed,
     CheckpointFailed,
     CheckpointLoadFailed,
+    ContextSaveFailed,
     LibraryUpdateFailed,
     RefreshRejected,
 };
@@ -32,6 +33,7 @@ public:
         RefreshService& refresh,
         LibraryService& library,
         ReaderCheckpointService& checkpoint,
+        AppContextService& context,
         TypographySettings typography,
         Viewport viewport
     );
@@ -51,6 +53,7 @@ private:
     RefreshService& refresh_;
     LibraryService& library_;
     ReaderCheckpointService& checkpoint_;
+    AppContextService& context_;
     TypographySettings typography_;
     Viewport viewport_;
     std::uint32_t refresh_generation_{0};

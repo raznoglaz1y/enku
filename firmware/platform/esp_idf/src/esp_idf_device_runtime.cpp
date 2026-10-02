@@ -413,6 +413,11 @@ void EspIdfDeviceRuntime::syncPlatformState() {
         battery.percent;
     app.power.charging =
         battery.charging;
+
+    // Snapshot the thread-safe HTTP ingress activity into AppState for UI
+    // and sleep policy decisions. The HTTP task never writes AppState.
+    app.import_active =
+        storage_.webUpload().active();
 }
 
 bool EspIdfDeviceRuntime::syncWebUploadServer() {

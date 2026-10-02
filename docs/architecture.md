@@ -134,6 +134,8 @@ The text layout, pagination and rendering rules are defined in [Pagination & Ren
 
 Runtime transitions for opening, reading, search, sleep/wake and recovery are defined in [Reader Runtime & State Machine](runtime-state-machine.md).
 
+The initial source/module layout and framework-neutral interfaces are defined in [Firmware Project Structure](firmware-structure.md).
+
 ### Reader v1 format scope
 
 The first ENKU reader release targets three reflowable/text-oriented formats:

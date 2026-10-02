@@ -249,3 +249,12 @@ Current capabilities:
 - light-sleep request with GPIO wake on navigation controls.
 
 The firmware smoke test reads and logs power telemetry but deliberately does **not** call software shutdown automatically.
+
+
+## RefreshService integration
+
+The SSD1677 driver is now wrapped by `EpaperRefreshService`, which implements the framework-neutral `RefreshService` contract.
+
+This is the first point where application runtime refresh requests are translated into physical panel behavior.
+
+The renderer/display boundary uses a 1-bit `MonoFramebufferSource`; the current owned implementation stores the full 800×480 frame and can extract byte-aligned dirty regions for partial updates.

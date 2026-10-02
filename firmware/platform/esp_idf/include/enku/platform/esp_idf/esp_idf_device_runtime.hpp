@@ -17,6 +17,7 @@
 #include "enku/runtime/locale_settings_runtime.hpp"
 #include "enku/runtime/about_device_runtime.hpp"
 #include "enku/runtime/power_off_confirm_runtime.hpp"
+#include "enku/runtime/wifi_settings_runtime.hpp"
 #include "enku/runtime/power_off.hpp"
 #include "enku/runtime/reader_overlay_runtime.hpp"
 #include "enku/runtime/search_runtime.hpp"
@@ -67,6 +68,7 @@ public:
     LocaleSettingsRuntime& localeSettings();
     AboutDeviceRuntime& aboutDevice();
     PowerOffConfirmRuntime& powerOffConfirm();
+    WiFiSettingsRuntime& wifiSettings();
 
     SleepWakeCoordinator& sleepWake();
     PowerOffCoordinator& powerOff();
@@ -115,6 +117,7 @@ private:
     SleepWakeCoordinator sleep_wake_;
     PowerOffCoordinator power_off_;
     PowerOffConfirmRuntime power_off_confirm_;
+    WiFiSettingsRuntime wifi_settings_;
     InputDispatcher input_dispatcher_;
 
     NetworkPolicyStatus network_policy_status_{

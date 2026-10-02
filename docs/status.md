@@ -36,7 +36,7 @@ ENKU is not yet a working reader firmware release. The project currently has a d
 - Storage/Import screen revision;
 - Wi-Fi screen revision;
 - hardware sourcing and delivery;
-- contributor and hardware-partner outreach.
+- supplier and hardware-partner outreach.
 
 ## Next
 
@@ -49,23 +49,20 @@ ENKU is not yet a working reader firmware release. The project currently has a d
 7. build the offline Library + Reader MVP;
 8. start the first measured enclosure prototype.
 
-## Looking for contributors
+## Looking for hardware partners and suppliers
 
-ENKU is actively looking for contributors.
+ENKU is actively looking for companies and distributors interested in supporting the project with hardware and components.
 
-The project is especially interested in people with experience in:
+Current priorities include:
 
-- ESP32-S3 firmware;
-- e-paper display drivers;
-- embedded UI architecture;
-- low-power embedded systems;
-- EPUB/FB2/text parsing and pagination;
-- font rendering and Unicode;
-- local web interfaces on embedded devices;
-- localization;
-- CAD / 3D-printable enclosure design;
-- technical documentation.
+- Waveshare ESP32-S3-ePaper-3.97 boards for development and testing;
+- suitable Li-Po batteries for the final enclosure;
+- switches, buttons, fasteners and small mechanical/electronic components;
+- prototype parts and replacement units for testing;
+- sample units or project pricing;
+- technical specifications and integration support;
+- suppliers willing to support future hardware and enclosure iterations.
 
-You do not need to commit to the whole project. A focused contribution, measurement, review or proof-of-concept is useful.
+Where appropriate, participating companies can be listed in the repository and project documentation as hardware partners or component suppliers.
 
-Start with [CONTRIBUTING.md](../CONTRIBUTING.md) or open an issue describing the area you would like to help with.
+The project prefers components that are easy for future builders to source again, so availability and reproducibility are important selection criteria.

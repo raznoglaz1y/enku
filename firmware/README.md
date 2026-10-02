@@ -67,3 +67,27 @@ Architecture references:
 - [Library data model & service interface](../docs/library-model.md)
 
 The public source language and code/documentation language for firmware is English.
+
+
+## Host build and tests
+
+The framework-neutral firmware modules can be compiled and tested on a desktop host with CMake:
+
+```bash
+cmake -S firmware -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel
+ctest --test-dir build --output-on-failure
+```
+
+The host suite currently covers:
+
+- TXT parsing;
+- text pagination;
+- Reader Engine;
+- ReaderSession navigation;
+- Book Loader;
+- Reader runtime open/page/back/restore lifecycle;
+- CBOR A/B checkpoint generation and corruption recovery;
+- POSIX filesystem checkpoint persistence.
+
+GitHub Actions runs the same host suite on pushes to `main` and on pull requests.

@@ -28,6 +28,11 @@ public:
         std::string& book_id
     );
 
+    void completeDelete(
+        const std::string& book_id,
+        const std::string& status
+    );
+
 private:
     WebUploadIngress& ingress_;
     LibraryService& library_;
@@ -35,6 +40,9 @@ private:
     std::atomic_bool upload_completed_{false};
     mutable std::mutex delete_mutex_;
     std::string pending_delete_book_id_;
+    std::string delete_result_book_id_;
+    std::string delete_result_status_;
+    bool mdns_started_{false};
 
     bool start();
     void stop();
@@ -60,6 +68,10 @@ private:
         httpd_req_t* request
     );
 
+    static esp_err_t handleDeleteStatus(
+        httpd_req_t* request
+    );
+
     esp_err_t upload(
         httpd_req_t* request
     );
@@ -71,6 +83,13 @@ private:
     esp_err_t deleteBook(
         httpd_req_t* request
     );
+
+    esp_err_t deleteStatus(
+        httpd_req_t* request
+    );
+
+    bool startMdns();
+    void stopMdns();
 };
 
 } // namespace enku::platform::esp_idf

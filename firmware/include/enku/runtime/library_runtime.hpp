@@ -86,6 +86,7 @@ private:
         RefreshClass refresh_class
     );
     void normalizeFocus();
+    void resetQueryWindow();
     std::optional<std::size_t> focusedIndex() const;
     LibraryRuntimeResult moveToOffset(
         std::uint32_t offset,

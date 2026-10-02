@@ -22,11 +22,20 @@ struct LayoutRequest {
     Viewport viewport;
 };
 
+enum class PageLineKind : std::uint8_t {
+    Paragraph,
+    Heading,
+    Quote,
+    ListItem,
+    Separator,
+};
+
 struct PageLine {
     std::string text;
     SemanticPosition position;
     std::uint16_t x{0};
     std::uint16_t y{0};
+    PageLineKind kind{PageLineKind::Paragraph};
 };
 
 struct PageResult {

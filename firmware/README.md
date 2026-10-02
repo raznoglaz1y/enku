@@ -12,6 +12,7 @@ The scaffold intentionally avoids choosing Arduino vs ESP-IDF until the real Wav
 include/enku/
   core/
     types.hpp
+    input.hpp
     events.hpp
     app_state.hpp
   reader/
@@ -26,6 +27,7 @@ Implementation directories will be added as hardware and subsystem work begins.
 Architecture references:
 
 - [System architecture](../docs/architecture.md)
+- [Input & physical controls](../docs/input-model.md)
 - [Firmware structure](../docs/firmware-structure.md)
 - [Reader runtime](../docs/runtime-state-machine.md)
 - [Pagination model](../docs/pagination-model.md)

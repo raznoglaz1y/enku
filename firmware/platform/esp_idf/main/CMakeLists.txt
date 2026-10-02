@@ -7,6 +7,7 @@ idf_component_register(
         "../include"
         "../../../include"
     REQUIRES
+        driver
         fatfs
         sdmmc
 )

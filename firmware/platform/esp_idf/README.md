@@ -296,3 +296,23 @@ SD mount
 The bring-up `app_main()` now consumes this composition root instead of constructing parallel board drivers itself.
 
 This is intentionally still a **platform** root rather than the final ENKU `DeviceRuntime`: Reader text measurement/rendering and the complete application renderer still need concrete implementations before the full application controller graph can be owned here.
+
+
+## Application storage layer on ESP-IDF
+
+The ESP-IDF target now links the real ENKU storage/application subset used by `ApplicationStorageRuntime`:
+
+- settings persistence/runtime;
+- Library persistence;
+- TXT import;
+- staged import;
+- delete transaction;
+- reader checkpoints;
+- app restore context;
+- boot-loop marker;
+- book source;
+- storage startup/recovery.
+
+This is the first board build where the same application persistence code tested on desktop is linked against the physical SD-backed adapters.
+
+The remaining application-runtime blocker is no longer persistence. It is the real Reader rendering path: text measurement, font data and screen composition.

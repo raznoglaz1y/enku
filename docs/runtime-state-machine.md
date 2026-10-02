@@ -447,3 +447,12 @@ Successful transition into Reading persists `Reading + book_id` through `AppCont
 Back from Reading persists `Library` before destroying the active ReaderSession. If that context write fails, Back is aborted so the previously safe Reading state is not silently discarded.
 
 At cold boot, `BootRestoreCoordinator` reuses the ordinary `OpenBookRequested` runtime path rather than creating a second special-purpose reader-opening implementation. Therefore automatic restore uses the same Library lookup, checkpoint restore, parser, ReaderSession and failure behavior as a user-initiated open.
+
+
+## 27. Sleep and fast Wake
+
+`SleepWakeCoordinator` owns the product-level Sleep transition without embedding hardware-specific PMU/deep-sleep logic in ReaderRuntime.
+
+When Sleeping from Reading, the semantic position is checkpointed even if the normal page-turn debounce has not fired yet. This makes Sleep an explicit persistence boundary.
+
+Fast Wake does not create a special reader-opening path. It calls the same persisted-context restore logic used by cold boot, which in turn uses `OpenBookRequested`, checkpoint restore and `ReaderBookLoader`. The difference is that Wake skips the full storage transaction scan when the suspended runtime still has mounted/valid storage.

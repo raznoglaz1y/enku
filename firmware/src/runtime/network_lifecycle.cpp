@@ -82,6 +82,14 @@ void NetworkLifecycleCoordinator::updateStatus() {
             ? *trusted
             : std::string{};
 
+    const auto address =
+        network_.localAddress();
+
+    app_state_.network.address =
+        address.has_value()
+            ? *address
+            : std::string{};
+
     if (link_state == NetworkLinkState::Online) {
         app_state_.network.status =
             NetworkRuntimeStatus::Connected;

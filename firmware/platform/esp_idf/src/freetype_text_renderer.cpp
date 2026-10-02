@@ -1033,6 +1033,245 @@ bool FreeTypeTextRenderer::renderLibrary(
 
 namespace enku::platform::esp_idf {
 
+bool FreeTypeTextRenderer::renderWiFiSettings(
+    const AppState& app_state
+) {
+    if (!ready()) {
+        return false;
+    }
+
+    framebuffer_.clearWhite();
+
+    const auto orientation =
+        app_state.orientation;
+
+    const int logical_width =
+        orientation == Orientation::Portrait
+            ? 480
+            : 800;
+
+    if (!drawTextAt(
+            "WI-FI",
+            26,
+            28,
+            50,
+            orientation
+        )) {
+        return false;
+    }
+
+    const auto policyLabel =
+        [](WiFiPolicy policy) -> const char* {
+            switch (policy) {
+                case WiFiPolicy::Off:
+                    return "OFF";
+                case WiFiPolicy::Manual:
+                    return "MANUAL";
+                case WiFiPolicy::AutoConnectTrusted:
+                    return "AUTO-CONNECT TRUSTED";
+            }
+            return "UNKNOWN";
+        };
+
+    if (app_state.wifi_settings.forget_confirm) {
+        if (!drawTextAt(
+                "FORGET TRUSTED NETWORK?",
+                20,
+                28,
+                118,
+                orientation
+            )) {
+            return false;
+        }
+
+        const int gap = 16;
+        const int button_width =
+            (logical_width - 64 - gap) / 2;
+        const int top =
+            orientation == Orientation::Portrait
+                ? 240
+                : 210;
+
+        const bool forget_selected =
+            app_state.wifi_settings.confirm_forget;
+
+        drawRect(
+            24,
+            top,
+            button_width,
+            54,
+            orientation,
+            forget_selected ? 1 : 2
+        );
+
+        drawRect(
+            24 + button_width + gap,
+            top,
+            button_width,
+            54,
+            orientation,
+            forget_selected ? 2 : 1
+        );
+
+        if (!drawTextAt(
+                "CANCEL",
+                17,
+                40,
+                top + 34,
+                orientation
+            )) {
+            return false;
+        }
+
+        if (!drawTextAt(
+                "FORGET",
+                17,
+                40 + button_width + gap,
+                top + 34,
+                orientation
+            )) {
+            return false;
+        }
+
+        return drawTextAt(
+            "UP/DOWN CHOOSE  FUNCTION CONFIRM  BACK CANCEL",
+            12,
+            28,
+            orientation == Orientation::Portrait
+                ? 760
+                : 448,
+            orientation
+        );
+    }
+
+    if (!drawTextAt(
+            "POLICY",
+            14,
+            28,
+            112,
+            orientation
+        )) {
+        return false;
+    }
+
+    if (app_state.wifi_settings.focus ==
+        WiFiSettingsFocus::Policy) {
+        drawRect(
+            20,
+            128,
+            logical_width - 40,
+            66,
+            orientation,
+            app_state.wifi_settings.editing_policy
+                ? 3
+                : 2
+        );
+    }
+
+    if (!drawTextAt(
+            policyLabel(
+                app_state.wifi_settings.
+                    editing_policy
+                    ? app_state.wifi_settings.
+                        selected_policy
+                    : app_state.wifi_policy
+            ),
+            17,
+            36,
+            168,
+            orientation
+        )) {
+        return false;
+    }
+
+    const char* connection =
+        app_state.network.connected
+            ? "CONNECTED"
+            : "OFFLINE";
+
+    if (!drawTextAt(
+            "STATUS",
+            13,
+            28,
+            226,
+            orientation
+        ) ||
+        !drawTextAt(
+            connection,
+            16,
+            36,
+            256,
+            orientation
+        )) {
+        return false;
+    }
+
+    const std::string trusted =
+        app_state.network.ssid.empty()
+            ? "TRUSTED: NONE"
+            : "TRUSTED: " +
+                app_state.network.ssid;
+
+    if (!drawTextAt(
+            trusted,
+            13,
+            28,
+            294,
+            orientation
+        )) {
+        return false;
+    }
+
+    const int forget_top =
+        orientation == Orientation::Portrait
+            ? 350
+            : 320;
+
+    if (app_state.wifi_settings.focus ==
+        WiFiSettingsFocus::ForgetTrusted) {
+        drawRect(
+            20,
+            forget_top,
+            logical_width - 40,
+            54,
+            orientation,
+            2
+        );
+    }
+
+    if (!drawTextAt(
+            "FORGET TRUSTED NETWORK",
+            16,
+            36,
+            forget_top + 34,
+            orientation
+        )) {
+        return false;
+    }
+
+    if (!drawTextAt(
+            "NETWORK SCAN / NEW CONNECTION FLOW PENDING",
+            11,
+            28,
+            forget_top + 86,
+            orientation
+        )) {
+        return false;
+    }
+
+    return drawTextAt(
+        app_state.wifi_settings.editing_policy
+            ? "UP/DOWN CHANGE  FUNCTION APPLY  BACK CANCEL"
+            : "UP/DOWN MOVE  FUNCTION SELECT  BACK SETTINGS",
+        12,
+        28,
+        orientation == Orientation::Portrait
+            ? 760
+            : 448,
+        orientation
+    );
+}
+
 bool FreeTypeTextRenderer::renderPowerOffConfirm(
     const AppState& app_state
 ) {

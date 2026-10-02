@@ -24,6 +24,7 @@ idf_component_register(
         "../../../src/runtime/application_reader_runtime.cpp"
         "../../../src/runtime/reader_runtime.cpp"
         "../../../src/runtime/library_runtime.cpp"
+        "../../../src/runtime/library_search_runtime.cpp"
         "../../../src/runtime/boot_restore.cpp"
         "../../../src/reader/book_loader.cpp"
         "../../../src/reader/document_search.cpp"

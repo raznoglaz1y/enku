@@ -254,7 +254,7 @@ ENKU is still in the pre-firmware stage, so several important decisions remain i
 - Reader v1 is scoped to EPUB, FB2 and TXT; PDF support is deferred and not yet designed;
 - the exact CBOR codec library, localization table generator, diagnostics backend and parser/rendering stack are not selected;
 - the final system suspend mechanism and wake-source mapping have not yet been measured on the real board;
-- partial-refresh behavior has not yet been measured on the real panel;
+- partial/region refresh behavior and ghosting thresholds have not yet been measured on the real panel;
 - battery model and real-world runtime are not finalized;
 - physical button mapping and wake behavior still require hardware testing;
 - the enclosure has not been dimensioned from the production board yet;
@@ -306,23 +306,30 @@ Firmware has not yet been published as a working reader. The planned implementat
    - portrait/landscape layout;
    - localization through stable semantic string keys;
    - English fallback with generated compact locale tables;
-   - e-paper-aware redraw strategy.
+   - render plans describing only visible changes.
 
-6. **Persistence layer**
+6. **Refresh Manager**
+   - Region / Full / Deferred / None update classes;
+   - bounded serialized refresh queue;
+   - dirty-region coalescing and stale-plan removal;
+   - measured ghosting/full-refresh escalation;
+   - panel-refresh diagnostics.
+
+7. **Persistence layer**
    - versioned CBOR records;
    - separate Library / settings / per-book state;
    - A/B generation recovery;
    - debounced progress checkpoints;
    - schema migration and integrity validation.
 
-7. **Diagnostics and recovery**
+8. **Diagnostics and recovery**
    - stable structured error codes;
    - localized user-facing error mapping;
    - bounded in-memory logs;
    - compact critical/reboot diagnostics;
    - boot-loop detection and Recovery/Safe Mode.
 
-8. **Local management service**
+9. **Local management service**
    - upload/import;
    - metadata operations;
    - storage status;
@@ -395,6 +402,7 @@ No final mechanical dimensions will be published as authoritative until the actu
 
 - [x] Select Reader v1 formats: EPUB, FB2 and TXT; PDF deferred
 - [ ] Implement staged boot coordinator and first-usable-screen checkpoint
+- [ ] Implement Refresh Manager queue and render-plan pipeline
 - [ ] Connect the firmware scaffold to verified platform drivers
 - [ ] Implement EPUB/FB2/TXT parsers and text layout
 - [ ] Implement Library grid/list navigation
@@ -469,6 +477,7 @@ Useful documents:
 - [Localization architecture](docs/localization-model.md)
 - [Errors, logging & diagnostics](docs/diagnostics-model.md)
 - [Boot & startup architecture](docs/boot-model.md)
+- [Refresh Manager & e-paper update policy](docs/refresh-model.md)
 - [Hardware baseline](docs/hardware.md)
 - [BOM status](docs/bom.md)
 - [UI specification](docs/ui-spec.md)
@@ -504,6 +513,7 @@ docs/
   localization-model.md     string keys, fallback, plurals and locale packaging
   diagnostics-model.md      structured errors, bounded logs and Recovery Mode
   boot-model.md             staged startup, restore and boot-loop handling
+  refresh-model.md          render plans, refresh queue and ghosting policy
   hardware.md              verified/planned hardware baseline
   bom.md                   parts/BOM status and sourcing priorities
   status.md                current project status

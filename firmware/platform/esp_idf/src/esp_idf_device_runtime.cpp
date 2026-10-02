@@ -23,6 +23,30 @@ EspIdfDeviceRuntime::EspIdfDeviceRuntime(
           text_renderer_,
           typography,
           viewport
+      ),
+      sleep_wake_(
+          storage_.appState(),
+          storage_.library(),
+          storage_.checkpoints(),
+          storage_.appContext(),
+          platform_.network(),
+          platform_.power(),
+          reader_.bootRestore()
+      ),
+      power_off_(
+          storage_.appState(),
+          storage_.library(),
+          storage_.checkpoints(),
+          storage_.appContext(),
+          platform_.network(),
+          platform_.power()
+      ),
+      input_dispatcher_(
+          storage_.appState(),
+          reader_.library(),
+          reader_.reader(),
+          sleep_wake_,
+          power_off_
       ) {}
 
 DeviceRuntimeInitStatus
@@ -65,6 +89,34 @@ EspIdfDeviceRuntime::reader() {
 FreeTypeTextRenderer&
 EspIdfDeviceRuntime::textRenderer() {
     return text_renderer_;
+}
+
+SleepWakeCoordinator&
+EspIdfDeviceRuntime::sleepWake() {
+    return sleep_wake_;
+}
+
+PowerOffCoordinator&
+EspIdfDeviceRuntime::powerOff() {
+    return power_off_;
+}
+
+InputDispatcher&
+EspIdfDeviceRuntime::input() {
+    return input_dispatcher_;
+}
+
+InputDispatchResult EspIdfDeviceRuntime::pollInput(
+    std::uint32_t now_ms
+) {
+    const auto event =
+        platform_.buttons().poll(now_ms);
+
+    if (!event.has_value()) {
+        return InputDispatchResult::Ignored;
+    }
+
+    return input_dispatcher_.handle(*event);
 }
 
 const BootRestoreResult&

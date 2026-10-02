@@ -200,6 +200,14 @@ int main() {
         settings.loadAndApply() ==
         SettingsRuntimeStatus::DefaultsCreated
     );
+    assert(
+        settings.handle(
+            LibrarySortChanged{
+                LibrarySort::RecentlyAdded,
+                SortDirection::Ascending,
+            }
+        ) == PersistStatus::Ok
+    );
 
     LibraryRuntimeController runtime(
         app,

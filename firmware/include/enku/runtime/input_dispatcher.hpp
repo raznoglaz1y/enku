@@ -13,6 +13,7 @@
 #include "about_book_runtime.hpp"
 #include "settings_navigation_runtime.hpp"
 #include "reading_settings_runtime.hpp"
+#include "display_settings_runtime.hpp"
 #include "power_off.hpp"
 #include "reader_overlay_runtime.hpp"
 #include "reader_runtime.hpp"
@@ -44,7 +45,8 @@ public:
         ContentsBookmarksRuntime* contents_bookmarks = nullptr,
         AboutBookRuntime* about_book = nullptr,
         SettingsNavigationRuntime* settings_nav = nullptr,
-        ReadingSettingsRuntime* reading_settings = nullptr
+        ReadingSettingsRuntime* reading_settings = nullptr,
+        DisplaySettingsRuntime* display_settings = nullptr
     );
 
     InputDispatchResult handle(
@@ -66,6 +68,7 @@ private:
     AboutBookRuntime* about_book_{nullptr};
     SettingsNavigationRuntime* settings_nav_{nullptr};
     ReadingSettingsRuntime* reading_settings_{nullptr};
+    DisplaySettingsRuntime* display_settings_{nullptr};
 };
 
 } // namespace enku

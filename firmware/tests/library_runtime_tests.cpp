@@ -371,6 +371,44 @@ int main() {
     assert(refresh.last.reason == RefreshReason::FocusChanged);
     assert(refresh.last.refresh_class == RefreshClass::Region);
 
+    app.library.limit = 1;
+    app.library.offset = 1;
+    app.library.focused_book = "beta";
+
+    assert(
+        runtime.handle(
+            LibrarySortChanged{
+                LibrarySort::Title,
+                SortDirection::Ascending,
+            }
+        ) == LibraryRuntimeResult::Applied
+    );
+    assert(app.library.offset == 0);
+    assert(runtime.page().offset == 0);
+    assert(runtime.page().items.size() == 1);
+    assert(runtime.page().items[0].book_id == "alpha");
+    assert(
+        app.library.focused_book ==
+        std::optional<BookId>{"alpha"}
+    );
+
+    const auto offset_before_view =
+        app.library.offset;
+    const auto focus_before_view =
+        app.library.focused_book;
+
+    assert(
+        runtime.handle(
+            LibraryViewChanged{LibraryView::List}
+        ) == LibraryRuntimeResult::Applied
+    );
+    assert(app.library.offset == offset_before_view);
+    assert(app.library.focused_book == focus_before_view);
+    assert(app.library.view == LibraryView::List);
+
+    app.library.offset = 1;
+    app.library.focused_book = "beta";
+
     assert(
         runtime.handle(
             LibraryFilterChanged{LibraryFilter::Reading}
@@ -386,8 +424,14 @@ int main() {
         persisted_settings.library_filter ==
         LibraryFilter::Reading
     );
+    assert(app.library.offset == 0);
+    assert(runtime.page().offset == 0);
     assert(runtime.page().total_matches == 1);
     assert(runtime.page().items[0].book_id == "beta");
+    assert(
+        app.library.focused_book ==
+        std::optional<BookId>{"beta"}
+    );
 
     assert(
         runtime.handle(

@@ -56,6 +56,15 @@ public:
         return LibraryStatus::Ok;
     }
 
+    LibraryStatus remove(const BookId& book_id) override {
+        if (record.has_value() &&
+            record->book_id == book_id) {
+            record.reset();
+            return LibraryStatus::Ok;
+        }
+        return LibraryStatus::NotFound;
+    }
+
     std::optional<BookRecord> get(
         const BookId& book_id
     ) const override {

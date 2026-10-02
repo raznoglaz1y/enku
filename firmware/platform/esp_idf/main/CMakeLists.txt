@@ -8,6 +8,7 @@ idf_component_register(
         "../src/esp_idf_power_service.cpp"
         "../src/epaper_refresh_service.cpp"
         "../src/esp_idf_platform.cpp"
+        "../src/freetype_text_renderer.cpp"
         "../../../src/render/owned_mono_framebuffer.cpp"
         "../../../src/runtime/input_runtime.cpp"
         "../../../src/runtime/application_storage_runtime.cpp"

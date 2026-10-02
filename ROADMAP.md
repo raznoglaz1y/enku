@@ -277,11 +277,11 @@ Reproducible build, documentation, case files and first tagged version.
 - [x] Define Pro display candidate: GDEY0426T82-FL01C
 - [x] Define multi-variant BOM ceilings and competitive stop limits
 - [ ] Receive Good Display pricing / reference circuitry for Base and Pro panels
-- [ ] Select exact charger / power-path topology
-- [ ] Select exact Dock OR-ing / power-mux device
+- [x] Select charger / power-path baseline: BQ25185; thermal validation still required
+- [x] Select Dock power-mux quality baseline: TPS2121; discrete cost-down comparison still required
 - [ ] Select exact microSD connector after enclosure-edge test
 - [ ] Select final low-noise page tact switches
-- [ ] Validate frontlight current / driver topology
+- [ ] Validate Pro frontlight current / driver topology; 2× TPS61165 reserved as prototype baseline
 - [ ] Validate Qi coil / receiver / ferrite stack for Pro Wireless
 - [ ] Complete per-variant populated / DNP BOM
 - [ ] Obtain PCBWay / assembly quotes at 10 / 25 / 50 / 100 units

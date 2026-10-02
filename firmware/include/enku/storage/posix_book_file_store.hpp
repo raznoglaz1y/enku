@@ -25,6 +25,11 @@ public:
         const std::string& path
     ) override;
 
+    BookFileStatus list(
+        const std::string& directory,
+        std::vector<std::string>& paths
+    ) override;
+
 private:
     std::filesystem::path root_;
 

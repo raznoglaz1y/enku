@@ -22,6 +22,7 @@
 #include "enku/runtime/reader_overlay_runtime.hpp"
 #include "enku/runtime/search_runtime.hpp"
 #include "enku/runtime/sleep_wake.hpp"
+#include "enku/runtime/network_lifecycle.hpp"
 
 #include "esp_idf_platform.hpp"
 #include "freetype_text_renderer.hpp"
@@ -113,6 +114,7 @@ private:
     DisplaySettingsRuntime display_settings_;
     LocaleSettingsRuntime locale_settings_;
     AboutDeviceRuntime about_device_;
+    NetworkLifecycleCoordinator network_lifecycle_;
 
     SleepWakeCoordinator sleep_wake_;
     PowerOffCoordinator power_off_;

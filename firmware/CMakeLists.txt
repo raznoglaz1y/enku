@@ -8,7 +8,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 include(CTest)
 
-add_library(enku_core STATIC
+add_library(enku_core
+    src/core/reader_overlay.cpp STATIC
     src/parsers/txt/txt_parser.cpp
     src/reader/text_paginator.cpp
     src/reader/document_reader_engine.cpp

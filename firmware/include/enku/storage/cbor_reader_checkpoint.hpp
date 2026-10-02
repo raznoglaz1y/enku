@@ -25,6 +25,10 @@ public:
         ReadingState reading_state
     ) override;
 
+    PersistStatus erase(
+        const BookId& book_id
+    );
+
 private:
     struct DecodedRecord {
         std::uint32_t generation{0};

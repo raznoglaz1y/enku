@@ -215,7 +215,8 @@ BookDeleteStatus BookDeleteService::remove(
             checkpoint_backup,
             context_points_to_book
                 ? context_backup
-                : std::nullopt
+                : std::nullopt,
+            bookmarks_backup
         )
             ? BookDeleteStatus::CheckpointRemoveFailed
             : BookDeleteStatus::RollbackFailed;

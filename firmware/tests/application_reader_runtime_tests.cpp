@@ -3,6 +3,8 @@
 #include "enku/runtime/search_runtime.hpp"
 #include "enku/runtime/contents_bookmarks_runtime.hpp"
 #include "enku/runtime/about_book_runtime.hpp"
+#include "enku/runtime/settings_navigation_runtime.hpp"
+#include "enku/runtime/reading_settings_runtime.hpp"
 #include "enku/storage/posix_book_file_store.hpp"
 #include "enku/storage/posix_state_file_store.hpp"
 
@@ -858,6 +860,150 @@ int main() {
         storage.appState().screen ==
         Screen::Library
     );
+
+    SettingsNavigationRuntime settings_nav(
+        storage.appState(),
+        runtime.library()
+    );
+
+    ReadingSettingsRuntime reading_settings(
+        storage.appState(),
+        storage,
+        runtime,
+        settings_nav
+    );
+
+    const auto typography_before_settings =
+        storage.appState().typography;
+
+    assert(
+        settings_nav.handle(
+            OpenSettingsRequested{}
+        ) == SettingsNavigationResult::Applied
+    );
+    assert(storage.appState().screen == Screen::Settings);
+    assert(
+        storage.appState().settings_nav.focus ==
+        SettingsItem::Reading
+    );
+
+    assert(
+        reading_settings.openFromSettings() ==
+        ReadingSettingsRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().screen ==
+        Screen::ReadingSettings
+    );
+
+    assert(
+        reading_settings.handle(
+            LogicalAction::Confirm
+        ) == ReadingSettingsRuntimeResult::Applied
+    );
+    assert(storage.appState().reading_settings.editing);
+
+    assert(
+        reading_settings.handle(
+            LogicalAction::NavigateNext
+        ) == ReadingSettingsRuntimeResult::Applied
+    );
+    const auto committed_typography =
+        storage.appState().typography;
+    assert(
+        committed_typography.preset !=
+        typography_before_settings.preset ||
+        committed_typography.font_size_px !=
+        typography_before_settings.font_size_px ||
+        committed_typography.line_spacing !=
+        typography_before_settings.line_spacing ||
+        committed_typography.margin_px !=
+        typography_before_settings.margin_px
+    );
+
+    assert(
+        reading_settings.handle(
+            LogicalAction::Confirm
+        ) == ReadingSettingsRuntimeResult::Applied
+    );
+    assert(!storage.appState().reading_settings.editing);
+
+    GlobalSettings persisted_typography;
+    assert(
+        storage.settingsStore().load(
+            persisted_typography
+        ) == PersistStatus::Ok
+    );
+    assert(
+        persisted_typography.reading_preset ==
+        committed_typography.preset
+    );
+    assert(
+        persisted_typography.font_size_px ==
+        committed_typography.font_size_px
+    );
+
+    assert(
+        reading_settings.handle(
+            LogicalAction::NavigateNext
+        ) == ReadingSettingsRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().reading_settings.focus ==
+        ReadingSettingsItem::FontSize
+    );
+
+    assert(
+        reading_settings.handle(
+            LogicalAction::Confirm
+        ) == ReadingSettingsRuntimeResult::Applied
+    );
+    assert(
+        reading_settings.handle(
+            LogicalAction::NavigateNext
+        ) == ReadingSettingsRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().typography.preset ==
+        ReadingPreset::Custom
+    );
+    assert(
+        storage.appState().typography.font_size_px >=
+        committed_typography.font_size_px
+    );
+
+    assert(
+        reading_settings.handle(
+            LogicalAction::Back
+        ) == ReadingSettingsRuntimeResult::Applied
+    );
+    assert(!storage.appState().reading_settings.editing);
+    assert(
+        storage.appState().typography.preset ==
+        committed_typography.preset
+    );
+    assert(
+        storage.appState().typography.font_size_px ==
+        committed_typography.font_size_px
+    );
+
+    assert(
+        reading_settings.handle(
+            LogicalAction::Back
+        ) == ReadingSettingsRuntimeResult::Applied
+    );
+    assert(storage.appState().screen == Screen::Settings);
+    assert(
+        storage.appState().settings_nav.focus ==
+        SettingsItem::Reading
+    );
+
+    assert(
+        settings_nav.handle(
+            LogicalAction::Back
+        ) == SettingsNavigationResult::Applied
+    );
+    assert(storage.appState().screen == Screen::Library);
 
     const auto library_renders_before_orientation =
         renderer.library_renders;

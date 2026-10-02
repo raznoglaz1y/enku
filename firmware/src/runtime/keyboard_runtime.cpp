@@ -125,6 +125,7 @@ KeyboardRuntimeResult KeyboardRuntime::activate(
             KeyboardShiftState::NextUppercase) {
             state_.shift =
                 KeyboardShiftState::Lowercase;
+            state_.focused_label = focusedLabel();
         }
 
         return KeyboardRuntimeResult::Changed;

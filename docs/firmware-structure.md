@@ -13,6 +13,9 @@ firmware/
   include/enku/
     core/
       types.hpp
+      input.hpp
+      power.hpp
+      persistence.hpp
       events.hpp
       app_state.hpp
     reader/
@@ -76,11 +79,15 @@ Owns:
 
 - Library index;
 - book identity/fingerprint;
+- versioned CBOR persistence;
+- A/B generation recovery;
 - metadata persistence;
 - progress;
 - bookmarks;
 - transactional import/replace;
 - temporary-file recovery.
+
+The Reader v1 persistence format is defined in `docs/persistence-model.md`.
 
 ### ui
 

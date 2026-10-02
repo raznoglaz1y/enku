@@ -107,17 +107,60 @@ SearchRuntimeResult SearchRuntime::handle(
     }
 
     if (app.search.phase == SearchPhase::Results) {
-        if (action == LogicalAction::NavigatePrevious &&
-            app.search.focus_index > 0U) {
-            --app.search.focus_index;
-            return render();
+        if (action == LogicalAction::NavigatePrevious) {
+            if (app.search.focus_index > 0U) {
+                --app.search.focus_index;
+                return render();
+            }
+
+            if (app.search.window_start > 0U) {
+                const auto new_start =
+                    app.search.window_start >= 24U
+                        ? app.search.window_start - 24U
+                        : 0U;
+
+                const auto result =
+                    populateWindow(new_start);
+
+                if (result != SearchRuntimeResult::Applied) {
+                    return result;
+                }
+
+                if (!app.search.matches.empty()) {
+                    app.search.focus_index =
+                        static_cast<std::uint32_t>(
+                            app.search.matches.size() - 1U
+                        );
+                }
+
+                return render();
+            }
         }
 
-        if (action == LogicalAction::NavigateNext &&
-            app.search.focus_index + 1U <
+        if (action == LogicalAction::NavigateNext) {
+            if (app.search.focus_index + 1U <
                 app.search.matches.size()) {
-            ++app.search.focus_index;
-            return render();
+                ++app.search.focus_index;
+                return render();
+            }
+
+            const auto next_global =
+                app.search.window_start +
+                static_cast<std::uint32_t>(
+                    app.search.matches.size()
+                );
+
+            if (next_global < app.search.total_matches) {
+                const auto result =
+                    populateWindow(next_global);
+
+                if (result != SearchRuntimeResult::Applied) {
+                    return result;
+                }
+
+                app.search.focus_index = 0;
+                return render();
+            }
         }
 
         if (action == LogicalAction::Confirm &&
@@ -180,6 +223,7 @@ SearchRuntimeResult SearchRuntime::executeSearch() {
     app.search.matches.clear();
     app.search.total_matches = 0;
     app.search.focus_index = 0;
+    app.search.window_start = 0;
 
     if (app.search.query.empty()) {
         app.search.phase = SearchPhase::QueryEntry;
@@ -192,7 +236,6 @@ SearchRuntimeResult SearchRuntime::executeSearch() {
     }
 
     const auto needle = asciiFold(app.search.query);
-    constexpr std::size_t kBatchLimit = 24;
 
     for (const auto& section : document->sections) {
         for (const auto& block : section.blocks) {
@@ -208,8 +251,60 @@ SearchRuntimeResult SearchRuntime::executeSearch() {
 
                 ++app.search.total_matches;
 
-                if (app.search.matches.size() <
-                    kBatchLimit) {
+                from = match + std::max<std::size_t>(
+                    1U,
+                    needle.size()
+                );
+            }
+        }
+    }
+
+    app.search.phase = SearchPhase::Results;
+
+    const auto window_result =
+        populateWindow(0U);
+
+    if (window_result != SearchRuntimeResult::Applied) {
+        return window_result;
+    }
+
+    return render();
+}
+
+SearchRuntimeResult SearchRuntime::populateWindow(
+    std::uint32_t window_start
+) {
+    auto& app = storage_.appState();
+    const auto* document = reader_.loader().document();
+
+    if (document == nullptr || app.search.query.empty()) {
+        return SearchRuntimeResult::Failed;
+    }
+
+    constexpr std::size_t kBatchLimit = 24;
+    const auto needle = asciiFold(app.search.query);
+
+    app.search.matches.clear();
+    app.search.window_start = window_start;
+
+    std::uint32_t global_index = 0;
+
+    for (const auto& section : document->sections) {
+        for (const auto& block : section.blocks) {
+            const auto haystack = asciiFold(block.text);
+            std::size_t from = 0;
+
+            while (from < haystack.size()) {
+                const auto match =
+                    haystack.find(needle, from);
+
+                if (match == std::string::npos) {
+                    break;
+                }
+
+                if (global_index >= window_start &&
+                    app.search.matches.size() <
+                        kBatchLimit) {
                     app.search.matches.push_back(
                         SearchMatch{
                             SemanticPosition{
@@ -228,6 +323,13 @@ SearchRuntimeResult SearchRuntime::executeSearch() {
                     );
                 }
 
+                ++global_index;
+
+                if (app.search.matches.size() >=
+                    kBatchLimit) {
+                    return SearchRuntimeResult::Applied;
+                }
+
                 from = match + std::max<std::size_t>(
                     1U,
                     needle.size()
@@ -236,8 +338,7 @@ SearchRuntimeResult SearchRuntime::executeSearch() {
         }
     }
 
-    app.search.phase = SearchPhase::Results;
-    return render();
+    return SearchRuntimeResult::Applied;
 }
 
 SearchRuntimeResult SearchRuntime::cancel() {

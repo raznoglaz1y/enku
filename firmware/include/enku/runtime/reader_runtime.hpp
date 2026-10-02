@@ -51,6 +51,10 @@ public:
     ReaderRuntimeResult handle(const TypographyDefaultsChanged&);
     ReaderRuntimeResult handle(const BookPositionChanged&);
 
+    ReaderRuntimeResult redrawCurrentPage(
+        RefreshReason reason = RefreshReason::ScreenChanged
+    );
+
     std::uint32_t refreshGeneration() const;
 
 private:

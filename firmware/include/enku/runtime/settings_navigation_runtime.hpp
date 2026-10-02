@@ -41,6 +41,8 @@ public:
         LogicalAction action
     );
 
+    SettingsNavigationResult resume();
+
 private:
     AppState& app_state_;
     LibraryRuntimeController& library_;

@@ -16,6 +16,10 @@
   <strong>Project website:</strong> <a href="https://enkureader.com">enkureader.com</a>
 </p>
 
+<p align="center">
+  <strong>UI languages:</strong> EN · PL · DE · FR · ES · IT · RU
+</p>
+
 ---
 
 ## What is ENKU?
@@ -251,7 +255,7 @@ ENKU separates **panel sleep**, **device suspend** and **full PMU power-off**.
 
 ENKU is still in the pre-firmware stage, so several important decisions remain intentionally open:
 
-- there is no production reader firmware yet;
+- there is no production reader firmware yet, but the first framework-neutral TXT parser MVP is now implemented and host-testable;
 - a framework-neutral C++ firmware scaffold now exists under `firmware/`;
 - the firmware architecture, Library/storage model, parser abstraction, pagination model and runtime state machine are specified, while hardware integration and reader implementation remain pending;
 - Reader v1 is scoped to EPUB, FB2 and TXT; PDF support is deferred and not yet designed;
@@ -289,7 +293,9 @@ Firmware has not yet been published as a working reader. The planned implementat
    - network state.
 
 3. **Reader engine**
-   - EPUB, FB2 and TXT parser adapters;
+   - shared normalized parser/document interfaces;
+   - first TXT parser MVP implemented in C++;
+   - EPUB and FB2 parser adapters still pending;
    - normalized metadata/document model;
    - text layout and on-demand pagination;
    - typography presets;
@@ -445,7 +451,7 @@ No final mechanical dimensions will be published as authoritative until the actu
 - [ ] Validate reboot and power-loss recovery
 - [ ] Validate boot-loop detection, Recovery Mode and diagnostic export
 - [ ] Publish reproducible build instructions
-- [ ] Select final code/design licenses
+- [x] Define software/documentation/hardware licensing model
 - [ ] Tag the first public reader release
 
 A more detailed implementation roadmap lives in [ROADMAP.md](ROADMAP.md).
@@ -477,6 +483,7 @@ Useful documents:
 - [Reader runtime & state machine](docs/runtime-state-machine.md)
 - [Pagination & rendering model](docs/pagination-model.md)
 - [Metadata & parser model](docs/parser-model.md)
+- [Licensing model](LICENSES.md)
 - [Library & storage model](docs/storage-model.md)
 - [Library data model & service interface](docs/library-model.md)
 - [Persistence backend](docs/persistence-model.md)
@@ -555,13 +562,17 @@ The interface language is independent from book content and keyboard input mode.
 ENKU uses English as the canonical/fallback string set, stable semantic keys, named placeholders and a lightweight centralized plural system. Human-readable locale sources are intended to be converted into compact runtime lookup tables rather than parsed as JSON on the device.
 
 
-## Open-source status
+## Open-source licensing
 
-ENKU is intended to be released as an open-source project.
+ENKU uses a scoped multi-license model:
 
-The final code and design licenses have **not yet been selected**, so this repository should not be interpreted as granting a license to redistribute all included material today. Third-party fonts/icons and historical mockup assets are being reviewed separately.
+- **Firmware/software:** Apache License 2.0
+- **Project documentation:** Creative Commons Attribution 4.0 International (CC BY 4.0)
+- **Future project-owned hardware/mechanical source:** CERN Open Hardware Licence Version 2 — Permissive (CERN-OHL-P-2.0)
 
-See [NOTICE.md](NOTICE.md).
+The ENKU name/logo, historical design boards and third-party assets are not automatically covered by those blanket grants. Their scope and release requirements are documented in [LICENSES.md](LICENSES.md) and [NOTICE.md](NOTICE.md).
+
+GitHub language detection is configured through `.gitattributes` so implementation source is represented by its actual code language instead of documentation/design assets dominating repository statistics.
 
 ---
 

@@ -166,6 +166,10 @@ public:
             ? NetworkLinkState::Online
             : NetworkLinkState::Disconnected;
     }
+
+    virtual std::optional<std::string> localAddress() const {
+        return std::nullopt;
+    }
 };
 
 enum class NetworkPolicyStatus : std::uint8_t {

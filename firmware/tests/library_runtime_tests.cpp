@@ -321,13 +321,15 @@ int main() {
         std::optional<BookId>{"alpha"}
     );
 
-    app.library.limit = 24;
-    app.library.offset = 0;
-    app.library.focused_book.reset();
+    app.library.limit = 1;
+    app.library.offset = 1;
+    app.library.focused_book = "beta";
     assert(
         runtime.handle(LibraryRefreshRequested{}) ==
         LibraryRuntimeResult::Applied
     );
+    assert(runtime.page().offset == 1);
+    assert(runtime.page().items[0].book_id == "beta");
 
     LibrarySearchRuntime library_search(
         app,
@@ -453,6 +455,14 @@ int main() {
     assert(!app.keyboard.open);
     assert(app.library.search_text.empty());
     assert(runtime.page().total_matches == 2);
+    assert(app.library.offset == 1);
+    assert(runtime.page().offset == 1);
+    assert(runtime.page().items.size() == 1);
+    assert(runtime.page().items[0].book_id == "beta");
+    assert(
+        app.library.focused_book ==
+        std::optional<BookId>{"beta"}
+    );
 
     app.library.limit = 1;
     assert(

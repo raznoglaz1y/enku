@@ -17,6 +17,7 @@ firmware/
       power.hpp
       persistence.hpp
       localization.hpp
+      diagnostics.hpp
       events.hpp
       app_state.hpp
     reader/
@@ -52,6 +53,19 @@ It must not depend on:
 - filesystem implementation details;
 - EPUB/FB2/TXT parser internals;
 - Wi-Fi implementation details.
+
+### diagnostics
+
+Owns:
+
+- structured product error domains/severity/codes;
+- centralized error-to-UI mapping;
+- bounded runtime log records;
+- critical/fatal failure summaries;
+- boot-loop/recovery markers;
+- Recovery/Safe Mode diagnostics.
+
+Normal product code should return/report structured errors rather than expose raw driver/parser strings directly to UI.
 
 ### localization
 

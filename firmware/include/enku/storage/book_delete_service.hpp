@@ -15,10 +15,12 @@ enum class BookDeleteStatus : std::uint8_t {
     Ok,
     NotFound,
     SourceReadFailed,
+    BookmarkLoadFailed,
     ContextLoadFailed,
     ContextSaveFailed,
     LibraryRemoveFailed,
     SourceRemoveFailed,
+    BookmarkRemoveFailed,
     CheckpointRemoveFailed,
     RollbackFailed,
 };

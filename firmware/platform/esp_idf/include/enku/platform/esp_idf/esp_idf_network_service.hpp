@@ -13,14 +13,9 @@
 
 namespace enku::platform::esp_idf {
 
-enum class NetworkPolicyStatus : std::uint8_t {
-    Ok,
-    NoTrustedNetwork,
-    InvalidCredentials,
-    DriverError,
-};
-
-class EspIdfNetworkService final : public NetworkService {
+class EspIdfNetworkService final
+    : public NetworkService,
+      public NetworkSettingsService {
 public:
     EspIdfNetworkService() = default;
     ~EspIdfNetworkService();
@@ -32,16 +27,16 @@ public:
 
     NetworkPolicyStatus applyPolicy(
         WiFiPolicy policy
-    );
+    ) override;
 
     NetworkPolicyStatus setTrustedNetwork(
         std::string_view ssid,
         std::string_view password
-    );
+    ) override;
 
-    NetworkPolicyStatus forgetTrustedNetwork();
+    NetworkPolicyStatus forgetTrustedNetwork() override;
 
-    std::optional<std::string> trustedSsid() const;
+    std::optional<std::string> trustedSsid() const override;
 
 private:
     std::atomic_bool connected_{false};

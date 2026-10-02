@@ -111,6 +111,48 @@ int main() {
         ) == LogicalAction::Back
     );
 
+    app.screen = Screen::ReaderOverlay;
+
+    assert(
+        InputActionMapper::map(
+            app,
+            PhysicalInputEvent{
+                PhysicalControl::Up,
+                PressType::Click,
+            }
+        ) == LogicalAction::NavigatePrevious
+    );
+
+    assert(
+        InputActionMapper::map(
+            app,
+            PhysicalInputEvent{
+                PhysicalControl::Down,
+                PressType::Click,
+            }
+        ) == LogicalAction::NavigateNext
+    );
+
+    assert(
+        InputActionMapper::map(
+            app,
+            PhysicalInputEvent{
+                PhysicalControl::Function,
+                PressType::Click,
+            }
+        ) == LogicalAction::Confirm
+    );
+
+    assert(
+        InputActionMapper::map(
+            app,
+            PhysicalInputEvent{
+                PhysicalControl::Boot,
+                PressType::Click,
+            }
+        ) == LogicalAction::Back
+    );
+
     app.screen = Screen::Sleep;
 
     assert(

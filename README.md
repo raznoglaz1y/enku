@@ -54,6 +54,31 @@ The goal is to build ENKU around readily available, reproducible parts rather th
 
 For partnership or supply discussions, please open an issue or contact the project owner through GitHub.
 
+## Project goals
+
+ENKU is being designed around a deliberately narrow set of product goals:
+
+- provide a **comfortable, distraction-free reading experience** on a compact e-paper device;
+- remain useful **fully offline**;
+- use **physical controls** instead of depending on a touchscreen;
+- keep book storage, reading progress and settings under the user's control;
+- support a clean local workflow for importing and managing books;
+- make the firmware, hardware assumptions and enclosure work understandable and reproducible;
+- stay small enough to be a practical everyday reader rather than a general-purpose tablet.
+
+## Non-goals
+
+ENKU is **not** intended to become:
+
+- an Android-like general-purpose device;
+- a multimedia tablet;
+- a cloud-dependent reading service;
+- a storefront or DRM ecosystem;
+- a notification-heavy connected gadget;
+- a platform that hides core reading features behind an account.
+
+The project favors a smaller, coherent feature set over adding functionality that does not improve reading.
+
 ## Why ENKU?
 
 ### Reading first
@@ -80,6 +105,31 @@ The project aims to document not only the final code, but also **why** design an
 
 A 3.97″ panel keeps the device small enough to carry easily while still providing a practical 800 × 480 reading canvas. Both portrait and landscape orientations are part of the design system.
 
+## Design preview
+
+The interface is being designed in English first and then localized. The boards below are current **EN design previews** from the active UI revision work; they are not yet firmware screenshots.
+
+<table>
+<tr>
+<td width="50%"><img src="design/screens/en/ENKU_library_grid_v2.svg" alt="ENKU Library grid design preview"></td>
+<td width="50%"><img src="design/screens/en/ENKU_typography_v2.svg" alt="ENKU Typography design preview"></td>
+</tr>
+<tr>
+<td align="center"><strong>Library</strong></td>
+<td align="center"><strong>Typography</strong></td>
+</tr>
+<tr>
+<td width="50%"><img src="design/screens/en/ENKU_book_details_v2.svg" alt="ENKU Book details design preview"></td>
+<td width="50%"><img src="design/screens/en/ENKU_settings_v2.svg" alt="ENKU Settings design preview"></td>
+</tr>
+<tr>
+<td align="center"><strong>Book details</strong></td>
+<td align="center"><strong>Settings</strong></td>
+</tr>
+</table>
+
+The production visual source of truth remains the Figma design system and approved review boards.
+
 ---
 
 ## Target hardware
@@ -98,6 +148,21 @@ The current reference platform is:
 | Enclosure | Custom 3D-printable case, developed after mechanical verification |
 
 Hardware-dependent details such as battery choice, wake behavior, button mapping, refresh modes and enclosure geometry remain provisional until verified on the real board.
+
+### Parts status
+
+| Part | Current status |
+| --- | --- |
+| Waveshare ESP32-S3-ePaper-3.97 | **Selected / ordered** |
+| 3.97″ 800 × 480 e-paper panel | **Part of reference platform** |
+| microSD storage | **Platform feature — hardware verification pending** |
+| Li-Po battery | **TBD — ~2000 mAh target, final size/connector pending** |
+| Physical controls | **Platform controls to be mapped and tested** |
+| Power switch / enclosure hardware | **TBD** |
+| Fasteners | **TBD after mechanical measurements** |
+| 3D-printed enclosure | **Planned after hardware measurement** |
+
+See the detailed [Hardware baseline](docs/hardware.md) and [BOM status](docs/bom.md).
 
 ## Planned reader experience
 
@@ -167,6 +232,21 @@ Planned Wi-Fi behavior includes:
 - battery thresholds and wake behavior validated on real hardware.
 
 ---
+
+## Current limitations
+
+ENKU is still in the pre-firmware stage, so several important decisions remain intentionally open:
+
+- there is no production reader firmware yet;
+- supported book formats are not finalized;
+- the parser and rendering stack are not selected;
+- partial-refresh behavior has not yet been measured on the real panel;
+- battery model and real-world runtime are not finalized;
+- physical button mapping and wake behavior still require hardware testing;
+- the enclosure has not been dimensioned from the production board yet;
+- current EN design boards are design previews, not screenshots from running firmware.
+
+These are active development items, not hidden assumptions.
 
 ## Firmware direction
 
@@ -247,6 +327,9 @@ No final mechanical dimensions will be published as authoritative until the actu
 ---
 
 ## Project roadmap
+
+**At a glance:**  
+**Design system → Hardware bring-up → Reader MVP → Connectivity → Enclosure → Open release**
 
 ### Phase 1 — Product and UI foundation
 
@@ -333,6 +416,7 @@ Useful documents:
 - [Project status](docs/status.md)
 - [Architecture](docs/architecture.md)
 - [Hardware baseline](docs/hardware.md)
+- [BOM status](docs/bom.md)
 - [UI specification](docs/ui-spec.md)
 - [UI audit](docs/ui-audit.md)
 - [UI revision plan](docs/ui-revision-plan.md)
@@ -352,6 +436,7 @@ design/
 docs/
   architecture.md    system architecture
   hardware.md        verified/planned hardware baseline
+  bom.md             parts/BOM status and sourcing priorities
   status.md          current project status
   UI and interaction specifications
 

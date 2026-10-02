@@ -91,6 +91,30 @@ bool EpaperRefreshService::shouldEscalateRegion(
 bool EpaperRefreshService::refreshFull(
     const RefreshRequest&
 ) {
+    auto status = display_.initializeFull();
+
+    if (status != EpaperStatus::Ok) {
+        return false;
+    }
+
+    status = display_.fullRefresh(
+        framebuffer_.data(),
+        framebuffer_.size()
+    );
+
+    if (status == EpaperStatus::Ok) {
+        has_base_frame_ = true;
+        fast_mode_ready_ = false;
+        ++stats_.full;
+        return true;
+    }
+
+    return false;
+}
+
+bool EpaperRefreshService::refreshFastFull(
+    const RefreshRequest&
+) {
     EpaperStatus status = EpaperStatus::Ok;
 
     if (!fast_mode_ready_) {
@@ -131,7 +155,7 @@ bool EpaperRefreshService::refreshRegion(
             *request.dirty_region
         )) {
         ++stats_.escalated_to_full;
-        return refreshFull(request);
+        return refreshFastFull(request);
     }
 
     std::vector<std::uint8_t> region_bytes;
@@ -141,7 +165,7 @@ bool EpaperRefreshService::refreshRegion(
             region_bytes
         )) {
         ++stats_.escalated_to_full;
-        return refreshFull(request);
+        return refreshFastFull(request);
     }
 
     const auto& region = *request.dirty_region;
@@ -205,8 +229,11 @@ bool EpaperRefreshService::submit(
             break;
 
         case RefreshClass::Full:
-        case RefreshClass::Deferred:
             ok = refreshFull(request);
+            break;
+
+        case RefreshClass::Deferred:
+            ok = refreshFastFull(request);
             break;
 
         case RefreshClass::None:

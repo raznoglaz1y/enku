@@ -20,6 +20,7 @@ firmware/
       diagnostics.hpp
       boot.hpp
       refresh.hpp
+      library.hpp
       events.hpp
       app_state.hpp
     reader/
@@ -106,6 +107,20 @@ Owns:
 - refresh diagnostics/statistics.
 
 Refresh policy remains independent from raw panel-driver APIs. Hardware-specific capability mapping lives under `platform`.
+
+### library
+
+Owns:
+
+- normalized Library records used by UI/runtime;
+- Browse vs Search query semantics;
+- All/New/Reading/Finished filtering;
+- Title/Author/RecentlyOpened/RecentlyAdded sorting;
+- bounded result paging;
+- stable focus/lookup by `book_id`;
+- Library summary updates independent from detailed per-book state.
+
+The Library service does not expose CBOR or filesystem details to UI code.
 
 ### reader
 

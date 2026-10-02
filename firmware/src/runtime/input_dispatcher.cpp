@@ -81,7 +81,8 @@ InputDispatcher::InputDispatcher(
     ReadingSettingsRuntime* reading_settings,
     DisplaySettingsRuntime* display_settings,
     LocaleSettingsRuntime* locale_settings,
-    AboutDeviceRuntime* about_device
+    AboutDeviceRuntime* about_device,
+    PowerOffConfirmRuntime* power_off_confirm
 )
     : app_state_(app_state),
       library_(library),
@@ -99,7 +100,8 @@ InputDispatcher::InputDispatcher(
       reading_settings_(reading_settings),
       display_settings_(display_settings),
       locale_settings_(locale_settings),
-      about_device_(about_device) {}
+      about_device_(about_device),
+      power_off_confirm_(power_off_confirm) {}
 
 InputDispatchResult InputDispatcher::handle(
     const PhysicalInputEvent& input
@@ -112,6 +114,25 @@ InputDispatchResult InputDispatcher::handle(
 
     if (!action.has_value()) {
         return InputDispatchResult::Ignored;
+    }
+
+    if (app_state_.screen == Screen::PowerOffConfirm) {
+        if (power_off_confirm_ == nullptr) {
+            return InputDispatchResult::Unhandled;
+        }
+
+        const auto result =
+            power_off_confirm_->handle(*action);
+
+        if (result == PowerOffConfirmRuntimeResult::Applied) {
+            return InputDispatchResult::Applied;
+        }
+
+        if (result == PowerOffConfirmRuntimeResult::Failed) {
+            return InputDispatchResult::Failed;
+        }
+
+        return InputDispatchResult::Unhandled;
     }
 
     if (app_state_.screen == Screen::AboutDevice) {
@@ -239,8 +260,11 @@ InputDispatchResult InputDispatcher::handle(
                     : InputDispatchResult::Failed;
 
             case SettingsNavigationResult::PowerOffRequested:
-                return power_off_.powerOff() ==
-                    PowerOffStatus::Applied
+                if (power_off_confirm_ == nullptr) {
+                    return InputDispatchResult::Unhandled;
+                }
+                return power_off_confirm_->openFromSettings() ==
+                    PowerOffConfirmRuntimeResult::Applied
                     ? InputDispatchResult::Applied
                     : InputDispatchResult::Failed;
 

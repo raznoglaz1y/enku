@@ -65,6 +65,17 @@ enum class BookDetailsFocus : std::uint8_t {
     DeleteBook,
 };
 
+enum class BookFinishedFocus : std::uint8_t {
+    BackToLibrary,
+    ReadAgain,
+};
+
+struct BookFinishedState {
+    BookFinishedFocus focus{BookFinishedFocus::BackToLibrary};
+    bool restart_confirm{false};
+    bool confirm_restart{false};
+};
+
 struct BookDetailsState {
     std::optional<BookId> book_id;
     BookDetailsMode mode{BookDetailsMode::Details};
@@ -149,6 +160,7 @@ struct AppState {
     ReaderSearchState search;
     ReaderSearchHighlight search_highlight;
     BookDetailsState book_details;
+    BookFinishedState book_finished;
     KeyboardState keyboard;
 
     NetworkState network;

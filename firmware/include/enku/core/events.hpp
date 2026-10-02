@@ -6,6 +6,7 @@
 
 #include "types.hpp"
 #include "input.hpp"
+#include "diagnostics.hpp"
 
 namespace enku {
 
@@ -56,6 +57,12 @@ struct BatteryStateChanged {
     bool charging{false};
 };
 
+struct ErrorReported {
+    AppError error;
+};
+
+struct RecoveryModeRequested {};
+
 using AppEvent = std::variant<
     InputReceived,
     ActionRequested,
@@ -73,7 +80,9 @@ using AppEvent = std::variant<
     ImportCompleted,
     WiFiConnected,
     WiFiDisconnected,
-    BatteryStateChanged
+    BatteryStateChanged,
+    ErrorReported,
+    RecoveryModeRequested
 >;
 
 } // namespace enku

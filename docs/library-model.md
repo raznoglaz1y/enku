@@ -404,3 +404,43 @@ It coordinates:
 Import requests set `AppState.import_active` for the duration of the transaction. This makes the existing Sleep and Power Off guards use the same authoritative import activity flag.
 
 A successful import clears Search mode, returns to Browse, reloads the Library and focuses the newly imported `book_id`. Exact duplicates return a distinct runtime result and leave the staged source available for UI/recovery handling.
+
+
+## 25. Transactional book deletion MVP
+
+Book deletion now has a dedicated `BookDeleteService` rather than being modeled as a raw `LibraryService::remove()`.
+
+The delete transaction coordinates four persistence domains:
+
+```text
+Library record
+source file
+per-book checkpoint A/B
+last-safe app context
+```
+
+Before mutation, the service snapshots the Library record, source bytes when available, current valid checkpoint, and current safe app context.
+
+If the safe app context points at the book being deleted, it is first moved to `Library` so a completed deletion can never leave cold boot pointing at a missing book.
+
+Canonical successful flow:
+
+```text
+validate/snapshot
+→ safe context = Library if needed
+→ remove Library entry
+→ remove source file
+→ erase checkpoint A/B
+→ success
+```
+
+Rollback rules:
+
+- Library remove failure → restore previous app context if it was changed;
+- source delete failure → restore Library/context;
+- checkpoint delete failure → restore source, Library, valid checkpoint backup and context;
+- rollback persistence failure → report `RollbackFailed` rather than claiming deletion succeeded.
+
+Missing source files do not prevent deliberate Library deletion; this supports cleanup of indexed records whose files disappeared externally.
+
+`LibraryRuntimeController` exposes this through `DeleteFocusedBookRequested`. After successful deletion the Library page is re-queried and focus is normalized to the next deterministic valid book.

@@ -438,3 +438,12 @@ Runtime rules:
 - page-turn input cannot create an unbounded refresh queue;
 - display failure does not roll back authoritative AppState;
 - hidden state changes do not produce display work.
+
+
+## 26. Persisted safe runtime context
+
+Successful transition into Reading persists `Reading + book_id` through `AppContextService`.
+
+Back from Reading persists `Library` before destroying the active ReaderSession. If that context write fails, Back is aborted so the previously safe Reading state is not silently discarded.
+
+At cold boot, `BootRestoreCoordinator` reuses the ordinary `OpenBookRequested` runtime path rather than creating a second special-purpose reader-opening implementation. Therefore automatic restore uses the same Library lookup, checkpoint restore, parser, ReaderSession and failure behavior as a user-initiated open.

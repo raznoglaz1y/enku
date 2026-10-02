@@ -2,18 +2,45 @@
 
 namespace enku {
 
+namespace {
+
+InputDispatchResult dispatchOverlay(
+    ReaderOverlayRuntime* overlay,
+    LogicalAction action
+) {
+    if (overlay == nullptr) {
+        return InputDispatchResult::Unhandled;
+    }
+
+    switch (overlay->handle(action)) {
+        case ReaderOverlayRuntimeResult::Applied:
+            return InputDispatchResult::Applied;
+
+        case ReaderOverlayRuntimeResult::Ignored:
+            return InputDispatchResult::Unhandled;
+
+        case ReaderOverlayRuntimeResult::Failed:
+        default:
+            return InputDispatchResult::Failed;
+    }
+}
+
+} // namespace
+
 InputDispatcher::InputDispatcher(
     AppState& app_state,
     LibraryRuntimeController& library,
     ReaderRuntimeController& reader,
     SleepWakeCoordinator& sleep_wake,
-    PowerOffCoordinator& power_off
+    PowerOffCoordinator& power_off,
+    ReaderOverlayRuntime* reader_overlay
 )
     : app_state_(app_state),
       library_(library),
       reader_(reader),
       sleep_wake_(sleep_wake),
-      power_off_(power_off) {}
+      power_off_(power_off),
+      reader_overlay_(reader_overlay) {}
 
 InputDispatchResult InputDispatcher::handle(
     const PhysicalInputEvent& input
@@ -30,6 +57,14 @@ InputDispatchResult InputDispatcher::handle(
 
     switch (*action) {
         case LogicalAction::NavigatePrevious: {
+            if (app_state_.screen ==
+                Screen::ReaderOverlay) {
+                return dispatchOverlay(
+                    reader_overlay_,
+                    *action
+                );
+            }
+
             const auto result =
                 library_.handle(
                     LibraryFocusPreviousRequested{}
@@ -42,6 +77,14 @@ InputDispatchResult InputDispatcher::handle(
         }
 
         case LogicalAction::NavigateNext: {
+            if (app_state_.screen ==
+                Screen::ReaderOverlay) {
+                return dispatchOverlay(
+                    reader_overlay_,
+                    *action
+                );
+            }
+
             const auto result =
                 library_.handle(
                     LibraryFocusNextRequested{}
@@ -54,6 +97,14 @@ InputDispatchResult InputDispatcher::handle(
         }
 
         case LogicalAction::Confirm: {
+            if (app_state_.screen ==
+                Screen::ReaderOverlay) {
+                return dispatchOverlay(
+                    reader_overlay_,
+                    *action
+                );
+            }
+
             if (app_state_.screen != Screen::Library) {
                 return InputDispatchResult::Unhandled;
             }
@@ -93,6 +144,14 @@ InputDispatchResult InputDispatcher::handle(
         }
 
         case LogicalAction::Back: {
+            if (app_state_.screen ==
+                Screen::ReaderOverlay) {
+                return dispatchOverlay(
+                    reader_overlay_,
+                    *action
+                );
+            }
+
             if (app_state_.screen == Screen::Reading) {
                 const auto result =
                     reader_.handle(
@@ -108,6 +167,13 @@ InputDispatchResult InputDispatcher::handle(
             return InputDispatchResult::Unhandled;
         }
 
+        case LogicalAction::OpenReaderMenu:
+        case LogicalAction::OpenQuickTypography:
+            return dispatchOverlay(
+                reader_overlay_,
+                *action
+            );
+
         case LogicalAction::Wake: {
             return sleep_wake_.wake() ==
                 SleepWakeStatus::Applied
@@ -122,8 +188,6 @@ InputDispatchResult InputDispatcher::handle(
                 : InputDispatchResult::Failed;
         }
 
-        case LogicalAction::OpenReaderMenu:
-        case LogicalAction::OpenQuickTypography:
         case LogicalAction::Sleep:
             return InputDispatchResult::Unhandled;
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <mutex>
 #include <optional>
 #include <string>
 #include <vector>
@@ -47,6 +48,7 @@ private:
     };
 
     StateFileStore& files_;
+    mutable std::mutex mutex_;
     std::vector<BookRecord> records_;
     std::uint32_t generation_{0};
 

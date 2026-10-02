@@ -46,6 +46,7 @@ firmware/
       cbor_reader_checkpoint.hpp
       cbor_library_service.hpp
       cbor_app_context_service.hpp
+      cbor_boot_loop_service.hpp
       book_import_service.hpp
       staged_book_import_service.hpp
       book_file_store.hpp
@@ -75,6 +76,7 @@ firmware/
       cbor_reader_checkpoint.cpp
       cbor_library_service.cpp
       cbor_app_context_service.cpp
+      cbor_boot_loop_service.cpp
       book_import_service.cpp
       staged_book_import_service.cpp
       stored_book_source_service.cpp
@@ -180,7 +182,8 @@ Owns:
 - startup coordination across Library persistence and staged import recovery;
 - safe restoration of the last persisted Library/Reading context after reboot;
 - Sleep/Wake orchestration across reader persistence, network shutdown and PowerService;
-- graceful Power Off persistence before platform shutdown.
+- graceful Power Off persistence before platform shutdown;
+- persistent boot-loop marker management for cold-boot recovery gating.
 
 The runtime layer does not manipulate semantic offsets directly.
 

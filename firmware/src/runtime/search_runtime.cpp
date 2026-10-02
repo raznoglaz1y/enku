@@ -119,6 +119,38 @@ SearchRuntimeResult SearchRuntime::handle(
             ++app.search.focus_index;
             return render();
         }
+
+        if (action == LogicalAction::Confirm &&
+            !app.search.matches.empty() &&
+            app.search.focus_index <
+                app.search.matches.size()) {
+            const auto selected =
+                app.search.matches[
+                    app.search.focus_index
+                ];
+
+            app.search_highlight.position =
+                selected.position;
+            app.search_highlight.query =
+                app.search.query;
+
+            const auto jump =
+                reader_.reader().handle(
+                    BookPositionChanged{
+                        selected.position
+                    }
+                );
+
+            if (jump != ReaderRuntimeResult::Applied) {
+                app.search_highlight =
+                    ReaderSearchHighlight{};
+                return SearchRuntimeResult::Failed;
+            }
+
+            app.search = ReaderSearchState{};
+            app.keyboard = KeyboardState{};
+            return SearchRuntimeResult::Applied;
+        }
     }
 
     return SearchRuntimeResult::Ignored;
@@ -237,6 +269,7 @@ SearchRuntimeResult SearchRuntime::cancel() {
     }
 
     app.search = ReaderSearchState{};
+    app.search_highlight = ReaderSearchHighlight{};
     app.keyboard = KeyboardState{};
     return SearchRuntimeResult::Applied;
 }

@@ -81,11 +81,12 @@ BookFormat BookImportService::detectFormat(
         return BookFormat::Epub;
     }
 
-    supported = false;
-
     if (ext == ".fb2") {
+        supported = true;
         return BookFormat::Fb2;
     }
+
+    supported = false;
 
     return BookFormat::Txt;
 }
@@ -151,6 +152,12 @@ PreparedBookImport BookImportService::prepare(
             break;
 
         case BookFormat::Fb2:
+            parsed = fb2_parser_.parse(
+                source.bytes,
+                parser_source
+            );
+            break;
+
         default:
             prepared.status =
                 BookImportStatus::UnsupportedFormat;

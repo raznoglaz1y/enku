@@ -255,7 +255,7 @@ ENKU separates **panel sleep**, **device suspend** and **full PMU power-off**.
 
 ENKU is still in the pre-firmware stage, so several important decisions remain intentionally open:
 
-- there is no production reader firmware yet, but the first framework-neutral TXT parser and forward-pagination MVPs are now implemented and host-testable;
+- there is no production reader firmware yet, but the first framework-neutral TXT parser, forward-pagination and Reader Engine MVPs are now implemented and host-testable;
 - a framework-neutral C++ firmware scaffold now exists under `firmware/`;
 - the firmware architecture, Library/storage model, parser abstraction, pagination model and runtime state machine are specified, while hardware integration and reader implementation remain pending;
 - Reader v1 is scoped to EPUB, FB2 and TXT; PDF support is deferred and not yet designed;
@@ -296,6 +296,7 @@ Firmware has not yet been published as a working reader. The planned implementat
    - shared normalized parser/document interfaces;
    - first TXT parser MVP implemented in C++;
    - first forward text-pagination MVP implemented in C++;
+   - first concrete DocumentReaderEngine implemented over the paginator;
    - EPUB and FB2 parser adapters still pending;
    - normalized metadata/document model;
    - on-demand pagination using a font/text measurement abstraction;
@@ -416,6 +417,7 @@ No final mechanical dimensions will be published as authoritative until the actu
 - [ ] Implement staged boot coordinator and first-usable-screen checkpoint
 - [ ] Implement Refresh Manager queue and render-plan pipeline
 - [ ] Connect the firmware scaffold to verified platform drivers
+- [ ] Add ReaderSession page history/cache and deterministic Previous
 - [ ] Expand pagination beyond TXT paragraphs and add real font metrics
 - [ ] Implement EPUB/FB2 parsers and complete text layout
 - [ ] Implement LibraryService/index and grid/list navigation
@@ -485,6 +487,7 @@ Useful documents:
 - [Reader runtime & state machine](docs/runtime-state-machine.md)
 - [Pagination & rendering model](docs/pagination-model.md)
 - [Pagination MVP](docs/pagination-mvp.md)
+- [Reader Engine MVP](docs/reader-engine-mvp.md)
 - [Metadata & parser model](docs/parser-model.md)
 - [Licensing model](LICENSES.md)
 - [Library & storage model](docs/storage-model.md)
@@ -524,6 +527,7 @@ docs/
   runtime-state-machine.md  reader runtime and recovery behavior
   pagination-model.md       text layout and pagination rules
   pagination-mvp.md         first TXT → BookDocument → page implementation
+  reader-engine-mvp.md      first BookDocument → Reader PageResult bridge
   parser-model.md           metadata normalization and parser abstraction
   storage-model.md          Library identity, state and transactional storage
   library-model.md          book records, browse/search queries and LibraryService

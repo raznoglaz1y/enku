@@ -103,6 +103,92 @@ BookFileStatus PosixBookFileStore::write(
         : BookFileStatus::IoError;
 }
 
+BookFileStatus PosixBookFileStore::size(
+    const std::string& path,
+    std::uint64_t& bytes
+) {
+    const auto full_path = resolve(path);
+
+    std::error_code ec;
+    const auto value =
+        std::filesystem::file_size(
+            full_path,
+            ec
+        );
+
+    if (ec) {
+        bytes = 0;
+        return ec ==
+                std::errc::no_such_file_or_directory
+            ? BookFileStatus::NotFound
+            : BookFileStatus::IoError;
+    }
+
+    bytes =
+        static_cast<std::uint64_t>(
+            value
+        );
+    return BookFileStatus::Ok;
+}
+
+BookFileStatus PosixBookFileStore::readRange(
+    const std::string& path,
+    std::uint64_t offset,
+    std::size_t length,
+    std::string& bytes
+) {
+    bytes.clear();
+
+    const auto full_path = resolve(path);
+
+    std::ifstream input(
+        full_path,
+        std::ios::binary
+    );
+
+    if (!input) {
+        std::error_code ec;
+        return std::filesystem::exists(
+                   full_path,
+                   ec
+               )
+            ? BookFileStatus::IoError
+            : BookFileStatus::NotFound;
+    }
+
+    input.seekg(
+        static_cast<std::streamoff>(
+            offset
+        ),
+        std::ios::beg
+    );
+
+    if (!input) {
+        return BookFileStatus::IoError;
+    }
+
+    bytes.resize(length);
+
+    if (length != 0U) {
+        input.read(
+            bytes.data(),
+            static_cast<std::streamsize>(
+                length
+            )
+        );
+
+        if (input.gcount() !=
+            static_cast<std::streamsize>(
+                length
+            )) {
+            bytes.clear();
+            return BookFileStatus::IoError;
+        }
+    }
+
+    return BookFileStatus::Ok;
+}
+
 BookFileStatus PosixBookFileStore::append(
     const std::string& path,
     const std::string& bytes

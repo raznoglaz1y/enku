@@ -17,12 +17,17 @@ jobs:
       - name: Wait for Cloudflare deployment
         run: sleep 45
 
-      - name: Check Contact page
+      - name: Check public pages
         run: |
           set -euo pipefail
           curl -fsSL --retry 5 --retry-delay 10 https://enkureader.com/contact -o /tmp/contact.html
           grep -q 'id="contact-form"' /tmp/contact.html
           grep -q "fetch('/api/contact'" /tmp/contact.html
+          curl -fsSL --retry 5 --retry-delay 10 https://enkureader.com/software -o /tmp/software.html
+          grep -q '<title>Software — ENKU</title>' /tmp/software.html
+          grep -q 'href="/software" class="active"' /tmp/software.html
+          curl -fsSL --retry 5 --retry-delay 10 https://enkureader.com/ -o /tmp/home.html
+          grep -q 'href="/software">Software</a>' /tmp/home.html
 
       - name: Check contact Worker route
         run: |

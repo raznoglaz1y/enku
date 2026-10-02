@@ -37,7 +37,7 @@ include/enku/
     services.hpp
 ```
 
-The first framework-neutral implementations now include the TXT parser, paginator, DocumentReaderEngine, ReaderSession and `src/runtime/reader_runtime.cpp`, with host-side assertion tests under `tests/`. Hardware-specific implementation directories will grow after board bring-up.
+The first framework-neutral implementations now include the TXT parser, paginator, DocumentReaderEngine, ReaderSession and reader runtime lifecycle (open/page/back/finished), with host-side assertion tests under `tests/`. Hardware-specific implementation directories will grow after board bring-up.
 
 Architecture references:
 

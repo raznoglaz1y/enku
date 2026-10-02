@@ -649,3 +649,98 @@ Measurements support UTF-8 code points and FreeType kerning. Line height uses th
 Rendering uses `FT_RENDER_MODE_MONO` and writes the resulting 1-bit glyph bitmaps directly into the existing 1-bit ENKU framebuffer.
 
 This aligns pagination and rendering: the same font engine and size determine both where lines wrap and where glyphs are drawn.
+
+
+## 36. Application Reader runtime composition
+
+`ApplicationReaderRuntime` now composes the first complete Library/Reader controller graph above `ApplicationStorageRuntime`.
+
+It owns:
+
+```text
+ReaderBookLoader
+ReaderRuntimeController
+LibraryRuntimeController
+BootRestoreCoordinator
+```
+
+Dependencies are explicit:
+
+```text
+ApplicationStorageRuntime
+RefreshService
+TextMeasurer
+ReaderPageRenderer
+LibraryPageRenderer
+TypographySettings
+Viewport
+```
+
+On ESP-IDF, one `FreeTypeTextRenderer` supplies all three text/render roles: measurement, Reader page rendering and Library rendering.
+
+## 37. Render-before-refresh contract
+
+Both Reading and Library now update the framebuffer before submitting a physical refresh.
+
+Reader:
+
+```text
+ReaderSession page transition
+→ update semantic state
+→ ReaderPageRenderer
+→ RefreshService
+```
+
+Library:
+
+```text
+query/focus/view state change
+→ LibraryPageRenderer
+→ RefreshService
+```
+
+A renderer failure is surfaced explicitly (`RenderFailed`) rather than allowing runtime state to claim that an unrendered frame became visible.
+
+The first ESP-IDF Library renderer is intentionally simple but real: Noto Sans header, title/author/progress rows and a focus outline.
+
+## 38. ESP-IDF DeviceRuntime
+
+`EspIdfDeviceRuntime` is the first board-specific application composition root above `EspIdfPlatform`.
+
+It connects:
+
+```text
+EspIdfPlatform
+→ ApplicationStorageRuntime
+→ FreeTypeTextRenderer
+→ ApplicationReaderRuntime
+→ SleepWakeCoordinator
+→ PowerOffCoordinator
+→ InputDispatcher
+```
+
+Boot sequence:
+
+```text
+platform begin
+→ font availability / FreeType init
+→ storage/settings/library startup
+→ boot-loop/context restore
+→ restore Reading or settle Library
+→ apply Wi-Fi policy
+→ synchronize network/power state
+→ render initial Library when needed
+→ enter application loop
+```
+
+A missing Noto Sans asset is treated as a provisioning state, not silently substituted with another font.
+
+## 39. Persistent application loop
+
+The normal ESP-IDF execution path no longer ends after a finite input smoke test.
+
+After successful DeviceRuntime initialization, firmware continuously polls the board controls at the configured 5 ms cadence and dispatches events through the real application graph.
+
+Hardware smoke tests remain available behind `CONFIG_ENKU_BRINGUP_SMOKE_TESTS` while physical validation is in progress.
+
+The current persistent loop is intentionally synchronous: page layout, rendering and e-paper refresh complete before the next visible transition is accepted. This favors deterministic e-paper behavior over premature concurrency; later profiling may introduce task separation where measured benefit justifies it.

@@ -145,6 +145,10 @@ public:
         const AppState& app_state
     ) override;
 
+    bool renderStatusBar(
+        const AppState& app_state
+    );
+
 private:
     OwnedMonoFramebuffer& framebuffer_;
     const AppState* app_state_{nullptr};
@@ -198,6 +202,29 @@ private:
         const KeyboardState& keyboard,
         Orientation orientation,
         int top
+    );
+
+    void clearLogicalRegion(
+        int x,
+        int y,
+        int width,
+        int height,
+        Orientation orientation
+    );
+
+    void drawWiFiStatusIcon(
+        NetworkRuntimeStatus status,
+        int x,
+        int y,
+        Orientation orientation
+    );
+
+    void drawBatteryStatusIcon(
+        std::uint8_t percent,
+        bool charging,
+        int x,
+        int y,
+        Orientation orientation
     );
 };
 

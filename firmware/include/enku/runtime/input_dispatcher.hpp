@@ -7,6 +7,7 @@
 #include "input_runtime.hpp"
 #include "library_runtime.hpp"
 #include "library_search_runtime.hpp"
+#include "book_details_runtime.hpp"
 #include "power_off.hpp"
 #include "reader_overlay_runtime.hpp"
 #include "reader_runtime.hpp"
@@ -32,7 +33,8 @@ public:
         PowerOffCoordinator& power_off,
         ReaderOverlayRuntime* reader_overlay = nullptr,
         SearchRuntime* search = nullptr,
-        LibrarySearchRuntime* library_search = nullptr
+        LibrarySearchRuntime* library_search = nullptr,
+        BookDetailsRuntime* book_details = nullptr
     );
 
     InputDispatchResult handle(
@@ -48,6 +50,7 @@ private:
     ReaderOverlayRuntime* reader_overlay_{nullptr};
     SearchRuntime* search_{nullptr};
     LibrarySearchRuntime* library_search_{nullptr};
+    BookDetailsRuntime* book_details_{nullptr};
 };
 
 } // namespace enku

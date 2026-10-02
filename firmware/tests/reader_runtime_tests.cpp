@@ -26,6 +26,25 @@ public:
     }
 };
 
+class FakePageRenderer final : public ReaderPageRenderer {
+public:
+    bool renderPage(
+        const PageResult& page,
+        const TypographySettings&
+    ) override {
+        ++calls;
+        last_line_count =
+            static_cast<std::uint32_t>(
+                page.lines.size()
+            );
+        return accept;
+    }
+
+    bool accept{true};
+    std::uint32_t calls{0};
+    std::uint32_t last_line_count{0};
+};
+
 class FakeRefreshService final : public RefreshService {
 public:
     bool busy() const override {
@@ -212,6 +231,7 @@ public:
 int main() {
     FixedWidthMeasurer measurer;
     FakeRefreshService refresh;
+    FakePageRenderer renderer;
     FakeLibraryService library;
     FakeBookSourceService source;
     FakeCheckpointService checkpoint;
@@ -247,7 +267,8 @@ int main() {
         checkpoint,
         context,
         typography,
-        viewport
+        viewport,
+        &renderer
     );
 
     // OpenBookRequested now performs the loader step itself and immediately
@@ -267,6 +288,8 @@ int main() {
     assert(context.saved->screen == Screen::Reading);
     assert(context.saved->current_book == "runtime-test");
     assert(refresh.last.reason == RefreshReason::PageTurn);
+    assert(renderer.calls == 1);
+    assert(renderer.last_line_count > 0);
 
     const auto first_offset = state.reading_position->text_offset;
 
@@ -278,6 +301,7 @@ int main() {
     assert(saved_offset > first_offset);
     assert(state.progress_dirty);
     assert(refresh.last.reason == RefreshReason::PageTurn);
+    assert(renderer.calls == 2);
 
     assert(
         runtime.handle(BackRequested{}) ==
@@ -342,6 +366,17 @@ int main() {
     assert(!state.current_book.has_value());
     assert(loader.session() == nullptr);
     assert(refresh.last.reason == RefreshReason::ErrorRecovery);
+
+    // A renderer failure is surfaced before a display refresh can claim that
+    // the newly laid-out page became visible.
+    source.status = BookSourceStatus::Ok;
+    renderer.accept = false;
+
+    assert(
+        runtime.handle(OpenBookRequested{"runtime-test"}) ==
+        ReaderRuntimeResult::RenderFailed
+    );
+    assert(state.screen == Screen::Reading);
 
     return 0;
 }

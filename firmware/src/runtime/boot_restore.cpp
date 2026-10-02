@@ -6,12 +6,14 @@ BootRestoreCoordinator::BootRestoreCoordinator(
     AppState& app_state,
     StorageStartupCoordinator& storage_startup,
     AppContextService& context,
+    BootLoopService& boot_loop,
     ReaderRuntimeController& reader_runtime,
     LibraryService& library
 )
     : app_state_(app_state),
       storage_startup_(storage_startup),
       context_(context),
+      boot_loop_(boot_loop),
       reader_runtime_(reader_runtime),
       library_(library) {}
 
@@ -22,6 +24,20 @@ bool BootRestoreCoordinator::persistLibraryContext() {
             std::nullopt,
         }
     ) == PersistStatus::Ok;
+}
+
+bool BootRestoreCoordinator::markBootStable() {
+    const auto status = boot_loop_.markStable();
+    if (status != PersistStatus::Ok) {
+        app_state_.boot.mode = BootMode::Recovery;
+        app_state_.boot.stage = BootStage::RecoveryMode;
+        app_state_.boot.boot_in_progress = false;
+        app_state_.screen = Screen::ErrorRecovery;
+        return false;
+    }
+
+    app_state_.boot.incomplete_boot_count = 0;
+    return true;
 }
 
 void BootRestoreCoordinator::settleLibrary() {
@@ -60,6 +76,12 @@ BootRestoreResult BootRestoreCoordinator::restoreLoadedContext(
         }
 
         settleLibrary();
+        if (!markBootStable()) {
+            return BootRestoreResult{
+                BootRestoreStatus::RecoveryRequired,
+                storage,
+            };
+        }
         return BootRestoreResult{
             BootRestoreStatus::LibraryReady,
             storage,
@@ -80,6 +102,12 @@ BootRestoreResult BootRestoreCoordinator::restoreLoadedContext(
         }
 
         settleLibrary();
+        if (!markBootStable()) {
+            return BootRestoreResult{
+                BootRestoreStatus::RecoveryRequired,
+                storage,
+            };
+        }
         return BootRestoreResult{
             BootRestoreStatus::FallbackToLibrary,
             storage,
@@ -89,6 +117,12 @@ BootRestoreResult BootRestoreCoordinator::restoreLoadedContext(
     if (restore.screen != Screen::Reading ||
         !restore.current_book.has_value()) {
         settleLibrary();
+        if (!markBootStable()) {
+            return BootRestoreResult{
+                BootRestoreStatus::RecoveryRequired,
+                storage,
+            };
+        }
         return BootRestoreResult{
             BootRestoreStatus::LibraryReady,
             storage,
@@ -130,6 +164,13 @@ BootRestoreResult BootRestoreCoordinator::restoreLoadedContext(
         app_state_.boot.stage = BootStage::Stable;
         app_state_.boot.boot_in_progress = false;
 
+        if (!markBootStable()) {
+            return BootRestoreResult{
+                BootRestoreStatus::RecoveryRequired,
+                storage,
+            };
+        }
+
         return BootRestoreResult{
             BootRestoreStatus::ReadingRestored,
             storage,
@@ -152,6 +193,13 @@ BootRestoreResult BootRestoreCoordinator::restoreLoadedContext(
         restore.current_book;
     settleLibrary();
 
+    if (!markBootStable()) {
+        return BootRestoreResult{
+            BootRestoreStatus::RecoveryRequired,
+            storage,
+        };
+    }
+
     return BootRestoreResult{
         BootRestoreStatus::FallbackToLibrary,
         storage,
@@ -172,6 +220,40 @@ BootRestoreResult BootRestoreCoordinator::run() {
     auto storage = storage_startup_.run();
 
     if (!storage.ready()) {
+        return BootRestoreResult{
+            BootRestoreStatus::RecoveryRequired,
+            storage,
+        };
+    }
+
+    BootLoopMarker marker;
+    const auto marker_status =
+        boot_loop_.beginBoot(marker);
+
+    if (marker_status != PersistStatus::Ok) {
+        app_state_.boot.mode = BootMode::Recovery;
+        app_state_.boot.stage = BootStage::RecoveryMode;
+        app_state_.boot.boot_in_progress = false;
+        app_state_.screen = Screen::ErrorRecovery;
+
+        return BootRestoreResult{
+            BootRestoreStatus::RecoveryRequired,
+            storage,
+        };
+    }
+
+    app_state_.boot.incomplete_boot_count =
+        marker.incomplete_boot_count;
+
+    constexpr std::uint8_t kBootLoopThreshold = 3;
+
+    if (marker.incomplete_boot_count >=
+        kBootLoopThreshold) {
+        app_state_.boot.mode = BootMode::Recovery;
+        app_state_.boot.stage = BootStage::RecoveryMode;
+        app_state_.boot.boot_in_progress = false;
+        app_state_.screen = Screen::ErrorRecovery;
+
         return BootRestoreResult{
             BootRestoreStatus::RecoveryRequired,
             storage,

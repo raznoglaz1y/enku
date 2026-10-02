@@ -52,6 +52,11 @@ public:
     LibraryRuntimeResult handle(const DeleteFocusedBookRequested&);
     LibraryRuntimeResult handle(const ImportRequested&);
 
+    LibraryRuntimeResult redraw(
+        RefreshReason reason = RefreshReason::OverlayChanged,
+        RefreshClass refresh_class = RefreshClass::Full
+    );
+
     const LibraryPage& page() const;
     StagedImportStatus lastImportStatus() const;
     std::uint32_t refreshGeneration() const;

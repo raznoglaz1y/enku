@@ -489,6 +489,35 @@ ReaderRuntimeResult ReaderRuntimeController::applySessionResult(
     }
 }
 
+ReaderRuntimeResult ReaderRuntimeController::redrawCurrentPage(
+    RefreshReason reason
+) {
+    const auto* active_session = session();
+
+    if (active_session == nullptr ||
+        !active_session->isOpen()) {
+        return ReaderRuntimeResult::Ignored;
+    }
+
+    const auto& current =
+        active_session->currentPage();
+
+    if (!current.has_value()) {
+        return ReaderRuntimeResult::LayoutFailed;
+    }
+
+    if (page_renderer_ != nullptr &&
+        !page_renderer_->renderPage(
+            *current,
+            typography_,
+            app_state_.orientation
+        )) {
+        return ReaderRuntimeResult::RenderFailed;
+    }
+
+    return submitRefresh(reason);
+}
+
 ReaderRuntimeResult ReaderRuntimeController::commitVisiblePage(
     bool mark_progress_dirty
 ) {

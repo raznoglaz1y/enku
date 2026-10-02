@@ -154,7 +154,6 @@ int main() {
                 state_files
             );
             CborAppContextService context(state_files);
-        CborBootLoopService boot_loop(state_files);
             FakeRefreshService refresh;
 
             AppState app;

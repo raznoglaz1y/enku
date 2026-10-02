@@ -245,6 +245,9 @@ bool EspIdfWebUploadServer::takeDeleteRequest(
         pending_delete_book_id_
     );
     pending_delete_book_id_.clear();
+
+    delete_result_book_id_ = book_id;
+    delete_result_status_ = "pending";
     return true;
 }
 

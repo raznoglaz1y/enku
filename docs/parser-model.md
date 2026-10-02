@@ -203,6 +203,22 @@ FB2-specific XML details stay inside the parser layer.
 
 TXT has little or no embedded metadata.
 
+A first framework-neutral TXT parser MVP now exists under `firmware/src/parsers/txt/`.
+
+Current MVP behavior:
+
+- accepts UTF-8 and UTF-8 with BOM;
+- rejects UTF-16 BOM input as unsupported rather than guessing;
+- validates UTF-8;
+- normalizes CRLF/CR to LF;
+- uses filename stem as title fallback;
+- uses `Unknown author`;
+- groups text separated by blank lines into paragraph blocks;
+- exposes one stable section id: `txt:body`;
+- tracks normalized UTF-8 byte offsets for source-position mapping.
+
+Additional encoding support and file/stream integration remain implementation work.
+
 TXT parser responsibilities:
 
 - detect/normalize supported text encoding;

@@ -617,17 +617,52 @@ ParseResult EpubParser::parse(
         return result;
     }
 
-    const auto rootfile_pos =
-        lower(container_xml).find(
-            "<rootfile"
-        );
+    const auto lower_container =
+        lower(container_xml);
 
-    if (rootfile_pos ==
-        std::string::npos) {
+    std::optional<std::size_t>
+        rootfile_position;
+    std::size_t rootfile_search = 0;
+
+    while (true) {
+        const auto candidate =
+            lower_container.find(
+                "<rootfile",
+                rootfile_search
+            );
+
+        if (candidate ==
+            std::string::npos) {
+            break;
+        }
+
+        const auto boundary =
+            candidate + 9U;
+
+        if (boundary >=
+                lower_container.size() ||
+            lower_container[boundary] == '>' ||
+            lower_container[boundary] == '/' ||
+            std::isspace(
+                static_cast<unsigned char>(
+                    lower_container[boundary]
+                )
+            )) {
+            rootfile_position = candidate;
+            break;
+        }
+
+        rootfile_search = boundary;
+    }
+
+    if (!rootfile_position.has_value()) {
         result.status =
             ParserStatus::InvalidSource;
         return result;
     }
+
+    const auto rootfile_pos =
+        *rootfile_position;
 
     const auto rootfile_end =
         container_xml.find(

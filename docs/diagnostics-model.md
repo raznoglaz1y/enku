@@ -181,6 +181,8 @@ Recovery Mode goals:
 
 Recovery Mode must not automatically erase user books.
 
+The detailed startup sequence and the exact point where boot becomes stable are defined in [Boot & Startup Architecture](boot-model.md).
+
 ## 11. Boot-loop detection
 
 ENKU should track a compact boot/recovery marker.

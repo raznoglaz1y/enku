@@ -147,12 +147,25 @@ public:
     virtual RefreshStats stats() const = 0;
 };
 
+enum class NetworkLinkState : std::uint8_t {
+    Disconnected,
+    Connecting,
+    Online,
+    Failed,
+};
+
 class NetworkService {
 public:
     virtual ~NetworkService() = default;
 
     virtual bool connected() const = 0;
     virtual void disconnect() = 0;
+
+    virtual NetworkLinkState connectionState() const {
+        return connected()
+            ? NetworkLinkState::Online
+            : NetworkLinkState::Disconnected;
+    }
 };
 
 enum class NetworkPolicyStatus : std::uint8_t {

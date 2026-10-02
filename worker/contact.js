@@ -72,6 +72,32 @@ const headerHtml = (pathname) => {
 </header>`;
 };
 
+const nextPage = (pathname) => {
+  const flow = {
+    "/hardware": { href: "/software", eyebrow: "NEXT · SOFTWARE", title: "See how the reader works." },
+    "/software": { href: "/design", eyebrow: "NEXT · DESIGN", title: "See the interface system." },
+    "/design": { href: "/build", eyebrow: "NEXT · BUILD", title: "Turn the system into a device." },
+    "/build": { href: "/status", eyebrow: "NEXT · STATUS", title: "Follow what is verified now." },
+    "/about": { href: "/status", eyebrow: "NEXT · STATUS", title: "See where the project stands." },
+    "/status": { href: "/build-log", eyebrow: "NEXT · BUILD LOG", title: "Read the engineering record." },
+    "/build-log": { href: "/downloads", eyebrow: "NEXT · DOWNLOADS", title: "Find reproducible releases." },
+    "/downloads": { href: "/contact", eyebrow: "NEXT · CONTACT", title: "Get involved with ENKU." },
+    "/contact": { href: "/hardware", eyebrow: "EXPLORE · HARDWARE", title: "Start from the reference platform." },
+  };
+  const item = flow[pathname];
+  if (!item) return "";
+  return `
+<section class="enku-next">
+  <a class="shell enku-next-inner" href="${item.href}">
+    <span>
+      <small>${item.eyebrow}</small>
+      <strong>${item.title}</strong>
+    </span>
+    <b aria-hidden="true">→</b>
+  </a>
+</section>`;
+};
+
 const footerHtml = `
 <footer class="site-footer">
   <div class="shell enku-footer-grid">
@@ -129,6 +155,12 @@ const sharedChromeCss = `
   .site-header .mobile-nav{display:none!important}
   .site-header .mobile-nav-label{font-size:9px;font-weight:700;letter-spacing:.16em;color:#817b73;padding:18px 0 5px}
 
+  .enku-next{border-top:1px solid rgba(20,20,20,.1);background:rgba(255,255,255,.13)}
+  .enku-next-inner{min-height:132px;display:flex;align-items:center;justify-content:space-between;gap:32px}
+  .enku-next small{display:block;font-size:9px;font-weight:700;letter-spacing:.16em;color:#837d75;margin-bottom:8px}
+  .enku-next strong{font-family:"Newsreader",serif;font-size:clamp(28px,3vw,42px);font-weight:500;letter-spacing:-.025em}
+  .enku-next b{font-size:32px;font-weight:400;transition:transform .18s ease}
+  .enku-next-inner:hover b{transform:translateX(5px)}
   .site-footer{border-top:1px solid rgba(20,20,20,.1)!important;padding:0!important}
   .enku-footer-grid{display:grid!important;grid-template-columns:minmax(260px,1.6fr) repeat(3,minmax(120px,.7fr))!important;gap:54px!important;padding-top:58px!important;padding-bottom:50px!important;align-items:start!important}
   .enku-footer-brand img{width:116px!important;height:auto!important}
@@ -197,6 +229,8 @@ export default {
         })
         .on("footer.site-footer", {
           element(element) {
+            const next = nextPage(url.pathname);
+            if (next) element.before(next, { html: true });
             element.replace(footerHtml, { html: true });
           },
         })

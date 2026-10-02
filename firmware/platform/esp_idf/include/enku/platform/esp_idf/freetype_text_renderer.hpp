@@ -10,6 +10,7 @@
 #include "enku/reader/reader_types.hpp"
 #include "enku/render/owned_mono_framebuffer.hpp"
 #include "enku/render/reader_page_renderer.hpp"
+#include "enku/render/library_page_renderer.hpp"
 
 namespace enku::platform::esp_idf {
 
@@ -23,7 +24,8 @@ enum class FontInitStatus : std::uint8_t {
 
 class FreeTypeTextRenderer final
     : public TextMeasurer,
-      public ReaderPageRenderer {
+      public ReaderPageRenderer,
+      public LibraryPageRenderer {
 public:
     FreeTypeTextRenderer(
         OwnedMonoFramebuffer& framebuffer,
@@ -53,6 +55,11 @@ public:
         const TypographySettings& typography
     ) override;
 
+    bool renderLibrary(
+        const AppState& app_state,
+        const LibraryPage& page
+    ) override;
+
 private:
     OwnedMonoFramebuffer& framebuffer_;
     std::string font_path_;
@@ -75,6 +82,21 @@ private:
         const FT_Bitmap& bitmap,
         int x,
         int y
+    );
+
+    bool drawTextAt(
+        std::string_view text,
+        std::uint16_t size_px,
+        int x,
+        int baseline
+    );
+
+    void drawRect(
+        int x,
+        int y,
+        int width,
+        int height,
+        int thickness = 1
     );
 };
 

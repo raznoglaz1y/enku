@@ -217,12 +217,9 @@ DocumentSearchResult DocumentSearch::window(
     std::uint32_t limit
 ) const {
     DocumentSearchResult result;
-    result.total_matches =
-        count(document, query);
     result.window_start = window_start;
 
-    if (query.empty() || limit == 0U ||
-        window_start >= result.total_matches) {
+    if (query.empty()) {
         return result;
     }
 
@@ -243,7 +240,9 @@ DocumentSearchResult DocumentSearch::window(
                     break;
                 }
 
-                if (global_index >= window_start) {
+                if (limit > 0U &&
+                    global_index >= window_start &&
+                    result.matches.size() < limit) {
                     result.matches.push_back(
                         makeMatch(
                             document,
@@ -253,10 +252,6 @@ DocumentSearchResult DocumentSearch::window(
                             needle.size()
                         )
                     );
-
-                    if (result.matches.size() >= limit) {
-                        return result;
-                    }
                 }
 
                 ++global_index;
@@ -269,6 +264,7 @@ DocumentSearchResult DocumentSearch::window(
         }
     }
 
+    result.total_matches = global_index;
     return result;
 }
 

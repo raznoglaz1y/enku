@@ -3,6 +3,7 @@
 #include "enku/runtime/library_search_runtime.hpp"
 #include "enku/runtime/book_details_runtime.hpp"
 #include "enku/runtime/book_finished_runtime.hpp"
+#include "enku/runtime/settings_navigation_runtime.hpp"
 #include "enku/storage/cbor_boot_loop_service.hpp"
 #include "enku/storage/cbor_bookmark_service.hpp"
 #include "enku/runtime/storage_startup.hpp"
@@ -286,6 +287,98 @@ int main() {
         std::optional<BookId>{"alpha"}
     );
     assert(app.library.total_matches == 2);
+
+    SettingsNavigationRuntime settings_nav(
+        app,
+        runtime
+    );
+
+    const auto settings_origin_focus =
+        app.library.focused_book;
+    const auto settings_origin_offset =
+        app.library.offset;
+    const auto settings_origin_view =
+        app.library.view;
+
+    assert(
+        settings_nav.handle(
+            OpenSettingsRequested{}
+        ) == SettingsNavigationResult::Applied
+    );
+    assert(app.screen == Screen::Settings);
+    assert(
+        app.settings_nav.focus ==
+        SettingsItem::Reading
+    );
+    assert(
+        settings_nav.handle(
+            LogicalAction::Confirm
+        ) ==
+        SettingsNavigationResult::ReadingRequested
+    );
+
+    assert(
+        settings_nav.handle(
+            LogicalAction::NavigateNext
+        ) == SettingsNavigationResult::Applied
+    );
+    assert(
+        app.settings_nav.focus ==
+        SettingsItem::Display
+    );
+    assert(
+        settings_nav.handle(
+            LogicalAction::Confirm
+        ) ==
+        SettingsNavigationResult::DisplayRequested
+    );
+
+    for (int i = 0; i < 6; ++i) {
+        assert(
+            settings_nav.handle(
+                LogicalAction::NavigateNext
+            ) == SettingsNavigationResult::Applied
+        );
+    }
+    assert(
+        app.settings_nav.focus ==
+        SettingsItem::PowerOff
+    );
+    assert(
+        settings_nav.handle(
+            LogicalAction::Confirm
+        ) ==
+        SettingsNavigationResult::PowerOffRequested
+    );
+
+    assert(
+        settings_nav.handle(
+            LogicalAction::NavigateNext
+        ) == SettingsNavigationResult::Applied
+    );
+    assert(
+        app.settings_nav.focus ==
+        SettingsItem::Reading
+    );
+    assert(
+        settings_nav.handle(
+            LogicalAction::NavigatePrevious
+        ) == SettingsNavigationResult::Applied
+    );
+    assert(
+        app.settings_nav.focus ==
+        SettingsItem::PowerOff
+    );
+
+    assert(
+        settings_nav.handle(
+            LogicalAction::Back
+        ) == SettingsNavigationResult::Applied
+    );
+    assert(app.screen == Screen::Library);
+    assert(app.library.focused_book == settings_origin_focus);
+    assert(app.library.offset == settings_origin_offset);
+    assert(app.library.view == settings_origin_view);
 
     BookDetailsRuntime book_details(
         app,

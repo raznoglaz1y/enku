@@ -16,6 +16,8 @@ The custom mainboard should be designed once and reused across several enclosure
 - 3.97-inch 800x480 e-paper display
 - microSD
 - native USB-C at the **bottom center**
+- reserved low-profile magnetic/pogo charging-dock input as an optional secondary 5 V source
+- wireless charging support reserved for a future Pro/accessory implementation rather than mandatory Base hardware
 - 1S Li-Po
 - physical **hard power-off switch at the top-left**
 - right-side physical reading controls
@@ -85,6 +87,45 @@ Initial gesture concept:
 - reject movements associated with ordinary grip adjustment
 
 Physical page controls always remain available; motion control never replaces them.
+
+## Custom mainboard and kit roadmap
+
+The Waveshare board remains the reference platform for early firmware and electrical validation, but ENKU is now also developing a dedicated portrait-first custom mainboard.
+
+Goals for the custom board:
+- lower per-unit cost at small production quantities;
+- better enclosure fit than a general-purpose development board;
+- native placement of the page rocker, hard power switch, BMI270, Hall sensor and future frontlight circuitry;
+- a reproducible BOM suitable for community builds and possible assembled kits;
+- one PCB with population options for Base / Cover / Pro rather than separate electronics for every enclosure.
+
+Possible future product formats, only after hardware validation:
+- **Electronics kit** — assembled mainboard + display + controls/hardware;
+- **Base kit** — electronics + battery + printable/finished enclosure hardware;
+- **Cover kit** — Base kit plus magnetic folio;
+- **Pro kit** — frontlight-populated electronics and matching optical/mechanical parts.
+
+These are a development and commercialization roadmap, not a statement that kits are currently for sale. Final kit contents, pricing, safety/compliance work and fulfillment model must follow prototype validation.
+
+## Charging interfaces
+
+USB-C remains the primary and universal charging/data connector.
+
+The board should also reserve a secondary charging input so the enclosure family can support a dock without redesigning the whole PCB.
+
+Preferred secondary interface:
+- **4-contact magnetic pogo/dock connector** on the lower rear or lower edge;
+- two contacts may be paralleled for +5 V / GND or the extra contacts can be used for dock detect / accessory ID;
+- connector should be keyed/asymmetric so reverse placement cannot swap polarity;
+- secondary 5 V input must be isolated/ORed with USB-C VBUS before the charger/power-path stage.
+
+Wireless charging is a **Pro / optional population target**, not a Base requirement:
+- reserve coil area and receiver/charger pads or a small receiver-module interface;
+- validate coil, ferrite shield, heat and magnet interaction in the final enclosure;
+- avoid placing the Qi coil in the ESP32 antenna keepout or directly under sensitive e-paper circuitry;
+- do not promise Qi certification until a complete receiver implementation is tested.
+
+Cost rule: Base ENKU should not carry the full BOM/assembly cost of wireless charging. Pogo charging may be a low-cost accessory option; Qi should be DNP or implemented in Pro.
 
 ## Hard power architecture
 
@@ -225,4 +266,6 @@ This keeps the open-source platform coherent and avoids maintaining separate fir
 5. Add Hall sensor candidate location and keep magnet keepout in enclosure CAD.
 6. Reserve the frontlight driver/connector area as DNP.
 7. Keep EPD HV/analog block reserved until the panel reference design is validated.
-8. Produce a new portrait-first Gerber placement preview.
+8. Add a costed 4-pin pogo/dock charging footprint and input-protection/OR-ing reservation.
+9. Reserve Pro-only wireless charging coil/receiver geometry without burdening Base BOM.
+10. Produce a new portrait-first Gerber placement preview and keep a per-variant BOM/cost model.

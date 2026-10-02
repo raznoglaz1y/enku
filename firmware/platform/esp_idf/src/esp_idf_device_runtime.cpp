@@ -431,6 +431,27 @@ bool EspIdfDeviceRuntime::syncWebUploadServer() {
     return web_upload_server_.sync(online);
 }
 
+void EspIdfDeviceRuntime::refreshLibraryAfterUploadIfNeeded() {
+    if (web_upload_server_.takeUploadCompleted()) {
+        library_refresh_pending_ = true;
+    }
+
+    if (!library_refresh_pending_ ||
+        storage_.appState().screen != Screen::Library) {
+        return;
+    }
+
+    const auto result =
+        reader_.library().handle(
+            LibraryRefreshRequested{}
+        );
+
+    if (result == LibraryRuntimeResult::Applied ||
+        result == LibraryRuntimeResult::Empty) {
+        library_refresh_pending_ = false;
+    }
+}
+
 bool EspIdfDeviceRuntime::refreshStatusBarIfNeeded() {
     auto& app = storage_.appState();
 
@@ -531,6 +552,7 @@ InputDispatchResult EspIdfDeviceRuntime::pollInput(
     // instead of waiting for the next poll cycle.
     syncPlatformState();
     syncWebUploadServer();
+    refreshLibraryAfterUploadIfNeeded();
 
     return result;
 }

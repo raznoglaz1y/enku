@@ -518,7 +518,16 @@ InputDispatchResult EspIdfDeviceRuntime::pollInput(
         return InputDispatchResult::Ignored;
     }
 
-    return input_dispatcher_.handle(*event);
+    const auto result =
+        input_dispatcher_.handle(*event);
+
+    // Sleep/wake and Wi-Fi settings can change network availability while
+    // dispatching this very input. Reconcile the HTTP service immediately
+    // instead of waiting for the next poll cycle.
+    syncPlatformState();
+    syncWebUploadServer();
+
+    return result;
 }
 
 const BootRestoreResult&

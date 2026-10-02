@@ -8,14 +8,15 @@
 #include "library.hpp"
 #include "localization.hpp"
 #include "boot.hpp"
+#include "settings.hpp"
 
 namespace enku {
 
 struct TypographyState {
-    std::string preset{"Standard"};
-    std::uint16_t font_size_px{0};
-    float line_spacing{1.0F};
-    std::uint16_t margin_px{0};
+    ReadingPreset preset{ReadingPreset::Standard};
+    std::uint16_t font_size_px{18};
+    float line_spacing{1.35F};
+    std::uint16_t margin_px{24};
     bool per_book_override{false};
 };
 
@@ -57,6 +58,7 @@ struct AppState {
     TypographyState typography;
 
     NetworkState network;
+    WiFiPolicy wifi_policy{WiFiPolicy::AutoConnectTrusted};
     PowerState power;
 
     bool progress_dirty{false};

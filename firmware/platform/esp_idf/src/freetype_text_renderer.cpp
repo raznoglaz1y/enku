@@ -453,6 +453,143 @@ void FreeTypeTextRenderer::drawRect(
     }
 }
 
+bool FreeTypeTextRenderer::drawKeyboardGrid(
+    const KeyboardState& keyboard,
+    Orientation orientation,
+    int top
+) {
+    const int logical_width =
+        orientation == Orientation::Portrait
+            ? 480
+            : 800;
+
+    const auto key_count =
+        keyboardKeyCount(
+            keyboard.mode
+        );
+    const auto character_count =
+        keyboardCharacterKeyCount(
+            keyboard.mode
+        );
+
+    const int key_height =
+        orientation == Orientation::Portrait
+            ? 42
+            : 34;
+    const int gap = 6;
+
+    const int character_columns =
+        orientation == Orientation::Portrait
+            ? 8
+            : 10;
+    const int character_width =
+        (logical_width - 48 -
+         gap * (character_columns - 1)) /
+        character_columns;
+
+    for (std::uint16_t i = 0;
+         i < character_count;
+         ++i) {
+        const int row =
+            static_cast<int>(i) /
+            character_columns;
+        const int column =
+            static_cast<int>(i) %
+            character_columns;
+
+        const int x =
+            24 +
+            column *
+                (character_width + gap);
+        const int y =
+            top +
+            row *
+                (key_height + gap);
+
+        drawRect(
+            x,
+            y,
+            character_width,
+            key_height,
+            orientation,
+            keyboard.focus_index == i
+                ? 2
+                : 1
+        );
+
+        const auto key =
+            keyboardKeyLabel(
+                keyboard,
+                i
+            );
+
+        if (!drawTextAt(
+                key,
+                14,
+                x + 8,
+                y + key_height - 11,
+                orientation
+            )) {
+            return false;
+        }
+    }
+
+    const int character_rows =
+        (static_cast<int>(character_count) +
+         character_columns - 1) /
+        character_columns;
+    const int special_y =
+        top +
+        character_rows *
+            (key_height + gap);
+    const int special_width =
+        (logical_width - 48 - gap * 4) /
+        5;
+
+    for (std::uint16_t i = character_count;
+         i < key_count;
+         ++i) {
+        const int column =
+            static_cast<int>(
+                i - character_count
+            );
+        const int x =
+            24 +
+            column *
+                (special_width + gap);
+
+        drawRect(
+            x,
+            special_y,
+            special_width,
+            key_height,
+            orientation,
+            keyboard.focus_index == i
+                ? 2
+                : 1
+        );
+
+        const auto key =
+            keyboardKeyLabel(
+                keyboard,
+                i
+            );
+
+        if (!drawTextAt(
+                key,
+                12,
+                x + 6,
+                special_y +
+                    key_height - 11,
+                orientation
+            )) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 bool FreeTypeTextRenderer::renderPage(
     const PageResult& page,
     const TypographySettings& typography,
@@ -964,132 +1101,14 @@ bool FreeTypeTextRenderer::renderSearch(
             return false;
         }
 
-        const auto key_count =
-            keyboardKeyCount(
-                app_state.keyboard.mode
-            );
-        const auto character_count =
-            keyboardCharacterKeyCount(
-                app_state.keyboard.mode
-            );
-
-        const int keyboard_top =
-            orientation == Orientation::Portrait
-                ? 206
-                : 198;
-        const int key_height =
-            orientation == Orientation::Portrait
-                ? 42
-                : 34;
-        const int gap = 6;
-
-        const int character_columns =
-            orientation == Orientation::Portrait
-                ? 8
-                : 10;
-        const int character_width =
-            (logical_width - 48 -
-             gap * (character_columns - 1)) /
-            character_columns;
-
-        for (std::uint16_t i = 0;
-             i < character_count;
-             ++i) {
-            const int row =
-                static_cast<int>(i) /
-                character_columns;
-            const int column =
-                static_cast<int>(i) %
-                character_columns;
-
-            const int x =
-                24 +
-                column *
-                    (character_width + gap);
-            const int y =
-                keyboard_top +
-                row *
-                    (key_height + gap);
-
-            drawRect(
-                x,
-                y,
-                character_width,
-                key_height,
+        if (!drawKeyboardGrid(
+                app_state.keyboard,
                 orientation,
-                app_state.keyboard.focus_index == i
-                    ? 2
-                    : 1
-            );
-
-            const auto key =
-                keyboardKeyLabel(
-                    app_state.keyboard,
-                    i
-                );
-
-            if (!drawTextAt(
-                    key,
-                    14,
-                    x + 8,
-                    y + key_height - 11,
-                    orientation
-                )) {
-                return false;
-            }
-        }
-
-        const int character_rows =
-            (static_cast<int>(character_count) +
-             character_columns - 1) /
-            character_columns;
-        const int special_y =
-            keyboard_top +
-            character_rows *
-                (key_height + gap);
-        const int special_width =
-            (logical_width - 48 - gap * 4) /
-            5;
-
-        for (std::uint16_t i = character_count;
-             i < key_count;
-             ++i) {
-            const int column =
-                static_cast<int>(
-                    i - character_count
-                );
-            const int x =
-                24 +
-                column *
-                    (special_width + gap);
-
-            drawRect(
-                x,
-                special_y,
-                special_width,
-                key_height,
-                orientation,
-                app_state.keyboard.focus_index == i
-                    ? 2
-                    : 1
-            );
-
-            const auto key =
-                keyboardKeyLabel(
-                    app_state.keyboard,
-                    i
-                );
-
-            if (!drawTextAt(
-                    key,
-                    12,
-                    x + 6,
-                    special_y +
-                        key_height - 11,
-                    orientation
-                )) {
-                return false;
-            }
+                orientation == Orientation::Portrait
+                    ? 206
+                    : 198
+            )) {
+            return false;
         }
 
         return drawTextAt(

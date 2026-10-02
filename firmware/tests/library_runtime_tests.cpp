@@ -316,36 +316,6 @@ int main() {
         std::optional<BookId>{"alpha"}
     );
 
-    // Physical input also routes through the dispatcher while details
-    // are open.
-    app.library.focused_book = "alpha";
-    assert(
-        book_details.handle(
-            OpenFocusedBookDetailsRequested{}
-        ) == BookDetailsRuntimeResult::Applied
-    );
-    assert(
-        dispatcher.handle(
-            PhysicalInputEvent{
-                PhysicalControl::Down,
-                PressType::Click,
-            }
-        ) == InputDispatchResult::Applied
-    );
-    assert(
-        app.book_details.focus ==
-        BookDetailsFocus::DeleteBook
-    );
-    assert(
-        dispatcher.handle(
-            PhysicalInputEvent{
-                PhysicalControl::Boot,
-                PressType::Click,
-            }
-        ) == InputDispatchResult::Applied
-    );
-    assert(app.screen == Screen::Library);
-
     // Reading book -> CONTINUE.
     app.library.focused_book = "beta";
     assert(
@@ -653,6 +623,36 @@ int main() {
         &library_search,
         &book_details
     );
+
+    // Physical input also routes through the dispatcher while details
+    // are open.
+    app.library.focused_book = "alpha";
+    assert(
+        book_details.handle(
+            OpenFocusedBookDetailsRequested{}
+        ) == BookDetailsRuntimeResult::Applied
+    );
+    assert(
+        dispatcher.handle(
+            PhysicalInputEvent{
+                PhysicalControl::Down,
+                PressType::Click,
+            }
+        ) == InputDispatchResult::Applied
+    );
+    assert(
+        app.book_details.focus ==
+        BookDetailsFocus::DeleteBook
+    );
+    assert(
+        dispatcher.handle(
+            PhysicalInputEvent{
+                PhysicalControl::Boot,
+                PressType::Click,
+            }
+        ) == InputDispatchResult::Applied
+    );
+    assert(app.screen == Screen::Library);
 
 
     assert(

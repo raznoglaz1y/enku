@@ -23,8 +23,9 @@ Conceptually:
 ```text
 UI / Runtime
 → LibraryService
-→ Library index + per-book state
-→ Persistence / Storage
+→ CborLibraryService
+→ A/B Library index
+→ StateFileStore
 ```
 
 ## 2. Book format
@@ -357,3 +358,26 @@ Library implementation should:
 - Metadata overrides do not change source fingerprint identity.
 - Missing source files do not automatically delete Library/state.
 - Query/storage failures are distinct from an empty Library.
+
+
+## 23. Current implementation MVP
+
+`CborLibraryService` is now the first concrete LibraryService implementation.
+
+Implemented behavior:
+
+- load `/system/library.a.cbor` and `library.b.cbor`;
+- validate schema, record type and CRC32;
+- select the newest valid generation;
+- recover from one corrupt slot;
+- direct lookup by `book_id`;
+- exact fingerprint lookup;
+- Browse filtering by All/New/Reading/Finished;
+- global title/author Search independent from the Browse filter;
+- Title/Author/RecentlyOpened/RecentlyAdded sorting;
+- deterministic `book_id` tie-breaking;
+- bounded offset/limit paging;
+- concrete `upsert()` for committed import integration;
+- summary state/progress updates with persistence rollback if commit fails.
+
+The current MVP commits Library index changes immediately. A later debounce/batching layer may reduce index write frequency after real storage profiling without changing the LibraryService query semantics.

@@ -39,6 +39,7 @@ firmware/
       library_runtime.hpp
       settings_runtime.hpp
       input_runtime.hpp
+      input_dispatcher.hpp
       storage_startup.hpp
       boot_restore.hpp
       sleep_wake.hpp
@@ -67,6 +68,7 @@ firmware/
       library_runtime.cpp
       settings_runtime.cpp
       input_runtime.cpp
+      input_dispatcher.cpp
       storage_startup.cpp
       boot_restore.cpp
       sleep_wake.cpp

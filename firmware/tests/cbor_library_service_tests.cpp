@@ -235,5 +235,17 @@ int main() {
     );
     assert(recovered.get("beta")->progress == before);
 
+    files.write_status = StateFileStatus::Ok;
+    assert(
+        recovered.remove("gamma") ==
+        LibraryStatus::Ok
+    );
+    assert(!recovered.get("gamma").has_value());
+
+    CborLibraryService after_remove(files);
+    assert(after_remove.load() == LibraryStatus::Ok);
+    assert(!after_remove.get("gamma").has_value());
+    assert(after_remove.records().size() == 2);
+
     return 0;
 }

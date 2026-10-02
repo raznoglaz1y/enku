@@ -267,6 +267,8 @@ Book files and reader state are logically separate.
 
 The detailed Library/storage model is defined in [Library & Storage Model](storage-model.md).
 
+The in-memory book records, browse/search queries and Library service boundary are defined in [Library Data Model & Service Interface](library-model.md).
+
 The physical persistence strategy is defined in [Persistence Backend](persistence-model.md): versioned CBOR records with generation-based recovery, separated by write frequency.
 
 Core decisions:

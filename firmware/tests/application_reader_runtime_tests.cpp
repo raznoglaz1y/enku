@@ -8,6 +8,7 @@
 #include "enku/runtime/display_settings_runtime.hpp"
 #include "enku/runtime/locale_settings_runtime.hpp"
 #include "enku/runtime/about_device_runtime.hpp"
+#include "enku/runtime/power_off_confirm_runtime.hpp"
 #include "enku/storage/posix_book_file_store.hpp"
 #include "enku/storage/posix_state_file_store.hpp"
 
@@ -70,6 +71,52 @@ public:
     Orientation last_orientation{Orientation::Landscape};
     std::uint32_t library_renders{0};
     std::uint32_t last_library_items{0};
+};
+
+class FakeNetworkService final : public NetworkService {
+public:
+    bool connected() const override {
+        return connected_;
+    }
+
+    void disconnect() override {
+        connected_ = false;
+        ++disconnects;
+    }
+
+    bool connected_{true};
+    std::uint32_t disconnects{0};
+};
+
+class FakePowerService final : public PowerService {
+public:
+    BatteryState batteryState() const override {
+        return {};
+    }
+
+    bool canSuspend() const override {
+        return true;
+    }
+
+    DevicePowerState powerState() const override {
+        return state;
+    }
+
+    WakeReason wakeReason() const override {
+        return WakeReason::ColdBoot;
+    }
+
+    bool requestSuspend() override {
+        return false;
+    }
+
+    void requestPowerOff() override {
+        ++power_off_requests;
+        state = DevicePowerState::PoweredOff;
+    }
+
+    DevicePowerState state{DevicePowerState::Active};
+    std::uint32_t power_off_requests{0};
 };
 
 class FakeRefreshService final : public RefreshService {
@@ -1225,6 +1272,86 @@ int main() {
         renderer.library_renders >
         library_renders_before_orientation
     );
+
+    // Power Off confirmation is Cancel-first and only reaches the
+    // coordinator after an explicit destructive choice.
+    assert(
+        settings_nav.handle(
+            OpenSettingsRequested{}
+        ) == SettingsNavigationResult::Applied
+    );
+    for (int i = 0; i < 7; ++i) {
+        assert(
+            settings_nav.handle(
+                LogicalAction::NavigateNext
+            ) == SettingsNavigationResult::Applied
+        );
+    }
+    assert(
+        storage.appState().settings_nav.focus ==
+        SettingsItem::PowerOff
+    );
+
+    FakeNetworkService power_network;
+    FakePowerService power_service;
+
+    PowerOffCoordinator power_off(
+        storage.appState(),
+        storage.library(),
+        storage.checkpoints(),
+        storage.appContext(),
+        power_network,
+        power_service
+    );
+
+    PowerOffConfirmRuntime power_confirm(
+        storage.appState(),
+        power_off,
+        settings_nav
+    );
+
+    assert(
+        power_confirm.openFromSettings() ==
+        PowerOffConfirmRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().screen ==
+        Screen::PowerOffConfirm
+    );
+    assert(
+        storage.appState().power_off_confirm.focus ==
+        PowerOffConfirmFocus::Cancel
+    );
+
+    assert(
+        power_confirm.handle(
+            LogicalAction::Confirm
+        ) == PowerOffConfirmRuntimeResult::Applied
+    );
+    assert(storage.appState().screen == Screen::Settings);
+    assert(power_service.power_off_requests == 0);
+    assert(power_network.disconnects == 0);
+
+    assert(
+        power_confirm.openFromSettings() ==
+        PowerOffConfirmRuntimeResult::Applied
+    );
+    assert(
+        power_confirm.handle(
+            LogicalAction::NavigateNext
+        ) == PowerOffConfirmRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().power_off_confirm.focus ==
+        PowerOffConfirmFocus::PowerOff
+    );
+    assert(
+        power_confirm.handle(
+            LogicalAction::Confirm
+        ) == PowerOffConfirmRuntimeResult::Applied
+    );
+    assert(power_service.power_off_requests == 1);
+    assert(power_network.disconnects == 1);
 
     std::filesystem::remove_all(root, ec);
     return 0;

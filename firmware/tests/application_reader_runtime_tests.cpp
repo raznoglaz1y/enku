@@ -137,7 +137,10 @@ int main() {
         book_files.write(
             staged_path,
             "Alpha beta gamma delta epsilon zeta eta theta "
-            "iota kappa lambda mu nu xi omicron pi rho sigma tau."
+            "iota kappa lambda mu nu xi omicron pi rho sigma tau. "
+            "beta beta beta beta beta beta beta beta beta beta "
+            "beta beta beta beta beta beta beta beta beta beta "
+            "beta beta beta beta beta beta beta beta beta"
         ) == BookFileStatus::Ok
     );
 
@@ -390,8 +393,28 @@ int main() {
         storage.appState().search.phase ==
         SearchPhase::Results
     );
-    assert(storage.appState().search.total_matches == 1);
-    assert(storage.appState().search.matches.size() == 1);
+    assert(storage.appState().search.total_matches == 30);
+    assert(storage.appState().search.matches.size() == 24);
+    assert(storage.appState().search.window_start == 0);
+
+    for (int i = 0; i < 23; ++i) {
+        assert(
+            search.handle(
+                LogicalAction::NavigateNext
+            ) == SearchRuntimeResult::Applied
+        );
+    }
+
+    assert(storage.appState().search.focus_index == 23);
+
+    assert(
+        search.handle(
+            LogicalAction::NavigateNext
+        ) == SearchRuntimeResult::Applied
+    );
+    assert(storage.appState().search.window_start == 24);
+    assert(storage.appState().search.focus_index == 0);
+    assert(storage.appState().search.matches.size() == 6);
     assert(
         storage.appState().search.matches[0].position.book_id ==
         *storage.appState().current_book

@@ -26,6 +26,11 @@ public:
         const std::string& bytes
     ) override;
 
+    BookFileStatus move(
+        const std::string& from,
+        const std::string& to
+    ) override;
+
     BookFileStatus remove(
         const std::string& path
     ) override;

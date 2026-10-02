@@ -7,6 +7,7 @@ idf_component_register(
         "../src/esp_idf_buttons.cpp"
         "../src/esp_idf_power_service.cpp"
         "../src/epaper_refresh_service.cpp"
+        "../src/esp_idf_platform.cpp"
         "../../../src/render/owned_mono_framebuffer.cpp"
         "../../../src/runtime/input_runtime.cpp"
     INCLUDE_DIRS

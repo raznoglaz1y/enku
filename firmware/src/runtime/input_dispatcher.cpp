@@ -77,7 +77,8 @@ InputDispatcher::InputDispatcher(
     BookFinishedRuntime* book_finished,
     ContentsBookmarksRuntime* contents_bookmarks,
     AboutBookRuntime* about_book,
-    SettingsNavigationRuntime* settings_nav
+    SettingsNavigationRuntime* settings_nav,
+    ReadingSettingsRuntime* reading_settings
 )
     : app_state_(app_state),
       library_(library),
@@ -91,7 +92,8 @@ InputDispatcher::InputDispatcher(
       book_finished_(book_finished),
       contents_bookmarks_(contents_bookmarks),
       about_book_(about_book),
-      settings_nav_(settings_nav) {}
+      settings_nav_(settings_nav),
+      reading_settings_(reading_settings) {}
 
 InputDispatchResult InputDispatcher::handle(
     const PhysicalInputEvent& input
@@ -106,6 +108,25 @@ InputDispatchResult InputDispatcher::handle(
         return InputDispatchResult::Ignored;
     }
 
+    if (app_state_.screen == Screen::ReadingSettings) {
+        if (reading_settings_ == nullptr) {
+            return InputDispatchResult::Unhandled;
+        }
+
+        const auto result =
+            reading_settings_->handle(*action);
+
+        if (result == ReadingSettingsRuntimeResult::Applied) {
+            return InputDispatchResult::Applied;
+        }
+
+        if (result == ReadingSettingsRuntimeResult::Failed) {
+            return InputDispatchResult::Failed;
+        }
+
+        return InputDispatchResult::Unhandled;
+    }
+
     if (app_state_.screen == Screen::Settings) {
         if (settings_nav_ == nullptr) {
             return InputDispatchResult::Unhandled;
@@ -117,6 +138,15 @@ InputDispatchResult InputDispatcher::handle(
         switch (result) {
             case SettingsNavigationResult::Applied:
                 return InputDispatchResult::Applied;
+
+            case SettingsNavigationResult::ReadingRequested:
+                if (reading_settings_ == nullptr) {
+                    return InputDispatchResult::Unhandled;
+                }
+                return reading_settings_->openFromSettings() ==
+                    ReadingSettingsRuntimeResult::Applied
+                    ? InputDispatchResult::Applied
+                    : InputDispatchResult::Failed;
 
             case SettingsNavigationResult::PowerOffRequested:
                 return power_off_.powerOff() ==

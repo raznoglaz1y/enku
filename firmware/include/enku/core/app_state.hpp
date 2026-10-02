@@ -102,6 +102,15 @@ struct BookDetailsState {
     bool confirm_restart{false};
 };
 
+enum class PowerOffConfirmFocus : std::uint8_t {
+    Cancel,
+    PowerOff,
+};
+
+struct PowerOffConfirmState {
+    PowerOffConfirmFocus focus{PowerOffConfirmFocus::Cancel};
+};
+
 struct LocaleSettingsState {
     std::uint8_t focus_index{0};
     std::uint8_t window_start{0};
@@ -221,6 +230,7 @@ struct AppState {
     ReadingSettingsState reading_settings;
     DisplaySettingsState display_settings;
     LocaleSettingsState locale_settings;
+    PowerOffConfirmState power_off_confirm;
     KeyboardState keyboard;
 
     NetworkState network;

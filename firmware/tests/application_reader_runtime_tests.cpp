@@ -1,6 +1,7 @@
 #include "enku/runtime/application_reader_runtime.hpp"
 #include "enku/runtime/reader_overlay_runtime.hpp"
 #include "enku/runtime/search_runtime.hpp"
+#include "enku/runtime/contents_bookmarks_runtime.hpp"
 #include "enku/storage/posix_book_file_store.hpp"
 #include "enku/storage/posix_state_file_store.hpp"
 
@@ -212,6 +213,12 @@ int main() {
         runtime
     );
 
+    ContentsBookmarksRuntime contents_bookmarks(
+        storage.appState(),
+        runtime,
+        storage.bookmarks()
+    );
+
     const auto overlay_position =
         storage.appState().reading_position;
     assert(overlay_position.has_value());
@@ -304,6 +311,181 @@ int main() {
         ) == ReaderOverlayRuntimeResult::Applied
     );
     assert(storage.appState().screen == Screen::Reading);
+
+    // Add Bookmark from the approved Reader Menu stores the current
+    // semantic position and returns to Reading. Repeating it is a no-op.
+    const auto bookmark_position =
+        storage.appState().reading_position;
+    assert(bookmark_position.has_value());
+
+    assert(
+        overlay.handle(
+            LogicalAction::OpenReaderMenu
+        ) == ReaderOverlayRuntimeResult::Applied
+    );
+    for (int i = 0; i < 2; ++i) {
+        assert(
+            overlay.handle(
+                LogicalAction::NavigateNext
+            ) == ReaderOverlayRuntimeResult::Applied
+        );
+    }
+    assert(
+        storage.appState().reader_overlay.focus_index == 2
+    );
+    assert(
+        overlay.handle(
+            LogicalAction::Confirm
+        ) == ReaderOverlayRuntimeResult::Applied
+    );
+    assert(storage.appState().screen == Screen::Reading);
+
+    std::vector<BookmarkRecord> saved_bookmarks;
+    assert(
+        storage.bookmarks().load(
+            *storage.appState().current_book,
+            saved_bookmarks
+        ) == BookmarkStatus::Ok
+    );
+    assert(saved_bookmarks.size() == 1);
+    assert(
+        saved_bookmarks[0].position.text_offset ==
+        bookmark_position->text_offset
+    );
+
+    assert(
+        overlay.handle(
+            LogicalAction::OpenReaderMenu
+        ) == ReaderOverlayRuntimeResult::Applied
+    );
+    for (int i = 0; i < 2; ++i) {
+        assert(
+            overlay.handle(
+                LogicalAction::NavigateNext
+            ) == ReaderOverlayRuntimeResult::Applied
+        );
+    }
+    assert(
+        overlay.handle(
+            LogicalAction::Confirm
+        ) == ReaderOverlayRuntimeResult::Applied
+    );
+    saved_bookmarks.clear();
+    assert(
+        storage.bookmarks().load(
+            *storage.appState().current_book,
+            saved_bookmarks
+        ) == BookmarkStatus::Ok
+    );
+    assert(saved_bookmarks.size() == 1);
+
+    // Contents & Bookmarks preserves the position until an item is
+    // explicitly opened. TXT currently has no structured ToC, so the
+    // Bookmarks tab remains available while Contents is empty.
+    const auto before_overlay =
+        storage.appState().reading_position;
+    assert(before_overlay.has_value());
+
+    assert(
+        overlay.handle(
+            LogicalAction::OpenReaderMenu
+        ) == ReaderOverlayRuntimeResult::Applied
+    );
+    assert(
+        overlay.handle(
+            LogicalAction::NavigateNext
+        ) == ReaderOverlayRuntimeResult::Applied
+    );
+    assert(
+        overlay.handle(
+            LogicalAction::Confirm
+        ) ==
+        ReaderOverlayRuntimeResult::ContentsBookmarksRequested
+    );
+    assert(storage.appState().screen == Screen::Reading);
+    assert(
+        contents_bookmarks.openFromReader() ==
+        ContentsBookmarksRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().screen ==
+        Screen::ContentsBookmarks
+    );
+    assert(contents_bookmarks.contents().empty());
+    assert(contents_bookmarks.bookmarks().size() == 1);
+    assert(
+        storage.appState().reading_position->text_offset ==
+        before_overlay->text_offset
+    );
+
+    assert(
+        contents_bookmarks.handle(
+            LogicalAction::NavigateNext
+        ) == ContentsBookmarksRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().contents_bookmarks.focus ==
+        ContentsBookmarksFocus::BookmarksTab
+    );
+    assert(
+        contents_bookmarks.handle(
+            LogicalAction::Confirm
+        ) == ContentsBookmarksRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().contents_bookmarks.tab ==
+        ContentsBookmarksTab::Bookmarks
+    );
+    assert(
+        contents_bookmarks.handle(
+            LogicalAction::NavigateNext
+        ) == ContentsBookmarksRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().contents_bookmarks.focus ==
+        ContentsBookmarksFocus::Item
+    );
+    assert(
+        contents_bookmarks.handle(
+            LogicalAction::Back
+        ) == ContentsBookmarksRuntimeResult::Applied
+    );
+    assert(storage.appState().screen == Screen::Reading);
+    assert(
+        storage.appState().reading_position->text_offset ==
+        before_overlay->text_offset
+    );
+
+    // Reopen and explicitly select the bookmark.
+    assert(
+        contents_bookmarks.openFromReader() ==
+        ContentsBookmarksRuntimeResult::Applied
+    );
+    assert(
+        contents_bookmarks.handle(
+            LogicalAction::NavigateNext
+        ) == ContentsBookmarksRuntimeResult::Applied
+    );
+    assert(
+        contents_bookmarks.handle(
+            LogicalAction::Confirm
+        ) == ContentsBookmarksRuntimeResult::Applied
+    );
+    assert(
+        contents_bookmarks.handle(
+            LogicalAction::NavigateNext
+        ) == ContentsBookmarksRuntimeResult::Applied
+    );
+    assert(
+        contents_bookmarks.handle(
+            LogicalAction::Confirm
+        ) == ContentsBookmarksRuntimeResult::Applied
+    );
+    assert(storage.appState().screen == Screen::Reading);
+    assert(
+        storage.appState().reading_position->text_offset <=
+        bookmark_position->text_offset
+    );
 
     const auto orientation_position =
         storage.appState().reading_position;

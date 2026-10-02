@@ -24,7 +24,7 @@ CBOR fits the ENKU constraints well:
 - records can be read/written independently;
 - suitable libraries exist for embedded C/C++ ecosystems.
 
-The exact CBOR library is intentionally not selected until the firmware framework is finalized.
+The broader firmware CBOR library is still intentionally not selected until the firmware framework is finalized. The first per-book checkpoint MVP uses a small framework-neutral CBOR subset encoder/decoder so A/B recovery semantics can be implemented and host-tested now without locking the project to a platform library.
 
 ## 3. Why not SQLite in v1
 
@@ -69,8 +69,8 @@ Proposed layout:
   settings.b.cbor
 
 /system/state/
-  <book_id>.a.cbor
-  <book_id>.b.cbor
+  <encoded-book-id>.a.cbor
+  <encoded-book-id>.b.cbor
 
 /system/covers/
   <book_id>.<cache-format>
@@ -80,6 +80,8 @@ Proposed layout:
 ```
 
 The A/B pair is a generation pair, not two independent copies to update simultaneously.
+
+For the current checkpoint backend, `book_id` is hex-encoded for filesystem-safe slot names. The original logical `book_id` is also stored inside the CBOR payload and must match during restore.
 
 ## 6. Record envelope
 
@@ -97,11 +99,15 @@ integrity
 
 The exact binary representation of integrity metadata is implementation-defined, but the reader must be able to detect an invalid/incomplete record.
 
-Recommended integrity fields:
+The first implemented Reader checkpoint envelope is a CBOR array containing:
 
-- payload length where useful;
-- CRC/checksum;
-- generation counter.
+- schema version;
+- record type;
+- generation counter;
+- encoded payload bytes;
+- CRC32 of the payload.
+
+The payload currently stores book id, section id, text offset, normalized progress and reading state.
 
 ## 7. Generation-based recovery
 
@@ -323,4 +329,5 @@ That export is not authoritative persistence and must not become required for no
 - Persisted records carry schema and integrity metadata.
 - Cover cache is disposable.
 - Original book files are never deleted merely because metadata/state records are corrupt.
-- The exact CBOR library and filesystem implementation remain framework/hardware decisions.
+- The checkpoint MVP already implements a restricted CBOR codec plus CRC32 A/B recovery.
+- The broader CBOR library and concrete ESP32 filesystem implementation remain framework/hardware decisions.

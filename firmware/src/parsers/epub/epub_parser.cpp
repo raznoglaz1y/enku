@@ -1131,6 +1131,163 @@ BookFormat EpubParser::format() const {
     return BookFormat::Epub;
 }
 
+ParseResult EpubParser::parseMetadata(
+    std::string_view bytes,
+    const ParserSourceInfo& source
+) const {
+    ParseResult result;
+    result.document.book_id = source.book_id;
+
+    if (bytes.empty()) {
+        result.status = ParserStatus::EmptyDocument;
+        return result;
+    }
+
+    ZipArchive archive(bytes);
+    if (archive.status() != ZipArchiveStatus::Ok) {
+        result.status = ParserStatus::InvalidSource;
+        return result;
+    }
+
+    std::string container_xml;
+    if (archive.read(
+            "META-INF/container.xml",
+            container_xml
+        ) != ZipArchiveStatus::Ok) {
+        result.status = ParserStatus::InvalidSource;
+        return result;
+    }
+
+    const auto lower_container = lower(container_xml);
+    std::optional<std::size_t> rootfile_position;
+    std::size_t search = 0;
+
+    while (true) {
+        const auto candidate =
+            lower_container.find("<rootfile", search);
+
+        if (candidate == std::string::npos) {
+            break;
+        }
+
+        const auto boundary = candidate + 9U;
+        if (boundary >= lower_container.size() ||
+            lower_container[boundary] == '>' ||
+            lower_container[boundary] == '/' ||
+            std::isspace(
+                static_cast<unsigned char>(
+                    lower_container[boundary]
+                )
+            )) {
+            rootfile_position = candidate;
+            break;
+        }
+
+        search = boundary;
+    }
+
+    if (!rootfile_position.has_value()) {
+        result.status = ParserStatus::InvalidSource;
+        return result;
+    }
+
+    const auto rootfile_end =
+        container_xml.find(
+            '>',
+            *rootfile_position
+        );
+
+    if (rootfile_end == std::string::npos) {
+        result.status = ParserStatus::InvalidSource;
+        return result;
+    }
+
+    const auto rootfile_tag =
+        std::string_view(container_xml).substr(
+            *rootfile_position,
+            rootfile_end -
+                *rootfile_position + 1U
+        );
+
+    const auto opf_path =
+        attribute(
+            rootfile_tag,
+            "full-path"
+        );
+
+    if (!opf_path.has_value() ||
+        opf_path->empty()) {
+        result.status = ParserStatus::InvalidSource;
+        return result;
+    }
+
+    std::string opf;
+    if (archive.read(*opf_path, opf) !=
+        ZipArchiveStatus::Ok) {
+        result.status = ParserStatus::InvalidSource;
+        return result;
+    }
+
+    result.document.metadata.title =
+        dcText(opf, "title").
+            value_or(
+                filenameStem(
+                    source.source_filename
+                )
+            );
+
+    const auto creators =
+        dcTexts(opf, "creator");
+
+    result.document.metadata.authors =
+        creators;
+
+    if (creators.empty()) {
+        result.document.metadata.author_display =
+            "Unknown author";
+    } else {
+        result.document.metadata.author_display =
+            creators.front();
+
+        for (std::size_t i = 1;
+             i < creators.size();
+             ++i) {
+            result.document.metadata.author_display +=
+                ", " + creators[i];
+        }
+    }
+
+    result.document.metadata.language =
+        dcText(opf, "language");
+    result.document.metadata.identifier =
+        dcText(opf, "identifier");
+    result.document.metadata.description =
+        dcText(opf, "description");
+    result.document.metadata.publisher =
+        dcText(opf, "publisher");
+    result.document.metadata.published_date =
+        dcText(opf, "date");
+
+    std::map<std::string, ManifestItem> manifest;
+    bool has_nav = false;
+
+    if (!parseManifest(
+            opf,
+            manifest,
+            has_nav
+        )) {
+        result.status = ParserStatus::InvalidSource;
+        return result;
+    }
+
+    result.document.metadata.toc_available =
+        has_nav ||
+        spineTocId(opf).has_value();
+
+    result.status = ParserStatus::Ok;
+    return result;
+}
+
 ParseResult EpubParser::parse(
     std::string_view bytes,
     const ParserSourceInfo& source

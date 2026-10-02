@@ -14,20 +14,58 @@ jobs:
   smoke:
     runs-on: ubuntu-latest
     steps:
-      - name: Wait for Cloudflare deployment
-        run: sleep 45
+      - name: Wait for deployed site revision
+        run: |
+          set -euo pipefail
+
+          for attempt in $(seq 1 12); do
+            echo "Deployment check $attempt/12"
+
+            contact_ok=0
+            software_ok=0
+            home_ok=0
+
+            if curl -fsSL https://enkureader.com/contact -o /tmp/contact.html &&
+               grep -q 'id="contact-form"' /tmp/contact.html &&
+               grep -q "fetch('/api/contact'" /tmp/contact.html; then
+              contact_ok=1
+            fi
+
+            if curl -fsSL https://enkureader.com/software -o /tmp/software.html &&
+               grep -q '<title>Software — ENKU</title>' /tmp/software.html &&
+               grep -q 'href="/software" class="active"' /tmp/software.html; then
+              software_ok=1
+            fi
+
+            if curl -fsSL https://enkureader.com/ -o /tmp/home.html &&
+               grep -q 'href="/software">Software</a>' /tmp/home.html &&
+               grep -q 'href="/hardware">Hardware</a>' /tmp/home.html; then
+              home_ok=1
+            fi
+
+            if [ "$contact_ok" = 1 ] &&
+               [ "$software_ok" = 1 ] &&
+               [ "$home_ok" = 1 ]; then
+              echo "Expected site revision is live."
+              exit 0
+            fi
+
+            echo "contact=$contact_ok software=$software_ok home=$home_ok"
+            sleep 10
+          done
+
+          echo "Timed out waiting for expected Cloudflare deployment."
+          exit 1
 
       - name: Check public pages
         run: |
           set -euo pipefail
-          curl -fsSL --retry 5 --retry-delay 10 https://enkureader.com/contact -o /tmp/contact.html
           grep -q 'id="contact-form"' /tmp/contact.html
           grep -q "fetch('/api/contact'" /tmp/contact.html
-          curl -fsSL --retry 5 --retry-delay 10 https://enkureader.com/software -o /tmp/software.html
           grep -q '<title>Software — ENKU</title>' /tmp/software.html
           grep -q 'href="/software" class="active"' /tmp/software.html
-          curl -fsSL --retry 5 --retry-delay 10 https://enkureader.com/ -o /tmp/home.html
           grep -q 'href="/software">Software</a>' /tmp/home.html
+          grep -q 'href="/hardware">Hardware</a>' /tmp/home.html
 
       - name: Check contact Worker route
         run: |

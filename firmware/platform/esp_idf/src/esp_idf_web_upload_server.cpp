@@ -77,8 +77,21 @@ async function deleteBook(id,title,control){
     const r=await fetch('/api/book/'+encodeURIComponent(id),{method:'DELETE'});
     if(!r.ok)throw new Error(await r.text());
     status.textContent='Delete queued.';
-    for(let i=0;i<5;i++){await sleep(250);await loadLibrary();}
-    status.textContent='Library updated.';
+    let finalStatus='pending';
+    for(let i=0;i<20;i++){
+      await sleep(200);
+      const sr=await fetch('/api/delete-status/'+encodeURIComponent(id),{cache:'no-store'});
+      if(sr.ok){
+        const data=await sr.json();
+        finalStatus=data.status;
+        if(finalStatus!=='pending')break;
+      }
+    }
+    if(finalStatus!=='ok'){
+      throw new Error('delete status: '+finalStatus);
+    }
+    await loadLibrary();
+    status.textContent='Deleted: '+title;
   }catch(e){status.textContent='Delete failed: '+e;control.disabled=false;}
 }
 button.onclick=async()=>{
@@ -646,10 +659,9 @@ esp_err_t EspIdfWebUploadServer::deleteBook(
         }
 
         pending_delete_book_id_ = book_id;
+        delete_result_book_id_.clear();
+        delete_result_status_.clear();
     }
-
-    delete_result_book_id_.clear();
-    delete_result_status_.clear();
 
     sendJson(
         request,

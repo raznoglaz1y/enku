@@ -129,7 +129,8 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 - [ ] Add real font metrics and production text shaping/measurement
 - [ ] Implement paragraph spacing, block styles and deterministic previous-page reconstruction
 - [x] Implement first DocumentReaderEngine over TextPaginator
-- [ ] Add ReaderSession page history/cache and deterministic Previous
+- [x] Add ReaderSession page history/cache and deterministic Previous
+- [ ] Add bounded long-session checkpoint/history compaction
 - [ ] Implement text layout and pagination
 - [x] Define portrait/landscape repagination behavior
 - [ ] Implement portrait/landscape repagination while preserving position

@@ -1,2 +1,3 @@
 dependencies:
   espressif/freetype: "^2.14.3"
+  espressif/mdns: "^1.13.1"

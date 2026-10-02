@@ -70,6 +70,7 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 ## 5. Library and storage
 
 - [x] Define the initial supported book format set: EPUB, FB2 and TXT; PDF deferred
+- [x] Define Library/storage data model and transactional import semantics
 - [ ] Implement library indexing
 - [ ] Implement metadata extraction
 - [ ] Implement cover extraction and fallback handling
@@ -79,8 +80,11 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 - [ ] Implement title/author search
 - [ ] Persist Library focus, view, filter and sort state
 - [ ] Implement safe delete
+- [x] Define transactional replace behavior
 - [ ] Implement transactional replace
-- [ ] Implement duplicate detection stronger than filename matching
+- [x] Define duplicate detection stronger than filename matching
+- [ ] Implement duplicate detection
+- [x] Define temporary-file cleanup/recovery behavior
 - [ ] Implement temporary-file cleanup after failed imports
 
 ## 6. Reader engine

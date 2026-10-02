@@ -10,6 +10,7 @@ BookDetailsRuntime::BookDetailsRuntime(
     LibraryRuntimeController& library_runtime,
     ReaderRuntimeController& reader,
     CborReaderCheckpointService& checkpoints,
+    BookDeleteService& delete_service,
     BookDetailsRenderer* renderer,
     RefreshService* refresh
 )
@@ -18,6 +19,7 @@ BookDetailsRuntime::BookDetailsRuntime(
       library_runtime_(library_runtime),
       reader_(reader),
       checkpoints_(checkpoints),
+      delete_service_(delete_service),
       renderer_(renderer),
       refresh_(refresh) {}
 
@@ -223,7 +225,7 @@ BookDetailsRuntime::activateFocused() {
             return render();
         }
 
-        return BookDetailsRuntimeResult::Ignored;
+        return removeBook();
     }
 
     switch (app_state_.book_details.focus) {
@@ -296,6 +298,36 @@ BookDetailsRuntime::restartReading() {
     return reader_.handle(
                OpenBookRequested{book->book_id}
            ) == ReaderRuntimeResult::Applied
+        ? BookDetailsRuntimeResult::Applied
+        : BookDetailsRuntimeResult::Failed;
+}
+
+BookDetailsRuntimeResult
+BookDetailsRuntime::removeBook() {
+    const auto book = currentBook();
+
+    if (!book.has_value()) {
+        return BookDetailsRuntimeResult::Failed;
+    }
+
+    const auto removed =
+        delete_service_.remove(book->book_id);
+
+    if (removed != BookDeleteStatus::Ok) {
+        return BookDetailsRuntimeResult::Failed;
+    }
+
+    app_state_.book_details =
+        BookDetailsState{};
+    app_state_.screen = Screen::Library;
+
+    const auto result =
+        library_runtime_.handle(
+            LibraryRefreshRequested{}
+        );
+
+    return result == LibraryRuntimeResult::Applied ||
+           result == LibraryRuntimeResult::Empty
         ? BookDetailsRuntimeResult::Applied
         : BookDetailsRuntimeResult::Failed;
 }

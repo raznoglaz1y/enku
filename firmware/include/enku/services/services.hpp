@@ -73,6 +73,22 @@ struct AppRestoreContext {
     std::optional<BookId> current_book;
 };
 
+struct BootLoopMarker {
+    std::uint8_t incomplete_boot_count{0};
+    bool stable{true};
+};
+
+class BootLoopService {
+public:
+    virtual ~BootLoopService() = default;
+
+    virtual PersistStatus beginBoot(
+        BootLoopMarker& marker
+    ) = 0;
+
+    virtual PersistStatus markStable() = 0;
+};
+
 class AppContextService {
 public:
     virtual ~AppContextService() = default;

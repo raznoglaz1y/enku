@@ -43,6 +43,7 @@ struct LibrarySearchChanged {
 struct LibraryFocusNextRequested {};
 struct LibraryFocusPreviousRequested {};
 struct OpenFocusedBookRequested {};
+struct DeleteFocusedBookRequested {};
 
 struct ImportRequested {
     std::string staged_path;
@@ -140,6 +141,7 @@ using AppEvent = std::variant<
     LibraryFocusNextRequested,
     LibraryFocusPreviousRequested,
     OpenFocusedBookRequested,
+    DeleteFocusedBookRequested,
     ImportRequested,
     ImportStarted,
     ImportDuplicate,

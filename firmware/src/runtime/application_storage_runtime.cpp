@@ -18,6 +18,7 @@ ApplicationStorageRuntime::ApplicationStorageRuntime(
           import_core_
       ),
       checkpoints_(state_files),
+      bookmarks_(state_files),
       app_context_(state_files),
       boot_loop_(state_files),
       delete_service_(
@@ -72,6 +73,11 @@ ApplicationStorageRuntime::deleteService() {
 CborReaderCheckpointService&
 ApplicationStorageRuntime::checkpoints() {
     return checkpoints_;
+}
+
+CborBookmarkService&
+ApplicationStorageRuntime::bookmarks() {
+    return bookmarks_;
 }
 
 CborAppContextService&

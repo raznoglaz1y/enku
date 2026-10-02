@@ -77,6 +77,11 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 - [ ] Add PL/DE/FR/ES/IT/RU translation catalogs
 - [ ] Implement generated runtime localization tables
 - [ ] Implement e-paper redraw scheduling / refresh policy
+- [x] Define structured error/logging/recovery architecture
+- [ ] Implement bounded structured log ring
+- [ ] Implement persistent critical-error/reboot summary
+- [ ] Implement boot-loop detection and Recovery Mode
+- [ ] Add diagnostic export/support bundle
 - [ ] Add structured logging and debug diagnostics
 
 ## 5. Library and storage

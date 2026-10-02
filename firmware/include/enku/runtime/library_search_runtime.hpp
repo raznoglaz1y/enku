@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include "../core/input.hpp"
+#include "../core/events.hpp"
 #include "keyboard_runtime.hpp"
 #include "library_runtime.hpp"
 
@@ -22,6 +23,9 @@ public:
     );
 
     LibrarySearchRuntimeResult open();
+    LibrarySearchRuntimeResult handle(
+        const OpenLibrarySearchRequested&
+    );
     LibrarySearchRuntimeResult handle(
         LogicalAction action
     );

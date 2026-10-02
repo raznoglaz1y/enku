@@ -17,6 +17,7 @@ add_library(enku_core STATIC
     src/runtime/reader_runtime.cpp
     src/storage/cbor_reader_checkpoint.cpp
     src/storage/cbor_library_service.cpp
+    src/storage/book_import_service.cpp
     src/storage/posix_state_file_store.cpp
 )
 
@@ -50,4 +51,5 @@ enku_add_test(book_loader_tests tests/book_loader_tests.cpp)
 enku_add_test(reader_runtime_tests tests/reader_runtime_tests.cpp)
 enku_add_test(cbor_reader_checkpoint_tests tests/cbor_reader_checkpoint_tests.cpp)
 enku_add_test(cbor_library_service_tests tests/cbor_library_service_tests.cpp)
+enku_add_test(book_import_service_tests tests/book_import_service_tests.cpp)
 enku_add_test(posix_checkpoint_integration_tests tests/posix_checkpoint_integration_tests.cpp)

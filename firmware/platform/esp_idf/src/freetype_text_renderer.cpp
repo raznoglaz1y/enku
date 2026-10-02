@@ -1712,7 +1712,7 @@ bool FreeTypeTextRenderer::renderWiFiSettings(
     const int forget_top =
         orientation == Orientation::Portrait
             ? 410
-            : 344;
+            : 378;
 
     if (state.focus ==
         WiFiSettingsFocus::ForgetTrusted) {

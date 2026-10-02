@@ -213,25 +213,17 @@ SearchRuntimeResult SearchRuntime::executeSearch() {
         return SearchRuntimeResult::Failed;
     }
 
-    app.search.total_matches =
-        document_search_.count(
-            *document,
-            app.search.query
-        );
-
-    if (app.search.total_matches == 0U) {
-        app.search.phase = SearchPhase::NoResults;
-        return render();
-    }
-
-    app.search.phase = SearchPhase::Results;
-
     const auto window_result =
         populateWindow(0U);
 
     if (window_result != SearchRuntimeResult::Applied) {
         return window_result;
     }
+
+    app.search.phase =
+        app.search.total_matches == 0U
+            ? SearchPhase::NoResults
+            : SearchPhase::Results;
 
     return render();
 }

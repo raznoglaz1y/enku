@@ -19,6 +19,7 @@ enum class Screen : std::uint8_t {
     BookDetails,
     BookOpening,
     Reading,
+    BookFinished,
     ReaderOverlay,
     Search,
     Settings,

@@ -8,6 +8,7 @@
 
 #include "esp_event.h"
 #include "esp_netif.h"
+#include "esp_timer.h"
 
 #include "enku/services/services.hpp"
 
@@ -50,17 +51,35 @@ public:
 private:
     std::atomic_bool connected_{false};
     std::atomic_bool started_{false};
+    std::atomic_bool manual_disconnect_{false};
+    std::atomic<WiFiPolicy> active_policy_{WiFiPolicy::Off};
+    std::atomic_uint8_t reconnect_attempt_{0};
     bool initialized_{false};
     esp_netif_t* station_netif_{nullptr};
     esp_event_handler_instance_t wifi_handler_{nullptr};
+    esp_event_handler_instance_t ip_handler_{nullptr};
+    esp_timer_handle_t reconnect_timer_{nullptr};
 
     bool ensureStarted();
+    void resetReconnect();
+    void scheduleReconnect();
 
     static void handleWifiEvent(
         void* arg,
         esp_event_base_t event_base,
         std::int32_t event_id,
         void* event_data
+    );
+
+    static void handleIpEvent(
+        void* arg,
+        esp_event_base_t event_base,
+        std::int32_t event_id,
+        void* event_data
+    );
+
+    static void reconnectTimerCallback(
+        void* arg
     );
 };
 

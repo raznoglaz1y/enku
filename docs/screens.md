@@ -1,6 +1,19 @@
 # Screen inventory
 
-Latest available revision per board. Board labels can mix English headings with Russian UI. English coverage is incomplete; historical design audit is pending.
+This file indexes the screen assets currently stored in the repository.
+
+The **Figma design system is the current visual source of truth** for active UI work. Existing RU PNG boards remain valuable historical/reference material, while EN boards in the repository may be drafts or incomplete until they pass the review workflow.
+
+Current design-state rules:
+
+- English is the canonical/source UI language.
+- Approved final review boards are PNG.
+- Temporary EN SVG screen compositions are intermediate artifacts only.
+- Figma component work currently includes Foundations, Statusbar, Header and Primary Button; Universal Row is in progress.
+- A board is not implementation-ready merely because a historical file exists in this index.
+- Implementation readiness is defined by [UI audit](ui-audit.md), [UI specification](ui-spec.md) and [UI revision plan](ui-revision-plan.md).
+
+The table below is therefore an **asset inventory**, not a statement that each listed board is current or approved.
 
 | Board | Available file | English |
 | --- | --- | --- |

@@ -216,6 +216,70 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
 }
 
 ReaderRuntimeResult ReaderRuntimeController::handle(
+    const TypographyDefaultsChanged&
+) {
+    auto* active_session = session();
+
+    if (app_state_.screen != Screen::Reading &&
+        app_state_.screen != Screen::ReaderOverlay) {
+        return ReaderRuntimeResult::Ignored;
+    }
+
+    if (active_session == nullptr ||
+        !active_session->isOpen()) {
+        return ReaderRuntimeResult::Ignored;
+    }
+
+    typography_.font_size_px =
+        app_state_.typography.font_size_px;
+    typography_.line_spacing =
+        app_state_.typography.line_spacing;
+    typography_.margin_px =
+        app_state_.typography.margin_px;
+
+    const bool was_dirty =
+        app_state_.progress_dirty;
+
+    active_session->invalidateLayout(
+        typography_,
+        viewport_
+    );
+
+    if (active_session->status() !=
+        ReaderSessionStatus::Ready) {
+        return ReaderRuntimeResult::LayoutFailed;
+    }
+
+    const auto& current =
+        active_session->currentPage();
+
+    if (!current.has_value()) {
+        return ReaderRuntimeResult::LayoutFailed;
+    }
+
+    app_state_.current_book =
+        current->first_position.book_id;
+    app_state_.reading_position =
+        current->first_position;
+    app_state_.reading_progress =
+        current->progress;
+    app_state_.progress_dirty = was_dirty;
+
+    if (page_renderer_ != nullptr &&
+        !page_renderer_->renderPage(
+            *current,
+            typography_,
+            app_state_.orientation
+        )) {
+        return ReaderRuntimeResult::RenderFailed;
+    }
+
+    return submitRefresh(
+        RefreshReason::ScreenChanged
+    );
+}
+
+ReaderRuntimeResult ReaderRuntimeController::handle(
     const OrientationChanged&
 ) {
     auto* active_session = session();

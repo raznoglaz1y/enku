@@ -18,6 +18,7 @@ add_library(enku_core STATIC
     src/runtime/library_runtime.cpp
     src/runtime/settings_runtime.cpp
     src/runtime/input_runtime.cpp
+    src/runtime/input_dispatcher.cpp
     src/runtime/storage_startup.cpp
     src/runtime/boot_restore.cpp
     src/runtime/sleep_wake.cpp

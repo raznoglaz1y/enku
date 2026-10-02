@@ -3,11 +3,13 @@ idf_component_register(
         "app_main.cpp"
         "../src/esp_idf_file_store.cpp"
         "../src/esp_idf_sd_card.cpp"
+        "../src/esp_idf_epaper.cpp"
     INCLUDE_DIRS
         "../include"
         "../../../include"
     REQUIRES
         driver
+        esp_timer
         fatfs
         sdmmc
 )

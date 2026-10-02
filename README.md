@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/branding/enku-logo.svg" alt="ENKU" width="420">
+  <img src="assets/branding/enku_eink_refresh_compact.gif" alt="ENKU" width="420">
 </p>
 
 <h1 align="center">ENKU</h1>
@@ -255,7 +255,7 @@ ENKU separates **panel sleep**, **device suspend** and **full PMU power-off**.
 
 ENKU is still in the pre-firmware stage, so several important decisions remain intentionally open:
 
-- there is no production reader firmware yet, but the first framework-neutral TXT parser MVP is now implemented and host-testable;
+- there is no production reader firmware yet, but the first framework-neutral TXT parser and forward-pagination MVPs are now implemented and host-testable;
 - a framework-neutral C++ firmware scaffold now exists under `firmware/`;
 - the firmware architecture, Library/storage model, parser abstraction, pagination model and runtime state machine are specified, while hardware integration and reader implementation remain pending;
 - Reader v1 is scoped to EPUB, FB2 and TXT; PDF support is deferred and not yet designed;
@@ -295,9 +295,10 @@ Firmware has not yet been published as a working reader. The planned implementat
 3. **Reader engine**
    - shared normalized parser/document interfaces;
    - first TXT parser MVP implemented in C++;
+   - first forward text-pagination MVP implemented in C++;
    - EPUB and FB2 parser adapters still pending;
    - normalized metadata/document model;
-   - text layout and on-demand pagination;
+   - on-demand pagination using a font/text measurement abstraction;
    - typography presets;
    - semantic position mapping;
    - search and table of contents.
@@ -415,7 +416,8 @@ No final mechanical dimensions will be published as authoritative until the actu
 - [ ] Implement staged boot coordinator and first-usable-screen checkpoint
 - [ ] Implement Refresh Manager queue and render-plan pipeline
 - [ ] Connect the firmware scaffold to verified platform drivers
-- [ ] Implement EPUB/FB2/TXT parsers and text layout
+- [ ] Expand pagination beyond TXT paragraphs and add real font metrics
+- [ ] Implement EPUB/FB2 parsers and complete text layout
 - [ ] Implement LibraryService/index and grid/list navigation
 - [ ] Implement CBOR persistence and reading-position checkpoints
 - [ ] Implement typography presets and Custom mode
@@ -482,6 +484,7 @@ Useful documents:
 - [Power, sleep & wake model](docs/power-model.md)
 - [Reader runtime & state machine](docs/runtime-state-machine.md)
 - [Pagination & rendering model](docs/pagination-model.md)
+- [Pagination MVP](docs/pagination-mvp.md)
 - [Metadata & parser model](docs/parser-model.md)
 - [Licensing model](LICENSES.md)
 - [Library & storage model](docs/storage-model.md)
@@ -520,6 +523,7 @@ docs/
   power-model.md            panel sleep, system suspend and PMU power-off
   runtime-state-machine.md  reader runtime and recovery behavior
   pagination-model.md       text layout and pagination rules
+  pagination-mvp.md         first TXT → BookDocument → page implementation
   parser-model.md           metadata normalization and parser abstraction
   storage-model.md          Library identity, state and transactional storage
   library-model.md          book records, browse/search queries and LibraryService

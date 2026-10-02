@@ -39,20 +39,27 @@ public:
         std::string& bytes
     ) = 0;
 
-    virtual std::optional<std::uint64_t> sourceSize(
-        const BookRecord& record
+    virtual BookSourceStatus sourceSize(
+        const BookRecord& record,
+        std::uint64_t& size_bytes
     ) {
         std::string bytes;
-        if (readSource(
+        const auto status =
+            readSource(
                 record,
                 bytes
-            ) != BookSourceStatus::Ok) {
-            return std::nullopt;
+            );
+
+        if (status != BookSourceStatus::Ok) {
+            size_bytes = 0;
+            return status;
         }
 
-        return static_cast<std::uint64_t>(
-            bytes.size()
-        );
+        size_bytes =
+            static_cast<std::uint64_t>(
+                bytes.size()
+            );
+        return BookSourceStatus::Ok;
     }
 
     virtual BookSourceStatus readSourceRange(

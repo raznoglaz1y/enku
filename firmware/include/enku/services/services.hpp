@@ -85,6 +85,8 @@ struct ReaderCheckpoint {
 struct AppRestoreContext {
     Screen screen{Screen::Library};
     std::optional<BookId> current_book;
+    std::uint32_t library_offset{0};
+    std::optional<BookId> library_focused_book;
 };
 
 struct BootLoopMarker {

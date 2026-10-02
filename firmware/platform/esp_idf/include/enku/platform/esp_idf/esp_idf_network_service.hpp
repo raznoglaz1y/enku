@@ -54,6 +54,7 @@ private:
     std::atomic<NetworkLinkState> link_state_{NetworkLinkState::Disconnected};
     std::atomic_bool started_{false};
     std::atomic_bool manual_disconnect_{false};
+    std::atomic_bool transient_connect_{false};
     std::atomic<WiFiPolicy> active_policy_{WiFiPolicy::Off};
     std::atomic_uint8_t reconnect_attempt_{0};
     bool initialized_{false};

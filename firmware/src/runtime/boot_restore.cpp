@@ -1,5 +1,7 @@
 #include "enku/runtime/boot_restore.hpp"
 
+#include <algorithm>
+
 namespace enku {
 
 BootRestoreCoordinator::BootRestoreCoordinator(
@@ -26,6 +28,95 @@ bool BootRestoreCoordinator::persistLibraryContext() {
             app_state_.library.focused_book,
         }
     ) == PersistStatus::Ok;
+}
+
+bool BootRestoreCoordinator::normalizeLibraryPosition(
+    bool& changed
+) {
+    changed = false;
+
+    const auto original_offset =
+        app_state_.library.offset;
+    const auto original_focus =
+        app_state_.library.focused_book;
+
+    LibraryQuery query;
+    query.mode = LibraryQueryMode::Browse;
+    query.filter = app_state_.library.filter;
+    query.sort = app_state_.library.sort;
+    query.direction = app_state_.library.direction;
+    query.offset = app_state_.library.offset;
+    query.limit = app_state_.library.limit;
+
+    LibraryPage page;
+    const auto status =
+        library_.query(query, page);
+
+    if (status != LibraryStatus::Ok) {
+        return false;
+    }
+
+    if (page.total_matches == 0U) {
+        app_state_.library.offset = 0;
+        app_state_.library.focused_book.reset();
+
+        changed =
+            original_offset != 0U ||
+            original_focus.has_value();
+        return true;
+    }
+
+    if (page.items.empty()) {
+        const auto limit =
+            static_cast<std::uint32_t>(
+                app_state_.library.limit
+            );
+
+        if (limit == 0U) {
+            return false;
+        }
+
+        app_state_.library.offset =
+            ((page.total_matches - 1U) /
+             limit) *
+            limit;
+
+        query.offset =
+            app_state_.library.offset;
+
+        if (library_.query(query, page) !=
+            LibraryStatus::Ok ||
+            page.items.empty()) {
+            return false;
+        }
+    }
+
+    bool focus_valid = false;
+
+    if (app_state_.library.focused_book.has_value()) {
+        focus_valid =
+            std::any_of(
+                page.items.begin(),
+                page.items.end(),
+                [&](const BookRecord& record) {
+                    return record.book_id ==
+                        *app_state_.library.focused_book;
+                }
+            );
+    }
+
+    if (!focus_valid) {
+        app_state_.library.focused_book =
+            page.items.front().book_id;
+    }
+
+    changed =
+        app_state_.library.offset !=
+            original_offset ||
+        app_state_.library.focused_book !=
+            original_focus;
+
+    return true;
 }
 
 bool BootRestoreCoordinator::markBootStable() {
@@ -124,8 +215,36 @@ BootRestoreResult BootRestoreCoordinator::restoreLoadedContext(
     app_state_.library.focused_book =
         restore.library_focused_book;
 
+    bool library_position_changed = false;
+    if (!normalizeLibraryPosition(
+            library_position_changed
+        )) {
+        app_state_.boot.mode = BootMode::Recovery;
+        app_state_.boot.stage = BootStage::RecoveryMode;
+        app_state_.boot.boot_in_progress = false;
+        app_state_.screen = Screen::ErrorRecovery;
+
+        return BootRestoreResult{
+            BootRestoreStatus::RecoveryRequired,
+            storage,
+        };
+    }
+
     if (restore.screen != Screen::Reading ||
         !restore.current_book.has_value()) {
+        if (library_position_changed &&
+            !persistLibraryContext()) {
+            app_state_.boot.mode = BootMode::Recovery;
+            app_state_.boot.stage = BootStage::RecoveryMode;
+            app_state_.boot.boot_in_progress = false;
+            app_state_.screen = Screen::ErrorRecovery;
+
+            return BootRestoreResult{
+                BootRestoreStatus::RecoveryRequired,
+                storage,
+            };
+        }
+
         settleLibrary();
         if (finalize_boot_marker &&
             !markBootStable()) {

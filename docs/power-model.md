@@ -392,3 +392,28 @@ The host integration test verifies:
 - Wake restores the exact saved semantic text offset;
 - active import blocks Sleep;
 - unavailable suspend capability is surfaced without pretending the device slept.
+
+
+## 19. Graceful Power Off runtime MVP
+
+`PowerOffCoordinator` now implements the framework-neutral product-side shutdown boundary.
+
+From Reading:
+
+```text
+Power Off requested
+→ reject while import_active
+→ checkpoint current semantic position
+→ synchronize Library reading state/progress
+→ persist safe Reading + book_id context
+→ disconnect Wi-Fi
+→ PowerService::requestPowerOff()
+```
+
+From non-Reading states, ENKU persists a safe Library context before shutdown.
+
+The coordinator does not call AXP2101 APIs directly. `PowerService::requestPowerOff()` remains the platform boundary that will eventually invoke the verified PMU shutdown mechanism.
+
+Unlike Sleep/Wake, Power Off has no fast resume path. The next power-on is treated as a cold boot and restores the saved context through the full `BootRestoreCoordinator::run()` storage-validation path.
+
+Active imports block graceful Power Off in this MVP rather than allowing the platform to cut power during a transactional write.

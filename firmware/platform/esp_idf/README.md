@@ -165,3 +165,36 @@ target: esp32s3
 ```
 
 This compile check validates the board target and ESP-IDF APIs even before flashing physical hardware.
+
+
+## Fast and partial refresh smoke path
+
+The SSD1677 adapter now also exposes:
+
+- fast full-screen initialization;
+- fast full-screen refresh;
+- fast base refresh;
+- partial region refresh.
+
+The vendor reference refresh control values are preserved:
+
+```text
+full    0x22 = 0xF7
+fast    0x22 = 0xD7
+partial 0x22 = 0xFF
+```
+
+Current bring-up sequence on one boot:
+
+```text
+full ENKU screen
+→ fast ENKU screen with FAST REFRESH label
+→ partial counter 0
+→ partial counter 1
+→ partial counter 2
+→ panel deep sleep
+```
+
+The partial test region is 96×96 pixels and byte-aligned. The API validates bounds and region byte count before touching panel RAM.
+
+Physical validation still needs the real board so we can compare actual refresh time, ghosting and whether the vendor partial window behavior matches the panel revision shipped with the unit.

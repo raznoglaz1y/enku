@@ -1821,17 +1821,26 @@ bool FreeTypeTextRenderer::renderReaderOverlay(
     }
 
     constexpr const char* labels[] = {
-        "TYPOGRAPHY",
+        "FONT",
+        "CONTENTS & BOOKMARKS",
+        "ADD BOOKMARK",
+        "SEARCH IN BOOK",
         "ORIENTATION",
-        "SEARCH",
+        "ABOUT BOOK",
         "SLEEP",
     };
 
-    constexpr int kStartY = 98;
-    constexpr int kRowHeight = 64;
+    const int kStartY =
+        orientation == Orientation::Portrait
+            ? 92
+            : 72;
+    const int kRowHeight =
+        orientation == Orientation::Portrait
+            ? 64
+            : 48;
     constexpr int kLeft = 24;
 
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 7; ++i) {
         const int top =
             kStartY + i * kRowHeight;
 
@@ -1849,9 +1858,15 @@ bool FreeTypeTextRenderer::renderReaderOverlay(
 
         if (!drawTextAt(
                 labels[i],
-                18,
+                orientation == Orientation::Portrait
+                    ? 17
+                    : 15,
                 kLeft + 16,
-                top + 34,
+                top + (
+                    orientation == Orientation::Portrait
+                        ? 34
+                        : 29
+                ),
                 orientation
             )) {
             return false;

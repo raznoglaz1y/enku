@@ -345,3 +345,50 @@ Only after these measurements should the final Suspended implementation be selec
 - Wi-Fi is shut down for Sleep.
 - No live clock/animation is maintained during Sleep.
 - AXP2101-specific implementation stays inside the platform layer.
+
+
+## 18. Sleep/Wake runtime MVP
+
+The framework-neutral product flow is now implemented by `SleepWakeCoordinator`.
+
+Sleep behavior:
+
+```text
+Sleep requested
+→ reject while import_active
+→ require PowerService::canSuspend()
+→ checkpoint current semantic position
+→ update Library summary
+→ persist safe Reading/Library app context
+→ disconnect Wi-Fi
+→ set Screen::Sleep
+→ PowerService::requestSuspend()
+```
+
+If checkpoint, Library summary or context persistence fails, suspend is not requested.
+
+If `requestSuspend()` rejects the transition, the previous screen is restored and the coordinator reports `SuspendFailed`.
+
+Wake behavior uses `BootRestoreCoordinator::restoreContextOnly()` rather than rerunning the full cold-boot storage recovery path:
+
+```text
+Suspended / Sleep
+→ load safe app context
+→ restore Reader checkpoint if needed
+→ reopen current book through normal ReaderRuntimeController
+→ Reading or Library
+→ Active logical runtime
+```
+
+This is the logical fast-wake path. The exact hardware mechanism behind `requestSuspend()` remains intentionally unresolved until current consumption and wake sources are measured on the real Waveshare board.
+
+The host integration test verifies:
+
+- dirty Reading progress is checkpointed before suspend;
+- Library summary is synchronized;
+- Reading context is persisted;
+- Wi-Fi is disconnected;
+- suspend is requested only after persistence succeeds;
+- Wake restores the exact saved semantic text offset;
+- active import blocks Sleep;
+- unavailable suspend capability is surfaced without pretending the device slept.

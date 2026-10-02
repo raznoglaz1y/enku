@@ -361,6 +361,98 @@ std::string sampleEpub2() {
 }
 
 
+std::string sampleLargeRangedEpub() {
+    std::vector<StoredEntry> entries{
+        {
+            "META-INF/container.xml",
+            R"(<container><rootfiles><rootfile full-path="OEBPS/content.opf"/></rootfiles></container>)",
+            false,
+        },
+        {
+            "OEBPS/content.opf",
+            R"(<package xmlns:dc="http://purl.org/dc/elements/1.1/"><metadata><dc:title>Ranged EPUB</dc:title></metadata><manifest><item id="c1" href="ch1.xhtml" media-type="application/xhtml+xml"/></manifest><spine><itemref idref="c1"/></spine></package>)",
+            false,
+        },
+        {
+            "OEBPS/ch1.xhtml",
+            R"(<html><body><p>Only this small chapter is needed.</p></body></html>)",
+            false,
+        },
+        {
+            "unused-large.bin",
+            std::string(
+                512U * 1024U,
+                'x'
+            ),
+            false,
+        },
+    };
+
+    return makeStoredZip(
+        std::move(entries)
+    );
+}
+
+class TrackingZipRangeSource final
+    : public ZipRangeSource {
+public:
+    explicit TrackingZipRangeSource(
+        std::string bytes
+    )
+        : bytes_(std::move(bytes)) {}
+
+    std::uint64_t size() const override {
+        return static_cast<std::uint64_t>(
+            bytes_.size()
+        );
+    }
+
+    bool readRange(
+        std::uint64_t offset,
+        std::size_t length,
+        std::string& out
+    ) const override {
+        ++read_calls;
+        max_read =
+            std::max(
+                max_read,
+                length
+            );
+
+        if (offset >
+                static_cast<std::uint64_t>(
+                    bytes_.size()
+                ) ||
+            static_cast<std::uint64_t>(
+                length
+            ) >
+                static_cast<std::uint64_t>(
+                    bytes_.size()
+                ) -
+                    offset) {
+            out.clear();
+            return false;
+        }
+
+        out.assign(
+            bytes_,
+            static_cast<std::size_t>(
+                offset
+            ),
+            length
+        );
+
+        return true;
+    }
+
+    mutable std::size_t read_calls{0};
+    mutable std::size_t max_read{0};
+
+private:
+    std::string bytes_;
+};
+
+
 } // namespace
 
 int main() {
@@ -529,6 +621,31 @@ int main() {
         std::optional<std::string>{
             "Legacy Chapter"
         }
+    );
+
+    TrackingZipRangeSource ranged_source(
+        sampleLargeRangedEpub()
+    );
+
+    assert(
+        ranged_source.size() >
+        512U * 1024U
+    );
+
+    const auto ranged =
+        parser.parse(
+            ranged_source,
+            source
+        );
+
+    assert(ranged.ok());
+    assert(
+        ranged.document.metadata.title ==
+        "Ranged EPUB"
+    );
+    assert(ranged_source.read_calls > 0);
+    assert(
+        ranged_source.max_read <= 65557U
     );
 
     const auto invalid =

@@ -17,6 +17,7 @@ firmware/
       power.hpp
       persistence.hpp
       localization.hpp
+      settings.hpp
       diagnostics.hpp
       boot.hpp
       refresh.hpp
@@ -36,6 +37,7 @@ firmware/
     runtime/
       reader_runtime.hpp
       library_runtime.hpp
+      settings_runtime.hpp
       storage_startup.hpp
       boot_restore.hpp
       sleep_wake.hpp
@@ -48,6 +50,7 @@ firmware/
       cbor_library_service.hpp
       cbor_app_context_service.hpp
       cbor_boot_loop_service.hpp
+      cbor_settings_service.hpp
       book_import_service.hpp
       staged_book_import_service.hpp
       book_delete_service.hpp
@@ -61,6 +64,7 @@ firmware/
     runtime/
       reader_runtime.cpp
       library_runtime.cpp
+      settings_runtime.cpp
       storage_startup.cpp
       boot_restore.cpp
       sleep_wake.cpp
@@ -80,6 +84,7 @@ firmware/
       cbor_library_service.cpp
       cbor_app_context_service.cpp
       cbor_boot_loop_service.cpp
+      cbor_settings_service.cpp
       book_import_service.cpp
       staged_book_import_service.cpp
       book_delete_service.cpp
@@ -188,7 +193,8 @@ Owns:
 - Sleep/Wake orchestration across reader persistence, network shutdown and PowerService;
 - graceful Power Off persistence before platform shutdown;
 - persistent boot-loop marker management for cold-boot recovery gating;
-- Library query/focus/open coordination, transactional import event handling and focused-book deletion.
+- Library query/focus/open coordination, transactional import event handling and focused-book deletion;
+- global settings loading, safe-default recovery and runtime persistence.
 
 The runtime layer does not manipulate semantic offsets directly.
 

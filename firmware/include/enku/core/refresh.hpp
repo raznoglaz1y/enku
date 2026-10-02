@@ -31,6 +31,7 @@ enum class RefreshReason : std::uint8_t {
     SleepScreen,
     ErrorRecovery,
     FirstScreen,
+    ScreenChanged,
 };
 
 struct RefreshRequest {

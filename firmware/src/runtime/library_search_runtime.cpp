@@ -30,6 +30,13 @@ LibrarySearchRuntime::open() {
 
 LibrarySearchRuntimeResult
 LibrarySearchRuntime::handle(
+    const OpenLibrarySearchRequested&
+) {
+    return open();
+}
+
+LibrarySearchRuntimeResult
+LibrarySearchRuntime::handle(
     LogicalAction action
 ) {
     if (app_state_.screen != Screen::Library ||

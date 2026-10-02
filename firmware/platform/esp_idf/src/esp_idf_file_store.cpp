@@ -6,6 +6,7 @@
 #include <cstring>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <utility>
 
 namespace enku::platform::esp_idf {
 namespace {

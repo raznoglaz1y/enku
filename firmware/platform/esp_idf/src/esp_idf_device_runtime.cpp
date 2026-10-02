@@ -64,7 +64,8 @@ EspIdfDeviceRuntime::EspIdfDeviceRuntime(
           sleep_wake_,
           power_off_,
           &reader_overlay_,
-          &search_
+          &search_,
+          &library_search_
       ) {
     text_renderer_.bindAppState(
         storage_.appState()

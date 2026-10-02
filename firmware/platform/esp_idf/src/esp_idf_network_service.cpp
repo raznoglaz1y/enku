@@ -6,6 +6,7 @@
 
 #include "esp_log.h"
 #include "esp_wifi.h"
+#include "esp_netif.h"
 #include "nvs_flash.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -18,6 +19,21 @@ constexpr const char* kTag = "ENKU_WIFI";
 } // namespace
 
 EspIdfNetworkService::~EspIdfNetworkService() {
+    if (reconnect_timer_ != nullptr) {
+        esp_timer_stop(reconnect_timer_);
+        esp_timer_delete(reconnect_timer_);
+        reconnect_timer_ = nullptr;
+    }
+
+    if (ip_handler_ != nullptr) {
+        esp_event_handler_instance_unregister(
+            IP_EVENT,
+            IP_EVENT_STA_GOT_IP,
+            ip_handler_
+        );
+        ip_handler_ = nullptr;
+    }
+
     if (wifi_handler_ != nullptr) {
         esp_event_handler_instance_unregister(
             WIFI_EVENT,
@@ -127,6 +143,38 @@ bool EspIdfNetworkService::begin() {
         return false;
     }
 
+    result =
+        esp_event_handler_instance_register(
+            IP_EVENT,
+            IP_EVENT_STA_GOT_IP,
+            &EspIdfNetworkService::handleIpEvent,
+            this,
+            &ip_handler_
+        );
+
+    if (result != ESP_OK) {
+        ESP_LOGE(
+            kTag,
+            "IP event registration failed: %s",
+            esp_err_to_name(result)
+        );
+        return false;
+    }
+
+    esp_timer_create_args_t reconnect_timer_args = {};
+    reconnect_timer_args.callback =
+        &EspIdfNetworkService::reconnectTimerCallback;
+    reconnect_timer_args.arg = this;
+    reconnect_timer_args.name = "enku-wifi-retry";
+
+    if (esp_timer_create(
+            &reconnect_timer_args,
+            &reconnect_timer_
+        ) != ESP_OK) {
+        ESP_LOGE(kTag, "Wi-Fi reconnect timer init failed");
+        return false;
+    }
+
     if (esp_wifi_set_storage(WIFI_STORAGE_FLASH) != ESP_OK ||
         esp_wifi_set_mode(WIFI_MODE_STA) != ESP_OK ||
         esp_wifi_start() != ESP_OK) {
@@ -168,6 +216,8 @@ bool EspIdfNetworkService::connected() const {
 }
 
 void EspIdfNetworkService::disconnect() {
+    manual_disconnect_.store(true);
+    resetReconnect();
     connected_.store(false);
 
     if (initialized_ && started_.load()) {
@@ -181,6 +231,9 @@ NetworkPolicyStatus EspIdfNetworkService::applyPolicy(
     if (!initialized_) {
         return NetworkPolicyStatus::DriverError;
     }
+
+    active_policy_.store(policy);
+    resetReconnect();
 
     switch (policy) {
         case WiFiPolicy::Off:
@@ -218,6 +271,8 @@ NetworkPolicyStatus EspIdfNetworkService::applyPolicy(
             if (config.sta.ssid[0] == '\0') {
                 return NetworkPolicyStatus::NoTrustedNetwork;
             }
+
+            manual_disconnect_.store(false);
 
             if (esp_wifi_connect() != ESP_OK) {
                 return NetworkPolicyStatus::DriverError;
@@ -424,6 +479,7 @@ NetworkPolicyStatus EspIdfNetworkService::connectToNetwork(
     }
 
     connected_.store(false);
+    manual_disconnect_.store(false);
 
     const auto connect_result =
         esp_wifi_connect();
@@ -593,14 +649,147 @@ void EspIdfNetworkService::handleWifiEvent(
     ) {
         self->started_.store(false);
         self->connected_.store(false);
+        self->resetReconnect();
     } else if (
         event_id == WIFI_EVENT_STA_CONNECTED
     ) {
-        self->connected_.store(true);
+        // Association alone is not enough. connected() becomes true only
+        // after IP_EVENT_STA_GOT_IP.
+        self->connected_.store(false);
     } else if (
         event_id == WIFI_EVENT_STA_DISCONNECTED
     ) {
         self->connected_.store(false);
+
+        const bool manual =
+            self->manual_disconnect_.exchange(false);
+
+        if (!manual &&
+            self->active_policy_.load() ==
+                WiFiPolicy::AutoConnectTrusted) {
+            self->scheduleReconnect();
+        }
+    }
+}
+
+void EspIdfNetworkService::handleIpEvent(
+    void* arg,
+    esp_event_base_t,
+    std::int32_t event_id,
+    void*
+) {
+    auto* self =
+        static_cast<EspIdfNetworkService*>(arg);
+
+    if (self == nullptr ||
+        event_id != IP_EVENT_STA_GOT_IP) {
+        return;
+    }
+
+    self->connected_.store(true);
+    self->manual_disconnect_.store(false);
+    self->resetReconnect();
+
+    ESP_LOGI(
+        kTag,
+        "Wi-Fi link is online and has an IP address"
+    );
+}
+
+void EspIdfNetworkService::resetReconnect() {
+    reconnect_attempt_.store(0);
+
+    if (reconnect_timer_ != nullptr &&
+        esp_timer_is_active(reconnect_timer_)) {
+        esp_timer_stop(reconnect_timer_);
+    }
+}
+
+void EspIdfNetworkService::scheduleReconnect() {
+    constexpr std::uint8_t kMaxReconnectAttempts = 3;
+
+    if (!initialized_ ||
+        !started_.load() ||
+        active_policy_.load() !=
+            WiFiPolicy::AutoConnectTrusted ||
+        reconnect_timer_ == nullptr) {
+        return;
+    }
+
+    const auto attempt =
+        reconnect_attempt_.load();
+
+    if (attempt >= kMaxReconnectAttempts) {
+        ESP_LOGW(
+            kTag,
+            "Wi-Fi reconnect limit reached"
+        );
+        return;
+    }
+
+    static constexpr std::uint64_t kRetryDelayUs[] = {
+        1'000'000ULL,
+        2'000'000ULL,
+        4'000'000ULL,
+    };
+
+    reconnect_attempt_.store(
+        static_cast<std::uint8_t>(attempt + 1U)
+    );
+
+    if (esp_timer_is_active(reconnect_timer_)) {
+        esp_timer_stop(reconnect_timer_);
+    }
+
+    const auto timer_result =
+        esp_timer_start_once(
+            reconnect_timer_,
+            kRetryDelayUs[attempt]
+        );
+
+    if (timer_result != ESP_OK) {
+        ESP_LOGE(
+            kTag,
+            "Failed to schedule Wi-Fi reconnect: %s",
+            esp_err_to_name(timer_result)
+        );
+        return;
+    }
+
+    ESP_LOGW(
+        kTag,
+        "Wi-Fi disconnected; retry %u/%u scheduled",
+        static_cast<unsigned>(attempt + 1U),
+        static_cast<unsigned>(kMaxReconnectAttempts)
+    );
+}
+
+void EspIdfNetworkService::reconnectTimerCallback(
+    void* arg
+) {
+    auto* self =
+        static_cast<EspIdfNetworkService*>(arg);
+
+    if (self == nullptr ||
+        self->active_policy_.load() !=
+            WiFiPolicy::AutoConnectTrusted ||
+        !self->started_.load() ||
+        self->connected_.load()) {
+        return;
+    }
+
+    self->manual_disconnect_.store(false);
+
+    const auto result =
+        esp_wifi_connect();
+
+    if (result != ESP_OK) {
+        ESP_LOGW(
+            kTag,
+            "Wi-Fi reconnect call failed: %s",
+            esp_err_to_name(result)
+        );
+        self->scheduleReconnect();
     }
 }
 

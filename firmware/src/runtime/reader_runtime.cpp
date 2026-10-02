@@ -10,7 +10,8 @@ ReaderRuntimeController::ReaderRuntimeController(
     ReaderCheckpointService& checkpoint,
     AppContextService& context,
     TypographySettings typography,
-    Viewport viewport
+    Viewport viewport,
+    ReaderPageRenderer* page_renderer
 )
     : app_state_(app_state),
       loader_(loader),
@@ -19,7 +20,8 @@ ReaderRuntimeController::ReaderRuntimeController(
       checkpoint_(checkpoint),
       context_(context),
       typography_(typography),
-      viewport_(viewport) {}
+      viewport_(viewport),
+      page_renderer_(page_renderer) {}
 
 ReaderSession* ReaderRuntimeController::session() {
     return loader_.session();
@@ -326,6 +328,14 @@ ReaderRuntimeResult ReaderRuntimeController::commitVisiblePage(
     app_state_.reading_position = current->first_position;
     app_state_.reading_progress = current->progress;
     app_state_.progress_dirty = mark_progress_dirty;
+
+    if (page_renderer_ != nullptr &&
+        !page_renderer_->renderPage(
+            *current,
+            typography_
+        )) {
+        return ReaderRuntimeResult::RenderFailed;
+    }
 
     return submitRefresh(RefreshReason::PageTurn);
 }

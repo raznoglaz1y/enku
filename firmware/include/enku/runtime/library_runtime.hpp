@@ -6,6 +6,7 @@
 #include "../core/events.hpp"
 #include "../core/library.hpp"
 #include "../services/services.hpp"
+#include "../render/library_page_renderer.hpp"
 #include "../storage/staged_book_import_service.hpp"
 #include "../storage/book_delete_service.hpp"
 #include "reader_runtime.hpp"
@@ -24,6 +25,7 @@ enum class LibraryRuntimeResult : std::uint8_t {
     ImportFailed,
     DeleteFailed,
     SettingsSaveFailed,
+    RenderFailed,
 };
 
 class LibraryRuntimeController {
@@ -35,7 +37,8 @@ public:
         StagedBookImportService& importer,
         BookDeleteService& deleter,
         SettingsRuntimeController& settings,
-        RefreshService& refresh
+        RefreshService& refresh,
+        LibraryPageRenderer* page_renderer = nullptr
     );
 
     LibraryRuntimeResult handle(const LibraryRefreshRequested&);
@@ -61,6 +64,7 @@ private:
     BookDeleteService& deleter_;
     SettingsRuntimeController& settings_;
     RefreshService& refresh_;
+    LibraryPageRenderer* page_renderer_{nullptr};
 
     LibraryPage page_;
     StagedImportStatus last_import_status_{

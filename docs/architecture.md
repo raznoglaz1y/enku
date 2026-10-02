@@ -126,7 +126,19 @@ The engine returns:
 - reading-progress information;
 - optional structural context such as chapter/section.
 
-The UI does not need to know how EPUB, FB2 or another format is internally parsed.
+The UI does not need to know how EPUB, FB2 or TXT content is internally parsed.
+
+### Reader v1 format scope
+
+The first ENKU reader release targets three reflowable/text-oriented formats:
+
+- **EPUB**
+- **FB2**
+- **TXT**
+
+**PDF is explicitly deferred to a later revision.** It is not part of the Reader v1 scope because fixed-layout PDF rendering, zoom/pan navigation, rasterization and memory requirements would add substantial complexity and do not align well with the initial 3.97″ reading experience.
+
+PDF support may be revisited after the core reflowable reader, storage model and rendering pipeline are stable.
 
 ## 4. Semantic reading position
 
@@ -281,7 +293,6 @@ Expected rules:
 The following are intentionally not frozen yet:
 
 - exact firmware framework;
-- initial book format set;
 - parser library/stack;
 - exact persistence backend;
 - partial refresh thresholds;

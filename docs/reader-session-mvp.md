@@ -87,6 +87,17 @@ The session:
 
 This intentionally prioritizes stable logical position over preserving old rendered-page history.
 
+## Runtime integration
+
+ReaderSession is now connected to application page-turn events through [Reader Runtime Integration MVP](reader-runtime-mvp.md).
+
+That layer:
+
+- handles `PageNextRequested` / `PagePreviousRequested`;
+- updates AppState only after a successful session transition;
+- marks reading progress dirty;
+- submits a PageTurn refresh request.
+
 ## Current limitations
 
 The MVP does not yet provide:

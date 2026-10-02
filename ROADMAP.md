@@ -68,6 +68,8 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 - [x] Define staged boot/startup and restore architecture
 - [ ] Implement boot coordinator / stage state machine
 - [ ] Instrument startup stage timings
+- [x] Integrate PageNext/PagePrevious events with ReaderSession and AppState
+- [ ] Integrate OpenBook/Back/Finished transitions
 - [ ] Implement application state model
 - [x] Define persistence backend and crash-recovery model
 - [ ] Implement CBOR persistence codec and generation recovery

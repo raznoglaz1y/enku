@@ -8,6 +8,7 @@
 #include "application_storage_runtime.hpp"
 #include "settings_navigation_runtime.hpp"
 #include "keyboard_runtime.hpp"
+#include "network_lifecycle.hpp"
 
 namespace enku {
 
@@ -25,6 +26,7 @@ public:
         ApplicationStorageRuntime& storage,
         NetworkService& network,
         NetworkSettingsService& network_settings,
+        NetworkLifecycleCoordinator& network_lifecycle,
         SettingsNavigationRuntime& settings_nav,
         WiFiSettingsRenderer* renderer = nullptr,
         RefreshService* refresh = nullptr
@@ -41,6 +43,7 @@ private:
     ApplicationStorageRuntime& storage_;
     NetworkService& network_;
     NetworkSettingsService& network_settings_;
+    NetworkLifecycleCoordinator& network_lifecycle_;
     SettingsNavigationRuntime& settings_nav_;
     WiFiSettingsRenderer* renderer_{nullptr};
     RefreshService* refresh_{nullptr};

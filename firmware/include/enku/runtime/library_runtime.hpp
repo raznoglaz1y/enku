@@ -9,6 +9,7 @@
 #include "../storage/staged_book_import_service.hpp"
 #include "../storage/book_delete_service.hpp"
 #include "reader_runtime.hpp"
+#include "settings_runtime.hpp"
 
 namespace enku {
 
@@ -22,6 +23,7 @@ enum class LibraryRuntimeResult : std::uint8_t {
     ImportDuplicate,
     ImportFailed,
     DeleteFailed,
+    SettingsSaveFailed,
 };
 
 class LibraryRuntimeController {
@@ -32,12 +34,14 @@ public:
         ReaderRuntimeController& reader,
         StagedBookImportService& importer,
         BookDeleteService& deleter,
+        SettingsRuntimeController& settings,
         RefreshService& refresh
     );
 
     LibraryRuntimeResult handle(const LibraryRefreshRequested&);
     LibraryRuntimeResult handle(const LibraryFilterChanged&);
     LibraryRuntimeResult handle(const LibrarySortChanged&);
+    LibraryRuntimeResult handle(const LibraryViewChanged&);
     LibraryRuntimeResult handle(const LibrarySearchChanged&);
     LibraryRuntimeResult handle(const LibraryFocusNextRequested&);
     LibraryRuntimeResult handle(const LibraryFocusPreviousRequested&);
@@ -55,6 +59,7 @@ private:
     ReaderRuntimeController& reader_;
     StagedBookImportService& importer_;
     BookDeleteService& deleter_;
+    SettingsRuntimeController& settings_;
     RefreshService& refresh_;
 
     LibraryPage page_;

@@ -259,6 +259,13 @@ Reproducible build, documentation, case files and first tagged version.
 
 ## 12. Custom mainboard / productization
 
+- [x] Open-source commercialization policy fixed: commercial kits / Kickstarter are compatible with ENKU's open licenses
+- [x] Trademark separated from open hardware/software source
+- [x] Pricing policy fixed: full COGS + sustainable margin, not raw-BOM pricing
+- [x] Kickstarter rule fixed: no launch before a working physical prototype demonstrates marketed core features
+- [x] Power cost/quality shortlist added: BQ25185, TPS2121 baseline, TPS63031 test candidate, TPS63070 fallback, BQ51013C for Pro Wireless
+
+
 - [x] Define portrait-first custom-mainboard direction
 - [x] Define common Base / Cover / Pro / Pro Wireless architecture
 - [x] Define Dock pogo charging and explicit DOCK_DETECT

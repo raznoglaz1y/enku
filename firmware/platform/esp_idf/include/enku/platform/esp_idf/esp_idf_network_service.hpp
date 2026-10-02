@@ -29,6 +29,15 @@ public:
         WiFiPolicy policy
     ) override;
 
+    NetworkPolicyStatus scanNetworks(
+        std::vector<WiFiNetworkInfo>& networks
+    ) override;
+
+    NetworkPolicyStatus connectToNetwork(
+        std::string_view ssid,
+        std::string_view password
+    ) override;
+
     NetworkPolicyStatus setTrustedNetwork(
         std::string_view ssid,
         std::string_view password

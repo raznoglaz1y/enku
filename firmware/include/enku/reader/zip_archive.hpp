@@ -26,6 +26,19 @@ struct ZipEntry {
     std::uint32_t local_header_offset{0};
 };
 
+class ZipRangeSource {
+public:
+    virtual ~ZipRangeSource() = default;
+
+    virtual std::uint64_t size() const = 0;
+
+    virtual bool readRange(
+        std::uint64_t offset,
+        std::size_t length,
+        std::string& out
+    ) const = 0;
+};
+
 class ZipArchive {
 public:
     static constexpr std::size_t kMaxEntryBytes =
@@ -33,6 +46,10 @@ public:
 
     explicit ZipArchive(
         std::string_view bytes
+    );
+
+    explicit ZipArchive(
+        const ZipRangeSource& source
     );
 
     ZipArchiveStatus status() const;
@@ -49,10 +66,19 @@ public:
 
 private:
     std::string_view bytes_;
+    const ZipRangeSource* source_{nullptr};
     ZipArchiveStatus status_{
         ZipArchiveStatus::InvalidArchive
     };
     std::vector<ZipEntry> entries_;
+
+    std::uint64_t sourceSize() const;
+
+    bool readRange(
+        std::uint64_t offset,
+        std::size_t length,
+        std::string& out
+    ) const;
 
     bool parseCentralDirectory();
 };

@@ -65,6 +65,12 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
         app_state_.current_book_finished = false;
         app_state_.progress_dirty = false;
 
+        const auto recovery_refresh =
+            submitRefresh(RefreshReason::ErrorRecovery);
+        if (recovery_refresh == ReaderRuntimeResult::RefreshRejected) {
+            return recovery_refresh;
+        }
+
         return ReaderRuntimeResult::CheckpointLoadFailed;
     }
 

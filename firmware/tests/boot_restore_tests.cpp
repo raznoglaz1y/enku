@@ -438,6 +438,16 @@ int main() {
         BookImportService importer(library);
         AppState app;
         CborSettingsService settings_service(state_files);
+        GlobalSettings library_settings;
+        library_settings.library_sort =
+            LibrarySort::RecentlyAdded;
+        library_settings.library_direction =
+            SortDirection::Ascending;
+        assert(
+            settings_service.save(library_settings) ==
+            PersistStatus::Ok
+        );
+
         SettingsRuntimeController settings(
             app,
             settings_service

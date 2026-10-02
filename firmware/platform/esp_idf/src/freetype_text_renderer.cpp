@@ -913,10 +913,18 @@ bool FreeTypeTextRenderer::renderSearch(
             2
         );
 
+        if (!drawTextAt(
+                app_state.keyboard.focused_label,
+                22,
+                40,
+                230,
+                orientation
+            )) {
+            return false;
+        }
+
         return drawTextAt(
-            app_state.keyboard.focus_index < 1000
-                ? "UP/DOWN KEY  FUNCTION SELECT  BACK CLOSE"
-                : "",
+            "UP/DOWN KEY  FUNCTION SELECT  BACK CLOSE",
             12,
             30,
             orientation == Orientation::Portrait

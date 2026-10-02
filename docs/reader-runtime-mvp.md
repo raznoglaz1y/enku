@@ -7,8 +7,8 @@ This document defines the first concrete integration between ReaderSession, AppS
 ```text
 OpenBookRequested
 → Book Opening
-→ external loader prepares ReaderSession
-→ BookOpened / BookOpenFailed
+→ ReaderBookLoader opens the source/document/session
+→ BookOpened / BookOpenFailed completion path
 → Reading / Library
 
 PageNextRequested / PagePreviousRequested
@@ -103,12 +103,14 @@ The persistence/checkpoint layer later commits according to the existing debounc
 
 `OpenBookRequested` now moves the app from Library to Book Opening and records the requested `book_id`.
 
-Actual storage/parser/document construction is now implemented by the first [Book Loader / Document Provider MVP](book-loader-mvp.md). The runtime lifecycle remains event-based so loading can become asynchronous later without changing screen/state semantics. After that layer opens ReaderSession it emits:
+Actual storage/parser/document construction is implemented by the first [Book Loader / Document Provider MVP](book-loader-mvp.md). `ReaderRuntimeController` now invokes that loader directly when it receives `OpenBookRequested`.
 
-- `BookOpened` → validate current session, switch to Reading and synchronize the visible page into AppState;
-- `BookOpenFailed` → close partial session and return safely to Library.
+The completion semantics remain expressed through the existing lifecycle handlers:
 
-This keeps runtime transitions independent from parser/storage implementation.
+- successful load → `BookOpened` path validates the loader-owned session, switches to Reading and synchronizes the visible page into AppState;
+- failed load → `BookOpenFailed` path clears loader state and returns safely to Library.
+
+The current implementation is synchronous, but the success/failure lifecycle remains explicit so loading can later become asynchronous without changing screen/state semantics.
 
 ## Back / checkpoint
 
@@ -127,8 +129,8 @@ Checkpoint failure leaves the Reader open rather than silently discarding unsave
 
 Implemented:
 
-- OpenBookRequested → Book Opening transition;
-- BookOpened / BookOpenFailed completion events;
+- OpenBookRequested → Book Opening → automatic ReaderBookLoader invocation;
+- automatic success/failure completion through BookOpened / BookOpenFailed lifecycle handlers;
 - explicit PageNext/PagePrevious handlers;
 - ReaderSession invocation;
 - AppState reading-position/progress synchronization;
@@ -142,7 +144,6 @@ Implemented:
 
 Not yet implemented:
 
-- direct automatic dispatch from the concrete loader into BookOpened/BookOpenFailed;
 - structured layout/display error events;
 - typography/orientation event integration;
 - render-plan payload/framebuffer generation.

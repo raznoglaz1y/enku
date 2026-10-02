@@ -128,6 +128,8 @@ The engine returns:
 
 The UI does not need to know how EPUB, FB2 or TXT content is internally parsed.
 
+The format adapter and metadata normalization rules are defined in [Metadata & Parser Model](parser-model.md).
+
 ### Reader v1 format scope
 
 The first ENKU reader release targets three reflowable/text-oriented formats:
@@ -295,7 +297,7 @@ Expected rules:
 The following are intentionally not frozen yet:
 
 - exact firmware framework;
-- parser library/stack;
+- concrete parser libraries/stack;
 - exact persistence backend;
 - partial refresh thresholds;
 - battery model and percentage calibration;

@@ -102,6 +102,21 @@ struct BookDetailsState {
     bool confirm_restart{false};
 };
 
+enum class SettingsItem : std::uint8_t {
+    Reading,
+    Display,
+    WiFi,
+    Language,
+    Storage,
+    Sleep,
+    About,
+    PowerOff,
+};
+
+struct SettingsNavigationState {
+    SettingsItem focus{SettingsItem::Reading};
+};
+
 struct NetworkState {
     bool connected{false};
     std::string ssid;
@@ -180,6 +195,7 @@ struct AppState {
     BookDetailsState book_details;
     BookFinishedState book_finished;
     ContentsBookmarksState contents_bookmarks;
+    SettingsNavigationState settings_nav;
     KeyboardState keyboard;
 
     NetworkState network;

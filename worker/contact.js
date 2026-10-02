@@ -240,34 +240,34 @@ const sharedChromeCss = `
   .enku-home-actions{display:flex;align-items:center;gap:22px;margin-top:34px;flex-wrap:wrap}
   .enku-button{min-height:50px;padding:0 20px;border:1px solid #171717;border-radius:5px;background:#171717;color:#f5f1e8;display:inline-flex;align-items:center;gap:26px;font-size:13px;font-weight:600}
   .enku-text-link{font-size:13px;font-weight:600;border-bottom:1px solid rgba(20,20,20,.25);padding-bottom:3px}
-  .enku-home-explore,.enku-home-status,.enku-home-work{padding:98px 0;border-bottom:1px solid rgba(20,20,20,.09)}
-  .enku-home-head{display:grid;grid-template-columns:.45fr .9fr 1fr;gap:44px;align-items:start;margin-bottom:50px}
+  .enku-home-explore,.enku-home-status,.enku-home-work{padding:108px 0;border-bottom:1px solid rgba(20,20,20,.09)}
+  .enku-home-head{display:grid;grid-template-columns:.42fr .92fr 1fr;gap:56px;align-items:start;margin-bottom:62px}
   .enku-home-head h2,.enku-home-split h2{font-size:clamp(46px,4.8vw,68px);line-height:.94;margin:0}
   .enku-home-head>p:last-child,.enku-home-split>div:last-child>p{font-size:15px;line-height:1.7;color:#625e57;margin:0}
-  .enku-home-cards{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid rgba(20,20,20,.16);border-bottom:1px solid rgba(20,20,20,.16)}
-  .enku-home-card{padding:26px 22px 28px 0;min-height:310px;display:flex;flex-direction:column}
-  .enku-home-card+.enku-home-card{border-left:1px solid rgba(20,20,20,.12);padding-left:22px}
+  .enku-home-cards{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid rgba(20,20,20,.16);border-bottom:1px solid rgba(20,20,20,.16);column-gap:0}
+  .enku-home-card{padding:30px 26px 30px 0;min-height:328px;display:flex;flex-direction:column;transition:transform .18s ease,background .18s ease}
+  .enku-home-card+.enku-home-card{border-left:1px solid rgba(20,20,20,.12);padding-left:26px}
   .enku-home-card small,.enku-work-main small,.enku-work-side small,.enku-home-final small,.enku-home-status-grid small{font-size:9px;font-weight:700;letter-spacing:.13em;color:#7c766e}
-  .enku-home-card strong{font-size:31px;line-height:1.05;margin:48px 0 12px}
-  .enku-home-card p{font-size:12px;line-height:1.6;color:#666159;margin:0}
-  .enku-home-card span{margin-top:auto;padding-top:26px;font-size:12px;font-weight:600}
+  .enku-home-card strong{font-size:32px;line-height:1.04;margin:58px 0 13px}
+  .enku-home-card p{font-size:12px;line-height:1.68;color:#666159;margin:0;max-width:245px}
+  .enku-home-card span{margin-top:auto;padding-top:30px;font-size:12px;font-weight:600}.enku-home-card:hover{transform:translateY(-3px);background:rgba(255,255,255,.14)}
   .enku-home-split{align-items:start}
-  .enku-home-status-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(20,20,20,.15);border-bottom:1px solid rgba(20,20,20,.15);margin:32px 0 28px}
+  .enku-home-status-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(20,20,20,.15);border-bottom:1px solid rgba(20,20,20,.15);margin:38px 0 30px}
   .enku-home-status-grid div{padding:20px 18px 22px 0}
   .enku-home-status-grid div+div{border-left:1px solid rgba(20,20,20,.12);padding-left:18px}
   .enku-home-status-grid strong{display:block;font-family:"Newsreader",serif;font-size:23px;font-weight:500;margin-top:7px}
   .enku-home-head.compact{grid-template-columns:.4fr 1.6fr;margin-bottom:42px}
   .enku-home-work-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:28px}
-  .enku-work-main,.enku-work-side a{border:1px solid rgba(20,20,20,.13);padding:28px;display:flex;flex-direction:column}
-  .enku-work-main{min-height:310px}
+  .enku-work-main,.enku-work-side a{border:1px solid rgba(20,20,20,.13);padding:32px;display:flex;flex-direction:column;transition:transform .18s ease,background .18s ease}
+  .enku-work-main{min-height:330px}
   .enku-work-main strong{font-size:42px;line-height:1;margin:54px 0 12px}
   .enku-work-main p{font-size:13px;line-height:1.65;color:#645f58;max-width:580px;margin:0}
-  .enku-work-main span,.enku-work-side span{margin-top:auto;font-size:12px;font-weight:600;padding-top:26px}
+  .enku-work-main span,.enku-work-side span{margin-top:auto;font-size:12px;font-weight:600;padding-top:28px}.enku-work-main:hover,.enku-work-side a:hover{transform:translateY(-3px);background:rgba(255,255,255,.14)}
   .enku-work-side{display:grid;grid-template-rows:1fr 1fr;gap:18px}
   .enku-work-side strong{font-size:28px;margin:20px 0 8px}
   .enku-work-side span{font-weight:400;line-height:1.5;color:#625e57}
   .enku-home-final{border-bottom:1px solid rgba(20,20,20,.09)}
-  .enku-home-final-inner{min-height:150px;display:flex;align-items:center;justify-content:space-between;gap:30px}
+  .enku-home-final-inner{min-height:164px;display:flex;align-items:center;justify-content:space-between;gap:30px}
   .enku-home-final strong{display:block;font-size:42px;margin-top:7px}
   .enku-home-final b{font-size:34px;font-weight:400}
   .enku-next{border-top:1px solid rgba(20,20,20,.1);background:rgba(255,255,255,.13)}
@@ -309,7 +309,7 @@ const sharedChromeCss = `
     .enku-footer-brand{grid-column:1/-1}
     .enku-home-hero{padding:70px 0 70px}
     .enku-home h1{font-size:clamp(58px,16vw,82px)}
-    .enku-home-explore,.enku-home-status,.enku-home-work{padding:72px 0}
+    .enku-home-explore,.enku-home-status,.enku-home-work{padding:78px 0}
     .enku-home-cards{grid-template-columns:1fr}
     .enku-home-card,.enku-home-card+.enku-home-card,.enku-home-card:nth-child(3),.enku-home-card:nth-child(4){border-left:0;border-top:1px solid rgba(20,20,20,.12);padding:24px 0;min-height:240px}
     .enku-home-card:first-child{border-top:0}

@@ -28,6 +28,7 @@ idf_component_register(
         "../../../src/runtime/book_details_runtime.cpp"
         "../../../src/runtime/book_finished_runtime.cpp"
         "../../../src/runtime/contents_bookmarks_runtime.cpp"
+        "../../../src/runtime/about_book_runtime.cpp"
         "../../../src/runtime/boot_restore.cpp"
         "../../../src/reader/book_loader.cpp"
         "../../../src/reader/document_search.cpp"

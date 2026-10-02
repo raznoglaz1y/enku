@@ -24,6 +24,8 @@ The exact C++ API is not fixed yet, but the separation is.
 
 The Library and Reader Engine should work with normalized ENKU structures rather than EPUB-, FB2- or TXT-specific objects.
 
+The Library-facing record/query representation is defined separately in [Library Data Model & Service Interface](library-model.md).
+
 ## 2. Canonical metadata model
 
 Every imported book is normalized into a common metadata record.

@@ -81,7 +81,7 @@ fingerprint = hash(relevant file/content identity)
 book_id = internal stable identifier associated with that fingerprint
 ```
 
-The exact hash algorithm can be selected during implementation.
+The current import MVP uses FNV-1a 64 plus byte length as a deterministic provisional content fingerprint. It is isolated behind `BookImportService` and is not treated as a cryptographic identity guarantee; migration to SHA-256 can happen without changing the Library API.
 
 ### Duplicate detection
 
@@ -198,6 +198,22 @@ receive/copy
 → commit Library entry
 → remove temporary data
 ```
+
+The first framework-neutral `BookImportService` now implements the validation/indexing core for TXT sources supplied as bytes:
+
+```text
+detect format
+→ compute deterministic content fingerprint
+→ reject exact duplicate
+→ parse/validate TXT
+→ normalize metadata
+→ build BookRecord
+→ LibraryService.upsert()
+```
+
+The source-file staging/copy step remains a platform/storage concern and will wrap this core pipeline later. EPUB/FB2 imports remain unsupported until their parsers exist.
+
+The initial per-book state is represented by absence of a checkpoint. This is intentional: `ReaderCheckpointService::load() == NotFound` already means start from the beginning, so import does not create an unnecessary state write or risk a partially committed Library/state transaction.
 
 A book must not appear in the Library before the commit stage succeeds.
 

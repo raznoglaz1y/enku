@@ -37,6 +37,9 @@ firmware/
       reader_runtime.hpp
     services/
       services.hpp
+    storage/
+      state_file_store.hpp
+      cbor_reader_checkpoint.hpp
 
   src/
     core/
@@ -53,12 +56,13 @@ firmware/
       txt/
         txt_parser.cpp
     storage/
+      cbor_reader_checkpoint.cpp
     ui/
     platform/
     services/
 ```
 
-Framework-independent interfaces are committed at this stage, plus host-testable TXT parser, forward text-pagination, concrete Reader Engine and ReaderSession navigation implementations.
+Framework-independent interfaces are committed at this stage, plus host-testable TXT parser, forward text-pagination, concrete Reader Engine and ReaderSession navigation implementations, and the first concrete per-book A/B CBOR checkpoint backend.
 
 ## 2. Module ownership
 

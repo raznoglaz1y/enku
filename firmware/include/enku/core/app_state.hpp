@@ -102,6 +102,11 @@ struct BookDetailsState {
     bool confirm_restart{false};
 };
 
+struct LocaleSettingsState {
+    std::uint8_t focus_index{0};
+    std::uint8_t window_start{0};
+};
+
 struct DisplaySettingsState {
     Orientation selected{Orientation::Portrait};
 };
@@ -215,6 +220,7 @@ struct AppState {
     SettingsNavigationState settings_nav;
     ReadingSettingsState reading_settings;
     DisplaySettingsState display_settings;
+    LocaleSettingsState locale_settings;
     KeyboardState keyboard;
 
     NetworkState network;

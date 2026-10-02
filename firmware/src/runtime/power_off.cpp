@@ -70,6 +70,8 @@ PowerOffStatus PowerOffCoordinator::powerOff() {
                 AppRestoreContext{
                     Screen::Library,
                     std::nullopt,
+                    app_state_.library.offset,
+                    app_state_.library.focused_book,
                 }
             ) != PersistStatus::Ok) {
             return PowerOffStatus::ContextSaveFailed;

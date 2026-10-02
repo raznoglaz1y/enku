@@ -255,3 +255,57 @@ Verified printable enclosure around the final hardware stack.
 
 **M6 — Open release**  
 Reproducible build, documentation, case files and first tagged version.
+
+
+## 12. Custom mainboard / productization
+
+- [x] Define portrait-first custom-mainboard direction
+- [x] Define common Base / Cover / Pro / Pro Wireless architecture
+- [x] Define Dock pogo charging and explicit DOCK_DETECT
+- [x] Define configurable Dock Mode product concept
+- [x] Add BMI270 motion/orientation target
+- [x] Add Hall sensor / magnetic-cover target
+- [x] Reserve Pro frontlight and Pro Wireless Qi paths
+- [x] Define Base display candidate: GDEY0397T81P
+- [x] Define Pro display candidate: GDEY0426T82-FL01C
+- [x] Define multi-variant BOM ceilings and competitive stop limits
+- [ ] Receive Good Display pricing / reference circuitry for Base and Pro panels
+- [ ] Select exact charger / power-path topology
+- [ ] Select exact Dock OR-ing / power-mux device
+- [ ] Select exact microSD connector after enclosure-edge test
+- [ ] Select final low-noise page tact switches
+- [ ] Validate frontlight current / driver topology
+- [ ] Validate Qi coil / receiver / ferrite stack for Pro Wireless
+- [ ] Complete per-variant populated / DNP BOM
+- [ ] Obtain PCBWay / assembly quotes at 10 / 25 / 50 / 100 units
+- [ ] Re-run competitive pricing after real quotes
+- [ ] Freeze schematic only after all EPD/power BLOCKER items are closed
+
+### Cost ceilings
+
+- Electronics Kit: <= PLN 155
+- Base: <= PLN 180
+- Cover: <= PLN 200
+- Pro: <= PLN 230
+- Pro Wireless: <= PLN 260
+- Dock: <= PLN 40
+
+If supplier / assembly quotes materially exceed these ceilings, cost-down happens before final routing.
+
+## 13. Software priorities after competitive review
+
+Priority order:
+
+1. robust EPUB / FB2 / TXT reader;
+2. Library + persistence;
+3. typography;
+4. bookmarks / TOC / in-book search;
+5. local browser-based library manager;
+6. Dock Mode;
+7. offline dictionary;
+8. PDF only after the reflowable reader is stable.
+
+Explicitly out of R0.x scope unless strategy changes:
+- DRM/store integration;
+- audio/TTS;
+- waterproofing.

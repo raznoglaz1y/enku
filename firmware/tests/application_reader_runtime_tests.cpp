@@ -298,6 +298,46 @@ int main() {
     );
     assert(storage.appState().screen == Screen::Reading);
 
+    const auto orientation_position =
+        storage.appState().reading_position;
+    assert(orientation_position.has_value());
+    const auto orientation_before =
+        storage.appState().orientation;
+
+    assert(
+        overlay.handle(
+            LogicalAction::OpenReaderMenu
+        ) == ReaderOverlayRuntimeResult::Applied
+    );
+    assert(
+        overlay.handle(
+            LogicalAction::NavigateNext
+        ) == ReaderOverlayRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().reader_overlay.focus_index == 1
+    );
+    assert(
+        overlay.handle(
+            LogicalAction::Confirm
+        ) == ReaderOverlayRuntimeResult::Applied
+    );
+    assert(storage.appState().screen == Screen::Reading);
+    assert(
+        storage.appState().orientation != orientation_before
+    );
+    assert(
+        renderer.last_orientation ==
+        storage.appState().orientation
+    );
+    assert(
+        storage.appState().reading_position.has_value()
+    );
+    assert(
+        storage.appState().reading_position->text_offset ==
+        orientation_position->text_offset
+    );
+
     const auto next =
         runtime.reader().handle(
             PageNextRequested{}

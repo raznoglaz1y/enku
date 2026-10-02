@@ -1,173 +1,11 @@
 #include "enku/runtime/search_runtime.hpp"
 
-#include <algorithm>
-#include <cctype>
 #include <string>
-#include <string_view>
 #include <utility>
 
 #include "enku/core/events.hpp"
 
 namespace enku {
-
-namespace {
-
-std::string simpleUtf8Fold(
-    std::string_view value
-) {
-    std::string out;
-    out.reserve(value.size());
-
-    std::size_t offset = 0;
-
-    while (offset < value.size()) {
-        const auto first =
-            static_cast<unsigned char>(
-                value[offset]
-            );
-
-        if (first < 0x80U) {
-            char ch =
-                static_cast<char>(first);
-
-            if (ch >= 'A' && ch <= 'Z') {
-                ch = static_cast<char>(
-                    ch - 'A' + 'a'
-                );
-            }
-
-            out.push_back(ch);
-            ++offset;
-            continue;
-        }
-
-        if (offset + 1U < value.size() &&
-            (first & 0xE0U) == 0xC0U) {
-            const auto second =
-                static_cast<unsigned char>(
-                    value[offset + 1U]
-                );
-
-            if ((second & 0xC0U) == 0x80U) {
-                std::uint32_t codepoint =
-                    ((first & 0x1FU) << 6U) |
-                    (second & 0x3FU);
-
-                if (codepoint >= 0x0410U &&
-                    codepoint <= 0x042FU) {
-                    codepoint += 0x20U;
-                } else if (codepoint == 0x0401U) {
-                    codepoint = 0x0451U;
-                }
-
-                out.push_back(
-                    static_cast<char>(
-                        0xC0U |
-                        ((codepoint >> 6U) &
-                         0x1FU)
-                    )
-                );
-                out.push_back(
-                    static_cast<char>(
-                        0x80U |
-                        (codepoint & 0x3FU)
-                    )
-                );
-                offset += 2U;
-                continue;
-            }
-        }
-
-        out.push_back(
-            static_cast<char>(first)
-        );
-        ++offset;
-    }
-
-    return out;
-}
-
-struct SearchPreview {
-    std::string text;
-    std::uint32_t match_start{0};
-    std::uint32_t match_length{0};
-};
-
-bool isUtf8Continuation(unsigned char ch) {
-    return (ch & 0xC0U) == 0x80U;
-}
-
-std::size_t clampUtf8Start(
-    const std::string& text,
-    std::size_t offset
-) {
-    offset = std::min(offset, text.size());
-
-    while (offset > 0U &&
-           offset < text.size() &&
-           isUtf8Continuation(
-               static_cast<unsigned char>(
-                   text[offset]
-               )
-           )) {
-        --offset;
-    }
-
-    return offset;
-}
-
-std::size_t clampUtf8End(
-    const std::string& text,
-    std::size_t offset
-) {
-    offset = std::min(offset, text.size());
-
-    while (offset < text.size() &&
-           isUtf8Continuation(
-               static_cast<unsigned char>(
-                   text[offset]
-               )
-           )) {
-        ++offset;
-    }
-
-    return offset;
-}
-
-SearchPreview previewAround(
-    const std::string& text,
-    std::size_t match,
-    std::size_t match_length
-) {
-    constexpr std::size_t kRadius = 40;
-
-    auto start =
-        match > kRadius
-            ? match - kRadius
-            : 0U;
-    auto end =
-        std::min<std::size_t>(
-            text.size(),
-            match + match_length + kRadius
-        );
-
-    start = clampUtf8Start(text, start);
-    end = clampUtf8End(text, end);
-
-    SearchPreview preview;
-    preview.text = text.substr(start, end - start);
-    preview.match_start =
-        static_cast<std::uint32_t>(
-            match - start
-        );
-    preview.match_length =
-        static_cast<std::uint32_t>(
-            match_length
-        );
-    return preview;
-}
-
-} // namespace
 
 SearchRuntime::SearchRuntime(
     ApplicationStorageRuntime& storage,
@@ -375,29 +213,11 @@ SearchRuntimeResult SearchRuntime::executeSearch() {
         return SearchRuntimeResult::Failed;
     }
 
-    const auto needle = simpleUtf8Fold(app.search.query);
-
-    for (const auto& section : document->sections) {
-        for (const auto& block : section.blocks) {
-            const auto haystack = simpleUtf8Fold(block.text);
-            std::size_t from = 0;
-
-            while (from < haystack.size()) {
-                const auto match =
-                    haystack.find(needle, from);
-                if (match == std::string::npos) {
-                    break;
-                }
-
-                ++app.search.total_matches;
-
-                from = match + std::max<std::size_t>(
-                    1U,
-                    needle.size()
-                );
-            }
-        }
-    }
+    app.search.total_matches =
+        document_search_.count(
+            *document,
+            app.search.query
+        );
 
     if (app.search.total_matches == 0U) {
         app.search.phase = SearchPhase::NoResults;
@@ -426,71 +246,34 @@ SearchRuntimeResult SearchRuntime::populateWindow(
         return SearchRuntimeResult::Failed;
     }
 
-    constexpr std::size_t kBatchLimit = 24;
-    const auto needle = simpleUtf8Fold(app.search.query);
+    constexpr std::uint32_t kBatchLimit = 24U;
+    const auto result =
+        document_search_.window(
+            *document,
+            app.search.query,
+            window_start,
+            kBatchLimit
+        );
 
     app.search.matches.clear();
-    app.search.window_start = window_start;
+    app.search.matches.reserve(result.matches.size());
 
-    std::uint32_t global_index = 0;
-
-    for (const auto& section : document->sections) {
-        for (const auto& block : section.blocks) {
-            const auto haystack = simpleUtf8Fold(block.text);
-            std::size_t from = 0;
-
-            while (from < haystack.size()) {
-                const auto match =
-                    haystack.find(needle, from);
-
-                if (match == std::string::npos) {
-                    break;
-                }
-
-                if (global_index >= window_start &&
-                    app.search.matches.size() <
-                        kBatchLimit) {
-                    const auto preview =
-                        previewAround(
-                            block.text,
-                            match,
-                            needle.size()
-                        );
-
-                    app.search.matches.push_back(
-                        SearchMatch{
-                            SemanticPosition{
-                                document->book_id,
-                                section.id,
-                                block.text_offset +
-                                    static_cast<std::uint64_t>(
-                                        match
-                                    ),
-                            },
-                            section.title.has_value()
-                                ? *section.title
-                                : section.id,
-                            preview.text,
-                            preview.match_start,
-                            preview.match_length,
-                        }
-                    );
-                }
-
-                ++global_index;
-
-                if (app.search.matches.size() >=
-                    kBatchLimit) {
-                    return SearchRuntimeResult::Applied;
-                }
-
-                from = match + std::max<std::size_t>(
-                    1U,
-                    needle.size()
-                );
+    for (const auto& match : result.matches) {
+        app.search.matches.push_back(
+            SearchMatch{
+                match.position,
+                match.section_label,
+                match.preview,
+                match.preview_match_start,
+                match.preview_match_length,
             }
-        }
+        );
     }
+
+    app.search.total_matches =
+        result.total_matches;
+    app.search.window_start =
+        result.window_start;
 
     return SearchRuntimeResult::Applied;
 }

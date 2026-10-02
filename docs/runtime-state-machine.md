@@ -90,6 +90,8 @@ When the user requests Next:
 
 The UI must not advance stored progress before a valid next page exists.
 
+The first concrete implementation of this path is documented in [Reader Runtime Integration MVP](reader-runtime-mvp.md). It updates `AppState.reading_position` / `reading_progress`, marks `progress_dirty`, and emits a PageTurn `RefreshRequest` only after ReaderSession accepts the transition.
+
 ## 6. Page Previous
 
 Previous returns to a deterministic prior logical page through ReaderSession.

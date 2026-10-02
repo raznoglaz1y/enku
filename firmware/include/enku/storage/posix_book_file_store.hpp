@@ -21,6 +21,11 @@ public:
         const std::string& bytes
     ) override;
 
+    BookFileStatus append(
+        const std::string& path,
+        const std::string& bytes
+    ) override;
+
     BookFileStatus remove(
         const std::string& path
     ) override;

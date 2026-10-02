@@ -35,7 +35,12 @@ int main() {
     }
 
     {
-        const std::string utf16_bom = "\xFF\xFEA\0";
+        const std::string utf16_bom{
+            static_cast<char>(0xFF),
+            static_cast<char>(0xFE),
+            'A',
+            '\0',
+        };
         const auto result = parser.parse(utf16_bom, source);
         assert(result.status == ParserStatus::UnsupportedEncoding);
     }

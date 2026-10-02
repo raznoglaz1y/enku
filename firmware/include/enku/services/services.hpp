@@ -60,9 +60,20 @@ public:
     virtual PersistStatus commit(PersistRecordType type) = 0;
 };
 
+struct ReaderCheckpoint {
+    SemanticPosition position;
+    float progress{0.0F};
+    ReadingState reading_state{ReadingState::New};
+};
+
 class ReaderCheckpointService {
 public:
     virtual ~ReaderCheckpointService() = default;
+
+    virtual PersistStatus load(
+        const BookId& book_id,
+        ReaderCheckpoint& checkpoint
+    ) = 0;
 
     virtual PersistStatus checkpoint(
         const BookId& book_id,

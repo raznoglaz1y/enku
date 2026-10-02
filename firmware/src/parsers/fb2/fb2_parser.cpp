@@ -52,6 +52,158 @@ std::string trim(std::string_view value) {
     );
 }
 
+bool appendUtf8(
+    std::uint32_t code_point,
+    std::string& out
+) {
+    if (code_point > 0x10FFFFU ||
+        (code_point >= 0xD800U &&
+         code_point <= 0xDFFFU)) {
+        return false;
+    }
+
+    if (code_point <= 0x7FU) {
+        out.push_back(
+            static_cast<char>(code_point)
+        );
+    } else if (code_point <= 0x7FFU) {
+        out.push_back(
+            static_cast<char>(
+                0xC0U |
+                (code_point >> 6U)
+            )
+        );
+        out.push_back(
+            static_cast<char>(
+                0x80U |
+                (code_point & 0x3FU)
+            )
+        );
+    } else if (code_point <= 0xFFFFU) {
+        out.push_back(
+            static_cast<char>(
+                0xE0U |
+                (code_point >> 12U)
+            )
+        );
+        out.push_back(
+            static_cast<char>(
+                0x80U |
+                ((code_point >> 6U) &
+                 0x3FU)
+            )
+        );
+        out.push_back(
+            static_cast<char>(
+                0x80U |
+                (code_point & 0x3FU)
+            )
+        );
+    } else {
+        out.push_back(
+            static_cast<char>(
+                0xF0U |
+                (code_point >> 18U)
+            )
+        );
+        out.push_back(
+            static_cast<char>(
+                0x80U |
+                ((code_point >> 12U) &
+                 0x3FU)
+            )
+        );
+        out.push_back(
+            static_cast<char>(
+                0x80U |
+                ((code_point >> 6U) &
+                 0x3FU)
+            )
+        );
+        out.push_back(
+            static_cast<char>(
+                0x80U |
+                (code_point & 0x3FU)
+            )
+        );
+    }
+
+    return true;
+}
+
+std::optional<std::uint32_t> numericEntity(
+    std::string_view entity
+) {
+    if (entity.size() < 2U ||
+        entity.front() != '#') {
+        return std::nullopt;
+    }
+
+    int base = 10;
+    std::size_t cursor = 1;
+
+    if (cursor < entity.size() &&
+        (entity[cursor] == 'x' ||
+         entity[cursor] == 'X')) {
+        base = 16;
+        ++cursor;
+    }
+
+    if (cursor >= entity.size()) {
+        return std::nullopt;
+    }
+
+    std::uint32_t value = 0;
+
+    for (; cursor < entity.size(); ++cursor) {
+        const unsigned char ch =
+            static_cast<unsigned char>(
+                entity[cursor]
+            );
+
+        int digit = -1;
+
+        if (ch >= '0' && ch <= '9') {
+            digit = ch - '0';
+        } else if (
+            base == 16 &&
+            ch >= 'a' && ch <= 'f'
+        ) {
+            digit = 10 + ch - 'a';
+        } else if (
+            base == 16 &&
+            ch >= 'A' && ch <= 'F'
+        ) {
+            digit = 10 + ch - 'A';
+        } else {
+            return std::nullopt;
+        }
+
+        if (digit >= base ||
+            value >
+                (0x10FFFFU -
+                 static_cast<std::uint32_t>(
+                     digit
+                 )) /
+                    static_cast<std::uint32_t>(
+                        base
+                    )) {
+            return std::nullopt;
+        }
+
+        value =
+            value *
+                static_cast<std::uint32_t>(
+                    base
+                ) +
+            static_cast<std::uint32_t>(
+                digit
+            );
+    }
+
+    return value;
+}
+
 std::string decodeEntities(
     std::string_view value
 ) {
@@ -89,6 +241,11 @@ std::string decodeEntities(
             out.push_back('"');
         } else if (entity == "apos") {
             out.push_back('\'');
+        } else if (const auto numeric =
+                       numericEntity(entity);
+                   numeric.has_value() &&
+                   appendUtf8(*numeric, out)) {
+            // Numeric XML entity decoded.
         } else {
             out.append(
                 value.substr(

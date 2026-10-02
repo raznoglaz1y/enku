@@ -7,10 +7,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 include(CTest)
+find_package(ZLIB REQUIRED)
 
 add_library(enku_core STATIC
     src/core/reader_overlay.cpp
     src/parsers/txt/txt_parser.cpp
+    src/parsers/epub/zip_archive.cpp
+    src/parsers/epub/epub_parser.cpp
     src/reader/text_paginator.cpp
     src/reader/document_reader_engine.cpp
     src/reader/reader_session.cpp
@@ -64,6 +67,11 @@ target_include_directories(enku_core
         ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
+target_link_libraries(enku_core
+    PUBLIC
+        ZLIB::ZLIB
+)
+
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
     target_compile_options(enku_core PRIVATE -Wall -Wextra -Wpedantic)
 endif()
@@ -82,6 +90,7 @@ function(enku_add_test target source)
 endfunction()
 
 enku_add_test(txt_parser_tests tests/txt_parser_tests.cpp)
+enku_add_test(epub_parser_tests tests/epub_parser_tests.cpp)
 enku_add_test(txt_pagination_tests tests/txt_pagination_tests.cpp)
 enku_add_test(reader_engine_tests tests/reader_engine_tests.cpp)
 enku_add_test(reader_session_tests tests/reader_session_tests.cpp)

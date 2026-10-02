@@ -144,6 +144,8 @@ The canonical string-key, fallback and pluralization strategy is defined in [Loc
 
 Structured errors, bounded logging and Recovery/Safe Mode are defined in [Errors, Logging & Diagnostics](diagnostics-model.md).
 
+The staged startup sequence, boot-loop handling and context restore rules are defined in [Boot & Startup Architecture](boot-model.md).
+
 ### Reader v1 format scope
 
 The first ENKU reader release targets three reflowable/text-oriented formats:

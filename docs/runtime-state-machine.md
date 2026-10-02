@@ -465,3 +465,42 @@ Power Off is a separate runtime lifecycle from Sleep.
 `PowerOffCoordinator` treats shutdown as a persistence boundary: Reading position, Library summary and last-safe app context must commit before `PowerService::requestPowerOff()` is called. Network is disconnected only after those writes succeed.
 
 The next boot restores through the normal cold-boot path, so a powered-off device does not depend on retained RAM or framebuffer state.
+
+
+## 29. Library and import runtime
+
+The first concrete Library controller is now `LibraryRuntimeController`.
+
+Canonical Library path:
+
+```text
+LibraryRefreshRequested
+→ LibraryService::query()
+→ bounded LibraryPage
+→ normalize focus by book_id
+→ RefreshService
+```
+
+Filter, sort and search events update typed `AppState.library` query state before re-running the query.
+
+Opening a focused item does not duplicate Reader logic:
+
+```text
+OpenFocusedBookRequested
+→ focused book_id
+→ ReaderRuntimeController(OpenBookRequested)
+→ normal Reader open/checkpoint/context flow
+```
+
+Import path:
+
+```text
+ImportRequested
+→ import_active = true
+→ StagedBookImportService
+→ success / duplicate / failure
+→ import_active = false
+→ on success reload Library + focus imported book
+```
+
+This connects the import activity flag already consumed by Sleep and Power Off policy to a real runtime operation rather than leaving it as a passive field.

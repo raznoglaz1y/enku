@@ -71,6 +71,9 @@ Proposed layout:
   context.a.cbor
   context.b.cbor
 
+  boot-marker.a.cbor
+  boot-marker.b.cbor
+
 /system/state/
   <encoded-book-id>.a.cbor
   <encoded-book-id>.b.cbor
@@ -363,3 +366,17 @@ optional current_book
 Only `Library` and `Reading` are valid persisted safe screens.
 
 This record answers “what safe product context should boot attempt to restore?” while per-book checkpoint files answer “where inside the book should Reading resume?”. Keeping those responsibilities separate prevents Library metadata, Reader progress and transient UI state from becoming one coupled record.
+
+
+## 24. Boot-loop marker
+
+`CborBootLoopService` persists the cold-boot loop marker with the same A/B generation and CRC32 recovery pattern as other critical state.
+
+Its payload is intentionally minimal:
+
+```text
+incomplete_boot_count
+stable
+```
+
+The marker is written at cold-boot start and after reaching the first stable usable screen. Fast Wake does not participate in this counter.

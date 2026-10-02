@@ -52,7 +52,8 @@ InputDispatcher::InputDispatcher(
     PowerOffCoordinator& power_off,
     ReaderOverlayRuntime* reader_overlay,
     SearchRuntime* search,
-    LibrarySearchRuntime* library_search
+    LibrarySearchRuntime* library_search,
+    BookDetailsRuntime* book_details
 )
     : app_state_(app_state),
       library_(library),
@@ -61,7 +62,8 @@ InputDispatcher::InputDispatcher(
       power_off_(power_off),
       reader_overlay_(reader_overlay),
       search_(search),
-      library_search_(library_search) {}
+      library_search_(library_search),
+      book_details_(book_details) {}
 
 InputDispatchResult InputDispatcher::handle(
     const PhysicalInputEvent& input
@@ -74,6 +76,25 @@ InputDispatchResult InputDispatcher::handle(
 
     if (!action.has_value()) {
         return InputDispatchResult::Ignored;
+    }
+
+    if (app_state_.screen == Screen::BookDetails) {
+        if (book_details_ == nullptr) {
+            return InputDispatchResult::Unhandled;
+        }
+
+        const auto result =
+            book_details_->handle(*action);
+
+        if (result == BookDetailsRuntimeResult::Applied) {
+            return InputDispatchResult::Applied;
+        }
+
+        if (result == BookDetailsRuntimeResult::Failed) {
+            return InputDispatchResult::Failed;
+        }
+
+        return InputDispatchResult::Unhandled;
     }
 
     if (app_state_.screen == Screen::Search) {

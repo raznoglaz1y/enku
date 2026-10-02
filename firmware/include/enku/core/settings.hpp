@@ -30,6 +30,15 @@ struct WiFiNetworkInfo {
     bool secured{false};
 };
 
+enum class NetworkRuntimeStatus : std::uint8_t {
+    Off,
+    Idle,
+    Connecting,
+    Connected,
+    NoTrustedNetwork,
+    Error,
+};
+
 struct GlobalSettings {
     LocaleId locale{LocaleId::En};
     Orientation orientation{Orientation::Portrait};

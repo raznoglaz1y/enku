@@ -115,10 +115,19 @@ int main() {
     );
 
     // Cross-book replacement is rejected.
+    const BookmarkRecord foreign{
+        SemanticPosition{
+            "book-b",
+            "chapter-9",
+            1,
+        },
+        "Foreign",
+    };
+
     assert(
         bookmarks.replace(
             "book-a",
-            std::vector<BookmarkRecord>{second}
+            std::vector<BookmarkRecord>{foreign}
         ) == BookmarkStatus::Invalid
     );
 

@@ -362,6 +362,106 @@ const explorePageCss = `
   }
 </style>`;
 
+const projectPageCss = `
+<style id="enku-project-system">
+  /* Shared project-page rhythm */
+  .about-hero,.status-hero,.log-hero,.downloads-hero,.hero.shell{
+    padding-top:108px!important;
+    padding-bottom:96px!important;
+    border-bottom:1px solid rgba(20,20,20,.09);
+    min-height:0!important;
+  }
+  .about-hero,.status-hero-grid,.log-hero-grid,.downloads-hero-grid,.hero.shell{
+    display:grid!important;
+    grid-template-columns:.82fr 1.18fr!important;
+    gap:96px!important;
+    align-items:end!important;
+  }
+  .about-intro h1,.status-hero h1,.log-hero h1,.downloads-hero h1,.hero.shell h1{
+    font-family:"Newsreader",serif!important;
+    font-size:clamp(70px,7.2vw,112px)!important;
+    line-height:.88!important;
+    letter-spacing:-.045em!important;
+    font-weight:500!important;
+    margin-top:0!important;
+  }
+  .about-intro h1{margin-bottom:30px!important}
+  .about-lede,.status-lead,.log-lead,.downloads-lead,.hero.shell .hero-copy p:last-child{
+    font-size:18px!important;
+    line-height:1.65!important;
+    color:#56524c!important;
+    max-width:610px!important;
+  }
+
+  /* Shared section system */
+  .about-page .section,.status-section,.log-section,.release-state,.requirements,.support{
+    padding-top:108px!important;
+    padding-bottom:108px!important;
+  }
+  .about-story-grid,.about-work-grid,.about-open,.section-intro,.requirements-grid,.support-head,.principle-inner,.contact-grid{
+    gap:96px!important;
+  }
+  .about-story-grid,.about-open{grid-template-columns:.82fr 1.18fr!important}
+  .about-work-grid,.section-intro,.requirements-grid,.support-head,.principle-inner,.contact-grid{
+    grid-template-columns:.82fr 1.18fr!important;
+  }
+  .about-story-grid h2,.about-work-grid h2,.about-open h2,.section-intro h2,.requirements h2,.support-head h2{
+    font-family:"Newsreader",serif!important;
+    font-size:clamp(48px,5vw,72px)!important;
+    line-height:.95!important;
+    letter-spacing:-.045em!important;
+    font-weight:500!important;
+  }
+
+  /* Project-specific cleanup */
+  .about-story-copy{padding-top:0!important}
+  .about-story-copy p{font-size:16px!important;line-height:1.7!important}
+  .stage-cell,.release-card,.download-card,.support-card{transition:background .16s ease}
+  .release-card{padding:38px!important}
+  .download-grid{margin-top:62px!important}
+  .log-section{padding-top:96px!important}
+  .log-date{grid-template-columns:180px 1fr!important;gap:64px!important}
+  .entry{padding-top:32px!important;padding-bottom:36px!important}
+  .contact-section{padding-bottom:108px!important}
+  .contact-note,.contact-form{padding-top:62px!important}
+  .support{background:rgba(255,255,255,.18)!important}
+  .principle{padding:88px 0!important}
+  .status-cta,.log-footer-cta{padding-top:88px!important;padding-bottom:108px!important}
+
+  @media(max-width:900px){
+    .about-hero,.status-hero-grid,.log-hero-grid,.downloads-hero-grid,.hero.shell,
+    .about-story-grid,.about-work-grid,.about-open,.section-intro,.requirements-grid,.support-head,.principle-inner,.contact-grid{
+      grid-template-columns:1fr!important;
+      gap:34px!important;
+    }
+    .about-hero,.status-hero,.log-hero,.downloads-hero,.hero.shell{
+      padding-top:82px!important;
+      padding-bottom:76px!important;
+    }
+    .about-page .section,.status-section,.log-section,.release-state,.requirements,.support{
+      padding-top:82px!important;
+      padding-bottom:82px!important;
+    }
+    .about-side{justify-content:flex-start!important}
+    .about-facts{width:100%!important;max-width:none!important}
+    .log-date{grid-template-columns:1fr!important;gap:28px!important}
+    .date-sticky{position:static!important}
+  }
+  @media(max-width:700px){
+    .about-intro h1,.status-hero h1,.log-hero h1,.downloads-hero h1,.hero.shell h1{
+      font-size:clamp(54px,15vw,78px)!important;
+    }
+    .about-lede,.status-lead,.log-lead,.downloads-lead,.hero.shell .hero-copy p:last-child{
+      font-size:16px!important;
+    }
+    .about-page .section,.status-section,.log-section,.release-state,.requirements,.support{
+      padding-top:70px!important;
+      padding-bottom:70px!important;
+    }
+    .contact-note,.contact-form{padding-top:44px!important}
+  }
+</style>`;
+
 const allowedSubjects = new Set([
   "Project question",
   "Collaboration",
@@ -435,6 +535,9 @@ export default {
             element.append(sharedChromeCss, { html: true });
             if (["/hardware", "/software", "/design", "/build"].includes(url.pathname)) {
               element.append(explorePageCss, { html: true });
+            }
+            if (["/about", "/status", "/build-log", "/downloads", "/contact"].includes(url.pathname)) {
+              element.append(projectPageCss, { html: true });
             }
           },
         })

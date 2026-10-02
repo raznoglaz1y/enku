@@ -17,6 +17,7 @@ enum class DeviceRuntimeInitStatus : std::uint8_t {
     Ok,
     FontMissing,
     FontInitFailed,
+    NetworkPolicyFailed,
     RecoveryRequired,
 };
 
@@ -42,6 +43,9 @@ public:
         std::uint32_t now_ms
     );
 
+    NetworkPolicyStatus applyNetworkPolicy();
+    void syncPlatformState();
+
     const BootRestoreResult& bootResult() const;
 
 private:
@@ -55,6 +59,9 @@ private:
     PowerOffCoordinator power_off_;
     InputDispatcher input_dispatcher_;
 
+    NetworkPolicyStatus network_policy_status_{
+        NetworkPolicyStatus::Ok
+    };
     BootRestoreResult boot_result_{};
 };
 

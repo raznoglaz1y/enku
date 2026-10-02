@@ -98,17 +98,3 @@ Only after that is stable, possible variants may include:
 - revised button geometry.
 
 The project will avoid fragmenting into many mechanical variants before the baseline design is proven.
-
-## Hardware contribution opportunities
-
-Contributors with experience in the following areas are especially useful:
-
-- ESP32-S3 low-power work;
-- Waveshare e-paper drivers;
-- e-paper ghosting/partial refresh characterization;
-- battery/power measurement;
-- compact Li-Po integration;
-- mechanical CAD and 3D-print tolerances;
-- button and enclosure ergonomics.
-
-See [CONTRIBUTING.md](../CONTRIBUTING.md).

@@ -17,38 +17,38 @@ bool containsTraversal(const std::string& path) {
         path.find("/..") != std::string::npos;
 }
 
-StateFileStatus stateStatusFromErrno() {
+EspIdfFsStatus fsStatusFromErrno() {
     if (errno == ENOENT) {
-        return StateFileStatus::NotFound;
+        return EspIdfFsStatus::NotFound;
     }
 
     if (errno == ENOSPC) {
-        return StateFileStatus::NoSpace;
+        return EspIdfFsStatus::NoSpace;
     }
 
-    return StateFileStatus::IoError;
+    return EspIdfFsStatus::IoError;
 }
 
-BookFileStatus bookStatusFromErrno() {
+EspIdfFsStatus bookStatusFromErrno() {
     if (errno == ENOENT) {
-        return BookFileStatus::NotFound;
+        return EspIdfFsStatus::NotFound;
     }
 
     if (errno == ENOSPC) {
-        return BookFileStatus::NoSpace;
+        return EspIdfFsStatus::NoSpace;
     }
 
-    return BookFileStatus::IoError;
+    return EspIdfFsStatus::IoError;
 }
 
 } // namespace
 
-EspIdfFileStore::EspIdfFileStore(
+EspIdfFilesystem::EspIdfFilesystem(
     std::string mount_point
 )
     : mount_point_(std::move(mount_point)) {}
 
-bool EspIdfFileStore::resolve(
+bool EspIdfFilesystem::resolve(
     const std::string& logical_path,
     std::string& physical_path
 ) const {
@@ -68,7 +68,7 @@ bool EspIdfFileStore::resolve(
     return true;
 }
 
-bool EspIdfFileStore::ensureParentDirectories(
+bool EspIdfFilesystem::ensureParentDirectories(
     const std::string& physical_path
 ) const {
     std::size_t pos =
@@ -90,7 +90,7 @@ bool EspIdfFileStore::ensureParentDirectories(
     return true;
 }
 
-StateFileStatus EspIdfFileStore::read(
+EspIdfFsStatus EspIdfFilesystem::readBytes(
     const std::string& path,
     std::vector<std::uint8_t>& bytes
 ) {
@@ -98,7 +98,7 @@ StateFileStatus EspIdfFileStore::read(
 
     std::string physical;
     if (!resolve(path, physical)) {
-        return StateFileStatus::IoError;
+        return EspIdfFsStatus::IoError;
     }
 
     FILE* file = std::fopen(
@@ -107,23 +107,23 @@ StateFileStatus EspIdfFileStore::read(
     );
 
     if (file == nullptr) {
-        return stateStatusFromErrno();
+        return fsStatusFromErrno();
     }
 
     if (std::fseek(file, 0, SEEK_END) != 0) {
         std::fclose(file);
-        return StateFileStatus::IoError;
+        return EspIdfFsStatus::IoError;
     }
 
     const long size = std::ftell(file);
     if (size < 0) {
         std::fclose(file);
-        return StateFileStatus::IoError;
+        return EspIdfFsStatus::IoError;
     }
 
     if (std::fseek(file, 0, SEEK_SET) != 0) {
         std::fclose(file);
-        return StateFileStatus::IoError;
+        return EspIdfFsStatus::IoError;
     }
 
     bytes.resize(static_cast<std::size_t>(size));
@@ -140,22 +140,22 @@ StateFileStatus EspIdfFileStore::read(
         if (read_count != bytes.size()) {
             std::fclose(file);
             bytes.clear();
-            return StateFileStatus::IoError;
+            return EspIdfFsStatus::IoError;
         }
     }
 
     std::fclose(file);
-    return StateFileStatus::Ok;
+    return EspIdfFsStatus::Ok;
 }
 
-StateFileStatus EspIdfFileStore::write(
+EspIdfFsStatus EspIdfFilesystem::writeBytes(
     const std::string& path,
     const std::vector<std::uint8_t>& bytes
 ) {
     std::string physical;
     if (!resolve(path, physical) ||
         !ensureParentDirectories(physical)) {
-        return StateFileStatus::IoError;
+        return EspIdfFsStatus::IoError;
     }
 
     FILE* file = std::fopen(
@@ -164,7 +164,7 @@ StateFileStatus EspIdfFileStore::write(
     );
 
     if (file == nullptr) {
-        return stateStatusFromErrno();
+        return fsStatusFromErrno();
     }
 
     if (!bytes.empty()) {
@@ -178,7 +178,7 @@ StateFileStatus EspIdfFileStore::write(
 
         if (written != bytes.size()) {
             const auto status =
-                stateStatusFromErrno();
+                fsStatusFromErrno();
             std::fclose(file);
             return status;
         }
@@ -186,29 +186,29 @@ StateFileStatus EspIdfFileStore::write(
 
     if (std::fflush(file) != 0) {
         std::fclose(file);
-        return StateFileStatus::IoError;
+        return EspIdfFsStatus::IoError;
     }
 
     std::fclose(file);
-    return StateFileStatus::Ok;
+    return EspIdfFsStatus::Ok;
 }
 
-StateFileStatus EspIdfFileStore::remove(
+EspIdfFsStatus EspIdfFilesystem::remove(
     const std::string& path
 ) {
     std::string physical;
     if (!resolve(path, physical)) {
-        return StateFileStatus::IoError;
+        return EspIdfFsStatus::IoError;
     }
 
     if (std::remove(physical.c_str()) == 0) {
-        return StateFileStatus::Ok;
+        return EspIdfFsStatus::Ok;
     }
 
-    return stateStatusFromErrno();
+    return fsStatusFromErrno();
 }
 
-BookFileStatus EspIdfFileStore::read(
+EspIdfFsStatus EspIdfFilesystem::readText(
     const std::string& path,
     std::string& bytes
 ) {
@@ -216,7 +216,7 @@ BookFileStatus EspIdfFileStore::read(
 
     std::string physical;
     if (!resolve(path, physical)) {
-        return BookFileStatus::IoError;
+        return EspIdfFsStatus::IoError;
     }
 
     FILE* file = std::fopen(
@@ -230,18 +230,18 @@ BookFileStatus EspIdfFileStore::read(
 
     if (std::fseek(file, 0, SEEK_END) != 0) {
         std::fclose(file);
-        return BookFileStatus::IoError;
+        return EspIdfFsStatus::IoError;
     }
 
     const long size = std::ftell(file);
     if (size < 0) {
         std::fclose(file);
-        return BookFileStatus::IoError;
+        return EspIdfFsStatus::IoError;
     }
 
     if (std::fseek(file, 0, SEEK_SET) != 0) {
         std::fclose(file);
-        return BookFileStatus::IoError;
+        return EspIdfFsStatus::IoError;
     }
 
     bytes.resize(static_cast<std::size_t>(size));
@@ -258,22 +258,22 @@ BookFileStatus EspIdfFileStore::read(
         if (read_count != bytes.size()) {
             std::fclose(file);
             bytes.clear();
-            return BookFileStatus::IoError;
+            return EspIdfFsStatus::IoError;
         }
     }
 
     std::fclose(file);
-    return BookFileStatus::Ok;
+    return EspIdfFsStatus::Ok;
 }
 
-BookFileStatus EspIdfFileStore::write(
+EspIdfFsStatus EspIdfFilesystem::writeText(
     const std::string& path,
     const std::string& bytes
 ) {
     std::string physical;
     if (!resolve(path, physical) ||
         !ensureParentDirectories(physical)) {
-        return BookFileStatus::IoError;
+        return EspIdfFsStatus::IoError;
     }
 
     FILE* file = std::fopen(
@@ -304,29 +304,14 @@ BookFileStatus EspIdfFileStore::write(
 
     if (std::fflush(file) != 0) {
         std::fclose(file);
-        return BookFileStatus::IoError;
+        return EspIdfFsStatus::IoError;
     }
 
     std::fclose(file);
-    return BookFileStatus::Ok;
+    return EspIdfFsStatus::Ok;
 }
 
-BookFileStatus EspIdfFileStore::remove(
-    const std::string& path
-) {
-    std::string physical;
-    if (!resolve(path, physical)) {
-        return BookFileStatus::IoError;
-    }
-
-    if (std::remove(physical.c_str()) == 0) {
-        return BookFileStatus::Ok;
-    }
-
-    return bookStatusFromErrno();
-}
-
-BookFileStatus EspIdfFileStore::list(
+EspIdfFsStatus EspIdfFilesystem::list(
     const std::string& directory,
     std::vector<std::string>& paths
 ) {
@@ -334,7 +319,7 @@ BookFileStatus EspIdfFileStore::list(
 
     std::string physical;
     if (!resolve(directory, physical)) {
-        return BookFileStatus::IoError;
+        return EspIdfFsStatus::IoError;
     }
 
     DIR* dir = ::opendir(physical.c_str());
@@ -359,7 +344,7 @@ BookFileStatus EspIdfFileStore::list(
         struct stat info = {};
         if (::stat(child_physical.c_str(), &info) != 0) {
             ::closedir(dir);
-            return BookFileStatus::IoError;
+            return EspIdfFsStatus::IoError;
         }
 
         if (S_ISREG(info.st_mode)) {
@@ -371,7 +356,110 @@ BookFileStatus EspIdfFileStore::list(
 
     ::closedir(dir);
     std::sort(paths.begin(), paths.end());
-    return BookFileStatus::Ok;
+    return EspIdfFsStatus::Ok;
+}
+
+namespace {
+
+StateFileStatus toStateStatus(EspIdfFsStatus status) {
+    switch (status) {
+        case EspIdfFsStatus::Ok:
+            return StateFileStatus::Ok;
+        case EspIdfFsStatus::NotFound:
+            return StateFileStatus::NotFound;
+        case EspIdfFsStatus::NoSpace:
+            return StateFileStatus::NoSpace;
+        case EspIdfFsStatus::IoError:
+        default:
+            return StateFileStatus::IoError;
+    }
+}
+
+BookFileStatus toBookStatus(EspIdfFsStatus status) {
+    switch (status) {
+        case EspIdfFsStatus::Ok:
+            return BookFileStatus::Ok;
+        case EspIdfFsStatus::NotFound:
+            return BookFileStatus::NotFound;
+        case EspIdfFsStatus::NoSpace:
+            return BookFileStatus::NoSpace;
+        case EspIdfFsStatus::IoError:
+        default:
+            return BookFileStatus::IoError;
+    }
+}
+
+} // namespace
+
+EspIdfStateFileStore::EspIdfStateFileStore(
+    EspIdfFilesystem& filesystem
+)
+    : filesystem_(filesystem) {}
+
+StateFileStatus EspIdfStateFileStore::read(
+    const std::string& path,
+    std::vector<std::uint8_t>& bytes
+) {
+    return toStateStatus(
+        filesystem_.readBytes(path, bytes)
+    );
+}
+
+StateFileStatus EspIdfStateFileStore::write(
+    const std::string& path,
+    const std::vector<std::uint8_t>& bytes
+) {
+    return toStateStatus(
+        filesystem_.writeBytes(path, bytes)
+    );
+}
+
+StateFileStatus EspIdfStateFileStore::remove(
+    const std::string& path
+) {
+    return toStateStatus(
+        filesystem_.remove(path)
+    );
+}
+
+EspIdfBookFileStore::EspIdfBookFileStore(
+    EspIdfFilesystem& filesystem
+)
+    : filesystem_(filesystem) {}
+
+BookFileStatus EspIdfBookFileStore::read(
+    const std::string& path,
+    std::string& bytes
+) {
+    return toBookStatus(
+        filesystem_.readText(path, bytes)
+    );
+}
+
+BookFileStatus EspIdfBookFileStore::write(
+    const std::string& path,
+    const std::string& bytes
+) {
+    return toBookStatus(
+        filesystem_.writeText(path, bytes)
+    );
+}
+
+BookFileStatus EspIdfBookFileStore::remove(
+    const std::string& path
+) {
+    return toBookStatus(
+        filesystem_.remove(path)
+    );
+}
+
+BookFileStatus EspIdfBookFileStore::list(
+    const std::string& directory,
+    std::vector<std::string>& paths
+) {
+    return toBookStatus(
+        filesystem_.list(directory, paths)
+    );
 }
 
 } // namespace enku::platform::esp_idf

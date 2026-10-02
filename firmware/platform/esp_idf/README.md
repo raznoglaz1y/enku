@@ -227,3 +227,42 @@ repeat   700 ms initial / 180 ms interval
 ```
 
 The Power button is intentionally not treated as a normal GPIO button here; it remains part of the PMU/power-control bring-up.
+
+
+## Power / AXP2101 bring-up
+
+The current board mapping follows the full Waveshare application reference, not the earlier minimal SD example.
+
+```text
+SDMMC:
+CLK 16
+CMD 17
+D0  15
+D1  7
+D2  8
+D3  18
+
+I2C:
+SDA 41
+SCL 42
+
+AXP2101 address: 0x34
+```
+
+`EspIdfPowerService` implements the framework-neutral `PowerService` boundary.
+
+Current telemetry:
+
+- battery %;
+- battery mV;
+- charging;
+- external power/VBUS.
+
+Current controls:
+
+- configure PWR-on timing to 1 second;
+- configure hardware PWR-off timing to 4 seconds;
+- software AXP2101 shutdown;
+- ESP32-S3 light sleep with GPIO wake on Up/Function/Down/BOOT.
+
+The bring-up smoke test only reads/logs telemetry. It does not power the board off automatically.

@@ -42,6 +42,18 @@ public:
         const std::string& bytes
     );
 
+    EspIdfFsStatus fileSize(
+        const std::string& path,
+        std::uint64_t& bytes
+    );
+
+    EspIdfFsStatus readTextRange(
+        const std::string& path,
+        std::uint64_t offset,
+        std::size_t length,
+        std::string& bytes
+    );
+
     EspIdfFsStatus appendText(
         const std::string& path,
         const std::string& bytes
@@ -112,6 +124,18 @@ public:
     BookFileStatus write(
         const std::string& path,
         const std::string& bytes
+    ) override;
+
+    BookFileStatus size(
+        const std::string& path,
+        std::uint64_t& bytes
+    ) override;
+
+    BookFileStatus readRange(
+        const std::string& path,
+        std::uint64_t offset,
+        std::size_t length,
+        std::string& bytes
     ) override;
 
     BookFileStatus append(

@@ -1219,14 +1219,88 @@ bool FreeTypeTextRenderer::renderSearch(
                 );
             }
 
+            const auto& match =
+                app_state.search.matches[index];
+
             if (!drawTextAt(
-                    app_state.search.matches[index].preview,
-                    14,
+                    match.section_label,
+                    12,
                     38,
-                    top + 32,
+                    top + 20,
                     orientation
                 )) {
                 return false;
+            }
+
+            if (!drawTextAt(
+                    match.preview,
+                    14,
+                    38,
+                    top + 43,
+                    orientation
+                )) {
+                return false;
+            }
+
+            const auto start =
+                static_cast<std::size_t>(
+                    match.preview_match_start
+                );
+            const auto length =
+                static_cast<std::size_t>(
+                    match.preview_match_length
+                );
+
+            if (start <= match.preview.size() &&
+                start + length <=
+                    match.preview.size() &&
+                length > 0U) {
+                const auto prefix =
+                    match.preview.substr(
+                        0,
+                        start
+                    );
+                const auto matched =
+                    match.preview.substr(
+                        start,
+                        length
+                    );
+
+                const int underline_x =
+                    38 +
+                    static_cast<int>(
+                        measureWidthPx(
+                            prefix,
+                            TypographySettings{
+                                14,
+                                1.0F,
+                                0,
+                            }
+                        )
+                    );
+
+                const int underline_width =
+                    static_cast<int>(
+                        measureWidthPx(
+                            matched,
+                            TypographySettings{
+                                14,
+                                1.0F,
+                                0,
+                            }
+                        )
+                    );
+
+                if (underline_width > 0) {
+                    drawRect(
+                        underline_x,
+                        top + 47,
+                        underline_width,
+                        2,
+                        orientation,
+                        1
+                    );
+                }
             }
         }
     } else {

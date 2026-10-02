@@ -19,6 +19,7 @@ include/enku/
     diagnostics.hpp
     boot.hpp
     refresh.hpp
+    library.hpp
     events.hpp
     app_state.hpp
   reader/
@@ -45,5 +46,6 @@ Architecture references:
 - [Pagination model](../docs/pagination-model.md)
 - [Parser model](../docs/parser-model.md)
 - [Storage model](../docs/storage-model.md)
+- [Library data model & service interface](../docs/library-model.md)
 
 The public source language and code/documentation language for firmware is English.

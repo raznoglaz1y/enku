@@ -50,6 +50,7 @@ firmware/
       cbor_boot_loop_service.hpp
       book_import_service.hpp
       staged_book_import_service.hpp
+      book_delete_service.hpp
       book_file_store.hpp
       posix_book_file_store.hpp
       stored_book_source_service.hpp
@@ -81,6 +82,7 @@ firmware/
       cbor_boot_loop_service.cpp
       book_import_service.cpp
       staged_book_import_service.cpp
+      book_delete_service.cpp
       stored_book_source_service.cpp
       posix_book_file_store.cpp
       posix_state_file_store.cpp
@@ -186,7 +188,7 @@ Owns:
 - Sleep/Wake orchestration across reader persistence, network shutdown and PowerService;
 - graceful Power Off persistence before platform shutdown;
 - persistent boot-loop marker management for cold-boot recovery gating;
-- Library query/focus/open coordination and transactional import event handling.
+- Library query/focus/open coordination, transactional import event handling and focused-book deletion.
 
 The runtime layer does not manipulate semantic offsets directly.
 

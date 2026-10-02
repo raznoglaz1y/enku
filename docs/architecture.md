@@ -211,15 +211,18 @@ The Refresh Manager owns e-paper update policy.
 
 Responsibilities:
 
-- choose full vs partial/region refresh;
+- choose full vs region/deferred/no-update behavior;
 - coalesce multiple UI updates;
 - throttle rapidly changing states;
-- force full refresh after measured ghosting thresholds;
+- discard obsolete queued work;
+- force broader/full refresh after measured ghosting thresholds;
 - avoid refreshing invisible state;
 - serialize display access;
 - expose measured driver limitations to higher layers without leaking driver details into UI code.
 
-The exact thresholds and partial-refresh rules are not fixed until the real Waveshare panel is characterized.
+The detailed render-plan, queueing, escalation and diagnostic rules are defined in [Refresh Manager & E-Paper Update Policy](refresh-model.md).
+
+Exact hardware thresholds and waveform choices remain unfrozen until the real Waveshare panel is characterized.
 
 ## 7. Hardware layer
 

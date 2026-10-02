@@ -1,6 +1,7 @@
 #include "enku/reader/book_loader.hpp"
 #include "enku/runtime/library_runtime.hpp"
 #include "enku/runtime/library_search_runtime.hpp"
+#include "enku/runtime/book_details_runtime.hpp"
 #include "enku/storage/cbor_boot_loop_service.hpp"
 #include "enku/runtime/storage_startup.hpp"
 #include "enku/runtime/boot_restore.hpp"
@@ -281,6 +282,158 @@ int main() {
         std::optional<BookId>{"alpha"}
     );
     assert(app.library.total_matches == 2);
+
+    BookDetailsRuntime book_details(
+        app,
+        library,
+        runtime,
+        reader,
+        checkpoint
+    );
+
+    // New book -> START.
+    app.library.focused_book = "alpha";
+    assert(
+        book_details.handle(
+            OpenFocusedBookDetailsRequested{}
+        ) == BookDetailsRuntimeResult::Applied
+    );
+    assert(app.screen == Screen::BookDetails);
+    assert(
+        std::string(
+            book_details.primaryActionLabel()
+        ) == "START"
+    );
+    assert(
+        book_details.handle(
+            LogicalAction::Back
+        ) == BookDetailsRuntimeResult::Applied
+    );
+    assert(app.screen == Screen::Library);
+    assert(
+        app.library.focused_book ==
+        std::optional<BookId>{"alpha"}
+    );
+
+    // Reading book -> CONTINUE.
+    app.library.focused_book = "beta";
+    assert(
+        book_details.handle(
+            OpenFocusedBookDetailsRequested{}
+        ) == BookDetailsRuntimeResult::Applied
+    );
+    assert(
+        std::string(
+            book_details.primaryActionLabel()
+        ) == "CONTINUE"
+    );
+    assert(
+        book_details.handle(
+            LogicalAction::Back
+        ) == BookDetailsRuntimeResult::Applied
+    );
+
+    // Finished book -> READ AGAIN -> confirmation defaults to Cancel.
+    assert(
+        checkpoint.checkpoint(
+            "beta",
+            SemanticPosition{
+                "beta",
+                "txt",
+                8,
+            },
+            1.0F,
+            ReadingState::Finished
+        ) == PersistStatus::Ok
+    );
+    assert(
+        library.updateSummary(
+            "beta",
+            ReadingState::Finished,
+            1.0F,
+            20
+        ) == LibraryStatus::Ok
+    );
+
+    app.library.focused_book = "beta";
+    assert(
+        book_details.handle(
+            OpenFocusedBookDetailsRequested{}
+        ) == BookDetailsRuntimeResult::Applied
+    );
+    assert(
+        std::string(
+            book_details.primaryActionLabel()
+        ) == "READ AGAIN"
+    );
+    assert(
+        book_details.handle(
+            LogicalAction::Confirm
+        ) == BookDetailsRuntimeResult::Applied
+    );
+    assert(
+        app.book_details.mode ==
+        BookDetailsMode::RestartConfirm
+    );
+    assert(!app.book_details.confirm_restart);
+
+    // Back from confirmation is non-destructive.
+    assert(
+        book_details.handle(
+            LogicalAction::Back
+        ) == BookDetailsRuntimeResult::Applied
+    );
+    assert(
+        app.book_details.mode ==
+        BookDetailsMode::Details
+    );
+
+    // Confirm restart: toggle from Cancel to Restart, then apply.
+    assert(
+        book_details.handle(
+            LogicalAction::Confirm
+        ) == BookDetailsRuntimeResult::Applied
+    );
+    assert(
+        book_details.handle(
+            LogicalAction::NavigateNext
+        ) == BookDetailsRuntimeResult::Applied
+    );
+    assert(app.book_details.confirm_restart);
+    assert(
+        book_details.handle(
+            LogicalAction::Confirm
+        ) == BookDetailsRuntimeResult::Applied
+    );
+    assert(app.screen == Screen::Reading);
+
+    ReaderCheckpoint erased_checkpoint;
+    assert(
+        checkpoint.load(
+            "beta",
+            erased_checkpoint
+        ) == PersistStatus::NotFound
+    );
+
+    const auto restarted_beta =
+        library.get("beta");
+    assert(restarted_beta.has_value());
+    assert(
+        restarted_beta->reading_state ==
+        ReadingState::Reading
+    );
+    assert(restarted_beta->progress == 0.0F);
+
+    assert(
+        reader.handle(BackRequested{}) ==
+        ReaderRuntimeResult::Applied
+    );
+    assert(app.screen == Screen::Library);
+    assert(
+        runtime.handle(
+            LibraryRefreshRequested{}
+        ) == LibraryRuntimeResult::Applied
+    );
 
     app.library.limit = 1;
     app.library.offset = 0;

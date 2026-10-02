@@ -36,16 +36,19 @@ firmware/
     runtime/
       reader_runtime.hpp
       storage_startup.hpp
+      boot_restore.hpp
     services/
       services.hpp
     storage/
       state_file_store.hpp
       cbor_reader_checkpoint.hpp
       cbor_library_service.hpp
+      cbor_app_context_service.hpp
       book_import_service.hpp
       staged_book_import_service.hpp
       book_file_store.hpp
       posix_book_file_store.hpp
+      stored_book_source_service.hpp
       posix_state_file_store.hpp
 
   src/
@@ -53,6 +56,7 @@ firmware/
     runtime/
       reader_runtime.cpp
       storage_startup.cpp
+      boot_restore.cpp
     reader/
       text_paginator.cpp
       document_reader_engine.cpp
@@ -66,8 +70,10 @@ firmware/
     storage/
       cbor_reader_checkpoint.cpp
       cbor_library_service.cpp
+      cbor_app_context_service.cpp
       book_import_service.cpp
       staged_book_import_service.cpp
+      stored_book_source_service.cpp
       posix_book_file_store.cpp
       posix_state_file_store.cpp
     ui/
@@ -167,7 +173,8 @@ Owns:
 - Book Opening → Reading / failure transitions;
 - Back-to-Library progress checkpoint coordination;
 - Finished-state Library summary updates;
-- startup coordination across Library persistence and staged import recovery.
+- startup coordination across Library persistence and staged import recovery;
+- safe restoration of the last persisted Library/Reading context after reboot.
 
 The runtime layer does not manipulate semantic offsets directly.
 

@@ -16,6 +16,7 @@ firmware/
       input.hpp
       power.hpp
       persistence.hpp
+      localization.hpp
       events.hpp
       app_state.hpp
     reader/
@@ -51,6 +52,19 @@ It must not depend on:
 - filesystem implementation details;
 - EPUB/FB2/TXT parser internals;
 - Wi-Fi implementation details.
+
+### localization
+
+Owns:
+
+- stable semantic string keys;
+- locale selection;
+- English fallback;
+- named placeholder substitution;
+- plural-category selection;
+- generated runtime locale tables.
+
+Human-reviewable source catalogs live under `locales/`. The runtime representation is generated and must not require parsing source JSON files on device startup.
 
 ### reader
 

@@ -30,7 +30,7 @@ The project is being developed as a complete product system rather than only a f
 - storage and import flows;
 - sleep and power-management behavior;
 - enclosure development and mechanical iterations;
-- reproducible documentation for builders and contributors.
+- reproducible documentation for the hardware, firmware and enclosure.
 
 > **Current status:** design system, UX specification and project architecture are actively being developed. Firmware bring-up begins after the target hardware is in hand. Features listed below are planned unless explicitly marked as completed.
 
@@ -240,6 +240,7 @@ Planned Wi-Fi behavior includes:
 ENKU is still in the pre-firmware stage, so several important decisions remain intentionally open:
 
 - there is no production reader firmware yet;
+- the firmware architecture, Library/storage model, parser abstraction, pagination model and runtime state machine are specified but not yet implemented;
 - Reader v1 is scoped to EPUB, FB2 and TXT; PDF support is deferred and not yet designed;
 - the parser and rendering stack are not selected;
 - partial-refresh behavior has not yet been measured on the real panel;
@@ -272,20 +273,28 @@ Firmware has not yet been published as a working reader. The planned implementat
    - network state.
 
 3. **Reader engine**
-   - format parsing;
-   - text layout and pagination;
+   - EPUB, FB2 and TXT parser adapters;
+   - normalized metadata/document model;
+   - text layout and on-demand pagination;
    - typography presets;
    - semantic position mapping;
    - search and table of contents.
 
-4. **UI system**
+4. **Runtime state machine**
+   - deterministic book open / page navigation;
+   - Reader Menu and Search context;
+   - debounced progress persistence;
+   - sleep/wake restoration;
+   - recoverable error handling.
+
+5. **UI system**
    - reusable status bar, headers, rows, buttons and dialogs;
    - focus navigation;
    - portrait/landscape layout;
    - localization;
    - e-paper-aware redraw strategy.
 
-5. **Local management service**
+6. **Local management service**
    - upload/import;
    - metadata operations;
    - storage status;
@@ -357,7 +366,7 @@ No final mechanical dimensions will be published as authoritative until the actu
 ### Phase 3 — Reader MVP
 
 - [x] Select Reader v1 formats: EPUB, FB2 and TXT; PDF deferred
-- [ ] Implement parser and text layout
+- [ ] Implement EPUB/FB2/TXT parsers and text layout
 - [ ] Implement Library grid/list navigation
 - [ ] Implement reading position and progress persistence
 - [ ] Implement typography presets and Custom mode
@@ -417,6 +426,10 @@ Useful documents:
 
 - [Project status](docs/status.md)
 - [Architecture](docs/architecture.md)
+- [Reader runtime & state machine](docs/runtime-state-machine.md)
+- [Pagination & rendering model](docs/pagination-model.md)
+- [Metadata & parser model](docs/parser-model.md)
+- [Library & storage model](docs/storage-model.md)
 - [Hardware baseline](docs/hardware.md)
 - [BOM status](docs/bom.md)
 - [UI specification](docs/ui-spec.md)
@@ -436,10 +449,14 @@ design/
   renders/          project diagrams and visual references
 
 docs/
-  architecture.md    system architecture
-  hardware.md        verified/planned hardware baseline
-  bom.md             parts/BOM status and sourcing priorities
-  status.md          current project status
+  architecture.md          system architecture
+  runtime-state-machine.md  reader runtime and recovery behavior
+  pagination-model.md       text layout and pagination rules
+  parser-model.md           metadata normalization and parser abstraction
+  storage-model.md          Library identity, state and transactional storage
+  hardware.md              verified/planned hardware baseline
+  bom.md                   parts/BOM status and sourcing priorities
+  status.md                current project status
   UI and interaction specifications
 
 README.md           project overview

@@ -7,6 +7,7 @@
 #include "../core/types.hpp"
 #include "../core/power.hpp"
 #include "../core/persistence.hpp"
+#include "../core/diagnostics.hpp"
 
 namespace enku {
 
@@ -66,9 +67,21 @@ class LogService {
 public:
     virtual ~LogService() = default;
 
-    virtual void info(const std::string& message) = 0;
-    virtual void warn(const std::string& message) = 0;
-    virtual void error(const std::string& message) = 0;
+    virtual void write(
+        LogLevel level,
+        LogCategory category,
+        std::uint32_t event_code,
+        const std::string& message
+    ) = 0;
+};
+
+class DiagnosticsService {
+public:
+    virtual ~DiagnosticsService() = default;
+
+    virtual void report(const AppError& error) = 0;
+    virtual std::optional<AppError> lastCriticalError() const = 0;
+    virtual bool recoveryModeRequested() const = 0;
 };
 
 } // namespace enku

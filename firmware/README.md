@@ -18,6 +18,7 @@ include/enku/
     localization.hpp
     diagnostics.hpp
     boot.hpp
+    refresh.hpp
     events.hpp
     app_state.hpp
   reader/
@@ -38,6 +39,7 @@ Architecture references:
 - [Localization architecture](../docs/localization-model.md)
 - [Errors, logging & diagnostics](../docs/diagnostics-model.md)
 - [Boot & startup architecture](../docs/boot-model.md)
+- [Refresh Manager & e-paper update policy](../docs/refresh-model.md)
 - [Firmware structure](../docs/firmware-structure.md)
 - [Reader runtime](../docs/runtime-state-machine.md)
 - [Pagination model](../docs/pagination-model.md)

@@ -947,25 +947,37 @@ ParseResult EpubParser::parse(
                 )
             );
 
-    const auto creator =
-        dcText(opf, "creator");
+    const auto creators =
+        dcTexts(opf, "creator");
 
-    result.document.metadata.author_display =
-        creator.has_value() &&
-                !creator->empty()
-            ? *creator
-            : "Unknown author";
+    result.document.metadata.authors =
+        creators;
 
-    if (creator.has_value() &&
-        !creator->empty()) {
-        result.document.metadata.authors.
-            push_back(*creator);
+    if (creators.empty()) {
+        result.document.metadata.author_display =
+            "Unknown author";
+    } else {
+        result.document.metadata.author_display =
+            creators.front();
+
+        for (std::size_t i = 1;
+             i < creators.size();
+             ++i) {
+            result.document.metadata.author_display +=
+                ", " + creators[i];
+        }
     }
 
     result.document.metadata.language =
         dcText(opf, "language");
     result.document.metadata.identifier =
         dcText(opf, "identifier");
+    result.document.metadata.description =
+        dcText(opf, "description");
+    result.document.metadata.publisher =
+        dcText(opf, "publisher");
+    result.document.metadata.published_date =
+        dcText(opf, "date");
 
     std::map<std::string, ManifestItem>
         manifest;
@@ -994,6 +1006,44 @@ ParseResult EpubParser::parse(
 
     const auto opf_directory =
         directoryOf(*opf_path);
+
+    std::map<std::string, std::string>
+        nav_labels;
+
+    if (has_nav) {
+        const auto nav_item =
+            std::find_if(
+                manifest.begin(),
+                manifest.end(),
+                [](const auto& pair) {
+                    return lower(
+                        pair.second.properties
+                    ).find("nav") !=
+                        std::string::npos;
+                }
+            );
+
+        if (nav_item != manifest.end()) {
+            const auto nav_path =
+                normalizePath(
+                    opf_directory,
+                    nav_item->second.href
+                );
+
+            std::string nav_xhtml;
+
+            if (archive.read(
+                    nav_path,
+                    nav_xhtml
+                ) == ZipArchiveStatus::Ok) {
+                nav_labels =
+                    parseNavLabels(
+                        nav_xhtml,
+                        directoryOf(nav_path)
+                    );
+            }
+        }
+    }
 
     std::uint64_t global_offset = 0;
 
@@ -1031,10 +1081,8 @@ ParseResult EpubParser::parse(
             continue;
         }
 
-        const auto clean_text =
-            stripXmlTags(xhtml);
         const auto blocks =
-            paragraphs(clean_text);
+            parseXhtmlBlocks(xhtml);
 
         if (blocks.empty()) {
             continue;
@@ -1043,21 +1091,43 @@ ParseResult EpubParser::parse(
         DocumentSection section;
         section.id = path;
 
+        if (const auto nav =
+                nav_labels.find(path);
+            nav != nav_labels.end()) {
+            section.title = nav->second;
+        } else {
+            const auto heading =
+                std::find_if(
+                    blocks.begin(),
+                    blocks.end(),
+                    [](const ParsedBlock& block) {
+                        return block.type ==
+                            TextBlockType::Heading;
+                    }
+                );
+
+            if (heading != blocks.end()) {
+                section.title =
+                    heading->text;
+            }
+        }
+
         std::uint64_t section_offset = 0;
 
-        for (const auto& paragraph :
+        for (const auto& parsed_block :
              blocks) {
             TextBlock block;
             block.type =
-                TextBlockType::Paragraph;
-            block.text = paragraph;
+                parsed_block.type;
+            block.text =
+                parsed_block.text;
             block.text_offset =
                 global_offset +
                 section_offset;
 
             section_offset +=
                 static_cast<std::uint64_t>(
-                    paragraph.size()
+                    block.text.size()
                 ) + 1U;
 
             section.blocks.push_back(

@@ -775,22 +775,28 @@ bool FreeTypeTextRenderer::renderLibrary(
             page.items.size()
         );
 
-    std::snprintf(
-        count_text,
-        sizeof(count_text),
-        page.total_matches == 0U
-            ? "0 BOOKS"
-            : "%lu-%lu OF %lu",
-        static_cast<unsigned long>(
-            page.total_matches == 0U
-                ? 0U
-                : page.offset + 1U
-        ),
-        static_cast<unsigned long>(page_end),
-        static_cast<unsigned long>(
-            page.total_matches
-        )
-    );
+    if (page.total_matches == 0U) {
+        std::snprintf(
+            count_text,
+            sizeof(count_text),
+            "0 BOOKS"
+        );
+    } else {
+        std::snprintf(
+            count_text,
+            sizeof(count_text),
+            "%lu-%lu OF %lu",
+            static_cast<unsigned long>(
+                page.offset + 1U
+            ),
+            static_cast<unsigned long>(
+                page_end
+            ),
+            static_cast<unsigned long>(
+                page.total_matches
+            )
+        );
+    }
 
     if (!drawTextAt(
             count_text,

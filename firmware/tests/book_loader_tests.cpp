@@ -27,6 +27,11 @@ public:
 
 class FakeLibraryService final : public LibraryService {
 public:
+    LibraryStatus upsert(const BookRecord& value) override {
+        record = value;
+        return LibraryStatus::Ok;
+    }
+
     std::optional<BookRecord> get(
         const BookId& book_id
     ) const override {

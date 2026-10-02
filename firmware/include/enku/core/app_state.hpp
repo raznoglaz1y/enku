@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "types.hpp"
 #include "library.hpp"
@@ -44,15 +45,40 @@ struct PowerState {
     bool charging{false};
 };
 
+enum class KeyboardMode : std::uint8_t {
+    Latin,
+    Cyrillic,
+    Symbols,
+};
+
+enum class KeyboardShiftState : std::uint8_t {
+    Lowercase,
+    NextUppercase,
+    CapsLock,
+};
+
+struct KeyboardState {
+    bool open{false};
+    KeyboardMode mode{KeyboardMode::Latin};
+    KeyboardShiftState shift{KeyboardShiftState::Lowercase};
+    std::uint16_t focus_index{0};
+};
+
 enum class SearchPhase : std::uint8_t {
     QueryEntry,
     Results,
+};
+
+struct SearchMatch {
+    SemanticPosition position;
+    std::string preview;
 };
 
 struct ReaderSearchState {
     SearchPhase phase{SearchPhase::QueryEntry};
     std::optional<SemanticPosition> origin_position;
     std::string query;
+    std::vector<SearchMatch> matches;
     std::uint32_t total_matches{0};
     std::uint32_t focus_index{0};
 };
@@ -72,6 +98,7 @@ struct AppState {
     TypographyState typography;
     ReaderOverlayState reader_overlay;
     ReaderSearchState search;
+    KeyboardState keyboard;
 
     NetworkState network;
     WiFiPolicy wifi_policy{WiFiPolicy::AutoConnectTrusted};

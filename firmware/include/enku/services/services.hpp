@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "../core/types.hpp"
 #include "../core/power.hpp"
@@ -152,6 +153,32 @@ public:
     virtual bool connected() const = 0;
     virtual void disconnect() = 0;
 };
+
+enum class NetworkPolicyStatus : std::uint8_t {
+    Ok,
+    NoTrustedNetwork,
+    InvalidCredentials,
+    DriverError,
+};
+
+class NetworkSettingsService {
+public:
+    virtual ~NetworkSettingsService() = default;
+
+    virtual NetworkPolicyStatus applyPolicy(
+        WiFiPolicy policy
+    ) = 0;
+
+    virtual NetworkPolicyStatus setTrustedNetwork(
+        std::string_view ssid,
+        std::string_view password
+    ) = 0;
+
+    virtual NetworkPolicyStatus forgetTrustedNetwork() = 0;
+
+    virtual std::optional<std::string> trustedSsid() const = 0;
+};
+
 
 class PowerService {
 public:

@@ -7,6 +7,7 @@
 #include "../storage/book_file_store.hpp"
 #include "../storage/book_import_service.hpp"
 #include "../storage/cbor_library_service.hpp"
+#include "settings_runtime.hpp"
 
 namespace enku {
 
@@ -15,6 +16,7 @@ enum class StorageStartupStatus : std::uint8_t {
     RecoveryRequired,
     LibraryRecoveryRequired,
     StorageUnavailable,
+    SettingsPersistenceFailure,
     CleanupFailed,
 };
 
@@ -32,6 +34,7 @@ class StorageStartupCoordinator {
 public:
     StorageStartupCoordinator(
         AppState& app_state,
+        SettingsRuntimeController& settings,
         CborLibraryService& library,
         BookFileStore& files,
         BookImportService& importer
@@ -41,6 +44,7 @@ public:
 
 private:
     AppState& app_state_;
+    SettingsRuntimeController& settings_;
     CborLibraryService& library_;
     BookFileStore& files_;
     BookImportService& importer_;

@@ -302,3 +302,42 @@ Key decisions:
 - Incomplete imports never appear as valid Library entries.
 - Per-book settings are separate from global settings and raw book files.
 - Runtime persistence uses versioned CBOR records with generation-based recovery.
+
+
+## 17. Staged file import MVP
+
+A concrete staged import flow now exists above the framework-neutral import core.
+
+`StagedBookImportService` coordinates `BookFileStore`, `BookImportService` and `LibraryService`.
+
+Current transaction:
+
+```text
+/system/tmp/<upload>
+→ read staged bytes
+→ BookImportService.prepare()
+→ validate / fingerprint / duplicate check / parse
+→ derive canonical /books/book-<id>.<ext>
+→ write final book file
+→ BookImportService.commit()
+→ persist Library index
+→ remove staged upload
+```
+
+Failure behavior:
+
+- missing/unreadable staged file → no Library or final-book changes;
+- unsupported/invalid/duplicate content → staged file remains for deterministic UI handling;
+- final book write failure → Library is unchanged and staged file remains;
+- Library commit failure → newly written final book file is removed and staged file remains for retry;
+- staged cleanup failure after commit → the imported book remains valid and the result reports `CleanupFailed` so recovery can remove the leftover tmp file later.
+
+The final filename is content-identity based rather than source-filename based:
+
+```text
+/books/book-<fingerprint-derived-id>.<ext>
+```
+
+This avoids collisions between unrelated uploads that happen to share a filename.
+
+The POSIX implementation is exercised by host integration tests using real temporary files. The target ESP32/SD adapter will implement the same `BookFileStore` contract.

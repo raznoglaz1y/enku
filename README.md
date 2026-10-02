@@ -24,7 +24,7 @@
 
 ## What is ENKU?
 
-ENKU is an open-source e-reader project designed around the **Waveshare ESP32-S3-ePaper-3.97** platform with an **800 × 480** e-paper display.
+ENKU is an open-source e-reader project currently validated around the **Waveshare ESP32-S3-ePaper-3.97** platform with an **800 × 480** e-paper display, while a dedicated portrait-first ENKU mainboard is being developed in parallel.
 
 The goal is not to reproduce a full tablet or build a feature-heavy general-purpose device. ENKU is intended to be a **small, calm and purpose-built reader**: fast enough for books, simple to operate, comfortable to use offline, and understandable from both the software and hardware side.
 
@@ -38,7 +38,8 @@ The project is being developed as a complete product system rather than only a f
 - storage and import flows;
 - sleep and power-management behavior;
 - enclosure development and mechanical iterations;
-- reproducible documentation for the hardware, firmware and enclosure.
+- reproducible documentation for the hardware, firmware and enclosure;
+- a custom ENKU mainboard and costed path toward small-batch community / kit builds.
 
 > **Current status:** design system, UX specification and project architecture are actively being developed. Firmware bring-up begins after the target hardware is in hand. Features listed below are planned unless explicitly marked as completed.
 
@@ -61,6 +62,22 @@ Partners can be credited in the project documentation and repository as hardware
 The goal is to build ENKU around readily available, reproducible parts rather than one-off or inaccessible hardware.
 
 For partnership or supply discussions, please open an issue or contact the project owner through GitHub.
+
+## Custom mainboard and future kits
+
+The reference Waveshare platform is useful for firmware bring-up, but ENKU is also being engineered as its own compact hardware platform.
+
+The custom mainboard roadmap targets:
+- ESP32-S3 + 3.97″ e-paper in a portrait-first PCB;
+- physical page controls, hard power-off, BMI270 motion/orientation sensing and magnetic-cover support;
+- USB-C as the primary charge/data connector;
+- optional magnetic pogo/dock charging;
+- Pro-ready frontlight and wireless-charging population options;
+- one core PCB that can support Base / Cover / Pro variants through DNP/population choices.
+
+After validation, the project may offer small-batch **electronics kits, Base kits, magnetic-cover kits and Pro/frontlight kits**. These are planned possibilities rather than products currently for sale; final contents and pricing depend on tested hardware, sourcing, compliance and fulfillment.
+
+The intent is to keep DIY builds fully documented even if assembled kits become available.
 
 ## Support ENKU
 

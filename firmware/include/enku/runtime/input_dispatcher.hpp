@@ -9,6 +9,7 @@
 #include "power_off.hpp"
 #include "reader_overlay_runtime.hpp"
 #include "reader_runtime.hpp"
+#include "search_runtime.hpp"
 #include "sleep_wake.hpp"
 
 namespace enku {
@@ -28,7 +29,8 @@ public:
         ReaderRuntimeController& reader,
         SleepWakeCoordinator& sleep_wake,
         PowerOffCoordinator& power_off,
-        ReaderOverlayRuntime* reader_overlay = nullptr
+        ReaderOverlayRuntime* reader_overlay = nullptr,
+        SearchRuntime* search = nullptr
     );
 
     InputDispatchResult handle(
@@ -42,6 +44,7 @@ private:
     SleepWakeCoordinator& sleep_wake_;
     PowerOffCoordinator& power_off_;
     ReaderOverlayRuntime* reader_overlay_{nullptr};
+    SearchRuntime* search_{nullptr};
 };
 
 } // namespace enku

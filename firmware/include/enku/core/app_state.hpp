@@ -33,6 +33,24 @@ struct LibraryState {
     std::uint16_t limit{24};
     std::uint32_t total_matches{0};
     std::optional<BookId> focused_book;
+
+    bool search_origin_valid{false};
+    std::uint32_t search_origin_offset{0};
+    std::optional<BookId> search_origin_focused_book;
+
+    std::uint32_t persistedOffset() const {
+        return mode == LibraryQueryMode::Search &&
+               search_origin_valid
+            ? search_origin_offset
+            : offset;
+    }
+
+    std::optional<BookId> persistedFocusedBook() const {
+        return mode == LibraryQueryMode::Search &&
+               search_origin_valid
+            ? search_origin_focused_book
+            : focused_book;
+    }
 };
 
 struct NetworkState {

@@ -7,12 +7,14 @@
 #include "../reader/txt_parser.hpp"
 #include "../reader/epub_parser.hpp"
 #include "../reader/fb2_parser.hpp"
+#include "book_file_store.hpp"
 
 namespace enku {
 
 enum class BookImportStatus : std::uint8_t {
     Ok,
     EmptySource,
+    SourceReadFailed,
     UnsupportedFormat,
     ParseFailed,
     Duplicate,
@@ -50,6 +52,13 @@ public:
 
     PreparedBookImport prepare(
         const BookImportSource& source,
+        std::uint64_t added_order
+    );
+
+    PreparedBookImport prepareStored(
+        BookFileStore& files,
+        const std::string& source_path,
+        const std::string& source_filename,
         std::uint64_t added_order
     );
 

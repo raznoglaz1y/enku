@@ -24,6 +24,10 @@ EspIdfDeviceRuntime::EspIdfDeviceRuntime(
           typography,
           viewport
       ),
+      reader_overlay_(
+          storage_,
+          reader_
+      ),
       sleep_wake_(
           storage_.appState(),
           storage_.library(),
@@ -46,7 +50,8 @@ EspIdfDeviceRuntime::EspIdfDeviceRuntime(
           reader_.library(),
           reader_.reader(),
           sleep_wake_,
-          power_off_
+          power_off_,
+          &reader_overlay_
       ) {}
 
 DeviceRuntimeInitStatus

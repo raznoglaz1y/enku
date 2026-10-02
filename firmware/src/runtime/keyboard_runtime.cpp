@@ -20,6 +20,12 @@ constexpr std::array<const char*, 33> kCyrillic = {
     "я","ч","с","м","и","т","ь","б","ю","ё",
 };
 
+constexpr std::array<const char*, 33> kCyrillicUpper = {
+    "Й","Ц","У","К","Е","Н","Г","Ш","Щ","З","Х","Ъ",
+    "Ф","Ы","В","А","П","Р","О","Л","Д","Ж","Э",
+    "Я","Ч","С","М","И","Т","Ь","Б","Ю","Ё",
+};
+
 constexpr std::array<const char*, 20> kSymbols = {
     "0","1","2","3","4","5","6","7","8","9",
     ".",
@@ -86,7 +92,10 @@ std::string keyboardKeyLabel(
                 value = kLatin[index];
                 break;
             case KeyboardMode::Cyrillic:
-                value = kCyrillic[index];
+                value =
+                    state.shift == KeyboardShiftState::Lowercase
+                        ? kCyrillic[index]
+                        : kCyrillicUpper[index];
                 break;
             case KeyboardMode::Symbols:
                 value = kSymbols[index];
@@ -188,11 +197,6 @@ KeyboardRuntimeResult KeyboardRuntime::activate(
 
     if (index < chars) {
         auto value = keyLabel(index);
-
-        if (state_.mode == KeyboardMode::Latin &&
-            state_.shift != KeyboardShiftState::Lowercase) {
-            value = asciiUpper(value);
-        }
 
         text += value;
 

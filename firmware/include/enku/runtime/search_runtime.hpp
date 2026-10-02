@@ -28,6 +28,7 @@ public:
 
     SearchRuntimeResult openFromReader();
     SearchRuntimeResult handle(LogicalAction action);
+    SearchRuntimeResult submitQuery(std::string query);
 
 private:
     ApplicationStorageRuntime& storage_;

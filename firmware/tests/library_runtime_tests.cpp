@@ -422,7 +422,18 @@ int main() {
         ) == LibraryRuntimeResult::Applied
     );
 
+    app.library.limit = 1;
+    app.library.offset = 1;
     app.library.focused_book = "beta";
+
+    assert(
+        runtime.handle(LibraryRefreshRequested{}) ==
+        LibraryRuntimeResult::Applied
+    );
+    assert(runtime.page().offset == 1);
+    assert(runtime.page().items.size() == 1);
+    assert(runtime.page().items[0].book_id == "beta");
+    assert(app.library.view == LibraryView::List);
 
     assert(
         runtime.handle(OpenFocusedBookRequested{}) ==
@@ -433,12 +444,57 @@ int main() {
         app.current_book ==
         std::optional<BookId>{"beta"}
     );
+    assert(app.library.offset == 1);
+    assert(
+        app.library.focused_book ==
+        std::optional<BookId>{"beta"}
+    );
+    assert(app.library.view == LibraryView::List);
 
     assert(
         reader.handle(BackRequested{}) ==
         ReaderRuntimeResult::Applied
     );
     assert(app.screen == Screen::Library);
+    assert(app.library.offset == 1);
+    assert(
+        app.library.focused_book ==
+        std::optional<BookId>{"beta"}
+    );
+    assert(app.library.view == LibraryView::List);
+
+    assert(
+        runtime.handle(LibraryRefreshRequested{}) ==
+        LibraryRuntimeResult::Applied
+    );
+    assert(runtime.page().offset == 1);
+    assert(runtime.page().items.size() == 1);
+    assert(runtime.page().items[0].book_id == "beta");
+    assert(
+        app.library.focused_book ==
+        std::optional<BookId>{"beta"}
+    );
+
+    assert(
+        settings.handle(
+            OrientationChanged{
+                Orientation::Landscape
+            }
+        ) == PersistStatus::Ok
+    );
+    assert(
+        runtime.handle(LibraryRefreshRequested{}) ==
+        LibraryRuntimeResult::Applied
+    );
+    assert(app.orientation == Orientation::Landscape);
+    assert(runtime.page().offset == 1);
+    assert(
+        app.library.focused_book ==
+        std::optional<BookId>{"beta"}
+    );
+    assert(app.library.view == LibraryView::List);
+
+    app.library.limit = 24;
 
     const std::string staged_path =
         "/system/tmp/gamma-upload.txt";

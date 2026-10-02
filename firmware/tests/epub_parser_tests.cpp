@@ -289,6 +289,70 @@ std::string sampleEpub() {
     });
 }
 
+std::string sampleEpub2() {
+    return makeStoredZip({
+        {
+            "mimetype",
+            "application/epub+zip",
+            false,
+        },
+        {
+            "META-INF/container.xml",
+            R"(<?xml version="1.0"?>
+<container>
+  <rootfiles>
+    <rootfile full-path="OPS/package.opf"
+      media-type="application/oebps-package+xml"/>
+  </rootfiles>
+</container>)",
+            true,
+        },
+        {
+            "OPS/package.opf",
+            R"(<?xml version="1.0"?>
+<package version="2.0"
+ xmlns:dc="http://purl.org/dc/elements/1.1/">
+ <metadata>
+  <dc:title>Legacy EPUB</dc:title>
+  <dc:creator>Legacy Author</dc:creator>
+ </metadata>
+ <manifest>
+  <item id="ncx" href="toc.ncx"
+   media-type="application/x-dtbncx+xml"/>
+  <item id="legacy1" href="chapters/one.xhtml"
+   media-type="application/xhtml+xml"/>
+ </manifest>
+ <spine toc="ncx">
+  <itemref idref="legacy1"/>
+ </spine>
+</package>)",
+            true,
+        },
+        {
+            "OPS/toc.ncx",
+            R"(<?xml version="1.0"?>
+<ncx>
+ <navMap>
+  <navPoint id="n1">
+   <navLabel><text>Legacy Chapter</text></navLabel>
+   <content src="chapters/one.xhtml#p1"/>
+  </navPoint>
+ </navMap>
+</ncx>)",
+            true,
+        },
+        {
+            "OPS/chapters/one.xhtml",
+            R"(<html><body>
+<h2>Fallback Heading</h2>
+<p id="p1">Old EPUB text.</p>
+</body></html>)",
+            true,
+        },
+    });
+}
+
+
 } // namespace
 
 int main() {
@@ -412,6 +476,34 @@ int main() {
     );
     assert(
         result.document.total_text_length > 0
+    );
+
+    ParserSourceInfo legacy_source{
+        "book-epub2-test",
+        "/books/legacy.epub",
+        "legacy.epub",
+    };
+
+    const auto legacy =
+        parser.parse(
+            sampleEpub2(),
+            legacy_source
+        );
+
+    assert(legacy.ok());
+    assert(
+        legacy.document.metadata.title ==
+        "Legacy EPUB"
+    );
+    assert(
+        legacy.document.metadata.toc_available
+    );
+    assert(legacy.document.sections.size() == 1);
+    assert(
+        legacy.document.sections[0].title ==
+        std::optional<std::string>{
+            "Legacy Chapter"
+        }
     );
 
     const auto invalid =

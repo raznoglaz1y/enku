@@ -140,6 +140,8 @@ The hardware-grounded button mapping and logical input actions are defined in [I
 
 The separation between display sleep, system suspend and PMU power-off is defined in [Power, Sleep & Wake Model](power-model.md).
 
+The canonical string-key, fallback and pluralization strategy is defined in [Localization Architecture](localization-model.md).
+
 ### Reader v1 format scope
 
 The first ENKU reader release targets three reflowable/text-oriented formats:

@@ -284,6 +284,34 @@ int main() {
             LibraryStatus::Ok
         );
 
+        auto other = makeBook(
+            "other-book",
+            "/books/other-book.txt",
+            "fp-other-book"
+        );
+        other.metadata.title = "Other";
+        other.added_order = 1;
+        record.added_order = 2;
+        assert(
+            library.upsert(record) ==
+            LibraryStatus::Ok
+        );
+        assert(
+            library.upsert(other) ==
+            LibraryStatus::Ok
+        );
+
+        CborSettingsService initial_settings_store(state_files);
+        GlobalSettings initial_settings;
+        initial_settings.library_sort =
+            LibrarySort::RecentlyAdded;
+        initial_settings.library_direction =
+            SortDirection::Ascending;
+        assert(
+            initial_settings_store.save(initial_settings) ==
+            PersistStatus::Ok
+        );
+
         std::uint64_t saved_offset = 0;
 
         {
@@ -302,7 +330,8 @@ int main() {
 
             AppState app;
             app.screen = Screen::Library;
-            app.library.offset = 24;
+            app.library.limit = 1;
+            app.library.offset = 1;
             app.library.focused_book =
                 BookId{"book-restore"};
 
@@ -352,6 +381,7 @@ int main() {
 
         // Rebuild with one authoritative AppState for the real restore run.
         AppState boot_app;
+        boot_app.library.limit = 1;
         CborSettingsService settings_service(state_files);
         SettingsRuntimeController settings(
             boot_app,
@@ -417,7 +447,7 @@ int main() {
         );
         assert(boot_app.boot.stage == BootStage::Stable);
         assert(!boot_app.boot.boot_in_progress);
-        assert(boot_app.library.offset == 24);
+        assert(boot_app.library.offset == 1);
         assert(
             boot_app.library.focused_book ==
             std::optional<BookId>{"book-restore"}
@@ -454,7 +484,7 @@ int main() {
                 AppRestoreContext{
                     Screen::Library,
                     std::nullopt,
-                    24,
+                    0,
                     BookId{"library-focus"},
                 }
             ) == PersistStatus::Ok
@@ -515,7 +545,7 @@ int main() {
             BootRestoreStatus::LibraryReady
         );
         assert(app.screen == Screen::Library);
-        assert(app.library.offset == 24);
+        assert(app.library.offset == 0);
         assert(
             app.library.focused_book ==
             std::optional<BookId>{"library-focus"}
@@ -526,7 +556,7 @@ int main() {
             context.load(restored_context) ==
             PersistStatus::Ok
         );
-        assert(restored_context.library_offset == 24);
+        assert(restored_context.library_offset == 0);
         assert(
             restored_context.library_focused_book ==
             std::optional<BookId>{"library-focus"}

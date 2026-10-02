@@ -142,7 +142,8 @@ It currently provides:
 - active-low GPIO button polling with debounce, long-press/repeat generation, screen-aware logical action mapping and runtime dispatch into Library/Reader/power flows;
 - AXP2101 power telemetry and shutdown/light-sleep platform service;
 - mono framebuffer boundary and concrete e-paper RefreshService with full/fast/partial routing;
-- unified ESP-IDF platform composition root owning storage, display, refresh, power and buttons.
+- unified ESP-IDF platform composition root owning storage, display, refresh, power and buttons;
+- application storage runtime composition for settings, Library, import/delete, checkpoints, boot-loop state and startup recovery.
 
 See [ESP-IDF platform bring-up](platform/esp_idf/README.md).
 

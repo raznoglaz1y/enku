@@ -340,6 +340,40 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
 }
 
 ReaderRuntimeResult ReaderRuntimeController::handle(
+    const BookPositionChanged& event
+) {
+    auto* active_session = session();
+
+    if ((app_state_.screen != Screen::Reading &&
+         app_state_.screen != Screen::Search) ||
+        active_session == nullptr ||
+        !active_session->isOpen() ||
+        !app_state_.current_book.has_value() ||
+        event.position.book_id != *app_state_.current_book) {
+        return ReaderRuntimeResult::Ignored;
+    }
+
+    const auto status =
+        active_session->open(
+            LayoutRequest{
+                event.position.book_id,
+                event.position,
+                typography_,
+                viewport_,
+            }
+        );
+
+    if (status != ReaderSessionStatus::Ready) {
+        return ReaderRuntimeResult::LayoutFailed;
+    }
+
+    app_state_.screen = Screen::Reading;
+    app_state_.current_book_finished = false;
+
+    return commitVisiblePage(true);
+}
+
+ReaderRuntimeResult ReaderRuntimeController::handle(
     const BackRequested&
 ) {
     if (app_state_.screen != Screen::Reading ||

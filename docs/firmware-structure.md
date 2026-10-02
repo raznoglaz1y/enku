@@ -32,11 +32,15 @@ firmware/
       reader_engine.hpp
       document_reader_engine.hpp
       reader_session.hpp
+    runtime/
+      reader_runtime.hpp
     services/
       services.hpp
 
   src/
     core/
+    runtime/
+      reader_runtime.cpp
     reader/
       text_paginator.cpp
       document_reader_engine.cpp
@@ -131,6 +135,18 @@ Owns:
 - Library summary updates independent from detailed per-book state.
 
 The Library service does not expose CBOR or filesystem details to UI code.
+
+### runtime
+
+Owns:
+
+- application-level coordination of typed events;
+- ReaderSession invocation for page navigation;
+- synchronization of visible Reader state into AppState;
+- progress-dirty hand-off to persistence;
+- generation of refresh requests after successful visible changes.
+
+The runtime layer does not manipulate semantic offsets directly.
 
 ### reader
 

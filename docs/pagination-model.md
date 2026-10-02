@@ -67,6 +67,8 @@ semantic anchor
 
 The exact implementation may change after profiling, but the pipeline separation is fixed.
 
+A first host-testable forward-pagination implementation now exists and is documented in [Pagination MVP](pagination-mvp.md). It currently covers the TXT paragraph path and consumes text metrics through an abstract `TextMeasurer`; production Noto Sans metrics remain pending.
+
 ## 4. Display list
 
 The pagination engine should return a compact display list rather than drawing directly to the e-paper driver.

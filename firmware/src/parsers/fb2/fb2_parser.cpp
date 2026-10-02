@@ -780,6 +780,121 @@ BookFormat Fb2Parser::format() const {
     return BookFormat::Fb2;
 }
 
+ParseResult Fb2Parser::parseMetadata(
+    std::string_view bytes,
+    const ParserSourceInfo& source
+) const {
+    ParseResult result;
+    result.document.book_id = source.book_id;
+
+    if (bytes.empty()) {
+        result.status = ParserStatus::EmptyDocument;
+        return result;
+    }
+
+    if (declaresNonUtf8(bytes)) {
+        result.status =
+            ParserStatus::UnsupportedEncoding;
+        return result;
+    }
+
+    const auto lowered = lower(bytes);
+    if (lowered.find("<fictionbook") ==
+        std::string::npos) {
+        result.status = ParserStatus::InvalidSource;
+        return result;
+    }
+
+    const auto description =
+        tagSlice(bytes, "description");
+    const auto title_info =
+        description.has_value()
+            ? tagSlice(
+                  *description,
+                  "title-info"
+              )
+            : std::nullopt;
+
+    result.document.metadata.title =
+        title_info.has_value()
+            ? tagText(
+                  *title_info,
+                  "book-title"
+              ).value_or(
+                  source.source_filename
+              )
+            : source.source_filename;
+
+    if (title_info.has_value()) {
+        result.document.metadata.authors =
+            authors(*title_info);
+        result.document.metadata.language =
+            tagText(*title_info, "lang");
+        result.document.metadata.description =
+            tagText(
+                *title_info,
+                "annotation"
+            );
+    }
+
+    if (result.document.metadata.authors.empty()) {
+        result.document.metadata.author_display =
+            "Unknown author";
+    } else {
+        result.document.metadata.author_display =
+            result.document.metadata.authors.front();
+
+        for (std::size_t i = 1;
+             i < result.document.metadata.authors.size();
+             ++i) {
+            result.document.metadata.author_display +=
+                ", " +
+                result.document.metadata.authors[i];
+        }
+    }
+
+    const auto publish_info =
+        description.has_value()
+            ? tagSlice(
+                  *description,
+                  "publish-info"
+              )
+            : std::nullopt;
+
+    if (publish_info.has_value()) {
+        result.document.metadata.publisher =
+            tagText(
+                *publish_info,
+                "publisher"
+            );
+        result.document.metadata.published_date =
+            tagText(
+                *publish_info,
+                "year"
+            );
+        result.document.metadata.identifier =
+            tagText(
+                *publish_info,
+                "isbn"
+            );
+    }
+
+    const auto body =
+        tagSlice(bytes, "body");
+
+    if (!body.has_value()) {
+        result.status = ParserStatus::InvalidSource;
+        return result;
+    }
+
+    result.document.metadata.toc_available =
+        lower(*body).find("<title") !=
+        std::string::npos;
+
+    result.status = ParserStatus::Ok;
+    return result;
+}
+
 ParseResult Fb2Parser::parse(
     std::string_view bytes,
     const ParserSourceInfo& source

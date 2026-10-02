@@ -9,6 +9,7 @@
 #include "../core/persistence.hpp"
 #include "../core/diagnostics.hpp"
 #include "../core/refresh.hpp"
+#include "../core/library.hpp"
 
 namespace enku {
 
@@ -18,6 +19,21 @@ public:
 
     virtual bool isAvailable() const = 0;
     virtual bool bookExists(const BookId& book_id) const = 0;
+};
+
+class LibraryService {
+public:
+    virtual ~LibraryService() = default;
+
+    virtual std::optional<BookRecord> get(const BookId& book_id) const = 0;
+    virtual LibraryStatus query(const LibraryQuery& query, LibraryPage& page) const = 0;
+    virtual std::optional<BookId> findByFingerprint(const std::string& fingerprint) const = 0;
+    virtual LibraryStatus updateSummary(
+        const BookId& book_id,
+        ReadingState reading_state,
+        float progress,
+        std::uint64_t last_opened_order
+    ) = 0;
 };
 
 class PersistenceService {

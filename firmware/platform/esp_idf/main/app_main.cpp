@@ -9,6 +9,7 @@
 #include "esp_heap_caps.h"
 #include "esp_log.h"
 #include "esp_system.h"
+#include "sdkconfig.h"
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -451,6 +452,54 @@ bool routedInputSmokeTest(
     return true;
 }
 
+[[noreturn]] void runApplicationLoop(
+    enku::platform::esp_idf::EspIdfDeviceRuntime& device
+) {
+    ESP_LOGI(
+        kTag,
+        "Entering ENKU application loop"
+    );
+
+    while (true) {
+        const auto now_ms =
+            static_cast<std::uint32_t>(
+                esp_timer_get_time() / 1000LL
+            );
+
+        const auto result =
+            device.pollInput(now_ms);
+
+        if (result ==
+            enku::InputDispatchResult::Failed) {
+            ESP_LOGE(
+                kTag,
+                "Input dispatch failed; screen=%u",
+                static_cast<unsigned>(
+                    device.storage().appState().screen
+                )
+            );
+        }
+
+        vTaskDelay(
+            pdMS_TO_TICKS(
+                enku::platform::esp_idf::
+                    EspIdfButtons::kPollIntervalMs
+            )
+        );
+    }
+}
+
+[[noreturn]] void idleWithoutFont() {
+    ESP_LOGW(
+        kTag,
+        "Reader font unavailable; idling until reboot"
+    );
+
+    while (true) {
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+}
+
 bool displaySmokeTest(
     EspIdfEpaper& display
 ) {
@@ -711,6 +760,9 @@ extern "C" void app_main(void) {
         return;
     }
 
+#if CONFIG_ENKU_BRINGUP_SMOKE_TESTS
+    ESP_LOGI(kTag, "Hardware bring-up smoke tests enabled");
+
     if (!storageSmokeTest(platform.bookFiles())) {
         ESP_LOGE(
             kTag,
@@ -734,6 +786,7 @@ extern "C" void app_main(void) {
         );
         return;
     }
+#endif
 
     enku::platform::esp_idf::EspIdfDeviceRuntime device(
         platform,
@@ -753,6 +806,7 @@ extern "C" void app_main(void) {
             "Application runtime skipped: copy /system/fonts/NotoSans-Regular.ttf to the TF card"
         );
 
+#if CONFIG_ENKU_RAW_INPUT_DIAGNOSTIC
         if (!inputSmokeTest(platform.buttons())) {
             ESP_LOGE(
                 kTag,
@@ -760,6 +814,9 @@ extern "C" void app_main(void) {
             );
             return;
         }
+#endif
+
+        idleWithoutFont();
     } else if (device_status !=
         enku::platform::esp_idf::DeviceRuntimeInitStatus::Ok) {
         ESP_LOGE(
@@ -797,17 +854,11 @@ extern "C" void app_main(void) {
             }
         }
 
-        if (!routedInputSmokeTest(device)) {
-            ESP_LOGE(
-                kTag,
-                "Routed input verification failed"
-            );
-            return;
-        }
-    }
+        ESP_LOGI(
+            kTag,
+            "ENKU application runtime ready"
+        );
 
-    ESP_LOGI(
-        kTag,
-        "ENKU storage + display + power + input + application bring-up complete"
-    );
+        runApplicationLoop(device);
+    }
 }

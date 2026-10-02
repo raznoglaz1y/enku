@@ -13,8 +13,11 @@ enum class ReaderOverlayMode : std::uint8_t {
 
 enum class ReaderMenuItem : std::uint8_t {
     Typography,
-    Orientation,
+    ContentsBookmarks,
+    AddBookmark,
     Search,
+    Orientation,
+    AboutBook,
     Sleep,
 };
 

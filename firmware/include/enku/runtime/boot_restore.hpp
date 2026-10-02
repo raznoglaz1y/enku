@@ -47,7 +47,8 @@ private:
     void settleLibrary();
     bool markBootStable();
     BootRestoreResult restoreLoadedContext(
-        const StorageStartupResult& storage
+        const StorageStartupResult& storage,
+        bool finalize_boot_marker
     );
 };
 

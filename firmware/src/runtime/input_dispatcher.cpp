@@ -211,8 +211,19 @@ InputDispatchResult InputDispatcher::handle(
                         BackRequested{}
                     );
 
-                return result ==
-                    ReaderRuntimeResult::Applied
+                if (result != ReaderRuntimeResult::Applied) {
+                    return InputDispatchResult::Failed;
+                }
+
+                const auto library_result =
+                    library_.handle(
+                        LibraryRefreshRequested{}
+                    );
+
+                return library_result ==
+                           LibraryRuntimeResult::Applied ||
+                       library_result ==
+                           LibraryRuntimeResult::Empty
                     ? InputDispatchResult::Applied
                     : InputDispatchResult::Failed;
             }

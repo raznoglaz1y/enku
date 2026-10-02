@@ -1,5 +1,6 @@
 #include "enku/reader/epub_parser.hpp"
 
+#include <algorithm>
 #include <cassert>
 #include <cstdint>
 #include <string>

@@ -101,6 +101,15 @@ struct PagePreviousRequested {};
 struct BackRequested {};
 struct OpenReaderMenuRequested {};
 struct OpenSearchRequested {};
+struct OpenSettingsRequested {};
+struct SettingsReadingRequested {};
+struct SettingsDisplayRequested {};
+struct SettingsWiFiRequested {};
+struct SettingsLanguageRequested {};
+struct SettingsStorageRequested {};
+struct SettingsSleepRequested {};
+struct SettingsAboutRequested {};
+struct SettingsPowerOffRequested {};
 struct SleepRequested {};
 struct WakeRequested {};
 
@@ -186,6 +195,15 @@ using AppEvent = std::variant<
     BackRequested,
     OpenReaderMenuRequested,
     OpenSearchRequested,
+    OpenSettingsRequested,
+    SettingsReadingRequested,
+    SettingsDisplayRequested,
+    SettingsWiFiRequested,
+    SettingsLanguageRequested,
+    SettingsStorageRequested,
+    SettingsSleepRequested,
+    SettingsAboutRequested,
+    SettingsPowerOffRequested,
     SleepRequested,
     WakeRequested,
     OrientationChanged,

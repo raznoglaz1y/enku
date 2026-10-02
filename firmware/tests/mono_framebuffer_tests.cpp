@@ -36,6 +36,10 @@ int main() {
     assert(framebuffer.size() == 16);
 
     framebuffer.clearWhite();
+    framebuffer.setBlack(2, 2);
+    framebuffer.setWhite(2, 2);
+    framebuffer.setBlack(-1, -1);
+    framebuffer.setWhite(999, 999);
 
     for (std::size_t i = 0; i < framebuffer.size(); ++i) {
         assert(framebuffer.data()[i] == 0xFF);

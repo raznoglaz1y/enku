@@ -5,7 +5,7 @@
 #include "../core/app_state.hpp"
 #include "../core/events.hpp"
 #include "../core/refresh.hpp"
-#include "../reader/reader_session.hpp"
+#include "../reader/book_loader.hpp"
 #include "../services/services.hpp"
 
 namespace enku {
@@ -27,10 +27,12 @@ class ReaderRuntimeController {
 public:
     ReaderRuntimeController(
         AppState& app_state,
-        ReaderSession& session,
+        ReaderBookLoader& loader,
         RefreshService& refresh,
         LibraryService& library,
-        ReaderCheckpointService& checkpoint
+        ReaderCheckpointService& checkpoint,
+        TypographySettings typography,
+        Viewport viewport
     );
 
     ReaderRuntimeResult handle(const OpenBookRequested&);
@@ -44,11 +46,16 @@ public:
 
 private:
     AppState& app_state_;
-    ReaderSession& session_;
+    ReaderBookLoader& loader_;
     RefreshService& refresh_;
     LibraryService& library_;
     ReaderCheckpointService& checkpoint_;
+    TypographySettings typography_;
+    Viewport viewport_;
     std::uint32_t refresh_generation_{0};
+
+    ReaderSession* session();
+    const ReaderSession* session() const;
 
     ReaderRuntimeResult applySessionResult(
         ReaderSessionStatus status

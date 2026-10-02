@@ -31,6 +31,7 @@ firmware/
       reader_types.hpp
       reader_engine.hpp
       document_reader_engine.hpp
+      reader_session.hpp
     services/
       services.hpp
 
@@ -39,6 +40,7 @@ firmware/
     reader/
       text_paginator.cpp
       document_reader_engine.cpp
+      reader_session.cpp
     parsers/
       epub/
       fb2/
@@ -50,7 +52,7 @@ firmware/
     services/
 ```
 
-Framework-independent interfaces are committed at this stage, plus host-testable TXT parser, forward text-pagination and concrete Reader Engine implementations.
+Framework-independent interfaces are committed at this stage, plus host-testable TXT parser, forward text-pagination, concrete Reader Engine and ReaderSession navigation implementations.
 
 ## 2. Module ownership
 
@@ -137,7 +139,10 @@ Owns:
 - semantic positions;
 - normalized reader requests/results;
 - pagination contract;
-- Reader Engine interface.
+- Reader Engine interface;
+- stateful ReaderSession navigation;
+- deterministic visited-page history;
+- disposable previous/current/next page working-set cache.
 
 It consumes normalized document content rather than raw source-format structures.
 

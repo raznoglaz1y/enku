@@ -40,6 +40,7 @@ add_library(enku_core STATIC
     src/runtime/storage_startup.cpp
     src/runtime/boot_restore.cpp
     src/runtime/sleep_wake.cpp
+    src/runtime/network_lifecycle.cpp
     src/runtime/power_off.cpp
     src/runtime/power_off_confirm_runtime.cpp
     src/runtime/wifi_settings_runtime.cpp

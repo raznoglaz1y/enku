@@ -820,3 +820,21 @@ Library mutations keep pagination valid and deterministic:
 - successful import exits Search mode and clears the active search text;
 - after import, the runtime reveals and focuses the imported book in whatever query window contains it, including Recently Added with ascending order;
 - import reveal respects the current page limit and sort direction instead of assuming the imported book is in the first window.
+
+## Book Details runtime
+
+Book Details is a dedicated runtime screen opened for the currently focused Library book.
+
+Semantic content is identical in portrait and landscape; orientation changes layout only.
+
+Primary action is derived from canonical reading state:
+
+- New -> Start;
+- Reading -> Continue;
+- Finished -> Read again.
+
+Read again always enters the approved restart confirmation first. Confirmation defaults to Cancel. A confirmed restart erases the saved reading checkpoint, resets summary progress to 0, transitions the book to Reading, preserves the source book and other per-book domains, then opens the book from the beginning.
+
+Delete Book enters a separate destructive confirmation with Cancel as the default focus. Confirmed deletion uses the transactional BookDeleteService and returns to Library with pagination/focus normalized.
+
+Back from a confirmation cancels the confirmation without changing book data. Back from Book Details returns to the same Library context.

@@ -188,3 +188,19 @@ reset
 The ESP-IDF target uses SPI3 mode 0 at 20 MHz with manual CS, matching the current official Waveshare example.
 
 The driver is compile-verified in GitHub Actions against ESP-IDF v5.5.5. Physical refresh quality, orientation, timing and ghosting still require validation on the delivered board.
+
+
+## Fast and partial refresh baseline
+
+The platform driver now includes the Waveshare reference refresh modes in addition to full refresh.
+
+Fast mode uses the vendor fast initialization sequence and update control `0xD7`.
+
+Partial mode programs a byte-aligned RAM window, writes only the region buffer, and triggers update control `0xFF`.
+
+The current smoke firmware deliberately exercises all three modes in one boot so physical bring-up can verify:
+
+- full-refresh orientation and mapping;
+- fast-refresh latency and ghosting;
+- partial-window coordinates;
+- repeated partial update artifacts.

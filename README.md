@@ -227,11 +227,16 @@ Planned Wi-Fi behavior includes:
 
 ### Sleep and power
 
+ENKU separates **panel sleep**, **device suspend** and **full PMU power-off**.
+
+- user-facing Sleep means a measured system-level low-power state, not only `EPD_Sleep()`;
 - static sleep screens suitable for e-paper;
 - optional book-cover sleep screen;
+- Wi-Fi off during Sleep;
 - no live clock or animation while sleeping;
 - auto-sleep suspended during writes/imports;
-- battery thresholds and wake behavior validated on real hardware.
+- full Power Off uses the board PMU shutdown path;
+- exact suspend mechanism, wake sources and battery thresholds are validated on real hardware.
 
 ---
 
@@ -244,6 +249,7 @@ ENKU is still in the pre-firmware stage, so several important decisions remain i
 - the firmware architecture, Library/storage model, parser abstraction, pagination model and runtime state machine are specified, while hardware integration and reader implementation remain pending;
 - Reader v1 is scoped to EPUB, FB2 and TXT; PDF support is deferred and not yet designed;
 - the parser and rendering stack are not selected;
+- the final system suspend mechanism and wake-source mapping have not yet been measured on the real board;
 - partial-refresh behavior has not yet been measured on the real panel;
 - battery model and real-world runtime are not finalized;
 - physical button mapping and wake behavior still require hardware testing;
@@ -360,7 +366,7 @@ No final mechanical dimensions will be published as authoritative until the actu
 - [ ] Bring up the e-paper panel
 - [ ] Characterize full/partial refresh behavior and ghosting
 - [ ] Verify microSD and persistent storage
-- [ ] Measure battery behavior and sleep current
+- [ ] Measure Active / DisplayIdle / Suspended / PoweredOff current
 - [ ] Validate wake/power-off behavior
 - [ ] Confirm typography rendering and memory use
 
@@ -430,6 +436,7 @@ Useful documents:
 - [Architecture](docs/architecture.md)
 - [Firmware project structure](docs/firmware-structure.md)
 - [Input & physical controls](docs/input-model.md)
+- [Power, sleep & wake model](docs/power-model.md)
 - [Reader runtime & state machine](docs/runtime-state-machine.md)
 - [Pagination & rendering model](docs/pagination-model.md)
 - [Metadata & parser model](docs/parser-model.md)
@@ -460,6 +467,7 @@ docs/
   architecture.md          system architecture
   firmware-structure.md    source layout and module boundaries
   input-model.md            physical controls and logical input mapping
+  power-model.md            panel sleep, system suspend and PMU power-off
   runtime-state-machine.md  reader runtime and recovery behavior
   pagination-model.md       text layout and pagination rules
   parser-model.md           metadata normalization and parser abstraction

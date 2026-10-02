@@ -20,6 +20,7 @@
 #include "enku/platform/esp_idf/esp_idf_file_store.hpp"
 #include "enku/platform/esp_idf/esp_idf_power_service.hpp"
 #include "enku/platform/esp_idf/esp_idf_platform.hpp"
+#include "enku/platform/esp_idf/esp_idf_device_runtime.hpp"
 #include "enku/platform/esp_idf/esp_idf_sd_card.hpp"
 
 namespace {
@@ -699,8 +700,43 @@ extern "C" void app_main(void) {
         return;
     }
 
+    enku::platform::esp_idf::EspIdfDeviceRuntime device(
+        platform,
+        enku::TypographySettings{18, 1.35F, 24},
+        enku::Viewport{
+            EspIdfEpaper::kWidth,
+            EspIdfEpaper::kHeight,
+        }
+    );
+
+    const auto device_status = device.begin();
+
+    if (device_status ==
+        enku::platform::esp_idf::DeviceRuntimeInitStatus::FontMissing) {
+        ESP_LOGW(
+            kTag,
+            "Application runtime skipped: copy /system/fonts/NotoSans-Regular.ttf to the TF card"
+        );
+    } else if (device_status !=
+        enku::platform::esp_idf::DeviceRuntimeInitStatus::Ok) {
+        ESP_LOGE(
+            kTag,
+            "Application runtime init failed with status %u",
+            static_cast<unsigned>(device_status)
+        );
+        return;
+    } else {
+        ESP_LOGI(
+            kTag,
+            "Application Reader runtime initialized; screen=%u",
+            static_cast<unsigned>(
+                device.storage().appState().screen
+            )
+        );
+    }
+
     ESP_LOGI(
         kTag,
-        "ENKU storage + display + power + input bring-up complete"
+        "ENKU storage + display + power + input + application bring-up complete"
     );
 }

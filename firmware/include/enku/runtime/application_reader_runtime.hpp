@@ -11,6 +11,12 @@
 
 namespace enku {
 
+enum class OrientationApplyStatus : std::uint8_t {
+    Ok,
+    SettingsSaveFailed,
+    RuntimeFailed,
+};
+
 class ApplicationReaderRuntime {
 public:
     ApplicationReaderRuntime(
@@ -27,6 +33,10 @@ public:
     ReaderRuntimeController& reader();
     LibraryRuntimeController& library();
     BootRestoreCoordinator& bootRestore();
+
+    OrientationApplyStatus applyOrientation(
+        Orientation orientation
+    );
 
 private:
     ApplicationStorageRuntime& storage_;

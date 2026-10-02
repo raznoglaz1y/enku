@@ -842,4 +842,76 @@ bool FreeTypeTextRenderer::renderReaderOverlay(
     );
 }
 
+
+bool FreeTypeTextRenderer::renderSearch(
+    const AppState& app_state
+) {
+    if (!ready()) {
+        return false;
+    }
+
+    framebuffer_.clearWhite();
+
+    const Orientation orientation =
+        app_state.orientation;
+    const int logical_width =
+        orientation == Orientation::Portrait
+            ? 480
+            : 800;
+
+    if (!drawTextAt(
+            "SEARCH IN BOOK",
+            26,
+            30,
+            52,
+            orientation
+        )) {
+        return false;
+    }
+
+    drawRect(
+        24,
+        82,
+        logical_width - 48,
+        54,
+        orientation,
+        2
+    );
+
+    const std::string label =
+        app_state.search.query.empty()
+            ? "ENTER SEARCH QUERY"
+            : app_state.search.query;
+
+    if (!drawTextAt(
+            label,
+            18,
+            40,
+            116,
+            orientation
+        )) {
+        return false;
+    }
+
+    if (!drawTextAt(
+            "FUNCTION: KEYBOARD",
+            13,
+            30,
+            178,
+            orientation
+        )) {
+        return false;
+    }
+
+    return drawTextAt(
+        "BACK: RETURN TO READING",
+        12,
+        30,
+        orientation == Orientation::Portrait
+            ? 760
+            : 448,
+        orientation
+    );
+}
+
 } // namespace enku::platform::esp_idf

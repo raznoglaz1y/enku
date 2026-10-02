@@ -248,7 +248,7 @@ ENKU is still in the pre-firmware stage, so several important decisions remain i
 - a framework-neutral C++ firmware scaffold now exists under `firmware/`;
 - the firmware architecture, Library/storage model, parser abstraction, pagination model and runtime state machine are specified, while hardware integration and reader implementation remain pending;
 - Reader v1 is scoped to EPUB, FB2 and TXT; PDF support is deferred and not yet designed;
-- the parser and rendering stack are not selected;
+- the exact CBOR codec library and parser/rendering stack are not selected;
 - the final system suspend mechanism and wake-source mapping have not yet been measured on the real board;
 - partial-refresh behavior has not yet been measured on the real panel;
 - battery model and real-world runtime are not finalized;
@@ -301,7 +301,14 @@ Firmware has not yet been published as a working reader. The planned implementat
    - localization;
    - e-paper-aware redraw strategy.
 
-6. **Local management service**
+6. **Persistence layer**
+   - versioned CBOR records;
+   - separate Library / settings / per-book state;
+   - A/B generation recovery;
+   - debounced progress checkpoints;
+   - schema migration and integrity validation.
+
+7. **Local management service**
    - upload/import;
    - metadata operations;
    - storage status;
@@ -376,7 +383,7 @@ No final mechanical dimensions will be published as authoritative until the actu
 - [ ] Connect the firmware scaffold to verified platform drivers
 - [ ] Implement EPUB/FB2/TXT parsers and text layout
 - [ ] Implement Library grid/list navigation
-- [ ] Implement reading position and progress persistence
+- [ ] Implement CBOR persistence and reading-position checkpoints
 - [ ] Implement typography presets and Custom mode
 - [ ] Add bookmarks and table of contents
 - [ ] Add in-book search
@@ -441,6 +448,7 @@ Useful documents:
 - [Pagination & rendering model](docs/pagination-model.md)
 - [Metadata & parser model](docs/parser-model.md)
 - [Library & storage model](docs/storage-model.md)
+- [Persistence backend](docs/persistence-model.md)
 - [Hardware baseline](docs/hardware.md)
 - [BOM status](docs/bom.md)
 - [UI specification](docs/ui-spec.md)
@@ -472,6 +480,7 @@ docs/
   pagination-model.md       text layout and pagination rules
   parser-model.md           metadata normalization and parser abstraction
   storage-model.md          Library identity, state and transactional storage
+  persistence-model.md      CBOR records, schema versioning and crash recovery
   hardware.md              verified/planned hardware baseline
   bom.md                   parts/BOM status and sourcing priorities
   status.md                current project status

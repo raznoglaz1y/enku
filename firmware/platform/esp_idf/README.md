@@ -316,3 +316,28 @@ The ESP-IDF target now links the real ENKU storage/application subset used by `A
 This is the first board build where the same application persistence code tested on desktop is linked against the physical SD-backed adapters.
 
 The remaining application-runtime blocker is no longer persistence. It is the real Reader rendering path: text measurement, font data and screen composition.
+
+
+## Reader font engine
+
+The ESP-IDF target now depends on Espressif's FreeType component and includes `FreeTypeTextRenderer`.
+
+Default font asset:
+
+```text
+/system/fonts/NotoSans-Regular.ttf
+```
+
+The SD mount creates `/system/fonts`, but the font binary itself is not embedded in firmware.
+
+The renderer:
+
+- loads the real TTF from FAT;
+- measures UTF-8 text with FreeType advances and kerning;
+- derives line height from the face metrics;
+- rasterizes glyphs in 1-bit monochrome mode;
+- writes directly into `OwnedMonoFramebuffer`.
+
+This keeps Reader pagination and physical rendering on the same metric source.
+
+A missing Noto Sans file is a provisioning error, not a trigger for silent fallback to another font.

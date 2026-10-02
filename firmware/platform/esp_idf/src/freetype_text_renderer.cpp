@@ -6,7 +6,6 @@
 #include <cstdint>
 #include <cstdio>
 #include <limits>
-#include <cstdio>
 #include <utility>
 
 #include "esp_log.h"
@@ -274,10 +273,29 @@ std::uint16_t FreeTypeTextRenderer::lineHeightPx(
     );
 }
 
+void FreeTypeTextRenderer::setLogicalBlack(
+    int x,
+    int y,
+    Orientation orientation
+) {
+    if (orientation == Orientation::Landscape) {
+        framebuffer_.setBlack(x, y);
+        return;
+    }
+
+    // Portrait logical surface is 480x800. Rotate clockwise into the
+    // controller-native 800x480 framebuffer.
+    framebuffer_.setBlack(
+        static_cast<int>(framebuffer_.width()) - 1 - y,
+        x
+    );
+}
+
 void FreeTypeTextRenderer::drawMonoBitmap(
     const FT_Bitmap& bitmap,
     int x,
-    int y
+    int y,
+    Orientation orientation
 ) {
     if (bitmap.pixel_mode != FT_PIXEL_MODE_MONO) {
         return;
@@ -302,9 +320,10 @@ void FreeTypeTextRenderer::drawMonoBitmap(
                 continue;
             }
 
-            framebuffer_.setBlack(
+            setLogicalBlack(
                 x + static_cast<int>(column),
-                y + static_cast<int>(row)
+                y + static_cast<int>(row),
+                orientation
             );
         }
     }
@@ -314,7 +333,8 @@ bool FreeTypeTextRenderer::drawTextAt(
     std::string_view text,
     std::uint16_t size_px,
     int x,
-    int baseline
+    int baseline,
+    Orientation orientation
 ) {
     if (!ensureSize(size_px)) {
         return false;
@@ -372,7 +392,8 @@ bool FreeTypeTextRenderer::drawTextAt(
         drawMonoBitmap(
             slot.bitmap,
             pen_x + slot.bitmap_left,
-            baseline - slot.bitmap_top
+            baseline - slot.bitmap_top,
+            orientation
         );
 
         pen_x +=
@@ -391,6 +412,7 @@ void FreeTypeTextRenderer::drawRect(
     int y,
     int width,
     int height,
+    Orientation orientation,
     int thickness
 ) {
     if (width <= 0 ||
@@ -403,20 +425,22 @@ void FreeTypeTextRenderer::drawRect(
         for (int px = x + t;
              px < x + width - t;
              ++px) {
-            framebuffer_.setBlack(px, y + t);
-            framebuffer_.setBlack(
+            setLogicalBlack(px, y + t, orientation);
+            setLogicalBlack(
                 px,
-                y + height - 1 - t
+                y + height - 1 - t,
+                orientation
             );
         }
 
         for (int py = y + t;
              py < y + height - t;
              ++py) {
-            framebuffer_.setBlack(x + t, py);
-            framebuffer_.setBlack(
+            setLogicalBlack(x + t, py, orientation);
+            setLogicalBlack(
                 x + width - 1 - t,
-                py
+                py,
+                orientation
             );
         }
     }
@@ -424,7 +448,8 @@ void FreeTypeTextRenderer::drawRect(
 
 bool FreeTypeTextRenderer::renderPage(
     const PageResult& page,
-    const TypographySettings& typography
+    const TypographySettings& typography,
+    Orientation orientation
 ) {
     if (!ensureSize(typography.font_size_px)) {
         return false;
@@ -496,7 +521,8 @@ bool FreeTypeTextRenderer::renderPage(
             drawMonoBitmap(
                 slot.bitmap,
                 pen_x + slot.bitmap_left,
-                baseline - slot.bitmap_top
+                baseline - slot.bitmap_top,
+                orientation
             );
 
             pen_x +=
@@ -521,11 +547,20 @@ bool FreeTypeTextRenderer::renderLibrary(
 
     framebuffer_.clearWhite();
 
+    const Orientation orientation =
+        app_state.orientation;
+
+    const int logical_width =
+        orientation == Orientation::Portrait
+            ? 480
+            : 800;
+
     if (!drawTextAt(
             "LIBRARY",
             28,
             32,
-            48
+            48,
+            orientation
         )) {
         return false;
     }
@@ -543,17 +578,21 @@ bool FreeTypeTextRenderer::renderLibrary(
     if (!drawTextAt(
             count_text,
             14,
-            650,
-            42
+            logical_width - 150,
+            42,
+            orientation
         )) {
         return false;
     }
 
     constexpr int kStartY = 78;
     constexpr int kRowHeight = 64;
-    constexpr int kLeft = 32;
-    constexpr int kWidth = 736;
-    constexpr std::size_t kMaxVisible = 6;
+    constexpr int kLeft = 24;
+    const int kWidth = logical_width - 48;
+    const std::size_t kMaxVisible =
+        orientation == Orientation::Portrait
+            ? 10U
+            : 6U;
 
     const auto visible =
         std::min<std::size_t>(
@@ -579,6 +618,7 @@ bool FreeTypeTextRenderer::renderLibrary(
                 top,
                 kWidth,
                 kRowHeight - 6,
+                orientation,
                 2
             );
         }
@@ -587,7 +627,8 @@ bool FreeTypeTextRenderer::renderLibrary(
                 book.metadata.title,
                 18,
                 kLeft + 14,
-                top + 25
+                top + 25,
+                orientation
             )) {
             return false;
         }
@@ -601,7 +642,8 @@ bool FreeTypeTextRenderer::renderLibrary(
                 meta,
                 13,
                 kLeft + 14,
-                top + 46
+                top + 46,
+                orientation
             )) {
             return false;
         }
@@ -626,7 +668,8 @@ bool FreeTypeTextRenderer::renderLibrary(
                 progress,
                 13,
                 kLeft + kWidth - 62,
-                top + 35
+                top + 35,
+                orientation
             )) {
             return false;
         }
@@ -637,7 +680,8 @@ bool FreeTypeTextRenderer::renderLibrary(
                 "NO BOOKS",
                 18,
                 32,
-                120
+                120,
+                orientation
             )) {
             return false;
         }
@@ -646,7 +690,8 @@ bool FreeTypeTextRenderer::renderLibrary(
                 "IMPORT A TXT BOOK TO START",
                 14,
                 32,
-                150
+                150,
+                orientation
             )) {
             return false;
         }

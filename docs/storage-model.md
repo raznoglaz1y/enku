@@ -44,6 +44,8 @@ The original file should not be modified just to store ENKU progress, bookmarks 
 
 ENKU should maintain a persistent Library index so the UI does not need to parse every book on every startup.
 
+The in-memory Library records, query/filter/sort model and service boundary are defined in [Library Data Model & Service Interface](library-model.md).
+
 Each Library entry should include at least:
 
 - `book_id`

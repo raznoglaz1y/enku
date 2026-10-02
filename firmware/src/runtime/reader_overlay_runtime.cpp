@@ -280,6 +280,14 @@ ReaderOverlayRuntime::confirm() {
             return ReaderOverlayRuntimeResult::Applied;
         }
 
+        if (item == ReaderMenuItem::Sleep) {
+            // SleepWakeCoordinator must see Reading so it checkpoints
+            // the active book and restores it on wake.
+            app.screen = Screen::Reading;
+            baseline_valid_ = false;
+            return ReaderOverlayRuntimeResult::SleepRequested;
+        }
+
         return ReaderOverlayRuntimeResult::Ignored;
     }
 

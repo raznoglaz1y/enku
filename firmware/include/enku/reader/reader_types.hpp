@@ -2,6 +2,8 @@
 
 #include <cstdint>
 #include <optional>
+#include <string>
+#include <vector>
 
 #include "../core/types.hpp"
 
@@ -20,15 +22,20 @@ struct LayoutRequest {
     Viewport viewport;
 };
 
+struct PageLine {
+    std::string text;
+    SemanticPosition position;
+    std::uint16_t x{0};
+    std::uint16_t y{0};
+};
+
 struct PageResult {
+    std::vector<PageLine> lines;
     SemanticPosition first_position;
     SemanticPosition last_position;
     std::optional<SemanticPosition> previous_anchor;
     std::optional<SemanticPosition> next_anchor;
     float progress{0.0F};
-
-    // Rendering payload/display-list representation is intentionally
-    // left implementation-defined until the font/raster stack is selected.
 };
 
 } // namespace enku

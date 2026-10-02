@@ -240,7 +240,8 @@ Planned Wi-Fi behavior includes:
 ENKU is still in the pre-firmware stage, so several important decisions remain intentionally open:
 
 - there is no production reader firmware yet;
-- the firmware architecture, Library/storage model, parser abstraction, pagination model and runtime state machine are specified but not yet implemented;
+- a framework-neutral C++ firmware scaffold now exists under `firmware/`;
+- the firmware architecture, Library/storage model, parser abstraction, pagination model and runtime state machine are specified, while hardware integration and reader implementation remain pending;
 - Reader v1 is scoped to EPUB, FB2 and TXT; PDF support is deferred and not yet designed;
 - the parser and rendering stack are not selected;
 - partial-refresh behavior has not yet been measured on the real panel;
@@ -300,7 +301,7 @@ Firmware has not yet been published as a working reader. The planned implementat
    - storage status;
    - safe replace/delete transactions.
 
-The exact framework and parser stack will be chosen after display bring-up, memory profiling and real-device tests.
+A framework-neutral C++ interface scaffold now exists under [firmware/](firmware/). The exact framework, build system, display library and parser stack will be chosen after display bring-up, memory profiling and real-device tests.
 
 ---
 
@@ -366,6 +367,7 @@ No final mechanical dimensions will be published as authoritative until the actu
 ### Phase 3 — Reader MVP
 
 - [x] Select Reader v1 formats: EPUB, FB2 and TXT; PDF deferred
+- [ ] Connect the firmware scaffold to verified platform drivers
 - [ ] Implement EPUB/FB2/TXT parsers and text layout
 - [ ] Implement Library grid/list navigation
 - [ ] Implement reading position and progress persistence
@@ -426,6 +428,7 @@ Useful documents:
 
 - [Project status](docs/status.md)
 - [Architecture](docs/architecture.md)
+- [Firmware project structure](docs/firmware-structure.md)
 - [Reader runtime & state machine](docs/runtime-state-machine.md)
 - [Pagination & rendering model](docs/pagination-model.md)
 - [Metadata & parser model](docs/parser-model.md)
@@ -448,8 +451,13 @@ design/
   screens/          historical and current UI boards
   renders/          project diagrams and visual references
 
+firmware/
+  README.md                firmware scaffold status and entry point
+  include/enku/            framework-neutral core/reader/service interfaces
+
 docs/
   architecture.md          system architecture
+  firmware-structure.md    source layout and module boundaries
   runtime-state-machine.md  reader runtime and recovery behavior
   pagination-model.md       text layout and pagination rules
   parser-model.md           metadata normalization and parser abstraction
@@ -464,7 +472,7 @@ ROADMAP.md          implementation roadmap
 NOTICE.md           third-party asset and release notes
 ```
 
-Firmware, hardware and enclosure directories will be added when those workstreams contain verified source material.
+The `firmware/` directory now contains the framework-neutral interface scaffold. Hardware-specific implementations and build files will be added after verified board bring-up. Hardware and enclosure source directories will be added when those workstreams contain verified material.
 
 ## Localization
 

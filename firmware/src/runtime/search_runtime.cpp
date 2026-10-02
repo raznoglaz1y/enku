@@ -87,19 +87,84 @@ std::string simpleUtf8Fold(
     return out;
 }
 
-std::string previewAround(
+struct SearchPreview {
+    std::string text;
+    std::uint32_t match_start{0};
+    std::uint32_t match_length{0};
+};
+
+bool isUtf8Continuation(unsigned char ch) {
+    return (ch & 0xC0U) == 0x80U;
+}
+
+std::size_t clampUtf8Start(
     const std::string& text,
-    std::size_t match
+    std::size_t offset
 ) {
-    constexpr std::size_t kRadius = 36;
-    const auto start =
-        match > kRadius ? match - kRadius : 0U;
-    const auto count =
+    offset = std::min(offset, text.size());
+
+    while (offset > 0U &&
+           offset < text.size() &&
+           isUtf8Continuation(
+               static_cast<unsigned char>(
+                   text[offset]
+               )
+           )) {
+        --offset;
+    }
+
+    return offset;
+}
+
+std::size_t clampUtf8End(
+    const std::string& text,
+    std::size_t offset
+) {
+    offset = std::min(offset, text.size());
+
+    while (offset < text.size() &&
+           isUtf8Continuation(
+               static_cast<unsigned char>(
+                   text[offset]
+               )
+           )) {
+        ++offset;
+    }
+
+    return offset;
+}
+
+SearchPreview previewAround(
+    const std::string& text,
+    std::size_t match,
+    std::size_t match_length
+) {
+    constexpr std::size_t kRadius = 40;
+
+    auto start =
+        match > kRadius
+            ? match - kRadius
+            : 0U;
+    auto end =
         std::min<std::size_t>(
-            text.size() - start,
-            kRadius * 2U
+            text.size(),
+            match + match_length + kRadius
         );
-    return text.substr(start, count);
+
+    start = clampUtf8Start(text, start);
+    end = clampUtf8End(text, end);
+
+    SearchPreview preview;
+    preview.text = text.substr(start, end - start);
+    preview.match_start =
+        static_cast<std::uint32_t>(
+            match - start
+        );
+    preview.match_length =
+        static_cast<std::uint32_t>(
+            match_length
+        );
+    return preview;
 }
 
 } // namespace
@@ -385,6 +450,13 @@ SearchRuntimeResult SearchRuntime::populateWindow(
                 if (global_index >= window_start &&
                     app.search.matches.size() <
                         kBatchLimit) {
+                    const auto preview =
+                        previewAround(
+                            block.text,
+                            match,
+                            needle.size()
+                        );
+
                     app.search.matches.push_back(
                         SearchMatch{
                             SemanticPosition{
@@ -395,10 +467,12 @@ SearchRuntimeResult SearchRuntime::populateWindow(
                                         match
                                     ),
                             },
-                            previewAround(
-                                block.text,
-                                match
-                            ),
+                            section.title.has_value()
+                                ? *section.title
+                                : section.id,
+                            preview.text,
+                            preview.match_start,
+                            preview.match_length,
                         }
                     );
                 }

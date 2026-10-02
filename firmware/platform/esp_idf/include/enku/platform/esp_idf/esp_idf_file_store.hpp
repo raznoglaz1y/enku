@@ -47,6 +47,11 @@ public:
         const std::string& bytes
     );
 
+    EspIdfFsStatus move(
+        const std::string& from,
+        const std::string& to
+    );
+
     EspIdfFsStatus remove(
         const std::string& path
     );
@@ -112,6 +117,11 @@ public:
     BookFileStatus append(
         const std::string& path,
         const std::string& bytes
+    ) override;
+
+    BookFileStatus move(
+        const std::string& from,
+        const std::string& to
     ) override;
 
     BookFileStatus remove(

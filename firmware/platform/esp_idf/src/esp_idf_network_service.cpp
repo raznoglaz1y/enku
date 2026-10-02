@@ -1,6 +1,8 @@
 #include "enku/platform/esp_idf/esp_idf_network_service.hpp"
 
+#include <algorithm>
 #include <cstdint>
+#include <cstring>
 
 #include "esp_log.h"
 #include "esp_wifi.h"
@@ -24,7 +26,9 @@ EspIdfNetworkService::~EspIdfNetworkService() {
     }
 
     if (initialized_) {
-        esp_wifi_stop();
+        if (started_.load()) {
+            esp_wifi_stop();
+        }
         esp_wifi_deinit();
         initialized_ = false;
     }
@@ -121,13 +125,15 @@ bool EspIdfNetworkService::begin() {
         return false;
     }
 
-    if (esp_wifi_set_mode(WIFI_MODE_STA) != ESP_OK ||
+    if (esp_wifi_set_storage(WIFI_STORAGE_FLASH) != ESP_OK ||
+        esp_wifi_set_mode(WIFI_MODE_STA) != ESP_OK ||
         esp_wifi_start() != ESP_OK) {
         ESP_LOGE(kTag, "Wi-Fi STA start failed");
         return false;
     }
 
     initialized_ = true;
+    started_.store(true);
     connected_.store(false);
 
     ESP_LOGI(
@@ -138,6 +144,23 @@ bool EspIdfNetworkService::begin() {
     return true;
 }
 
+bool EspIdfNetworkService::ensureStarted() {
+    if (!initialized_) {
+        return false;
+    }
+
+    if (started_.load()) {
+        return true;
+    }
+
+    if (esp_wifi_start() != ESP_OK) {
+        return false;
+    }
+
+    started_.store(true);
+    return true;
+}
+
 bool EspIdfNetworkService::connected() const {
     return connected_.load();
 }
@@ -145,9 +168,158 @@ bool EspIdfNetworkService::connected() const {
 void EspIdfNetworkService::disconnect() {
     connected_.store(false);
 
-    if (initialized_) {
+    if (initialized_ && started_.load()) {
         esp_wifi_disconnect();
     }
+}
+
+NetworkPolicyStatus EspIdfNetworkService::applyPolicy(
+    WiFiPolicy policy
+) {
+    if (!initialized_) {
+        return NetworkPolicyStatus::DriverError;
+    }
+
+    switch (policy) {
+        case WiFiPolicy::Off:
+            disconnect();
+
+            if (started_.load() &&
+                esp_wifi_stop() != ESP_OK) {
+                return NetworkPolicyStatus::DriverError;
+            }
+
+            started_.store(false);
+            return NetworkPolicyStatus::Ok;
+
+        case WiFiPolicy::Manual:
+            if (!ensureStarted()) {
+                return NetworkPolicyStatus::DriverError;
+            }
+
+            disconnect();
+            return NetworkPolicyStatus::Ok;
+
+        case WiFiPolicy::AutoConnectTrusted: {
+            if (!ensureStarted()) {
+                return NetworkPolicyStatus::DriverError;
+            }
+
+            wifi_config_t config = {};
+            if (esp_wifi_get_config(
+                    WIFI_IF_STA,
+                    &config
+                ) != ESP_OK) {
+                return NetworkPolicyStatus::DriverError;
+            }
+
+            if (config.sta.ssid[0] == '\0') {
+                return NetworkPolicyStatus::NoTrustedNetwork;
+            }
+
+            if (esp_wifi_connect() != ESP_OK) {
+                return NetworkPolicyStatus::DriverError;
+            }
+
+            return NetworkPolicyStatus::Ok;
+        }
+
+        default:
+            return NetworkPolicyStatus::DriverError;
+    }
+}
+
+NetworkPolicyStatus EspIdfNetworkService::setTrustedNetwork(
+    std::string_view ssid,
+    std::string_view password
+) {
+    if (!initialized_ ||
+        ssid.empty() ||
+        ssid.size() > 32U ||
+        password.size() > 64U) {
+        return NetworkPolicyStatus::InvalidCredentials;
+    }
+
+    if (!ensureStarted()) {
+        return NetworkPolicyStatus::DriverError;
+    }
+
+    wifi_config_t config = {};
+
+    std::memcpy(
+        config.sta.ssid,
+        ssid.data(),
+        ssid.size()
+    );
+
+    if (!password.empty()) {
+        std::memcpy(
+            config.sta.password,
+            password.data(),
+            password.size()
+        );
+    }
+
+    if (esp_wifi_set_config(
+            WIFI_IF_STA,
+            &config
+        ) != ESP_OK) {
+        return NetworkPolicyStatus::DriverError;
+    }
+
+    ESP_LOGI(
+        kTag,
+        "Trusted Wi-Fi network stored: %.*s",
+        static_cast<int>(ssid.size()),
+        ssid.data()
+    );
+
+    return NetworkPolicyStatus::Ok;
+}
+
+NetworkPolicyStatus
+EspIdfNetworkService::forgetTrustedNetwork() {
+    if (!initialized_) {
+        return NetworkPolicyStatus::DriverError;
+    }
+
+    disconnect();
+
+    wifi_config_t empty = {};
+    if (esp_wifi_set_config(
+            WIFI_IF_STA,
+            &empty
+        ) != ESP_OK) {
+        return NetworkPolicyStatus::DriverError;
+    }
+
+    return NetworkPolicyStatus::Ok;
+}
+
+std::optional<std::string>
+EspIdfNetworkService::trustedSsid() const {
+    if (!initialized_) {
+        return std::nullopt;
+    }
+
+    wifi_config_t config = {};
+    if (esp_wifi_get_config(
+            WIFI_IF_STA,
+            &config
+        ) != ESP_OK ||
+        config.sta.ssid[0] == '\0') {
+        return std::nullopt;
+    }
+
+    const auto* begin =
+        reinterpret_cast<const char*>(
+            config.sta.ssid
+        );
+
+    const auto length =
+        strnlen(begin, sizeof(config.sta.ssid));
+
+    return std::string(begin, length);
 }
 
 void EspIdfNetworkService::handleWifiEvent(
@@ -163,11 +335,19 @@ void EspIdfNetworkService::handleWifiEvent(
         return;
     }
 
-    if (event_id == WIFI_EVENT_STA_CONNECTED) {
+    if (event_id == WIFI_EVENT_STA_START) {
+        self->started_.store(true);
+    } else if (
+        event_id == WIFI_EVENT_STA_STOP
+    ) {
+        self->started_.store(false);
+        self->connected_.store(false);
+    } else if (
+        event_id == WIFI_EVENT_STA_CONNECTED
+    ) {
         self->connected_.store(true);
     } else if (
-        event_id == WIFI_EVENT_STA_DISCONNECTED ||
-        event_id == WIFI_EVENT_STA_STOP
+        event_id == WIFI_EVENT_STA_DISCONNECTED
     ) {
         self->connected_.store(false);
     }

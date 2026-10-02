@@ -82,7 +82,8 @@ InputDispatcher::InputDispatcher(
     DisplaySettingsRuntime* display_settings,
     LocaleSettingsRuntime* locale_settings,
     AboutDeviceRuntime* about_device,
-    PowerOffConfirmRuntime* power_off_confirm
+    PowerOffConfirmRuntime* power_off_confirm,
+    WiFiSettingsRuntime* wifi_settings
 )
     : app_state_(app_state),
       library_(library),
@@ -101,7 +102,8 @@ InputDispatcher::InputDispatcher(
       display_settings_(display_settings),
       locale_settings_(locale_settings),
       about_device_(about_device),
-      power_off_confirm_(power_off_confirm) {}
+      power_off_confirm_(power_off_confirm),
+      wifi_settings_(wifi_settings) {}
 
 InputDispatchResult InputDispatcher::handle(
     const PhysicalInputEvent& input
@@ -114,6 +116,26 @@ InputDispatchResult InputDispatcher::handle(
 
     if (!action.has_value()) {
         return InputDispatchResult::Ignored;
+    }
+
+    if (app_state_.screen == Screen::WiFiSettings) {
+        if (wifi_settings_ == nullptr) {
+            return InputDispatchResult::Unhandled;
+        }
+
+        const auto result =
+            wifi_settings_->handle(*action);
+
+        if (result == WiFiSettingsRuntimeResult::Applied ||
+            result == WiFiSettingsRuntimeResult::NoTrustedNetwork) {
+            return InputDispatchResult::Applied;
+        }
+
+        if (result == WiFiSettingsRuntimeResult::Failed) {
+            return InputDispatchResult::Failed;
+        }
+
+        return InputDispatchResult::Unhandled;
     }
 
     if (app_state_.screen == Screen::PowerOffConfirm) {
@@ -238,6 +260,15 @@ InputDispatchResult InputDispatcher::handle(
                 }
                 return display_settings_->openFromSettings() ==
                     DisplaySettingsRuntimeResult::Applied
+                    ? InputDispatchResult::Applied
+                    : InputDispatchResult::Failed;
+
+            case SettingsNavigationResult::WiFiRequested:
+                if (wifi_settings_ == nullptr) {
+                    return InputDispatchResult::Unhandled;
+                }
+                return wifi_settings_->openFromSettings() ==
+                    WiFiSettingsRuntimeResult::Applied
                     ? InputDispatchResult::Applied
                     : InputDispatchResult::Failed;
 

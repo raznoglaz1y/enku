@@ -4,6 +4,7 @@
 #include "enku/runtime/storage_startup.hpp"
 #include "enku/storage/book_import_service.hpp"
 #include "enku/storage/cbor_app_context_service.hpp"
+#include "enku/storage/cbor_boot_loop_service.hpp"
 #include "enku/storage/cbor_library_service.hpp"
 #include "enku/storage/cbor_reader_checkpoint.hpp"
 #include "enku/storage/posix_book_file_store.hpp"
@@ -153,6 +154,7 @@ int main() {
                 state_files
             );
             CborAppContextService context(state_files);
+        CborBootLoopService boot_loop(state_files);
             FakeRefreshService refresh;
 
             AppState app;
@@ -222,6 +224,7 @@ int main() {
             state_files
         );
         CborAppContextService context(state_files);
+        CborBootLoopService boot_loop(state_files);
         FakeRefreshService refresh;
 
         ReaderRuntimeController runtime(
@@ -239,6 +242,7 @@ int main() {
             boot_app,
             startup,
             context,
+            boot_loop,
             runtime,
             rebooted_library
         );
@@ -289,6 +293,7 @@ int main() {
         );
 
         CborAppContextService context(state_files);
+        CborBootLoopService boot_loop(state_files);
         assert(
             context.save(
                 AppRestoreContext{
@@ -335,6 +340,7 @@ int main() {
             app,
             startup,
             context,
+            boot_loop,
             runtime,
             library
         );

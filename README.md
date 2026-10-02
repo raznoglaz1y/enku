@@ -300,6 +300,7 @@ Firmware has not yet been published as a working reader. The planned implementat
    - ReaderSession with deterministic visited-page Previous and previous/current/next working-set cache;
    - Reader runtime integration updates AppState/progress and emits PageTurn refresh requests;
    - Open → Reading, Back → Library checkpoint and Finished transitions are now modeled in runtime;
+   - concrete TXT book-loader/document-provider owns BookDocument → ReaderEngine → ReaderSession lifetime;
    - EPUB and FB2 parser adapters still pending;
    - normalized metadata/document model;
    - on-demand pagination using a font/text measurement abstraction;
@@ -495,6 +496,7 @@ Useful documents:
 - [Reader Engine MVP](docs/reader-engine-mvp.md)
 - [Reader Session MVP](docs/reader-session-mvp.md)
 - [Reader Runtime Integration MVP](docs/reader-runtime-mvp.md)
+- [Book Loader / Document Provider MVP](docs/book-loader-mvp.md)
 - [Metadata & parser model](docs/parser-model.md)
 - [Licensing model](LICENSES.md)
 - [Library & storage model](docs/storage-model.md)
@@ -537,6 +539,7 @@ docs/
   reader-engine-mvp.md      first BookDocument → Reader PageResult bridge
   reader-session-mvp.md     deterministic Next/Previous session navigation
   reader-runtime-mvp.md     page events → AppState → refresh integration
+  book-loader-mvp.md        Library/source → parser → ReaderSession lifecycle
   parser-model.md           metadata normalization and parser abstraction
   storage-model.md          Library identity, state and transactional storage
   library-model.md          book records, browse/search queries and LibraryService

@@ -382,3 +382,25 @@ Implemented behavior:
 - summary state/progress updates with persistence rollback if commit fails.
 
 The current MVP commits Library index changes immediately. A later debounce/batching layer may reduce index write frequency after real storage profiling without changing the LibraryService query semantics.
+
+
+## 24. Library runtime controller MVP
+
+`LibraryRuntimeController` now owns the first concrete Library interaction flow above `LibraryService`.
+
+It coordinates:
+
+- typed Browse/Search query state from `AppState.library`;
+- refresh/reload of the current bounded `LibraryPage`;
+- focus normalization by stable `book_id`;
+- next/previous focus navigation;
+- filter and sort changes;
+- global title/author search;
+- opening the focused book through the existing `ReaderRuntimeController`;
+- staged imports through `StagedBookImportService`.
+
+`LibraryState` now stores typed values for mode/filter/sort/direction rather than string labels. Query results themselves remain bounded controller state rather than being copied wholesale into global `AppState`.
+
+Import requests set `AppState.import_active` for the duration of the transaction. This makes the existing Sleep and Power Off guards use the same authoritative import activity flag.
+
+A successful import clears Search mode, returns to Browse, reloads the Library and focuses the newly imported `book_id`. Exact duplicates return a distinct runtime result and leave the staged source available for UI/recovery handling.

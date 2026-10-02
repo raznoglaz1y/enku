@@ -18,6 +18,7 @@
 #include "enku/render/contents_bookmarks_renderer.hpp"
 #include "enku/render/about_book_renderer.hpp"
 #include "enku/render/settings_screen_renderer.hpp"
+#include "enku/render/reading_settings_renderer.hpp"
 
 namespace enku::platform::esp_idf {
 
@@ -39,7 +40,8 @@ class FreeTypeTextRenderer final
       public BookFinishedRenderer,
       public ContentsBookmarksRenderer,
       public AboutBookRenderer,
-      public SettingsScreenRenderer {
+      public SettingsScreenRenderer,
+      public ReadingSettingsRenderer {
 public:
     FreeTypeTextRenderer(
         OwnedMonoFramebuffer& framebuffer,

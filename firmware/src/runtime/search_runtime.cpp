@@ -68,6 +68,20 @@ SearchRuntimeResult SearchRuntime::openFromReader() {
     return render();
 }
 
+SearchRuntimeResult SearchRuntime::submitQuery(
+    std::string query
+) {
+    auto& app = storage_.appState();
+
+    if (app.screen != Screen::Search) {
+        return SearchRuntimeResult::Ignored;
+    }
+
+    app.search.query = std::move(query);
+    app.keyboard.open = false;
+    return executeSearch();
+}
+
 SearchRuntimeResult SearchRuntime::handle(
     LogicalAction action
 ) {

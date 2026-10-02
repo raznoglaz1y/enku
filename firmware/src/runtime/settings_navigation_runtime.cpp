@@ -34,6 +34,12 @@ SettingsNavigationRuntime::open() {
 }
 
 SettingsNavigationResult
+SettingsNavigationRuntime::resume() {
+    app_state_.screen = Screen::Settings;
+    return render();
+}
+
+SettingsNavigationResult
 SettingsNavigationRuntime::close() {
     app_state_.screen = Screen::Library;
 

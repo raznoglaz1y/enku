@@ -176,7 +176,7 @@ void drawText(
 }
 
 bool storageSmokeTest(
-    enku::platform::esp_idf::EspIdfFileStore& files
+    enku::platform::esp_idf::EspIdfBookFileStore& files
 ) {
     const std::string logical_path =
         "/system/tmp/platform-smoke.txt";
@@ -363,11 +363,19 @@ extern "C" void app_main(void) {
         return;
     }
 
-    enku::platform::esp_idf::EspIdfFileStore files(
+    enku::platform::esp_idf::EspIdfFilesystem filesystem(
         enku::platform::esp_idf::board::kSdMountPoint
     );
+    enku::platform::esp_idf::EspIdfBookFileStore book_files(
+        filesystem
+    );
+    enku::platform::esp_idf::EspIdfStateFileStore state_files(
+        filesystem
+    );
 
-    if (!storageSmokeTest(files)) {
+    (void)state_files;
+
+    if (!storageSmokeTest(book_files)) {
         ESP_LOGE(
             kTag,
             "Platform storage adapter verification failed"

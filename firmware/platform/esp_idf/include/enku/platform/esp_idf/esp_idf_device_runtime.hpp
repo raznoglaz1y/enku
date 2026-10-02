@@ -7,6 +7,7 @@
 #include "enku/runtime/application_storage_runtime.hpp"
 #include "enku/runtime/input_dispatcher.hpp"
 #include "enku/runtime/power_off.hpp"
+#include "enku/runtime/reader_overlay_runtime.hpp"
 #include "enku/runtime/sleep_wake.hpp"
 
 #include "esp_idf_platform.hpp"
@@ -75,6 +76,7 @@ private:
     ApplicationStorageRuntime storage_;
     FreeTypeTextRenderer text_renderer_;
     ApplicationReaderRuntime reader_;
+    ReaderOverlayRuntime reader_overlay_;
 
     SleepWakeCoordinator sleep_wake_;
     PowerOffCoordinator power_off_;

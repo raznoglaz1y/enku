@@ -500,6 +500,7 @@ NetworkPolicyStatus EspIdfNetworkService::connectToNetwork(
 
     connected_.store(false);
     manual_disconnect_.store(false);
+    transient_connect_.store(true);
     link_state_.store(
         NetworkLinkState::Connecting
     );
@@ -508,6 +509,7 @@ NetworkPolicyStatus EspIdfNetworkService::connectToNetwork(
         esp_wifi_connect();
 
     if (connect_result != ESP_OK) {
+        transient_connect_.store(false);
         link_state_.store(
             NetworkLinkState::Failed
         );
@@ -521,6 +523,7 @@ NetworkPolicyStatus EspIdfNetworkService::connectToNetwork(
     constexpr int kConnectPolls = 100;
     for (int i = 0; i < kConnectPolls; ++i) {
         if (connected_.load()) {
+            transient_connect_.store(false);
             ESP_LOGI(
                 kTag,
                 "Wi-Fi connected to %.*s",
@@ -536,6 +539,7 @@ NetworkPolicyStatus EspIdfNetworkService::connectToNetwork(
     }
 
     disconnect();
+    transient_connect_.store(false);
 
     const auto restore_result =
         esp_wifi_set_config(
@@ -701,6 +705,7 @@ void EspIdfNetworkService::handleWifiEvent(
             self->manual_disconnect_.exchange(false);
 
         if (!manual &&
+            !self->transient_connect_.load() &&
             self->active_policy_.load() ==
                 WiFiPolicy::AutoConnectTrusted) {
             self->scheduleReconnect();

@@ -30,6 +30,7 @@ enum class Screen : std::uint8_t {
     BookDetails = 10,
     BookFinished = 11,
     ContentsBookmarks = 12,
+    AboutBook = 13,
 };
 
 static_assert(

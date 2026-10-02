@@ -280,6 +280,14 @@ ReaderOverlayRuntime::confirm() {
             return ReaderOverlayRuntimeResult::Applied;
         }
 
+        if (item == ReaderMenuItem::Search) {
+            // SearchRuntime owns the Search transition and captures the
+            // pre-search semantic position after the overlay closes.
+            app.screen = Screen::Reading;
+            baseline_valid_ = false;
+            return ReaderOverlayRuntimeResult::SearchRequested;
+        }
+
         if (item == ReaderMenuItem::Sleep) {
             // SleepWakeCoordinator must see Reading so it checkpoints
             // the active book and restores it on wake.

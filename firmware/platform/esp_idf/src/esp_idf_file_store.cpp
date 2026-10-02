@@ -194,6 +194,51 @@ EspIdfFsStatus EspIdfFilesystem::writeBytes(
     return EspIdfFsStatus::Ok;
 }
 
+EspIdfFsStatus EspIdfFilesystem::appendText(
+    const std::string& path,
+    const std::string& bytes
+) {
+    std::string physical;
+    if (!resolve(path, physical) ||
+        !ensureParentDirectories(physical)) {
+        return EspIdfFsStatus::IoError;
+    }
+
+    FILE* file = std::fopen(
+        physical.c_str(),
+        "ab"
+    );
+
+    if (file == nullptr) {
+        return bookStatusFromErrno();
+    }
+
+    if (!bytes.empty()) {
+        const auto written =
+            std::fwrite(
+                bytes.data(),
+                1,
+                bytes.size(),
+                file
+            );
+
+        if (written != bytes.size()) {
+            const auto status =
+                bookStatusFromErrno();
+            std::fclose(file);
+            return status;
+        }
+    }
+
+    if (std::fflush(file) != 0) {
+        std::fclose(file);
+        return EspIdfFsStatus::IoError;
+    }
+
+    std::fclose(file);
+    return EspIdfFsStatus::Ok;
+}
+
 EspIdfFsStatus EspIdfFilesystem::remove(
     const std::string& path
 ) {
@@ -443,6 +488,15 @@ BookFileStatus EspIdfBookFileStore::write(
 ) {
     return toBookStatus(
         filesystem_.writeText(path, bytes)
+    );
+}
+
+BookFileStatus EspIdfBookFileStore::append(
+    const std::string& path,
+    const std::string& bytes
+) {
+    return toBookStatus(
+        filesystem_.appendText(path, bytes)
     );
 }
 

@@ -48,6 +48,7 @@ public:
     ReaderRuntimeResult handle(const PagePreviousRequested&);
     ReaderRuntimeResult handle(const BackRequested&);
     ReaderRuntimeResult handle(const OrientationChanged&);
+    ReaderRuntimeResult handle(const TypographyDefaultsChanged&);
 
     std::uint32_t refreshGeneration() const;
 

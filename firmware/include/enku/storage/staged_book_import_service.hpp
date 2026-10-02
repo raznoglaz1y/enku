@@ -36,8 +36,7 @@ class StagedBookImportService {
 public:
     StagedBookImportService(
         BookFileStore& files,
-        BookImportService& importer,
-        LibraryService& library
+        BookImportService& importer
     );
 
     StagedImportResult import(
@@ -49,7 +48,6 @@ public:
 private:
     BookFileStore& files_;
     BookImportService& importer_;
-    LibraryService& library_;
 
     static std::string extension(
         const std::string& filename

@@ -163,12 +163,6 @@ enum class NetworkPolicyStatus : std::uint8_t {
     ConnectionFailed,
 };
 
-struct WiFiNetworkInfo {
-    std::string ssid;
-    std::int32_t rssi{0};
-    bool secured{false};
-};
-
 class NetworkSettingsService {
 public:
     virtual ~NetworkSettingsService() = default;

@@ -32,6 +32,7 @@ public:
     );
 
     BootRestoreResult run();
+    BootRestoreResult restoreContextOnly();
 
 private:
     AppState& app_state_;
@@ -42,6 +43,9 @@ private:
 
     bool persistLibraryContext();
     void settleLibrary();
+    BootRestoreResult restoreLoadedContext(
+        const StorageStartupResult& storage
+    );
 };
 
 } // namespace enku

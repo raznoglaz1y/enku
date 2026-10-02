@@ -115,6 +115,25 @@ public:
 
 class FakeCheckpointService final : public ReaderCheckpointService {
 public:
+    PersistStatus load(
+        const BookId& book_id,
+        ReaderCheckpoint& checkpoint
+    ) override {
+        ++loads;
+
+        if (load_status != PersistStatus::Ok) {
+            return load_status;
+        }
+
+        if (!saved.has_value() ||
+            saved->position.book_id != book_id) {
+            return PersistStatus::NotFound;
+        }
+
+        checkpoint = *saved;
+        return PersistStatus::Ok;
+    }
+
     PersistStatus checkpoint(
         const BookId& book_id,
         const SemanticPosition& position,
@@ -126,10 +145,20 @@ public:
         last_position = position;
         last_progress = progress;
         last_state = reading_state;
+        if (status == PersistStatus::Ok) {
+            saved = ReaderCheckpoint{
+                position,
+                progress,
+                reading_state,
+            };
+        }
         return status;
     }
 
     PersistStatus status{PersistStatus::Ok};
+    PersistStatus load_status{PersistStatus::Ok};
+    std::optional<ReaderCheckpoint> saved;
+    std::uint32_t loads{0};
     std::uint32_t calls{0};
     BookId last_book;
     SemanticPosition last_position;
@@ -199,15 +228,10 @@ int main() {
         runtime.handle(PageNextRequested{}) ==
         ReaderRuntimeResult::Applied
     );
-    assert(state.reading_position->text_offset > first_offset);
+    const auto saved_offset = state.reading_position->text_offset;
+    assert(saved_offset > first_offset);
     assert(state.progress_dirty);
     assert(refresh.last.reason == RefreshReason::PageTurn);
-
-    assert(
-        runtime.handle(PagePreviousRequested{}) ==
-        ReaderRuntimeResult::Applied
-    );
-    assert(state.reading_position->text_offset == first_offset);
 
     assert(
         runtime.handle(BackRequested{}) ==
@@ -220,13 +244,16 @@ int main() {
     assert(loader.session() == nullptr);
     assert(refresh.last.reason == RefreshReason::ScreenChanged);
 
-    // Open again and advance to end. No external BookOpened event is needed.
+    // Reopen restores the semantic position persisted by BackRequested.
     assert(
         runtime.handle(OpenBookRequested{"runtime-test"}) ==
         ReaderRuntimeResult::Applied
     );
     assert(source.calls == 2);
+    assert(checkpoint.loads >= 2);
     assert(state.screen == Screen::Reading);
+    assert(state.reading_position.has_value());
+    assert(state.reading_position->text_offset == saved_offset);
 
     while (true) {
         const auto result =

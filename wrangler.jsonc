@@ -1,4 +1,5 @@
 // ENKU production website
+// Contact & support navigation enabled
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "enku-reader",

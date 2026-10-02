@@ -76,7 +76,8 @@ InputDispatcher::InputDispatcher(
     BookDetailsRuntime* book_details,
     BookFinishedRuntime* book_finished,
     ContentsBookmarksRuntime* contents_bookmarks,
-    AboutBookRuntime* about_book
+    AboutBookRuntime* about_book,
+    SettingsNavigationRuntime* settings_nav
 )
     : app_state_(app_state),
       library_(library),
@@ -89,7 +90,8 @@ InputDispatcher::InputDispatcher(
       book_details_(book_details),
       book_finished_(book_finished),
       contents_bookmarks_(contents_bookmarks),
-      about_book_(about_book) {}
+      about_book_(about_book),
+      settings_nav_(settings_nav) {}
 
 InputDispatchResult InputDispatcher::handle(
     const PhysicalInputEvent& input
@@ -102,6 +104,43 @@ InputDispatchResult InputDispatcher::handle(
 
     if (!action.has_value()) {
         return InputDispatchResult::Ignored;
+    }
+
+    if (app_state_.screen == Screen::Settings) {
+        if (settings_nav_ == nullptr) {
+            return InputDispatchResult::Unhandled;
+        }
+
+        const auto result =
+            settings_nav_->handle(*action);
+
+        switch (result) {
+            case SettingsNavigationResult::Applied:
+                return InputDispatchResult::Applied;
+
+            case SettingsNavigationResult::PowerOffRequested:
+                return power_off_.powerOff() ==
+                    PowerOffStatus::Applied
+                    ? InputDispatchResult::Applied
+                    : InputDispatchResult::Failed;
+
+            case SettingsNavigationResult::SleepRequested:
+                return sleep_wake_.sleep() ==
+                    SleepWakeStatus::Applied
+                    ? InputDispatchResult::Applied
+                    : InputDispatchResult::Failed;
+
+            case SettingsNavigationResult::Failed:
+                return InputDispatchResult::Failed;
+
+            case SettingsNavigationResult::Ignored:
+                return InputDispatchResult::Unhandled;
+
+            default:
+                // Reading / Display / Wi-Fi / Language / Storage / About
+                // are explicit navigation requests for dedicated runtimes.
+                return InputDispatchResult::Unhandled;
+        }
     }
 
     if (app_state_.screen == Screen::AboutBook) {

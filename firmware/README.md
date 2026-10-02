@@ -35,16 +35,19 @@ include/enku/
   runtime/
     reader_runtime.hpp
     storage_startup.hpp
+    boot_restore.hpp
   services/
     services.hpp
   storage/
     state_file_store.hpp
     cbor_reader_checkpoint.hpp
     cbor_library_service.hpp
+    cbor_app_context_service.hpp
     book_import_service.hpp
     staged_book_import_service.hpp
     book_file_store.hpp
     posix_book_file_store.hpp
+    stored_book_source_service.hpp
     posix_state_file_store.hpp
 ```
 
@@ -98,6 +101,7 @@ The host suite currently covers:
 - TXT import pipeline with format detection, parse validation, content fingerprinting and duplicate rejection;
 - transactional staged-file import from `/system/tmp` into canonical `/books/book-<id>.<ext>`;
 - storage startup recovery that loads the Library, cleans stale committed tmp artifacts, and preserves ambiguous uploads;
+- persisted last-safe app context and automatic cold-boot restore into Reading at the saved semantic checkpoint;
 - rollback of the final book file when Library commit fails;
 - POSIX filesystem persistence for book files and checkpoints.
 

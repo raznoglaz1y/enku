@@ -12,6 +12,11 @@ public:
         std::string_view bytes,
         const ParserSourceInfo& source
     ) const override;
+
+    ParseResult parseMetadata(
+        std::string_view bytes,
+        const ParserSourceInfo& source
+    ) const;
 };
 
 } // namespace enku

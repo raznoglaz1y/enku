@@ -15,6 +15,7 @@ include/enku/
     input.hpp
     power.hpp
     persistence.hpp
+    localization.hpp
     events.hpp
     app_state.hpp
   reader/
@@ -32,6 +33,7 @@ Architecture references:
 - [Input & physical controls](../docs/input-model.md)
 - [Power, sleep & wake model](../docs/power-model.md)
 - [Persistence backend](../docs/persistence-model.md)
+- [Localization architecture](../docs/localization-model.md)
 - [Firmware structure](../docs/firmware-structure.md)
 - [Reader runtime](../docs/runtime-state-machine.md)
 - [Pagination model](../docs/pagination-model.md)

@@ -1164,16 +1164,13 @@ int main() {
         SettingsItem::Language
     );
 
-    assert(
-        settings_nav.handle(
-            LogicalAction::NavigateNext
-        ) == SettingsNavigationResult::Applied
-    );
-    assert(
-        settings_nav.handle(
-            LogicalAction::NavigateNext
-        ) == SettingsNavigationResult::Applied
-    );
+    for (int i = 0; i < 3; ++i) {
+        assert(
+            settings_nav.handle(
+                LogicalAction::NavigateNext
+            ) == SettingsNavigationResult::Applied
+        );
+    }
     assert(
         storage.appState().settings_nav.focus ==
         SettingsItem::About

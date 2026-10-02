@@ -248,7 +248,7 @@ ENKU is still in the pre-firmware stage, so several important decisions remain i
 - a framework-neutral C++ firmware scaffold now exists under `firmware/`;
 - the firmware architecture, Library/storage model, parser abstraction, pagination model and runtime state machine are specified, while hardware integration and reader implementation remain pending;
 - Reader v1 is scoped to EPUB, FB2 and TXT; PDF support is deferred and not yet designed;
-- the exact CBOR codec library and parser/rendering stack are not selected;
+- the exact CBOR codec library, localization table generator and parser/rendering stack are not selected;
 - the final system suspend mechanism and wake-source mapping have not yet been measured on the real board;
 - partial-refresh behavior has not yet been measured on the real panel;
 - battery model and real-world runtime are not finalized;
@@ -298,7 +298,8 @@ Firmware has not yet been published as a working reader. The planned implementat
    - reusable status bar, headers, rows, buttons and dialogs;
    - focus navigation;
    - portrait/landscape layout;
-   - localization;
+   - localization through stable semantic string keys;
+   - English fallback with generated compact locale tables;
    - e-paper-aware redraw strategy.
 
 6. **Persistence layer**
@@ -409,8 +410,9 @@ No final mechanical dimensions will be published as authoritative until the actu
 
 ### Phase 6 — Release quality
 
-- [ ] Complete EN/RU localization
-- [ ] Add PL/DE/FR/ES/IT UI translations
+- [ ] Finalize canonical EN string catalog
+- [ ] Add RU/PL/DE/FR/ES/IT UI translations
+- [ ] Validate missing-key fallback and long translated strings
 - [ ] Run portrait/landscape layout validation
 - [ ] Test malformed books, missing storage and interrupted transfers
 - [ ] Validate reboot and power-loss recovery
@@ -449,6 +451,7 @@ Useful documents:
 - [Metadata & parser model](docs/parser-model.md)
 - [Library & storage model](docs/storage-model.md)
 - [Persistence backend](docs/persistence-model.md)
+- [Localization architecture](docs/localization-model.md)
 - [Hardware baseline](docs/hardware.md)
 - [BOM status](docs/bom.md)
 - [UI specification](docs/ui-spec.md)
@@ -481,10 +484,14 @@ docs/
   parser-model.md           metadata normalization and parser abstraction
   storage-model.md          Library identity, state and transactional storage
   persistence-model.md      CBOR records, schema versioning and crash recovery
+  localization-model.md     string keys, fallback, plurals and locale packaging
   hardware.md              verified/planned hardware baseline
   bom.md                   parts/BOM status and sourcing priorities
   status.md                current project status
   UI and interaction specifications
+
+locales/
+  README.md          localization source-catalog rules
 
 README.md           project overview
 ROADMAP.md          implementation roadmap
@@ -508,6 +515,8 @@ Planned first localization wave:
 - Italian
 
 The interface language is independent from book content and keyboard input mode.
+
+ENKU uses English as the canonical/fallback string set, stable semantic keys, named placeholders and a lightweight centralized plural system. Human-readable locale sources are intended to be converted into compact runtime lookup tables rather than parsed as JSON on the device.
 
 
 ## Open-source status

@@ -73,6 +73,16 @@ EspIdfDeviceRuntime::begin() {
         return DeviceRuntimeInitStatus::RecoveryRequired;
     }
 
+    network_policy_status_ =
+        applyNetworkPolicy();
+
+    if (network_policy_status_ ==
+        NetworkPolicyStatus::DriverError) {
+        return DeviceRuntimeInitStatus::NetworkPolicyFailed;
+    }
+
+    syncPlatformState();
+
     return DeviceRuntimeInitStatus::Ok;
 }
 
@@ -106,9 +116,46 @@ EspIdfDeviceRuntime::input() {
     return input_dispatcher_;
 }
 
+NetworkPolicyStatus
+EspIdfDeviceRuntime::applyNetworkPolicy() {
+    const auto status =
+        platform_.network().applyPolicy(
+            storage_.appState().wifi_policy
+        );
+
+    network_policy_status_ = status;
+    syncPlatformState();
+    return status;
+}
+
+void EspIdfDeviceRuntime::syncPlatformState() {
+    auto& app = storage_.appState();
+
+    app.network.connected =
+        platform_.network().connected();
+
+    const auto ssid =
+        platform_.network().trustedSsid();
+
+    app.network.ssid =
+        ssid.has_value()
+            ? *ssid
+            : std::string{};
+
+    const auto battery =
+        platform_.power().batteryState();
+
+    app.power.battery_percent =
+        battery.percent;
+    app.power.charging =
+        battery.charging;
+}
+
 InputDispatchResult EspIdfDeviceRuntime::pollInput(
     std::uint32_t now_ms
 ) {
+    syncPlatformState();
+
     const auto event =
         platform_.buttons().poll(now_ms);
 

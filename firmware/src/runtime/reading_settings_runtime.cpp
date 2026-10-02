@@ -180,7 +180,8 @@ bool ReadingSettingsRuntime::applyPreview(
             }
         );
 
-    if (result != ReaderRuntimeResult::Applied) {
+    if (result != ReaderRuntimeResult::Applied &&
+        result != ReaderRuntimeResult::Ignored) {
         app_state_.typography = previous;
         reader_.reader().handle(
             TypographyDefaultsChanged{

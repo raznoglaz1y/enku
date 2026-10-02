@@ -1103,6 +1103,38 @@ bool FreeTypeTextRenderer::renderSearch(
         );
     }
 
+    if (app_state.search.phase == SearchPhase::NoResults) {
+        if (!drawTextAt(
+                "NO RESULTS",
+                20,
+                30,
+                190,
+                orientation
+            )) {
+            return false;
+        }
+
+        if (!drawTextAt(
+                "FUNCTION: EDIT QUERY",
+                13,
+                30,
+                226,
+                orientation
+            )) {
+            return false;
+        }
+
+        return drawTextAt(
+            "BACK: QUERY  BACK AGAIN: READING",
+            12,
+            30,
+            orientation == Orientation::Portrait
+                ? 760
+                : 448,
+            orientation
+        );
+    }
+
     if (app_state.search.phase == SearchPhase::Results) {
         constexpr int kStartY = 198;
         constexpr int kRowHeight = 62;
@@ -1210,7 +1242,9 @@ bool FreeTypeTextRenderer::renderSearch(
     }
 
     return drawTextAt(
-        "BACK: RETURN TO READING",
+        app_state.search.phase == SearchPhase::Results
+            ? "BACK: EDIT QUERY"
+            : "BACK: RETURN TO READING",
         12,
         30,
         orientation == Orientation::Portrait

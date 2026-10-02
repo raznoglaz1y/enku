@@ -26,6 +26,7 @@ add_library(enku_core STATIC
     src/runtime/settings_runtime.cpp
     src/runtime/settings_navigation_runtime.cpp
     src/runtime/reading_settings_runtime.cpp
+    src/runtime/display_settings_runtime.cpp
     src/runtime/input_runtime.cpp
     src/runtime/input_dispatcher.cpp
     src/runtime/keyboard_runtime.cpp

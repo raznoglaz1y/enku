@@ -7,6 +7,7 @@
 #include "../services/services.hpp"
 #include "application_storage_runtime.hpp"
 #include "settings_navigation_runtime.hpp"
+#include "keyboard_runtime.hpp"
 
 namespace enku {
 
@@ -43,11 +44,17 @@ private:
     SettingsNavigationRuntime& settings_nav_;
     WiFiSettingsRenderer* renderer_{nullptr};
     RefreshService* refresh_{nullptr};
+    KeyboardRuntime keyboard_;
     std::uint32_t refresh_generation_{0};
 
     WiFiSettingsRuntimeResult render();
     WiFiSettingsRuntimeResult close();
     WiFiSettingsRuntimeResult moveFocus(int direction);
+    WiFiSettingsRuntimeResult scanNetworks();
+    WiFiSettingsRuntimeResult moveNetworkFocus(int direction);
+    WiFiSettingsRuntimeResult chooseNetwork();
+    WiFiSettingsRuntimeResult connectPendingNetwork();
+    WiFiSettingsRuntimeResult cancelNetworkFlow();
     WiFiSettingsRuntimeResult beginPolicyEdit();
     WiFiSettingsRuntimeResult cyclePolicy(int direction);
     WiFiSettingsRuntimeResult applyPolicy();

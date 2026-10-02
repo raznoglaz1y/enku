@@ -3,7 +3,6 @@
 #include <cstdint>
 
 #include "../core/app_state.hpp"
-#include "../reader/book_loader.hpp"
 #include "../services/services.hpp"
 #include "boot_restore.hpp"
 
@@ -25,7 +24,6 @@ class SleepWakeCoordinator {
 public:
     SleepWakeCoordinator(
         AppState& app_state,
-        ReaderBookLoader& loader,
         LibraryService& library,
         ReaderCheckpointService& checkpoint,
         AppContextService& context,
@@ -39,7 +37,6 @@ public:
 
 private:
     AppState& app_state_;
-    ReaderBookLoader& loader_;
     LibraryService& library_;
     ReaderCheckpointService& checkpoint_;
     AppContextService& context_;

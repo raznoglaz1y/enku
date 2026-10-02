@@ -178,6 +178,8 @@ See the detailed [Hardware baseline](docs/hardware.md) and [BOM status](docs/bom
 
 ### Reading
 
+**Reader v1 formats:** EPUB, FB2 and TXT. PDF is deferred to a later revision.
+
 - distraction-free reading view;
 - portrait and landscape;
 - semantic position preservation after layout changes;
@@ -238,7 +240,7 @@ Planned Wi-Fi behavior includes:
 ENKU is still in the pre-firmware stage, so several important decisions remain intentionally open:
 
 - there is no production reader firmware yet;
-- supported book formats are not finalized;
+- Reader v1 is scoped to EPUB, FB2 and TXT; PDF support is deferred and not yet designed;
 - the parser and rendering stack are not selected;
 - partial-refresh behavior has not yet been measured on the real panel;
 - battery model and real-world runtime are not finalized;
@@ -354,7 +356,7 @@ No final mechanical dimensions will be published as authoritative until the actu
 
 ### Phase 3 — Reader MVP
 
-- [ ] Select initial book format(s)
+- [x] Select Reader v1 formats: EPUB, FB2 and TXT; PDF deferred
 - [ ] Implement parser and text layout
 - [ ] Implement Library grid/list navigation
 - [ ] Implement reading position and progress persistence

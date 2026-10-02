@@ -98,6 +98,10 @@ void LibraryRuntimeController::normalizeFocus() {
         page_.items.front().book_id;
 }
 
+void LibraryRuntimeController::resetQueryWindow() {
+    app_state_.library.offset = 0;
+}
+
 std::optional<std::size_t>
 LibraryRuntimeController::focusedIndex() const {
     if (!app_state_.library.focused_book.has_value()) {
@@ -192,7 +196,7 @@ LibraryRuntimeResult LibraryRuntimeController::handle(
         return LibraryRuntimeResult::SettingsSaveFailed;
     }
     app_state_.library.search_text.clear();
-    app_state_.library.offset = 0;
+    resetQueryWindow();
     return reload();
 }
 
@@ -202,7 +206,7 @@ LibraryRuntimeResult LibraryRuntimeController::handle(
     if (settings_.handle(event) != PersistStatus::Ok) {
         return LibraryRuntimeResult::SettingsSaveFailed;
     }
-    app_state_.library.offset = 0;
+    resetQueryWindow();
     return reload();
 }
 

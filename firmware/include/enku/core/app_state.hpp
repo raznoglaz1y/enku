@@ -6,6 +6,7 @@
 
 #include "types.hpp"
 #include "localization.hpp"
+#include "boot.hpp"
 
 namespace enku {
 
@@ -36,6 +37,7 @@ struct PowerState {
 
 struct AppState {
     Screen screen{Screen::Boot};
+    BootState boot;
     Orientation orientation{Orientation::Portrait};
     LocaleId ui_locale{LocaleId::En};
 

@@ -20,6 +20,7 @@ EspIdfDeviceRuntime::EspIdfDeviceRuntime(
           platform_.refresh(),
           text_renderer_,
           text_renderer_,
+          text_renderer_,
           typography,
           viewport
       ) {}

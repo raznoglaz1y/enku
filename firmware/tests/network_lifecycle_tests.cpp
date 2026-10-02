@@ -20,7 +20,12 @@ public:
 
     void disconnect() override {
         connected_ = false;
+        link_state = NetworkLinkState::Disconnected;
         ++disconnects;
+    }
+
+    NetworkLinkState connectionState() const override {
+        return link_state;
     }
 
     NetworkPolicyStatus applyPolicy(
@@ -31,21 +36,27 @@ public:
 
         if (forced_status != NetworkPolicyStatus::Ok) {
             connected_ = false;
+            link_state = NetworkLinkState::Failed;
             return forced_status;
         }
 
         if (policy == WiFiPolicy::Off ||
             policy == WiFiPolicy::Manual) {
             connected_ = false;
+            link_state = NetworkLinkState::Disconnected;
             return NetworkPolicyStatus::Ok;
         }
 
         if (!trusted.has_value()) {
             connected_ = false;
+            link_state = NetworkLinkState::Disconnected;
             return NetworkPolicyStatus::NoTrustedNetwork;
         }
 
         connected_ = connect_immediately;
+        link_state = connect_immediately
+            ? NetworkLinkState::Online
+            : NetworkLinkState::Connecting;
         return NetworkPolicyStatus::Ok;
     }
 
@@ -82,6 +93,7 @@ public:
 
     bool connected_{false};
     bool connect_immediately{false};
+    NetworkLinkState link_state{NetworkLinkState::Disconnected};
     std::uint32_t disconnects{0};
     std::uint32_t apply_calls{0};
     WiFiPolicy last_policy{WiFiPolicy::Manual};
@@ -147,6 +159,7 @@ int main() {
     assert(app.network.ssid == "Home");
 
     network.connected_ = true;
+    network.link_state = NetworkLinkState::Online;
     lifecycle.sync();
     assert(app.network.connected);
     assert(
@@ -178,6 +191,17 @@ int main() {
         lifecycle.applyPolicy() ==
         NetworkLifecycleResult::Failed
     );
+    assert(
+        app.network.status ==
+        NetworkRuntimeStatus::Error
+    );
+
+    // A later asynchronous link failure must propagate even when the
+    // original policy application itself returned Ok.
+    network.forced_status = NetworkPolicyStatus::Ok;
+    network.link_state = NetworkLinkState::Failed;
+    network.connected_ = false;
+    lifecycle.sync();
     assert(
         app.network.status ==
         NetworkRuntimeStatus::Error

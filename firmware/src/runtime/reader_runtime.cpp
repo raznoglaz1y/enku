@@ -136,8 +136,8 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
             AppRestoreContext{
                 Screen::Reading,
                 event.book_id,
-                app_state_.library.offset,
-                app_state_.library.focused_book,
+                app_state_.library.persistedOffset(),
+                app_state_.library.persistedFocusedBook(),
             }
         ) != PersistStatus::Ok) {
         loader_.close();
@@ -422,8 +422,8 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
             AppRestoreContext{
                 Screen::Library,
                 std::nullopt,
-                app_state_.library.offset,
-                app_state_.library.focused_book,
+                app_state_.library.persistedOffset(),
+                app_state_.library.persistedFocusedBook(),
             }
         ) != PersistStatus::Ok) {
         return ReaderRuntimeResult::ContextSaveFailed;

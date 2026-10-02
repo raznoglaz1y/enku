@@ -140,7 +140,8 @@ int main() {
             "iota kappa lambda mu nu xi omicron pi rho sigma tau. "
             "beta beta beta beta beta beta beta beta beta beta "
             "beta beta beta beta beta beta beta beta beta beta "
-            "beta beta beta beta beta beta beta beta beta"
+            "beta beta beta beta beta beta beta beta beta. "
+            "Привет мир привет."
         ) == BookFileStatus::Ok
     );
 
@@ -384,6 +385,25 @@ int main() {
     assert(
         storage.appState().search.origin_position->text_offset ==
         search_origin->text_offset
+    );
+
+    assert(
+        search.submitQuery("ПРИВЕТ") ==
+        SearchRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().search.phase ==
+        SearchPhase::Results
+    );
+    assert(storage.appState().search.total_matches == 2);
+
+    assert(
+        search.handle(LogicalAction::Back) ==
+        SearchRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().search.phase ==
+        SearchPhase::QueryEntry
     );
 
     assert(

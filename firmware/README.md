@@ -23,13 +23,16 @@ include/enku/
     events.hpp
     app_state.hpp
   reader/
+    document.hpp
+    parser.hpp
+    txt_parser.hpp
     reader_types.hpp
     reader_engine.hpp
   services/
     services.hpp
 ```
 
-Implementation directories will be added as hardware and subsystem work begins.
+The first framework-neutral implementation now exists at `src/parsers/txt/txt_parser.cpp`, with a small host-side assertion test under `tests/`. Hardware-specific implementation directories will grow after board bring-up.
 
 Architecture references:
 

@@ -172,6 +172,7 @@ struct SettingsNavigationState {
 struct NetworkState {
     bool connected{false};
     std::string ssid;
+    std::string address;
     NetworkRuntimeStatus status{NetworkRuntimeStatus::Idle};
 };
 

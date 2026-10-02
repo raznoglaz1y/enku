@@ -130,6 +130,8 @@ The UI does not need to know how EPUB, FB2 or TXT content is internally parsed.
 
 The format adapter and metadata normalization rules are defined in [Metadata & Parser Model](parser-model.md).
 
+The text layout, pagination and rendering rules are defined in [Pagination & Rendering Model](pagination-model.md).
+
 ### Reader v1 format scope
 
 The first ENKU reader release targets three reflowable/text-oriented formats:

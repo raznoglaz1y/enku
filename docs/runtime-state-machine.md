@@ -744,3 +744,48 @@ After successful DeviceRuntime initialization, firmware continuously polls the b
 Hardware smoke tests remain available behind `CONFIG_ENKU_BRINGUP_SMOKE_TESTS` while physical validation is in progress.
 
 The current persistent loop is intentionally synchronous: page layout, rendering and e-paper refresh complete before the next visible transition is accepted. This favors deterministic e-paper behavior over premature concurrency; later profiling may introduce task separation where measured benefit justifies it.
+
+
+## 40. Orientation-aware pagination and rendering
+
+Orientation is now a real layout/rendering input rather than a persisted flag only.
+
+The Reader derives the logical viewport from the native panel geometry:
+
+```text
+Portrait  = short side × long side
+Landscape = long side × short side
+```
+
+For the current 800×480 panel:
+
+```text
+Portrait  = 480×800
+Landscape = 800×480
+```
+
+Reader pagination always works in logical coordinates.
+
+The ESP-IDF FreeType renderer then maps logical pixels into the controller-native 800×480 framebuffer. Portrait currently uses a clockwise 90° transform; the exact physical rotation direction remains easy to swap after enclosure/orientation validation without changing Reader pagination semantics.
+
+### Live orientation reflow
+
+`ApplicationReaderRuntime::applyOrientation()` now performs a durable, live orientation transition.
+
+While Reading:
+
+```text
+save new Orientation setting
+→ preserve current semantic page anchor
+→ derive new logical viewport
+→ ReaderSession::invalidateLayout()
+→ repaginate from the same semantic position
+→ render in the new orientation
+→ full visible refresh
+```
+
+The semantic text offset remains authoritative and is preserved across the reflow.
+
+While Library is visible, the same operation persists the setting and re-renders the Library in the new logical geometry.
+
+If runtime application of the new orientation fails after persistence, ENKU performs a best-effort rollback to the previous durable setting and previous layout.

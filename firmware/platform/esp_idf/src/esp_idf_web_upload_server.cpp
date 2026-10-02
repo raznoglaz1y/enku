@@ -37,8 +37,8 @@ button:disabled{opacity:.45}
 </head>
 <body>
 <h1>ENKU</h1>
-<p>Upload and manage books on this reader over the local network.</p>
-<input id="file" type="file" accept=".txt,text/plain">
+<p>Upload TXT and EPUB books and manage this reader over the local network.</p>
+<input id="file" type="file" accept=".txt,.epub,text/plain,application/epub+zip">
 <button id="upload">Upload book</button>
 <div id="status"></div>
 <h2>Library</h2>

@@ -4,6 +4,9 @@
 
 #include "enku/runtime/application_reader_runtime.hpp"
 #include "enku/runtime/application_storage_runtime.hpp"
+#include "enku/runtime/input_dispatcher.hpp"
+#include "enku/runtime/power_off.hpp"
+#include "enku/runtime/sleep_wake.hpp"
 
 #include "esp_idf_platform.hpp"
 #include "freetype_text_renderer.hpp"
@@ -31,6 +34,14 @@ public:
     ApplicationReaderRuntime& reader();
     FreeTypeTextRenderer& textRenderer();
 
+    SleepWakeCoordinator& sleepWake();
+    PowerOffCoordinator& powerOff();
+    InputDispatcher& input();
+
+    InputDispatchResult pollInput(
+        std::uint32_t now_ms
+    );
+
     const BootRestoreResult& bootResult() const;
 
 private:
@@ -39,6 +50,10 @@ private:
     ApplicationStorageRuntime storage_;
     FreeTypeTextRenderer text_renderer_;
     ApplicationReaderRuntime reader_;
+
+    SleepWakeCoordinator sleep_wake_;
+    PowerOffCoordinator power_off_;
+    InputDispatcher input_dispatcher_;
 
     BootRestoreResult boot_result_{};
 };

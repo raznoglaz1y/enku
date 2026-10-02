@@ -1104,10 +1104,19 @@ std::vector<std::string> parseSpine(
                 end - pos + 1U
             );
 
-        if (auto idref =
-                attribute(tag, "idref");
-            idref.has_value()) {
-            ids.push_back(*idref);
+        const auto linear =
+            attribute(tag, "linear");
+
+        const bool include =
+            !linear.has_value() ||
+            lower(*linear) != "no";
+
+        if (include) {
+            if (auto idref =
+                    attribute(tag, "idref");
+                idref.has_value()) {
+                ids.push_back(*idref);
+            }
         }
 
         cursor = end + 1U;

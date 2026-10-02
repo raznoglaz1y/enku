@@ -29,11 +29,12 @@ include/enku/
     pagination.hpp
     reader_types.hpp
     reader_engine.hpp
+    document_reader_engine.hpp
   services/
     services.hpp
 ```
 
-The first framework-neutral implementations now include `src/parsers/txt/txt_parser.cpp` and `src/reader/text_paginator.cpp`, with host-side assertion tests under `tests/`. Hardware-specific implementation directories will grow after board bring-up.
+The first framework-neutral implementations now include `src/parsers/txt/txt_parser.cpp`, `src/reader/text_paginator.cpp` and `src/reader/document_reader_engine.cpp`, with host-side assertion tests under `tests/`. Hardware-specific implementation directories will grow after board bring-up.
 
 Architecture references:
 
@@ -49,6 +50,7 @@ Architecture references:
 - [Reader runtime](../docs/runtime-state-machine.md)
 - [Pagination model](../docs/pagination-model.md)
 - [Pagination MVP](../docs/pagination-mvp.md)
+- [Reader Engine MVP](../docs/reader-engine-mvp.md)
 - [Parser model](../docs/parser-model.md)
 - [Storage model](../docs/storage-model.md)
 - [Library data model & service interface](../docs/library-model.md)

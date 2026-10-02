@@ -1,7 +1,7 @@
 #include "enku/reader/zip_archive.hpp"
 
 #include <algorithm>
-#include <cstring>
+#include <limits>
 
 #include <zlib.h>
 
@@ -69,6 +69,66 @@ ZipArchive::ZipArchive(
         : ZipArchiveStatus::InvalidArchive;
 }
 
+ZipArchive::ZipArchive(
+    const ZipRangeSource& source
+)
+    : source_(&source) {
+    status_ = parseCentralDirectory()
+        ? ZipArchiveStatus::Ok
+        : ZipArchiveStatus::InvalidArchive;
+}
+
+std::uint64_t ZipArchive::sourceSize() const {
+    return source_ != nullptr
+        ? source_->size()
+        : static_cast<std::uint64_t>(
+              bytes_.size()
+          );
+}
+
+bool ZipArchive::readRange(
+    std::uint64_t offset,
+    std::size_t length,
+    std::string& out
+) const {
+    const auto total = sourceSize();
+
+    if (offset > total ||
+        static_cast<std::uint64_t>(length) >
+            total - offset) {
+        out.clear();
+        return false;
+    }
+
+    if (source_ != nullptr) {
+        return source_->readRange(
+            offset,
+            length,
+            out
+        );
+    }
+
+    if (offset >
+        static_cast<std::uint64_t>(
+            std::numeric_limits<
+                std::size_t
+            >::max()
+        )) {
+        out.clear();
+        return false;
+    }
+
+    out.assign(
+        bytes_.substr(
+            static_cast<std::size_t>(
+                offset
+            ),
+            length
+        )
+    );
+    return true;
+}
+
 ZipArchiveStatus ZipArchive::status() const {
     return status_;
 }
@@ -83,52 +143,90 @@ bool ZipArchive::parseCentralDirectory() {
         0x06054B50U;
     constexpr std::uint32_t kCentralSignature =
         0x02014B50U;
+    constexpr std::uint64_t kMaxEocdWindow =
+        65557U;
 
-    if (bytes_.size() < 22U) {
+    const auto total = sourceSize();
+
+    if (total < 22U) {
         return false;
     }
 
-    const std::size_t search_start =
-        bytes_.size() > 65557U
-            ? bytes_.size() - 65557U
-            : 0U;
+    const auto tail_size =
+        static_cast<std::size_t>(
+            std::min<std::uint64_t>(
+                total,
+                kMaxEocdWindow
+            )
+        );
+
+    const auto tail_offset =
+        total - tail_size;
+
+    std::string tail;
+
+    if (!readRange(
+            tail_offset,
+            tail_size,
+            tail
+        )) {
+        return false;
+    }
 
     std::optional<std::size_t> eocd_offset;
 
-    for (std::size_t pos = bytes_.size() - 22U;;
+    for (std::size_t pos =
+             tail.size() - 22U;;
          --pos) {
-        if (readU32(bytes_, pos) ==
+        if (readU32(tail, pos) ==
             kEocdSignature) {
             eocd_offset = pos;
             break;
         }
 
-        if (pos == search_start) {
+        if (pos == 0U) {
             break;
         }
     }
 
-    if (!eocd_offset.has_value()) {
+    if (!eocd_offset.has_value() ||
+        !hasRange(
+            tail,
+            *eocd_offset,
+            22U
+        )) {
         return false;
     }
 
-    const auto eocd = *eocd_offset;
-
-    if (!hasRange(bytes_, eocd, 22U)) {
-        return false;
-    }
+    const auto eocd =
+        *eocd_offset;
 
     const auto entry_count =
-        readU16(bytes_, eocd + 10U);
+        readU16(tail, eocd + 10U);
     const auto central_size =
-        readU32(bytes_, eocd + 12U);
+        readU32(tail, eocd + 12U);
     const auto central_offset =
-        readU32(bytes_, eocd + 16U);
+        readU32(tail, eocd + 16U);
 
-    if (!hasRange(
-            bytes_,
-            central_offset,
+    if (static_cast<std::uint64_t>(
+            central_offset
+        ) > total ||
+        static_cast<std::uint64_t>(
             central_size
+        ) >
+            total -
+                static_cast<std::uint64_t>(
+                    central_offset
+                )) {
+        return false;
+    }
+
+    std::string central;
+
+    if (!readRange(
+            central_offset,
+            central_size,
+            central
         )) {
         return false;
     }
@@ -136,32 +234,60 @@ bool ZipArchive::parseCentralDirectory() {
     entries_.clear();
     entries_.reserve(entry_count);
 
-    std::size_t cursor = central_offset;
+    std::size_t cursor = 0;
 
     for (std::uint16_t index = 0;
          index < entry_count;
          ++index) {
-        if (!hasRange(bytes_, cursor, 46U) ||
-            readU32(bytes_, cursor) !=
+        if (!hasRange(
+                central,
+                cursor,
+                46U
+            ) ||
+            readU32(
+                central,
+                cursor
+            ) !=
                 kCentralSignature) {
             entries_.clear();
             return false;
         }
 
         const auto method =
-            readU16(bytes_, cursor + 10U);
+            readU16(
+                central,
+                cursor + 10U
+            );
         const auto compressed_size =
-            readU32(bytes_, cursor + 20U);
+            readU32(
+                central,
+                cursor + 20U
+            );
         const auto uncompressed_size =
-            readU32(bytes_, cursor + 24U);
+            readU32(
+                central,
+                cursor + 24U
+            );
         const auto name_length =
-            readU16(bytes_, cursor + 28U);
+            readU16(
+                central,
+                cursor + 28U
+            );
         const auto extra_length =
-            readU16(bytes_, cursor + 30U);
+            readU16(
+                central,
+                cursor + 30U
+            );
         const auto comment_length =
-            readU16(bytes_, cursor + 32U);
+            readU16(
+                central,
+                cursor + 32U
+            );
         const auto local_offset =
-            readU32(bytes_, cursor + 42U);
+            readU32(
+                central,
+                cursor + 42U
+            );
 
         const std::size_t record_size =
             46U +
@@ -176,7 +302,7 @@ bool ZipArchive::parseCentralDirectory() {
             );
 
         if (!hasRange(
-                bytes_,
+                central,
                 cursor,
                 record_size
             )) {
@@ -186,16 +312,22 @@ bool ZipArchive::parseCentralDirectory() {
 
         ZipEntry entry;
         entry.name.assign(
-            bytes_.substr(
+            central.substr(
                 cursor + 46U,
                 name_length
             )
         );
         entry.compression_method = method;
-        entry.compressed_size = compressed_size;
-        entry.uncompressed_size = uncompressed_size;
-        entry.local_header_offset = local_offset;
-        entries_.push_back(std::move(entry));
+        entry.compressed_size =
+            compressed_size;
+        entry.uncompressed_size =
+            uncompressed_size;
+        entry.local_header_offset =
+            local_offset;
+
+        entries_.push_back(
+            std::move(entry)
+        );
 
         cursor += record_size;
     }
@@ -206,13 +338,14 @@ bool ZipArchive::parseCentralDirectory() {
 std::optional<ZipEntry> ZipArchive::find(
     std::string_view name
 ) const {
-    const auto it = std::find_if(
-        entries_.begin(),
-        entries_.end(),
-        [&](const ZipEntry& entry) {
-            return entry.name == name;
-        }
-    );
+    const auto it =
+        std::find_if(
+            entries_.begin(),
+            entries_.end(),
+            [&](const ZipEntry& entry) {
+                return entry.name == name;
+            }
+        );
 
     if (it == entries_.end()) {
         return std::nullopt;
@@ -229,6 +362,7 @@ ZipArchiveStatus ZipArchive::read(
         0x04034B50U;
 
     const auto found = find(name);
+
     if (!found.has_value()) {
         return ZipArchiveStatus::EntryNotFound;
     }
@@ -240,45 +374,47 @@ ZipArchiveStatus ZipArchive::read(
         return ZipArchiveStatus::EntryTooLarge;
     }
 
-    const std::size_t local =
-        entry.local_header_offset;
+    std::string header;
 
-    if (!hasRange(bytes_, local, 30U) ||
-        readU32(bytes_, local) !=
+    if (!readRange(
+            entry.local_header_offset,
+            30U,
+            header
+        ) ||
+        readU32(header, 0U) !=
             kLocalSignature) {
         return ZipArchiveStatus::InvalidArchive;
     }
 
     const auto name_length =
-        readU16(bytes_, local + 26U);
+        readU16(header, 26U);
     const auto extra_length =
-        readU16(bytes_, local + 28U);
+        readU16(header, 28U);
 
-    const std::size_t data_offset =
-        local + 30U +
-        static_cast<std::size_t>(
+    const auto data_offset =
+        static_cast<std::uint64_t>(
+            entry.local_header_offset
+        ) +
+        30U +
+        static_cast<std::uint64_t>(
             name_length
         ) +
-        static_cast<std::size_t>(
+        static_cast<std::uint64_t>(
             extra_length
         );
 
-    if (!hasRange(
-            bytes_,
+    std::string compressed;
+
+    if (!readRange(
             data_offset,
-            entry.compressed_size
+            entry.compressed_size,
+            compressed
         )) {
         return ZipArchiveStatus::InvalidArchive;
     }
 
-    const auto compressed =
-        bytes_.substr(
-            data_offset,
-            entry.compressed_size
-        );
-
     if (entry.compression_method == 0U) {
-        out.assign(compressed);
+        out = std::move(compressed);
         return ZipArchiveStatus::Ok;
     }
 
@@ -294,9 +430,7 @@ ZipArchiveStatus ZipArchive::read(
     z_stream stream = {};
     stream.next_in =
         reinterpret_cast<Bytef*>(
-            const_cast<char*>(
-                compressed.data()
-            )
+            compressed.data()
         );
     stream.avail_in =
         static_cast<uInt>(

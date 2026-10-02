@@ -19,6 +19,7 @@
 #include "enku/platform/esp_idf/esp_idf_epaper.hpp"
 #include "enku/platform/esp_idf/esp_idf_file_store.hpp"
 #include "enku/platform/esp_idf/esp_idf_power_service.hpp"
+#include "enku/platform/esp_idf/esp_idf_platform.hpp"
 #include "enku/platform/esp_idf/esp_idf_sd_card.hpp"
 
 namespace {
@@ -332,14 +333,9 @@ const char* actionName(enku::LogicalAction action) {
     }
 }
 
-bool powerSmokeTest() {
-    enku::platform::esp_idf::EspIdfPowerService power;
-
-    if (!power.begin()) {
-        ESP_LOGE(kTag, "AXP2101 initialization failed");
-        return false;
-    }
-
+bool powerSmokeTest(
+    enku::platform::esp_idf::EspIdfPowerService& power
+) {
     const auto battery = power.batteryState();
 
     ESP_LOGI(
@@ -359,14 +355,9 @@ bool powerSmokeTest() {
     return true;
 }
 
-bool inputSmokeTest() {
-    enku::platform::esp_idf::EspIdfButtons buttons;
-
-    if (!buttons.begin()) {
-        ESP_LOGE(kTag, "Button GPIO initialization failed");
-        return false;
-    }
-
+bool inputSmokeTest(
+    enku::platform::esp_idf::EspIdfButtons& buttons
+) {
     enku::AppState app;
     app.screen = enku::Screen::Library;
 
@@ -416,15 +407,9 @@ bool inputSmokeTest() {
     return true;
 }
 
-bool displaySmokeTest() {
-    EspIdfEpaper display;
-
-    if (display.begin() !=
-        enku::platform::esp_idf::EpaperStatus::Ok) {
-        ESP_LOGE(kTag, "E-paper bus init failed");
-        return false;
-    }
-
+bool displaySmokeTest(
+    EspIdfEpaper& display
+) {
     auto* framebuffer =
         static_cast<std::uint8_t*>(
             heap_caps_malloc(
@@ -668,31 +653,21 @@ extern "C" void app_main(void) {
         )
     );
 
-    enku::platform::esp_idf::EspIdfSdCard sd_card;
-    const auto mount_status = sd_card.mount();
+    enku::platform::esp_idf::EspIdfPlatform platform;
 
-    if (mount_status !=
-        enku::platform::esp_idf::SdMountStatus::Ok) {
+    const auto platform_status = platform.begin();
+
+    if (platform_status !=
+        enku::platform::esp_idf::PlatformInitStatus::Ok) {
         ESP_LOGE(
             kTag,
-            "TF initialization failed; bring-up stopped"
+            "Platform initialization failed with status %u",
+            static_cast<unsigned>(platform_status)
         );
         return;
     }
 
-    enku::platform::esp_idf::EspIdfFilesystem filesystem(
-        enku::platform::esp_idf::board::kSdMountPoint
-    );
-    enku::platform::esp_idf::EspIdfBookFileStore book_files(
-        filesystem
-    );
-    enku::platform::esp_idf::EspIdfStateFileStore state_files(
-        filesystem
-    );
-
-    (void)state_files;
-
-    if (!storageSmokeTest(book_files)) {
+    if (!storageSmokeTest(platform.bookFiles())) {
         ESP_LOGE(
             kTag,
             "Platform storage adapter verification failed"
@@ -700,7 +675,7 @@ extern "C" void app_main(void) {
         return;
     }
 
-    if (!displaySmokeTest()) {
+    if (!displaySmokeTest(platform.display())) {
         ESP_LOGE(
             kTag,
             "Platform display verification failed"
@@ -708,7 +683,7 @@ extern "C" void app_main(void) {
         return;
     }
 
-    if (!powerSmokeTest()) {
+    if (!powerSmokeTest(platform.power())) {
         ESP_LOGE(
             kTag,
             "Platform power verification failed"
@@ -716,7 +691,7 @@ extern "C" void app_main(void) {
         return;
     }
 
-    if (!inputSmokeTest()) {
+    if (!inputSmokeTest(platform.buttons())) {
         ESP_LOGE(
             kTag,
             "Platform input verification failed"

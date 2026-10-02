@@ -82,6 +82,7 @@ struct ReaderSearchState {
     std::vector<SearchMatch> matches;
     std::uint32_t total_matches{0};
     std::uint32_t focus_index{0};
+    std::uint32_t window_start{0};
 };
 
 struct ReaderSearchHighlight {

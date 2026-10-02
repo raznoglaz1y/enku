@@ -76,6 +76,8 @@ SleepWakeStatus SleepWakeCoordinator::sleep() {
                 AppRestoreContext{
                     Screen::Reading,
                     book_id,
+                    app_state_.library.offset,
+                    app_state_.library.focused_book,
                 }
             ) != PersistStatus::Ok) {
             return SleepWakeStatus::ContextSaveFailed;

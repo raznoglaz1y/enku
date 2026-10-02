@@ -26,23 +26,31 @@ BookSourceStatus StoredBookSourceService::readSource(
     }
 }
 
-std::optional<std::uint64_t>
+BookSourceStatus
 StoredBookSourceService::sourceSize(
-    const BookRecord& record
+    const BookRecord& record,
+    std::uint64_t& size_bytes
 ) {
-    std::uint64_t bytes = 0;
-
     const auto status =
         files_.size(
             record.source_path,
-            bytes
+            size_bytes
         );
 
-    return status == BookFileStatus::Ok
-        ? std::optional<std::uint64_t>{
-              bytes
-          }
-        : std::nullopt;
+    switch (status) {
+        case BookFileStatus::Ok:
+            return BookSourceStatus::Ok;
+
+        case BookFileStatus::NotFound:
+            size_bytes = 0;
+            return BookSourceStatus::Unavailable;
+
+        case BookFileStatus::IoError:
+        case BookFileStatus::NoSpace:
+        default:
+            size_bytes = 0;
+            return BookSourceStatus::ReadFailed;
+    }
 }
 
 BookSourceStatus

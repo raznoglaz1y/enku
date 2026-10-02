@@ -1,5 +1,6 @@
 #include "enku/runtime/application_reader_runtime.hpp"
 #include "enku/runtime/reader_overlay_runtime.hpp"
+#include "enku/runtime/search_runtime.hpp"
 #include "enku/storage/posix_book_file_store.hpp"
 #include "enku/storage/posix_state_file_store.hpp"
 
@@ -336,6 +337,59 @@ int main() {
     assert(
         storage.appState().reading_position->text_offset ==
         orientation_position->text_offset
+    );
+
+    SearchRuntime search(
+        storage,
+        runtime
+    );
+
+    const auto search_origin =
+        storage.appState().reading_position;
+    assert(search_origin.has_value());
+
+    assert(
+        overlay.handle(
+            LogicalAction::OpenReaderMenu
+        ) == ReaderOverlayRuntimeResult::Applied
+    );
+    assert(
+        overlay.handle(
+            LogicalAction::NavigateNext
+        ) == ReaderOverlayRuntimeResult::Applied
+    );
+    assert(
+        overlay.handle(
+            LogicalAction::NavigateNext
+        ) == ReaderOverlayRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().reader_overlay.focus_index == 2
+    );
+    assert(
+        overlay.handle(
+            LogicalAction::Confirm
+        ) == ReaderOverlayRuntimeResult::SearchRequested
+    );
+    assert(storage.appState().screen == Screen::Reading);
+    assert(
+        search.openFromReader() ==
+        SearchRuntimeResult::Applied
+    );
+    assert(storage.appState().screen == Screen::Search);
+    assert(storage.appState().search.origin_position.has_value());
+    assert(
+        storage.appState().search.origin_position->text_offset ==
+        search_origin->text_offset
+    );
+    assert(
+        search.handle(LogicalAction::Back) ==
+        SearchRuntimeResult::Applied
+    );
+    assert(storage.appState().screen == Screen::Reading);
+    assert(
+        storage.appState().reading_position->text_offset ==
+        search_origin->text_offset
     );
 
     assert(

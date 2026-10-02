@@ -109,10 +109,18 @@ BookDeleteStatus BookDeleteService::remove(
             std::optional<BookId>{book_id};
 
     if (context_points_to_book) {
+        const auto preserved_focus =
+            context_backup->library_focused_book ==
+                    std::optional<BookId>{book_id}
+                ? std::optional<BookId>{}
+                : context_backup->library_focused_book;
+
         if (context_.save(
                 AppRestoreContext{
                     Screen::Library,
                     std::nullopt,
+                    context_backup->library_offset,
+                    preserved_focus,
                 }
             ) != PersistStatus::Ok) {
             return BookDeleteStatus::ContextSaveFailed;

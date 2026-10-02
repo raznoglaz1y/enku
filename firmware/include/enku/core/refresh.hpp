@@ -1,0 +1,54 @@
+#pragma once
+
+#include <cstdint>
+
+namespace enku {
+
+struct Rect {
+    std::uint16_t x{0};
+    std::uint16_t y{0};
+    std::uint16_t width{0};
+    std::uint16_t height{0};
+};
+
+enum class RefreshClass : std::uint8_t {
+    None,
+    Region,
+    Full,
+    Deferred,
+};
+
+enum class RefreshReason : std::uint8_t {
+    Unknown,
+    PageTurn,
+    FocusChanged,
+    OverlayChanged,
+    StatusChanged,
+    ProgressChanged,
+    OrientationChanged,
+    LanguageChanged,
+    TypographyChanged,
+    SleepScreen,
+    ErrorRecovery,
+    FirstScreen,
+};
+
+struct RefreshRequest {
+    RefreshClass refresh_class{RefreshClass::None};
+    RefreshReason reason{RefreshReason::Unknown};
+    std::uint32_t generation{0};
+    bool may_coalesce{true};
+    bool may_defer{false};
+};
+
+struct RefreshStats {
+    std::uint32_t total{0};
+    std::uint32_t region{0};
+    std::uint32_t full{0};
+    std::uint32_t escalated_to_full{0};
+    std::uint32_t coalesced{0};
+    std::uint32_t dropped_obsolete{0};
+    std::uint32_t failures{0};
+};
+
+} // namespace enku

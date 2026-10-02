@@ -139,6 +139,39 @@ BookFileStatus PosixBookFileStore::append(
         : BookFileStatus::IoError;
 }
 
+BookFileStatus PosixBookFileStore::move(
+    const std::string& from,
+    const std::string& to
+) {
+    const auto source = resolve(from);
+    const auto target = resolve(to);
+
+    std::error_code ec;
+    if (!std::filesystem::exists(source, ec)) {
+        return ec
+            ? BookFileStatus::IoError
+            : BookFileStatus::NotFound;
+    }
+
+    std::filesystem::create_directories(
+        target.parent_path(),
+        ec
+    );
+    if (ec) {
+        return BookFileStatus::IoError;
+    }
+
+    std::filesystem::rename(
+        source,
+        target,
+        ec
+    );
+
+    return ec
+        ? BookFileStatus::IoError
+        : BookFileStatus::Ok;
+}
+
 BookFileStatus PosixBookFileStore::remove(
     const std::string& path
 ) {

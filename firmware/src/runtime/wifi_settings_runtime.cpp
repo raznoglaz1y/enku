@@ -154,6 +154,15 @@ WiFiSettingsRuntime::moveFocus(
 WiFiSettingsRuntimeResult
 WiFiSettingsRuntime::scanNetworks() {
     auto& state = app_state_.wifi_settings;
+
+    if (app_state_.wifi_policy == WiFiPolicy::Off) {
+        state.status_message = "WI-FI IS OFF";
+        state.scan_results.clear();
+        state.network_focus = 0;
+        state.selecting_network = false;
+        return render();
+    }
+
     state.status_message = "SCANNING...";
     state.scan_results.clear();
     state.network_focus = 0;

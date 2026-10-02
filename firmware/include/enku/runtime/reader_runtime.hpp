@@ -19,6 +19,7 @@ enum class ReaderRuntimeResult : std::uint8_t {
     EndOfBook,
     LayoutFailed,
     CheckpointFailed,
+    CheckpointLoadFailed,
     LibraryUpdateFailed,
     RefreshRejected,
 };

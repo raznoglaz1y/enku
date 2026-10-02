@@ -4,7 +4,6 @@ namespace enku {
 
 SleepWakeCoordinator::SleepWakeCoordinator(
     AppState& app_state,
-    ReaderBookLoader& loader,
     LibraryService& library,
     ReaderCheckpointService& checkpoint,
     AppContextService& context,
@@ -13,7 +12,6 @@ SleepWakeCoordinator::SleepWakeCoordinator(
     BootRestoreCoordinator& boot_restore
 )
     : app_state_(app_state),
-      loader_(loader),
       library_(library),
       checkpoint_(checkpoint),
       context_(context),

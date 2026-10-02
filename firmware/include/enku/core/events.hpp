@@ -9,6 +9,7 @@
 #include "diagnostics.hpp"
 #include "boot.hpp"
 #include "refresh.hpp"
+#include "library.hpp"
 
 namespace enku {
 
@@ -23,6 +24,43 @@ struct ActionRequested {
 struct OpenBookRequested {
     BookId book_id;
 };
+
+struct LibraryRefreshRequested {};
+
+struct LibraryFilterChanged {
+    LibraryFilter filter{LibraryFilter::All};
+};
+
+struct LibrarySortChanged {
+    LibrarySort sort{LibrarySort::RecentlyOpened};
+    SortDirection direction{SortDirection::Descending};
+};
+
+struct LibrarySearchChanged {
+    std::string text;
+};
+
+struct LibraryFocusNextRequested {};
+struct LibraryFocusPreviousRequested {};
+struct OpenFocusedBookRequested {};
+
+struct ImportRequested {
+    std::string staged_path;
+    std::string source_filename;
+    std::uint64_t added_order{0};
+};
+
+struct ImportStarted {};
+
+struct ImportDuplicate {
+    std::string source_filename;
+};
+
+struct ImportFailed {
+    std::string source_filename;
+};
+
+
 
 struct BookOpened {
     BookId book_id;
@@ -95,6 +133,17 @@ using AppEvent = std::variant<
     InputReceived,
     ActionRequested,
     OpenBookRequested,
+    LibraryRefreshRequested,
+    LibraryFilterChanged,
+    LibrarySortChanged,
+    LibrarySearchChanged,
+    LibraryFocusNextRequested,
+    LibraryFocusPreviousRequested,
+    OpenFocusedBookRequested,
+    ImportRequested,
+    ImportStarted,
+    ImportDuplicate,
+    ImportFailed,
     BookOpened,
     BookOpenFailed,
     PageNextRequested,

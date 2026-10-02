@@ -9,6 +9,7 @@ idf_component_register(
         "../src/epaper_refresh_service.cpp"
         "../src/esp_idf_platform.cpp"
         "../src/freetype_text_renderer.cpp"
+        "../src/esp_idf_device_runtime.cpp"
         "../../../src/render/owned_mono_framebuffer.cpp"
         "../../../src/runtime/input_runtime.cpp"
         "../../../src/runtime/application_storage_runtime.cpp"

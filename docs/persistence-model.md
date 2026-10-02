@@ -178,6 +178,8 @@ Persistent progress writes are checkpointed according to the runtime policy, for
 
 A page turn must not synchronously rewrite the entire Library database.
 
+The runtime-facing `ReaderCheckpointService` exposes both save and load semantics. On book open, the latest per-book checkpoint is loaded first; its semantic position is passed to the book loader as the restore anchor. `NotFound` means "start from the beginning", while other persistence failures are surfaced as restore failures instead of silently discarding progress.
+
 ## 12. Global settings
 
 Global settings use their own A/B CBOR record.

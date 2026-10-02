@@ -6,11 +6,13 @@ namespace enku {
 
 StorageStartupCoordinator::StorageStartupCoordinator(
     AppState& app_state,
+    SettingsRuntimeController& settings,
     CborLibraryService& library,
     BookFileStore& files,
     BookImportService& importer
 )
     : app_state_(app_state),
+      settings_(settings),
       library_(library),
       files_(files),
       importer_(importer) {}
@@ -47,6 +49,19 @@ StorageStartupResult StorageStartupCoordinator::run() {
     app_state_.boot.stage = BootStage::Storage;
 
     app_state_.boot.stage = BootStage::Persistence;
+
+    const auto settings_status =
+        settings_.loadAndApply();
+
+    if (settings_status ==
+        SettingsRuntimeStatus::PersistenceFailure) {
+        return enterRecovery(
+            StorageStartupStatus::SettingsPersistenceFailure,
+            0,
+            0
+        );
+    }
+
     const auto library_status = library_.load();
 
     if (library_status != LibraryStatus::Ok) {

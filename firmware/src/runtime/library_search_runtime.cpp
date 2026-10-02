@@ -18,10 +18,10 @@ LibrarySearchRuntime::open() {
 
     if (app_state_.library.mode !=
         LibraryQueryMode::Search) {
-        origin_valid_ = true;
-        origin_offset_ =
+        app_state_.library.search_origin_valid = true;
+        app_state_.library.search_origin_offset =
             app_state_.library.offset;
-        origin_focused_book_ =
+        app_state_.library.search_origin_focused_book =
             app_state_.library.focused_book;
     }
 
@@ -139,11 +139,11 @@ LibrarySearchRuntime::cancel() {
     app_state_.library.mode =
         LibraryQueryMode::Browse;
 
-    if (origin_valid_) {
+    if (app_state_.library.search_origin_valid) {
         app_state_.library.offset =
-            origin_offset_;
+            app_state_.library.search_origin_offset;
         app_state_.library.focused_book =
-            origin_focused_book_;
+            app_state_.library.search_origin_focused_book;
     } else {
         app_state_.library.offset = 0;
         app_state_.library.focused_book.reset();
@@ -154,9 +154,9 @@ LibrarySearchRuntime::cancel() {
             LibraryRefreshRequested{}
         );
 
-    origin_valid_ = false;
-    origin_offset_ = 0;
-    origin_focused_book_.reset();
+    app_state_.library.search_origin_valid = false;
+    app_state_.library.search_origin_offset = 0;
+    app_state_.library.search_origin_focused_book.reset();
 
     return result == LibraryRuntimeResult::Applied ||
            result == LibraryRuntimeResult::Empty

@@ -12,6 +12,7 @@
 #include "enku/render/reader_page_renderer.hpp"
 #include "enku/render/library_page_renderer.hpp"
 #include "enku/render/reader_overlay_renderer.hpp"
+#include "enku/render/search_renderer.hpp"
 
 namespace enku::platform::esp_idf {
 
@@ -27,7 +28,8 @@ class FreeTypeTextRenderer final
     : public TextMeasurer,
       public ReaderPageRenderer,
       public LibraryPageRenderer,
-      public ReaderOverlayRenderer {
+      public ReaderOverlayRenderer,
+      public SearchRenderer {
 public:
     FreeTypeTextRenderer(
         OwnedMonoFramebuffer& framebuffer,
@@ -64,6 +66,10 @@ public:
     ) override;
 
     bool renderReaderOverlay(
+        const AppState& app_state
+    ) override;
+
+    bool renderSearch(
         const AppState& app_state
     ) override;
 

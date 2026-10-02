@@ -16,6 +16,7 @@ enum class Orientation : std::uint8_t {
 enum class Screen : std::uint8_t {
     Boot,
     Library,
+    BookDetails,
     BookOpening,
     Reading,
     ReaderOverlay,

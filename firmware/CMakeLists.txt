@@ -18,6 +18,7 @@ add_library(enku_core STATIC
     src/reader/document_search.cpp
     src/runtime/reader_runtime.cpp
     src/runtime/library_runtime.cpp
+    src/runtime/library_search_runtime.cpp
     src/runtime/settings_runtime.cpp
     src/runtime/input_runtime.cpp
     src/runtime/input_dispatcher.cpp

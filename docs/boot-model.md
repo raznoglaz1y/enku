@@ -448,3 +448,41 @@ The first host integration test models a cold reboot with new service/runtime ob
 - `restoreContextOnly()` — fast Wake from logical Suspended state: reuse current mounted storage/Library and restore only the persisted safe context.
 
 Both paths converge on the same ReaderRuntime open/checkpoint logic and the same fallback-to-Library behavior. This avoids maintaining separate cold-boot and wake-specific reader restoration implementations.
+
+
+## 28. Persistent boot-loop protection MVP
+
+Cold boot now uses `CborBootLoopService` with an A/B marker:
+
+```text
+/system/boot-marker.a.cbor
+/system/boot-marker.b.cbor
+```
+
+The marker stores:
+
+- consecutive incomplete cold-boot count;
+- whether the previous boot reached the stable checkpoint.
+
+Cold-boot sequence:
+
+```text
+storage recovery
+→ beginBoot()
+→ increment incomplete count
+→ if count >= 3: Recovery Mode
+→ otherwise restore safe app context
+→ first stable Library/Reading state
+→ markStable()
+→ reset count to 0
+```
+
+The threshold is currently fixed at three consecutive incomplete cold boots.
+
+The gate is evaluated before automatic Reading restore, so a repeatedly failing last book is not reopened indefinitely.
+
+Fast Wake from logical Suspended state does not increment or clear the cold-boot marker. It continues to use `restoreContextOnly()`.
+
+Recovery/service code may explicitly call `markStable()` after the underlying cause has been handled, allowing the next cold boot to start a fresh attempt sequence.
+
+Host integration tests cover two incomplete boots followed by a third boot entering Recovery, then explicit marker recovery followed by a normal stable Library boot.

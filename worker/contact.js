@@ -55,11 +55,16 @@ const headerHtml = (pathname) => {
       </details>
     </nav>
 
-    <a class="github-icon" href="https://github.com/raznoglaz1y/enku" target="_blank" rel="noreferrer" aria-label="ENKU on GitHub">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .7a11.5 11.5 0 0 0-3.64 22.41c.58.11.79-.25.79-.56v-2.24c-3.23.7-3.91-1.37-3.91-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.78 2.72 1.27 3.39.97.1-.75.4-1.27.74-1.56-2.58-.29-5.29-1.29-5.29-5.68 0-1.25.45-2.28 1.2-3.08-.12-.29-.52-1.47.11-3.04 0 0 .98-.31 3.16 1.18a11 11 0 0 1 5.76 0c2.18-1.49 3.16-1.18 3.16-1.18.63 1.57.23 2.75.11 3.04.75.8 1.2 1.83 1.2 3.08 0 4.4-2.72 5.38-5.31 5.67.42.36.79 1.07.79 2.17v3.23c0 .31.21.68.8.56A11.5 11.5 0 0 0 12 .7Z"/></svg>
-    </a>
-
-    <button class="menu-button" aria-expanded="false" aria-label="Open menu"><span></span><span></span><span></span></button>
+    <div class="header-actions">
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch color theme" title="Switch color theme">
+        <span class="theme-toggle-sun" aria-hidden="true">☼</span>
+        <span class="theme-toggle-moon" aria-hidden="true">◐</span>
+      </button>
+      <a class="github-icon" href="https://github.com/raznoglaz1y/enku" target="_blank" rel="noreferrer" aria-label="ENKU on GitHub">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .7a11.5 11.5 0 0 0-3.64 22.41c.58.11.79-.25.79-.56v-2.24c-3.23.7-3.91-1.37-3.91-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.78 2.72 1.27 3.39.97.1-.75.4-1.27.74-1.56-2.58-.29-5.29-1.29-5.29-5.68 0-1.25.45-2.28 1.2-3.08-.12-.29-.52-1.47.11-3.04 0 0 .98-.31 3.16 1.18a11 11 0 0 1 5.76 0c2.18-1.49 3.16-1.18 3.16-1.18.63 1.57.23 2.75.11 3.04.75.8 1.2 1.83 1.2 3.08 0 4.4-2.72 5.38-5.31 5.67.42.36.79 1.07.79 2.17v3.23c0 .31.21.68.8.56A11.5 11.5 0 0 0 12 .7Z"/></svg>
+      </a>
+      <button class="menu-button" aria-expanded="false" aria-label="Open menu"><span></span><span></span><span></span></button>
+    </div>
   </div>
 
   <nav class="mobile-nav" aria-label="Mobile navigation">
@@ -213,7 +218,7 @@ const footerHtml = `
 const sharedChromeCss = `
 <style id="enku-shared-chrome">
   .site-header{position:sticky!important;top:0;z-index:100;background:rgba(245,241,232,.94)!important;backdrop-filter:blur(14px);border-bottom:1px solid rgba(20,20,20,.08)}
-  .site-header .header-inner{height:72px!important;display:grid!important;grid-template-columns:150px minmax(0,1fr) 40px!important;gap:24px!important;align-items:center!important}
+  .site-header .header-inner{height:72px!important;display:grid!important;grid-template-columns:150px minmax(0,1fr) auto!important;gap:24px!important;align-items:center!important}
   .site-header .logo-link{display:flex!important;align-items:center!important;justify-self:start!important}
   .site-header .logo-link img{width:116px!important;height:32px!important;object-fit:contain!important;display:block!important}
   .site-header .desktop-nav{display:flex!important;align-items:center!important;justify-content:center!important;gap:clamp(18px,2vw,30px)!important;font-size:13px!important;white-space:nowrap!important}
@@ -231,6 +236,13 @@ const sharedChromeCss = `
   .site-header .project-popover a.active:after{content:none!important;display:none!important}
   .site-header .github-icon{justify-self:end!important;width:28px!important;height:28px!important;display:grid!important;place-items:center!important}
   .site-header .github-icon svg{width:23px!important;height:23px!important;fill:currentColor}
+  .site-header .header-actions{justify-self:end;display:flex;align-items:center;gap:8px}
+  .site-header .theme-toggle{width:30px;height:30px;border:1px solid rgba(20,20,20,.14);border-radius:999px;background:transparent;color:inherit;display:grid;place-items:center;cursor:pointer;padding:0;font:inherit;line-height:1}
+  .site-header .theme-toggle:hover{background:rgba(20,20,20,.05)}
+  .site-header .theme-toggle-sun{display:none;font-size:15px}
+  .site-header .theme-toggle-moon{display:block;font-size:15px}
+  html[data-theme="dark"] .site-header .theme-toggle-sun{display:block}
+  html[data-theme="dark"] .site-header .theme-toggle-moon{display:none}
   .site-header .menu-button{display:none!important;background:transparent;border:0;padding:8px;gap:4px;flex-direction:column;justify-content:center}
   .site-header .menu-button span{display:block;width:22px;height:1px;background:#171717}
   .site-header .mobile-nav{display:none!important}
@@ -463,6 +475,127 @@ const projectPageCss = `
   }
 </style>`;
 
+
+
+const themeResponsiveCss = `
+<style id="enku-theme-responsive">
+  @media(max-width:760px){
+    .site-header .header-inner{grid-template-columns:1fr auto!important}
+    .site-header .header-actions{gap:6px}
+    .site-header .github-icon{display:none!important}
+    .site-header .theme-toggle{display:grid!important}
+    .site-header .menu-button{display:flex!important}
+  }
+</style>`;
+
+const darkThemeCss = `
+<style id="enku-dark-theme">
+  html{color-scheme:light dark}
+  html[data-theme="dark"]{background:#10110f;color-scheme:dark}
+  html[data-theme="dark"] body,
+  html[data-theme="dark"] main,
+  html[data-theme="dark"] .enku-home{background:#10110f!important;color:#ece9df!important}
+  html[data-theme="dark"] .site-header{background:rgba(16,17,15,.94)!important;border-color:rgba(255,255,255,.10)!important}
+  html[data-theme="dark"] .site-header .project-popover,
+  html[data-theme="dark"] .site-header .mobile-nav{background:#151612!important;border-color:rgba(255,255,255,.12)!important}
+  html[data-theme="dark"] .site-header .desktop-nav>a:hover,
+  html[data-theme="dark"] .site-header .project-menu>summary:hover,
+  html[data-theme="dark"] .site-header .project-popover a:hover,
+  html[data-theme="dark"] .site-header .project-popover a.active{background:rgba(255,255,255,.07)!important}
+  html[data-theme="dark"] .site-header .theme-toggle{border-color:rgba(255,255,255,.17)!important}
+  html[data-theme="dark"] .site-header .theme-toggle:hover{background:rgba(255,255,255,.08)!important}
+  html[data-theme="dark"] .site-header .menu-button span{background:#ece9df!important}
+  html[data-theme="dark"] .site-header .logo-link img,
+  html[data-theme="dark"] .site-footer img{filter:invert(1) grayscale(1) brightness(1.22)}
+  html[data-theme="dark"] .site-footer,
+  html[data-theme="dark"] .enku-next{background:#10110f!important;border-color:rgba(255,255,255,.10)!important}
+  html[data-theme="dark"] .enku-button{background:#ece9df!important;color:#11120f!important;border-color:#ece9df!important}
+  html[data-theme="dark"] body p,
+  html[data-theme="dark"] body figcaption,
+  html[data-theme="dark"] body .hardware-lead,
+  html[data-theme="dark"] body .status-lead,
+  html[data-theme="dark"] body .log-lead,
+  html[data-theme="dark"] body .downloads-lead,
+  html[data-theme="dark"] body .about-lede,
+  html[data-theme="dark"] body .section-intro p,
+  html[data-theme="dark"] body .hw-intro p,
+  html[data-theme="dark"] body .enku-home-head>p:last-child,
+  html[data-theme="dark"] body .enku-home-split>div:last-child>p{color:#b8b5aa!important}
+  html[data-theme="dark"] body small,
+  html[data-theme="dark"] body .eyebrow,
+  html[data-theme="dark"] body .enku-kicker,
+  html[data-theme="dark"] body .hardware-label,
+  html[data-theme="dark"] body .stage-label,
+  html[data-theme="dark"] body .state,
+  html[data-theme="dark"] body .tag{color:#8f8c83!important}
+  html[data-theme="dark"] body section,
+  html[data-theme="dark"] body footer,
+  html[data-theme="dark"] body .hardware-state,
+  html[data-theme="dark"] body .stage-strip,
+  html[data-theme="dark"] body .verify-list,
+  html[data-theme="dark"] body .timeline,
+  html[data-theme="dark"] body .mini-links,
+  html[data-theme="dark"] body .support-grid,
+  html[data-theme="dark"] body .enku-home-cards,
+  html[data-theme="dark"] body .enku-home-status-grid{border-color:rgba(255,255,255,.11)!important}
+  html[data-theme="dark"] body .spec,
+  html[data-theme="dark"] body .verify-row,
+  html[data-theme="dark"] body .milestone,
+  html[data-theme="dark"] body .support-card,
+  html[data-theme="dark"] body .enku-work-main,
+  html[data-theme="dark"] body .enku-work-side a,
+  html[data-theme="dark"] body .download-card,
+  html[data-theme="dark"] body .log-card{background:#141512!important;border-color:rgba(255,255,255,.12)!important;color:#ece9df!important}
+  html[data-theme="dark"] body table{color:#ece9df!important;border-color:rgba(255,255,255,.13)!important}
+  html[data-theme="dark"] body th,
+  html[data-theme="dark"] body td{border-color:rgba(255,255,255,.12)!important}
+  html[data-theme="dark"] body input,
+  html[data-theme="dark"] body select,
+  html[data-theme="dark"] body textarea{color:#ece9df!important;border-color:rgba(255,255,255,.28)!important;background:transparent!important}
+  html[data-theme="dark"] body input::placeholder,
+  html[data-theme="dark"] body textarea::placeholder{color:#777a72!important}
+  html[data-theme="dark"] body .button-secondary{color:#ece9df!important;border-color:#ece9df!important;background:transparent!important}
+  html[data-theme="dark"] body .flag.verified{border-color:rgba(255,255,255,.22)!important;color:#d8d5cb!important}
+  html[data-theme="dark"] body a{color:inherit}
+  html[data-theme="dark"] body ::selection{background:#ece9df;color:#10110f}
+</style>`;
+
+const themeRuntime = `
+<script id="enku-theme-runtime">
+(() => {
+  const key = "enku-theme";
+  const root = document.documentElement;
+  const media = window.matchMedia("(prefers-color-scheme: dark)");
+  const saved = localStorage.getItem(key);
+  root.dataset.theme = saved === "dark" || saved === "light" ? saved : (media.matches ? "dark" : "light");
+  const updateButtons = () => {
+    document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
+      const dark = root.dataset.theme === "dark";
+      button.setAttribute("aria-label", dark ? "Switch to light theme" : "Switch to dark theme");
+      button.setAttribute("title", dark ? "Light theme" : "Dark theme");
+    });
+  };
+  const toggle = () => {
+    const next = root.dataset.theme === "dark" ? "light" : "dark";
+    root.dataset.theme = next;
+    localStorage.setItem(key, next);
+    updateButtons();
+  };
+  const bind = () => {
+    document.querySelectorAll("[data-theme-toggle]").forEach((button) => button.addEventListener("click", toggle));
+    updateButtons();
+  };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bind, { once: true });
+  else bind();
+  media.addEventListener?.("change", (event) => {
+    if (!localStorage.getItem(key)) {
+      root.dataset.theme = event.matches ? "dark" : "light";
+      updateButtons();
+    }
+  });
+})();
+</script>`;
+
 const allowedSubjects = new Set([
   "Project question",
   "Collaboration",
@@ -534,6 +667,9 @@ export default {
         .on("head", {
           element(element) {
             element.append(sharedChromeCss, { html: true });
+            element.append(themeResponsiveCss, { html: true });
+            element.append(darkThemeCss, { html: true });
+            element.append(themeRuntime, { html: true });
             if (["/hardware", "/software", "/design", "/build"].includes(url.pathname)) {
               element.append(explorePageCss, { html: true });
             }

@@ -142,6 +142,8 @@ The separation between display sleep, system suspend and PMU power-off is define
 
 The canonical string-key, fallback and pluralization strategy is defined in [Localization Architecture](localization-model.md).
 
+Structured errors, bounded logging and Recovery/Safe Mode are defined in [Errors, Logging & Diagnostics](diagnostics-model.md).
+
 ### Reader v1 format scope
 
 The first ENKU reader release targets three reflowable/text-oriented formats:

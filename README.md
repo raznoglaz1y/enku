@@ -12,6 +12,10 @@
   A focused, low-power reading device with physical controls, a carefully designed interface, local file management and an open hardware/software roadmap.
 </p>
 
+<p align="center">
+  <strong>Project website:</strong> <a href="https://enkureader.com">enkureader.com</a>
+</p>
+
 ---
 
 ## What is ENKU?
@@ -287,7 +291,9 @@ Firmware has not yet been published as a working reader. The planned implementat
    - semantic position mapping;
    - search and table of contents.
 
-4. **Runtime state machine**
+4. **Runtime and startup**
+   - staged boot with boot-loop detection;
+   - Normal / First Start / Recovery boot modes;
    - deterministic book open / page navigation;
    - Reader Menu and Search context;
    - debounced progress persistence;
@@ -388,6 +394,7 @@ No final mechanical dimensions will be published as authoritative until the actu
 ### Phase 3 — Reader MVP
 
 - [x] Select Reader v1 formats: EPUB, FB2 and TXT; PDF deferred
+- [ ] Implement staged boot coordinator and first-usable-screen checkpoint
 - [ ] Connect the firmware scaffold to verified platform drivers
 - [ ] Implement EPUB/FB2/TXT parsers and text layout
 - [ ] Implement Library grid/list navigation
@@ -461,6 +468,7 @@ Useful documents:
 - [Persistence backend](docs/persistence-model.md)
 - [Localization architecture](docs/localization-model.md)
 - [Errors, logging & diagnostics](docs/diagnostics-model.md)
+- [Boot & startup architecture](docs/boot-model.md)
 - [Hardware baseline](docs/hardware.md)
 - [BOM status](docs/bom.md)
 - [UI specification](docs/ui-spec.md)
@@ -495,6 +503,7 @@ docs/
   persistence-model.md      CBOR records, schema versioning and crash recovery
   localization-model.md     string keys, fallback, plurals and locale packaging
   diagnostics-model.md      structured errors, bounded logs and Recovery Mode
+  boot-model.md             staged startup, restore and boot-loop handling
   hardware.md              verified/planned hardware baseline
   bom.md                   parts/BOM status and sourcing priorities
   status.md                current project status

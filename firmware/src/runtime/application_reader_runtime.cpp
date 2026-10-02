@@ -67,6 +67,51 @@ ApplicationReaderRuntime::bootRestore() {
     return boot_restore_;
 }
 
+TypographyApplyStatus
+ApplicationReaderRuntime::applyTypographyPreset(
+    ReadingPreset preset
+) {
+    const auto values =
+        readingPresetValues(preset);
+
+    auto& app = storage_.appState();
+    const auto previous =
+        storage_.settingsRuntime().current();
+
+    const TypographyDefaultsChanged event{
+        preset,
+        values.font_size_px,
+        values.line_spacing,
+        values.margin_px,
+    };
+
+    if (storage_.settingsRuntime().handle(event) !=
+        PersistStatus::Ok) {
+        return TypographyApplyStatus::SettingsSaveFailed;
+    }
+
+    const auto result =
+        reader_.handle(event);
+
+    if (result == ReaderRuntimeResult::Applied) {
+        return TypographyApplyStatus::Ok;
+    }
+
+    storage_.settingsRuntime().apply(previous);
+    storage_.settingsStore().save(previous);
+
+    const TypographyDefaultsChanged rollback{
+        previous.reading_preset,
+        previous.font_size_px,
+        previous.line_spacing,
+        previous.margin_px,
+    };
+
+    reader_.handle(rollback);
+
+    return TypographyApplyStatus::RuntimeFailed;
+}
+
 OrientationApplyStatus
 ApplicationReaderRuntime::applyOrientation(
     Orientation orientation

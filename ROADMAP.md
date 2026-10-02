@@ -64,6 +64,9 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 - [x] Define initial core/service interface boundaries
 - [ ] Implement hardware abstraction for display, input, storage and power
 - [x] Define reader runtime/state-machine behavior
+- [x] Define staged boot/startup and restore architecture
+- [ ] Implement boot coordinator / stage state machine
+- [ ] Instrument startup stage timings
 - [ ] Implement application state model
 - [x] Define persistence backend and crash-recovery model
 - [ ] Implement CBOR persistence codec and generation recovery

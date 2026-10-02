@@ -124,7 +124,7 @@ jobs:
           grep -q 'id="enku-project-system"' /tmp/status.html
 
           curl -fsSL https://enkureader.com/about -o /tmp/about.html
-          grep -q '<title>About — ENKU</title>' /tmp/about.html
+          grep -q '<title>About Alex — ENKU</title>' /tmp/about.html
           grep -q 'id="enku-project-system"' /tmp/about.html
           grep -q 'class="enku-next"' /tmp/about.html
 

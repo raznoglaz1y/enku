@@ -122,6 +122,24 @@ LibraryRuntimeController::focusedIndex() const {
     );
 }
 
+LibraryRuntimeResult LibraryRuntimeController::redraw(
+    RefreshReason reason,
+    RefreshClass refresh_class
+) {
+    if (page_renderer_ != nullptr &&
+        !page_renderer_->renderLibrary(
+            app_state_,
+            page_
+        )) {
+        return LibraryRuntimeResult::RenderFailed;
+    }
+
+    return submitRefresh(
+        reason,
+        refresh_class
+    );
+}
+
 LibraryRuntimeResult LibraryRuntimeController::reload(
     RefreshReason reason
 ) {

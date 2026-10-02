@@ -153,15 +153,15 @@ int main() {
         BookImportStatus::ParseFailed
     );
 
-    const BookImportSource unsupported{
+    const BookImportSource invalid_epub{
         "/incoming/book.epub",
         "book.epub",
         "epub bytes"
     };
 
     assert(
-        importer.import(unsupported, 46).status ==
-        BookImportStatus::UnsupportedFormat
+        importer.import(invalid_epub, 46).status ==
+        BookImportStatus::ParseFailed
     );
 
     const BookImportSource empty{

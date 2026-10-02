@@ -8,6 +8,7 @@ InputDispatchResult dispatchOverlay(
     ReaderOverlayRuntime* overlay,
     SearchRuntime* search,
     ContentsBookmarksRuntime* contents_bookmarks,
+    AboutBookRuntime* about_book,
     SleepWakeCoordinator& sleep_wake,
     LogicalAction action
 ) {
@@ -38,7 +39,13 @@ InputDispatchResult dispatchOverlay(
                 : InputDispatchResult::Failed;
 
         case ReaderOverlayRuntimeResult::AboutBookRequested:
-            return InputDispatchResult::Unhandled;
+            if (about_book == nullptr) {
+                return InputDispatchResult::Unhandled;
+            }
+            return about_book->openFromReader() ==
+                AboutBookRuntimeResult::Applied
+                ? InputDispatchResult::Applied
+                : InputDispatchResult::Failed;
 
         case ReaderOverlayRuntimeResult::SleepRequested:
             return sleep_wake.sleep() ==
@@ -68,7 +75,8 @@ InputDispatcher::InputDispatcher(
     LibrarySearchRuntime* library_search,
     BookDetailsRuntime* book_details,
     BookFinishedRuntime* book_finished,
-    ContentsBookmarksRuntime* contents_bookmarks
+    ContentsBookmarksRuntime* contents_bookmarks,
+    AboutBookRuntime* about_book
 )
     : app_state_(app_state),
       library_(library),
@@ -80,7 +88,8 @@ InputDispatcher::InputDispatcher(
       library_search_(library_search),
       book_details_(book_details),
       book_finished_(book_finished),
-      contents_bookmarks_(contents_bookmarks) {}
+      contents_bookmarks_(contents_bookmarks),
+      about_book_(about_book) {}
 
 InputDispatchResult InputDispatcher::handle(
     const PhysicalInputEvent& input
@@ -93,6 +102,25 @@ InputDispatchResult InputDispatcher::handle(
 
     if (!action.has_value()) {
         return InputDispatchResult::Ignored;
+    }
+
+    if (app_state_.screen == Screen::AboutBook) {
+        if (about_book_ == nullptr) {
+            return InputDispatchResult::Unhandled;
+        }
+
+        const auto result =
+            about_book_->handle(*action);
+
+        if (result == AboutBookRuntimeResult::Applied) {
+            return InputDispatchResult::Applied;
+        }
+
+        if (result == AboutBookRuntimeResult::Failed) {
+            return InputDispatchResult::Failed;
+        }
+
+        return InputDispatchResult::Unhandled;
     }
 
     if (app_state_.screen == Screen::ContentsBookmarks) {
@@ -206,6 +234,7 @@ InputDispatchResult InputDispatcher::handle(
                     reader_overlay_,
                     search_,
                     contents_bookmarks_,
+                    about_book_,
                     sleep_wake_,
                     *action
                 );
@@ -230,6 +259,7 @@ InputDispatchResult InputDispatcher::handle(
                     reader_overlay_,
                     search_,
                     contents_bookmarks_,
+                    about_book_,
                     sleep_wake_,
                     *action
                 );
@@ -254,6 +284,7 @@ InputDispatchResult InputDispatcher::handle(
                     reader_overlay_,
                     search_,
                     contents_bookmarks_,
+                    about_book_,
                     sleep_wake_,
                     *action
                 );
@@ -327,6 +358,7 @@ InputDispatchResult InputDispatcher::handle(
                     reader_overlay_,
                     search_,
                     contents_bookmarks_,
+                    about_book_,
                     sleep_wake_,
                     *action
                 );
@@ -364,6 +396,7 @@ InputDispatchResult InputDispatcher::handle(
                 reader_overlay_,
                 search_,
                 contents_bookmarks_,
+                about_book_,
                 sleep_wake_,
                 *action
             );

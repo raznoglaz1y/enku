@@ -40,6 +40,50 @@ OwnedMonoFramebuffer::mutableData() {
     return bytes_.data();
 }
 
+void OwnedMonoFramebuffer::setBlack(
+    int x,
+    int y
+) {
+    if (x < 0 || y < 0 ||
+        x >= width_ || y >= height_) {
+        return;
+    }
+
+    const std::size_t row_bytes =
+        (static_cast<std::size_t>(width_) + 7U) / 8U;
+
+    const std::size_t index =
+        static_cast<std::size_t>(y) * row_bytes +
+        static_cast<std::size_t>(x / 8);
+
+    bytes_[index] &=
+        static_cast<std::uint8_t>(
+            ~(0x80U >> (x & 7))
+        );
+}
+
+void OwnedMonoFramebuffer::setWhite(
+    int x,
+    int y
+) {
+    if (x < 0 || y < 0 ||
+        x >= width_ || y >= height_) {
+        return;
+    }
+
+    const std::size_t row_bytes =
+        (static_cast<std::size_t>(width_) + 7U) / 8U;
+
+    const std::size_t index =
+        static_cast<std::size_t>(y) * row_bytes +
+        static_cast<std::size_t>(x / 8);
+
+    bytes_[index] |=
+        static_cast<std::uint8_t>(
+            0x80U >> (x & 7)
+        );
+}
+
 void OwnedMonoFramebuffer::clearWhite() {
     std::fill(
         bytes_.begin(),

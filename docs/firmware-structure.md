@@ -144,7 +144,10 @@ Owns:
 - ReaderSession invocation for page navigation;
 - synchronization of visible Reader state into AppState;
 - progress-dirty hand-off to persistence;
-- generation of refresh requests after successful visible changes.
+- generation of refresh requests after successful visible changes;
+- Book Opening → Reading / failure transitions;
+- Back-to-Library progress checkpoint coordination;
+- Finished-state Library summary updates.
 
 The runtime layer does not manipulate semantic offsets directly.
 
@@ -221,6 +224,7 @@ Defines cross-cutting service contracts used by application/runtime code.
 Examples:
 
 - storage service;
+- reader checkpoint service;
 - display/refresh service;
 - network service;
 - power service;

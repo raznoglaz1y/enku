@@ -5,6 +5,7 @@ idf_component_register(
         "../src/esp_idf_sd_card.cpp"
         "../src/esp_idf_epaper.cpp"
         "../src/esp_idf_buttons.cpp"
+        "../src/esp_idf_power_service.cpp"
         "../../../src/runtime/input_runtime.cpp"
     INCLUDE_DIRS
         "../include"
@@ -12,6 +13,7 @@ idf_component_register(
     REQUIRES
         driver
         esp_timer
+        esp_hw_support
         fatfs
         sdmmc
 )

@@ -87,6 +87,10 @@ private:
     );
     void normalizeFocus();
     std::optional<std::size_t> focusedIndex() const;
+    LibraryRuntimeResult moveToOffset(
+        std::uint32_t offset,
+        bool focus_last
+    );
 };
 
 } // namespace enku

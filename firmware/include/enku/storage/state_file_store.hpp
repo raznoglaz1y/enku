@@ -26,6 +26,10 @@ public:
         const std::string& path,
         const std::vector<std::uint8_t>& bytes
     ) = 0;
+
+    virtual StateFileStatus remove(
+        const std::string& path
+    ) = 0;
 };
 
 } // namespace enku

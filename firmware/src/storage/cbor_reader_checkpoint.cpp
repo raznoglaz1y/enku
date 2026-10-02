@@ -591,4 +591,33 @@ PersistStatus CborReaderCheckpointService::checkpoint(
     );
 }
 
+PersistStatus CborReaderCheckpointService::erase(
+    const BookId& book_id
+) {
+    const auto remove_slot =
+        [&](char slot) -> PersistStatus {
+            const auto status =
+                files_.remove(slotPath(book_id, slot));
+
+            if (status == StateFileStatus::Ok ||
+                status == StateFileStatus::NotFound) {
+                return PersistStatus::Ok;
+            }
+
+            return mapFileStatus(status);
+        };
+
+    const auto a_status = remove_slot('a');
+    if (a_status != PersistStatus::Ok) {
+        return a_status;
+    }
+
+    const auto b_status = remove_slot('b');
+    if (b_status != PersistStatus::Ok) {
+        return b_status;
+    }
+
+    return PersistStatus::Ok;
+}
+
 } // namespace enku

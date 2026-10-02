@@ -22,6 +22,8 @@ bool BootRestoreCoordinator::persistLibraryContext() {
         AppRestoreContext{
             Screen::Library,
             std::nullopt,
+            app_state_.library.offset,
+            app_state_.library.focused_book,
         }
     ) == PersistStatus::Ok;
 }
@@ -116,6 +118,11 @@ BootRestoreResult BootRestoreCoordinator::restoreLoadedContext(
             storage,
         };
     }
+
+    app_state_.library.offset =
+        restore.library_offset;
+    app_state_.library.focused_book =
+        restore.library_focused_book;
 
     if (restore.screen != Screen::Reading ||
         !restore.current_book.has_value()) {

@@ -1311,6 +1311,133 @@ int main() {
         WiFiPolicy::Off
     );
 
+    // Scan -> secure network -> shared keyboard -> successful transient
+    // connection -> only then persist trusted credentials.
+    assert(
+        wifi_settings.handle(
+            LogicalAction::NavigateNext
+        ) == WiFiSettingsRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().wifi_settings.focus ==
+        WiFiSettingsFocus::ScanNetworks
+    );
+
+    assert(
+        wifi_settings.handle(
+            LogicalAction::Confirm
+        ) == WiFiSettingsRuntimeResult::Applied
+    );
+    assert(storage.appState().wifi_settings.selecting_network);
+    assert(wifi_network.scan_calls == 1);
+    assert(
+        storage.appState().wifi_settings.scan_results.size() ==
+        3U
+    );
+
+    assert(
+        wifi_settings.handle(
+            LogicalAction::NavigateNext
+        ) == WiFiSettingsRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().wifi_settings.network_focus ==
+        1U
+    );
+
+    assert(
+        wifi_settings.handle(
+            LogicalAction::Confirm
+        ) == WiFiSettingsRuntimeResult::Applied
+    );
+    assert(storage.appState().keyboard.open);
+    assert(
+        storage.appState().wifi_settings.pending_ssid ==
+        "SecureNet"
+    );
+    assert(wifi_network.set_trusted_calls == 0);
+
+    // From the first character key, Previous wraps directly to DONE.
+    assert(
+        wifi_settings.handle(
+            LogicalAction::NavigatePrevious
+        ) == WiFiSettingsRuntimeResult::Applied
+    );
+    assert(
+        wifi_settings.handle(
+            LogicalAction::Confirm
+        ) == WiFiSettingsRuntimeResult::Applied
+    );
+    assert(!storage.appState().keyboard.open);
+    assert(wifi_network.connect_calls == 1);
+    assert(wifi_network.set_trusted_calls == 1);
+    assert(
+        wifi_network.trustedSsid().value_or("") ==
+        "SecureNet"
+    );
+    assert(
+        storage.appState().network.ssid ==
+        "SecureNet"
+    );
+
+    // A later failed connection must never replace durable credentials.
+    assert(
+        wifi_settings.handle(
+            LogicalAction::Confirm
+        ) == WiFiSettingsRuntimeResult::Applied
+    );
+    assert(storage.appState().wifi_settings.selecting_network);
+
+    assert(
+        wifi_settings.handle(
+            LogicalAction::NavigateNext
+        ) == WiFiSettingsRuntimeResult::Applied
+    );
+    assert(
+        wifi_settings.handle(
+            LogicalAction::NavigateNext
+        ) == WiFiSettingsRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().wifi_settings.network_focus ==
+        2U
+    );
+
+    assert(
+        wifi_settings.handle(
+            LogicalAction::Confirm
+        ) == WiFiSettingsRuntimeResult::Applied
+    );
+    assert(storage.appState().keyboard.open);
+
+    assert(
+        wifi_settings.handle(
+            LogicalAction::NavigatePrevious
+        ) == WiFiSettingsRuntimeResult::Applied
+    );
+    assert(
+        wifi_settings.handle(
+            LogicalAction::Confirm
+        ) == WiFiSettingsRuntimeResult::Applied
+    );
+    assert(wifi_network.connect_calls == 2);
+    assert(wifi_network.set_trusted_calls == 1);
+    assert(
+        wifi_network.trustedSsid().value_or("") ==
+        "SecureNet"
+    );
+    assert(
+        storage.appState().wifi_settings.status_message ==
+        "CONNECTION FAILED"
+    );
+
+    assert(
+        wifi_settings.handle(
+            LogicalAction::Back
+        ) == WiFiSettingsRuntimeResult::Applied
+    );
+    assert(!storage.appState().wifi_settings.selecting_network);
+
     assert(
         wifi_settings.handle(
             LogicalAction::NavigateNext

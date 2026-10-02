@@ -204,3 +204,48 @@ The current smoke firmware deliberately exercises all three modes in one boot so
 - fast-refresh latency and ghosting;
 - partial-window coordinates;
 - repeated partial update artifacts.
+
+
+## Corrected full-board SD / I2C mapping
+
+The complete official Waveshare firmware for this board uses a different SDMMC pin map from the early/basic e-paper example.
+
+For ENKU board integration we now follow the full board reference:
+
+### SDMMC
+
+| Signal | GPIO |
+| --- | ---: |
+| CLK | 16 |
+| CMD | 17 |
+| D0 | 15 |
+| D1 | 7 |
+| D2 | 8 |
+| D3 | 18 |
+
+### Shared board I2C
+
+| Signal | GPIO |
+| --- | ---: |
+| SDA | 41 |
+| SCL | 42 |
+
+The AXP2101 PMU address is `0x34`.
+
+This resolves the apparent GPIO41/42 conflict: it came from mixing the minimal e-paper example's SD map with the complete board firmware's I2C map.
+
+## AXP2101 power baseline
+
+The first ENKU ESP-IDF power service now talks directly to AXP2101 through the native ESP-IDF I2C master driver.
+
+Current capabilities:
+
+- battery percentage;
+- battery voltage;
+- charging state;
+- external/VBUS power presence;
+- vendor-aligned PWR on/off timing setup;
+- software PMU shutdown;
+- light-sleep request with GPIO wake on navigation controls.
+
+The firmware smoke test reads and logs power telemetry but deliberately does **not** call software shutdown automatically.

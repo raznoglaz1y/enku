@@ -24,6 +24,7 @@ add_library(enku_core STATIC
     src/runtime/contents_bookmarks_runtime.cpp
     src/runtime/about_book_runtime.cpp
     src/runtime/settings_runtime.cpp
+    src/runtime/settings_navigation_runtime.cpp
     src/runtime/input_runtime.cpp
     src/runtime/input_dispatcher.cpp
     src/runtime/keyboard_runtime.cpp

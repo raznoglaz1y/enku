@@ -9,19 +9,22 @@ BookDeleteService::BookDeleteService(
     LibraryService& library,
     BookFileStore& book_files,
     CborReaderCheckpointService& checkpoint,
-    AppContextService& context
+    AppContextService& context,
+    CborBookmarkService* bookmarks
 )
     : library_(library),
       book_files_(book_files),
       checkpoint_(checkpoint),
-      context_(context) {}
+      context_(context),
+      bookmarks_(bookmarks) {}
 
 bool BookDeleteService::rollback(
     const BookRecord& record,
     const std::string& source_bytes,
     bool source_existed,
     const std::optional<ReaderCheckpoint>& checkpoint_backup,
-    const std::optional<AppRestoreContext>& context_backup
+    const std::optional<AppRestoreContext>& context_backup,
+    const std::optional<std::vector<BookmarkRecord>>& bookmarks_backup
 ) {
     bool ok = true;
 
@@ -46,6 +49,16 @@ bool BookDeleteService::rollback(
                 saved.progress,
                 saved.reading_state
             ) != PersistStatus::Ok) {
+            ok = false;
+        }
+    }
+
+    if (bookmarks_ != nullptr &&
+        bookmarks_backup.has_value()) {
+        if (bookmarks_->replace(
+                record.book_id,
+                *bookmarks_backup
+            ) != BookmarkStatus::Ok) {
             ok = false;
         }
     }
@@ -89,6 +102,26 @@ BookDeleteStatus BookDeleteService::remove(
 
     if (checkpoint_status == PersistStatus::Ok) {
         checkpoint_backup = checkpoint_value;
+    }
+
+    std::optional<std::vector<BookmarkRecord>>
+        bookmarks_backup;
+
+    if (bookmarks_ != nullptr) {
+        std::vector<BookmarkRecord> stored_bookmarks;
+        const auto bookmark_status =
+            bookmarks_->load(
+                book_id,
+                stored_bookmarks
+            );
+
+        if (bookmark_status == BookmarkStatus::Ok) {
+            bookmarks_backup =
+                std::move(stored_bookmarks);
+        } else if (
+            bookmark_status != BookmarkStatus::NotFound) {
+            return BookDeleteStatus::SourceReadFailed;
+        }
     }
 
     std::optional<AppRestoreContext> context_backup;
@@ -149,11 +182,29 @@ BookDeleteStatus BookDeleteService::remove(
                 checkpoint_backup,
                 context_points_to_book
                     ? context_backup
-                    : std::nullopt
+                    : std::nullopt,
+                bookmarks_backup
             )
                 ? BookDeleteStatus::SourceRemoveFailed
                 : BookDeleteStatus::RollbackFailed;
         }
+    }
+
+    if (bookmarks_ != nullptr &&
+        bookmarks_->eraseBook(book_id) !=
+            BookmarkStatus::Ok) {
+        return rollback(
+            *record,
+            source_bytes,
+            source_existed,
+            checkpoint_backup,
+            context_points_to_book
+                ? context_backup
+                : std::nullopt,
+            bookmarks_backup
+        )
+            ? BookDeleteStatus::CheckpointRemoveFailed
+            : BookDeleteStatus::RollbackFailed;
     }
 
     if (checkpoint_.erase(book_id) != PersistStatus::Ok) {

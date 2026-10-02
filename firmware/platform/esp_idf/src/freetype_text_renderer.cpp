@@ -1408,6 +1408,9 @@ bool FreeTypeTextRenderer::renderSettingsScreen(
         case ReadingPreset::Dense:
             preset = "DENSE";
             break;
+        case ReadingPreset::Custom:
+            preset = "CUSTOM";
+            break;
     }
 
     const char* orient =
@@ -1637,10 +1640,10 @@ bool FreeTypeTextRenderer::renderAboutBook(
         return false;
     }
 
-    if (book.metadata.series.has_value() &&
-        !book.metadata.series->empty()) {
+    if (book.metadata.series_name.has_value() &&
+        !book.metadata.series_name->empty()) {
         std::string series =
-            "SERIES: " + *book.metadata.series;
+            "SERIES: " + *book.metadata.series_name;
 
         if (book.metadata.series_index.has_value()) {
             series += " #" +

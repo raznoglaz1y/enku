@@ -49,6 +49,7 @@ include/enku/
     cbor_boot_loop_service.hpp
     book_import_service.hpp
     staged_book_import_service.hpp
+    book_delete_service.hpp
     book_file_store.hpp
     posix_book_file_store.hpp
     stored_book_source_service.hpp
@@ -100,7 +101,7 @@ The host suite currently covers:
 - ReaderSession navigation;
 - Book Loader;
 - Reader runtime open/page/back/restore lifecycle;
-- Library runtime filtering, sorting, search, focus navigation, focused-book open and staged-import flow;
+- Library runtime filtering, sorting, search, focus navigation, focused-book open, staged-import flow and transactional delete;
 - CBOR A/B checkpoint generation and corruption recovery;
 - persistent CBOR Library index, queries, sorting, paging and summary updates;
 - TXT import pipeline with format detection, parse validation, content fingerprinting and duplicate rejection;
@@ -111,6 +112,7 @@ The host suite currently covers:
 - graceful Power Off persistence before the platform PMU shutdown request;
 - persistent boot-loop protection that enters Recovery before a third consecutive incomplete cold boot can auto-restore again;
 - rollback of the final book file when Library commit fails;
+- transactional book deletion with Library/source/checkpoint/context cleanup and rollback;
 - POSIX filesystem persistence for book files and checkpoints.
 
 GitHub Actions runs the same host suite on pushes to `main` and on pull requests.

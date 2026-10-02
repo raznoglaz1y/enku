@@ -10,6 +10,7 @@
 #include "../core/diagnostics.hpp"
 #include "../core/refresh.hpp"
 #include "../core/library.hpp"
+#include "../core/settings.hpp"
 
 namespace enku {
 
@@ -51,6 +52,19 @@ public:
         ReadingState reading_state,
         float progress,
         std::uint64_t last_opened_order
+    ) = 0;
+};
+
+class SettingsService {
+public:
+    virtual ~SettingsService() = default;
+
+    virtual PersistStatus load(
+        GlobalSettings& settings
+    ) = 0;
+
+    virtual PersistStatus save(
+        const GlobalSettings& settings
     ) = 0;
 };
 

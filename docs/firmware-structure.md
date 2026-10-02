@@ -38,6 +38,7 @@ firmware/
       storage_startup.hpp
       boot_restore.hpp
       sleep_wake.hpp
+      power_off.hpp
     services/
       services.hpp
     storage/
@@ -59,6 +60,7 @@ firmware/
       storage_startup.cpp
       boot_restore.cpp
       sleep_wake.cpp
+      power_off.cpp
     reader/
       text_paginator.cpp
       document_reader_engine.cpp
@@ -177,7 +179,8 @@ Owns:
 - Finished-state Library summary updates;
 - startup coordination across Library persistence and staged import recovery;
 - safe restoration of the last persisted Library/Reading context after reboot;
-- Sleep/Wake orchestration across reader persistence, network shutdown and PowerService.
+- Sleep/Wake orchestration across reader persistence, network shutdown and PowerService;
+- graceful Power Off persistence before platform shutdown.
 
 The runtime layer does not manipulate semantic offsets directly.
 

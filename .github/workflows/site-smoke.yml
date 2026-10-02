@@ -18,8 +18,8 @@ jobs:
         run: |
           set -euo pipefail
 
-          for attempt in $(seq 1 12); do
-            echo "Deployment check $attempt/12"
+          for attempt in $(seq 1 24); do
+            echo "Deployment check $attempt/24"
 
             contact_ok=0
             software_ok=0
@@ -51,19 +51,41 @@ jobs:
               build_ok=1
             fi
 
-            if curl -fsSL https://enkureader.com/ -o /tmp/home.html &&
-               grep -Eq 'href="/software"[^>]*>Software</a>' /tmp/home.html &&
-               grep -Eq 'href="/hardware"[^>]*>Hardware</a>' /tmp/home.html &&
-               grep -Eq 'href="/design"[^>]*>Design</a>' /tmp/home.html &&
-               grep -Eq 'href="/build"[^>]*>Build</a>' /tmp/home.html &&
-               grep -q 'class="project-menu"' /tmp/home.html &&
-               grep -q 'class="enku-home"' /tmp/home.html &&
-               grep -q 'One reader. Four connected layers.' /tmp/home.html &&
-               grep -q 'class="enku-footer-grid"' /tmp/home.html &&
-               ! grep -q 'href="/#hardware"' /tmp/home.html &&
-               ! grep -q 'href="/#software"' /tmp/home.html &&
-               ! grep -q 'href="/#design"' /tmp/home.html &&
-               ! grep -q 'href="/#build"' /tmp/home.html; then
+            home_nav=0
+            home_hub=0
+            home_footer=0
+            home_legacy=0
+
+            if curl -fsSL https://enkureader.com/ -o /tmp/home.html; then
+              if grep -Eq 'href="/software"[^>]*>Software</a>' /tmp/home.html &&
+                 grep -Eq 'href="/hardware"[^>]*>Hardware</a>' /tmp/home.html &&
+                 grep -Eq 'href="/design"[^>]*>Design</a>' /tmp/home.html &&
+                 grep -Eq 'href="/build"[^>]*>Build</a>' /tmp/home.html &&
+                 grep -q 'class="project-menu"' /tmp/home.html; then
+                home_nav=1
+              fi
+
+              if grep -q 'class="enku-home"' /tmp/home.html &&
+                 grep -q 'One reader. Four connected layers.' /tmp/home.html; then
+                home_hub=1
+              fi
+
+              if grep -q 'class="enku-footer-grid"' /tmp/home.html; then
+                home_footer=1
+              fi
+
+              if ! grep -q 'href="/#hardware"' /tmp/home.html &&
+                 ! grep -q 'href="/#software"' /tmp/home.html &&
+                 ! grep -q 'href="/#design"' /tmp/home.html &&
+                 ! grep -q 'href="/#build"' /tmp/home.html; then
+                home_legacy=1
+              fi
+            fi
+
+            if [ "$home_nav" = 1 ] &&
+               [ "$home_hub" = 1 ] &&
+               [ "$home_footer" = 1 ] &&
+               [ "$home_legacy" = 1 ]; then
               home_ok=1
             fi
 
@@ -76,11 +98,11 @@ jobs:
               exit 0
             fi
 
-            echo "contact=$contact_ok software=$software_ok design=$design_ok build=$build_ok home=$home_ok"
+            echo "contact=$contact_ok software=$software_ok design=$design_ok build=$build_ok home=$home_ok nav=$home_nav hub=$home_hub footer=$home_footer legacy=$home_legacy"
             sleep 10
           done
 
-          echo "Timed out waiting for expected Cloudflare deployment."
+          echo "Timed out waiting for expected Cloudflare deployment after ~4 minutes."
           exit 1
 
       - name: Check public pages

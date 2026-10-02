@@ -8,6 +8,7 @@ ReaderRuntimeController::ReaderRuntimeController(
     RefreshService& refresh,
     LibraryService& library,
     ReaderCheckpointService& checkpoint,
+    AppContextService& context,
     TypographySettings typography,
     Viewport viewport
 )
@@ -16,6 +17,7 @@ ReaderRuntimeController::ReaderRuntimeController(
       refresh_(refresh),
       library_(library),
       checkpoint_(checkpoint),
+      context_(context),
       typography_(typography),
       viewport_(viewport) {}
 
@@ -117,6 +119,16 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
     }
 
     app_state_.progress_dirty = false;
+
+    if (context_.save(
+            AppRestoreContext{
+                Screen::Reading,
+                event.book_id,
+            }
+        ) != PersistStatus::Ok) {
+        return ReaderRuntimeResult::ContextSaveFailed;
+    }
+
     return ReaderRuntimeResult::Applied;
 }
 
@@ -211,6 +223,15 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
             app_state_.reading_progress
         ) != LibraryStatus::Ok) {
         return ReaderRuntimeResult::LibraryUpdateFailed;
+    }
+
+    if (context_.save(
+            AppRestoreContext{
+                Screen::Library,
+                std::nullopt,
+            }
+        ) != PersistStatus::Ok) {
+        return ReaderRuntimeResult::ContextSaveFailed;
     }
 
     loader_.close();

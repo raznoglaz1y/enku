@@ -396,15 +396,59 @@ int main() {
         storage.appState().search.matches[0].position.book_id ==
         *storage.appState().current_book
     );
+
+    const auto selected_match =
+        storage.appState().search.matches[0].position;
+
+    assert(
+        search.handle(LogicalAction::Confirm) ==
+        SearchRuntimeResult::Applied
+    );
+    assert(storage.appState().screen == Screen::Reading);
+    assert(storage.appState().search_highlight.position.has_value());
+    assert(
+        storage.appState().search_highlight.position->text_offset ==
+        selected_match.text_offset
+    );
+    assert(
+        storage.appState().search_highlight.query == "beta"
+    );
+    assert(storage.appState().reading_position.has_value());
+    assert(
+        storage.appState().reading_position->text_offset <=
+        selected_match.text_offset
+    );
+
+    assert(
+        overlay.handle(
+            LogicalAction::OpenReaderMenu
+        ) == ReaderOverlayRuntimeResult::Applied
+    );
+    assert(
+        overlay.handle(
+            LogicalAction::NavigateNext
+        ) == ReaderOverlayRuntimeResult::Applied
+    );
+    assert(
+        overlay.handle(
+            LogicalAction::NavigateNext
+        ) == ReaderOverlayRuntimeResult::Applied
+    );
+    assert(
+        overlay.handle(
+            LogicalAction::Confirm
+        ) == ReaderOverlayRuntimeResult::SearchRequested
+    );
+    assert(
+        search.openFromReader() ==
+        SearchRuntimeResult::Applied
+    );
     assert(
         search.handle(LogicalAction::Back) ==
         SearchRuntimeResult::Applied
     );
     assert(storage.appState().screen == Screen::Reading);
-    assert(
-        storage.appState().reading_position->text_offset ==
-        search_origin->text_offset
-    );
+    assert(!storage.appState().search_highlight.position.has_value());
 
     assert(
         overlay.handle(

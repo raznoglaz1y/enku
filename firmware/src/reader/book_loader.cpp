@@ -65,7 +65,21 @@ BookLoadResult ReaderBookLoader::open(
             break;
         }
 
-        case BookFormat::Epub:
+        case BookFormat::Epub: {
+            ParserSourceInfo source_info{
+                record->book_id,
+                record->source_path,
+                record->source_filename,
+            };
+
+            parsed =
+                epub_parser_.parse(
+                    bytes,
+                    source_info
+                );
+            break;
+        }
+
         case BookFormat::Fb2:
         default:
             return {

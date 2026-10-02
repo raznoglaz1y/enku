@@ -14,6 +14,7 @@ namespace enku {
 enum class ReaderOverlayRuntimeResult : std::uint8_t {
     Ignored,
     Applied,
+    SearchRequested,
     SleepRequested,
     Failed,
 };

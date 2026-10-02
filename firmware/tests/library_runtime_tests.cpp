@@ -689,6 +689,42 @@ int main() {
         ) == BookFileStatus::NotFound
     );
 
+    // Deleting down to an empty Library must leave a stable
+    // empty state with offset 0 and no focused book.
+    while (runtime.page().total_matches > 0U) {
+        assert(app.library.focused_book.has_value());
+
+        const auto result =
+            runtime.handle(
+                DeleteFocusedBookRequested{}
+            );
+
+        if (runtime.page().total_matches == 0U) {
+            assert(result == LibraryRuntimeResult::Empty);
+            break;
+        }
+
+        assert(result == LibraryRuntimeResult::Applied);
+    }
+
+    assert(runtime.page().total_matches == 0);
+    assert(runtime.page().items.empty());
+    assert(app.library.offset == 0);
+    assert(!app.library.focused_book.has_value());
+
+    assert(
+        runtime.handle(LibraryFocusNextRequested{}) ==
+        LibraryRuntimeResult::Empty
+    );
+    assert(
+        runtime.handle(LibraryFocusPreviousRequested{}) ==
+        LibraryRuntimeResult::Empty
+    );
+    assert(
+        runtime.handle(OpenFocusedBookRequested{}) ==
+        LibraryRuntimeResult::Ignored
+    );
+
     std::filesystem::remove_all(root, ec);
     return 0;
 }

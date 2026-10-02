@@ -141,13 +141,13 @@ The current reference platform is:
 | Main board | Waveshare ESP32-S3-ePaper-3.97 |
 | MCU | ESP32-S3 |
 | Display | 3.97″ e-paper, 800 × 480 |
-| Input | Physical controls, non-touch UI |
+| Input | Up / Function / Down control + BOOT; PWR handled separately |
 | Storage | microSD / local storage workflow |
 | Connectivity | Wi-Fi, BLE available at platform level |
 | Power | Li-Po battery; final pack and runtime profile to be validated on hardware |
 | Enclosure | Custom 3D-printable case, developed after mechanical verification |
 
-Hardware-dependent details such as battery choice, wake behavior, button mapping, refresh modes and enclosure geometry remain provisional until verified on the real board.
+The current official Waveshare source maps the active-low navigation inputs to GPIO4 (Up), GPIO5 (Function), GPIO6 (Down) and GPIO0 (BOOT). ENKU keeps raw GPIO details inside the platform layer and maps them to stable logical actions. PWR is treated separately through the PMU. Physical behavior will still be verified on the received board.
 
 ### Parts status
 
@@ -429,6 +429,7 @@ Useful documents:
 - [Project status](docs/status.md)
 - [Architecture](docs/architecture.md)
 - [Firmware project structure](docs/firmware-structure.md)
+- [Input & physical controls](docs/input-model.md)
 - [Reader runtime & state machine](docs/runtime-state-machine.md)
 - [Pagination & rendering model](docs/pagination-model.md)
 - [Metadata & parser model](docs/parser-model.md)
@@ -453,11 +454,12 @@ design/
 
 firmware/
   README.md                firmware scaffold status and entry point
-  include/enku/            framework-neutral core/reader/service interfaces
+  include/enku/            framework-neutral core/input/reader/service interfaces
 
 docs/
   architecture.md          system architecture
   firmware-structure.md    source layout and module boundaries
+  input-model.md            physical controls and logical input mapping
   runtime-state-machine.md  reader runtime and recovery behavior
   pagination-model.md       text layout and pagination rules
   parser-model.md           metadata normalization and parser abstraction

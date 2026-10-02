@@ -5,6 +5,7 @@
 #include <string>
 
 #include "../core/types.hpp"
+#include "../core/power.hpp"
 
 namespace enku {
 
@@ -36,9 +37,13 @@ class PowerService {
 public:
     virtual ~PowerService() = default;
 
-    virtual std::uint8_t batteryPercent() const = 0;
-    virtual bool charging() const = 0;
-    virtual void requestSleep() = 0;
+    virtual BatteryState batteryState() const = 0;
+    virtual bool canSuspend() const = 0;
+    virtual DevicePowerState powerState() const = 0;
+    virtual WakeReason wakeReason() const = 0;
+
+    virtual bool requestSuspend() = 0;
+    virtual void requestPowerOff() = 0;
 };
 
 class ClockService {

@@ -6,6 +6,7 @@
 #include "../render/search_renderer.hpp"
 #include "../services/services.hpp"
 #include "application_reader_runtime.hpp"
+#include "keyboard_runtime.hpp"
 #include "application_storage_runtime.hpp"
 
 namespace enku {
@@ -33,8 +34,11 @@ private:
     ApplicationReaderRuntime& reader_;
     SearchRenderer* renderer_{nullptr};
     RefreshService* refresh_{nullptr};
+    KeyboardRuntime keyboard_;
 
     SearchRuntimeResult cancel();
+    SearchRuntimeResult executeSearch();
+    SearchRuntimeResult handleKeyboard(LogicalAction action);
     SearchRuntimeResult render();
     SearchRuntimeResult refreshCurrentFrame();
 };

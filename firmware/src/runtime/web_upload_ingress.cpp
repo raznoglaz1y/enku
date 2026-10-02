@@ -11,13 +11,11 @@ constexpr const char* kWebUploadStagePath =
 } // namespace
 
 WebUploadIngress::WebUploadIngress(
-    AppState& app_state,
     BookFileStore& files,
     StagedBookImportService& staged_import,
     std::size_t max_payload_bytes
 )
-    : app_state_(app_state),
-      files_(files),
+    : files_(files),
       staged_import_(staged_import),
       max_payload_bytes_(max_payload_bytes) {}
 
@@ -50,11 +48,10 @@ void WebUploadIngress::resetSession(
         files_.remove(kWebUploadStagePath);
     }
 
-    session_active_ = false;
+    session_active_.store(false);
     source_filename_.clear();
     expected_bytes_ = 0;
     received_bytes_ = 0;
-    app_state_.import_active = false;
 }
 
 WebUploadResult WebUploadIngress::begin(
@@ -63,8 +60,7 @@ WebUploadResult WebUploadIngress::begin(
 ) {
     WebUploadResult result;
 
-    if (app_state_.import_active ||
-        session_active_) {
+    if (session_active_.load()) {
         result.status = WebUploadStatus::Busy;
         return result;
     }
@@ -100,8 +96,7 @@ WebUploadResult WebUploadIngress::begin(
         std::string(source_filename);
     expected_bytes_ = content_length;
     received_bytes_ = 0;
-    session_active_ = true;
-    app_state_.import_active = true;
+    session_active_.store(true);
 
     result.status = WebUploadStatus::Ok;
     return result;
@@ -112,7 +107,7 @@ WebUploadResult WebUploadIngress::appendChunk(
 ) {
     WebUploadResult result;
 
-    if (!session_active_) {
+    if (!session_active_.load()) {
         result.status =
             WebUploadStatus::NoActiveUpload;
         return result;
@@ -151,7 +146,7 @@ WebUploadResult WebUploadIngress::finish(
 ) {
     WebUploadResult result;
 
-    if (!session_active_) {
+    if (!session_active_.load()) {
         result.status =
             WebUploadStatus::NoActiveUpload;
         return result;
@@ -190,11 +185,15 @@ WebUploadResult WebUploadIngress::finish(
 }
 
 void WebUploadIngress::cancel() {
-    if (!session_active_) {
+    if (!session_active_.load()) {
         return;
     }
 
     resetSession(true);
+}
+
+bool WebUploadIngress::active() const {
+    return session_active_.load();
 }
 
 WebUploadResult WebUploadIngress::upload(

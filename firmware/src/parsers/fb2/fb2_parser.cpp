@@ -709,9 +709,62 @@ ParseResult Fb2Parser::parse(
                 end - gt - 1U
             );
 
+        std::string section_content(
+            section_xml
+        );
+
+        std::optional<std::string> section_title;
+        const auto lower_section =
+            lower(section_xml);
+        const auto title_begin =
+            lower_section.find("<title");
+
+        if (title_begin != std::string::npos) {
+            const auto title_open_end =
+                lower_section.find(
+                    '>',
+                    title_begin
+                );
+            const auto title_end =
+                title_open_end ==
+                        std::string::npos
+                    ? std::string::npos
+                    : lower_section.find(
+                          "</title>",
+                          title_open_end + 1U
+                      );
+
+            if (title_open_end !=
+                    std::string::npos &&
+                title_end !=
+                    std::string::npos) {
+                const auto title_text =
+                    stripTags(
+                        section_xml.substr(
+                            title_open_end + 1U,
+                            title_end -
+                                title_open_end - 1U
+                        )
+                    );
+
+                if (!title_text.empty()) {
+                    section_title =
+                        title_text;
+                }
+
+                section_content.erase(
+                    title_begin,
+                    title_end +
+                        std::string("</title>").
+                            size() -
+                        title_begin
+                );
+            }
+        }
+
         const auto parsed =
             parseSectionBlocks(
-                section_xml
+                section_content
             );
 
         if (!parsed.empty()) {
@@ -721,21 +774,8 @@ ParseResult Fb2Parser::parse(
                 std::to_string(
                     ++section_number
                 );
-
-            if (const auto title =
-                    tagSlice(
-                        section_xml,
-                        "title"
-                    );
-                title.has_value()) {
-                const auto title_text =
-                    stripTags(*title);
-
-                if (!title_text.empty()) {
-                    section.title =
-                        title_text;
-                }
-            }
+            section.title =
+                section_title;
 
             std::uint64_t section_offset = 0;
 

@@ -20,6 +20,7 @@ ReaderRuntimeController::ReaderRuntimeController(
       checkpoint_(checkpoint),
       context_(context),
       typography_(typography),
+      native_viewport_(viewport),
       viewport_(viewport),
       page_renderer_(page_renderer) {}
 
@@ -45,10 +46,7 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
     typography_.margin_px =
         app_state_.typography.margin_px;
 
-    viewport_ =
-        app_state_.orientation == Orientation::Portrait
-            ? Viewport{480, 800}
-            : Viewport{800, 480};
+    viewport_ = orientedViewport();
 
     app_state_.screen = Screen::BookOpening;
     app_state_.current_book = event.book_id;
@@ -370,6 +368,22 @@ ReaderRuntimeResult ReaderRuntimeController::submitRefresh(
     }
 
     return ReaderRuntimeResult::Applied;
+}
+
+Viewport ReaderRuntimeController::orientedViewport() const {
+    const auto short_side =
+        native_viewport_.width < native_viewport_.height
+            ? native_viewport_.width
+            : native_viewport_.height;
+
+    const auto long_side =
+        native_viewport_.width > native_viewport_.height
+            ? native_viewport_.width
+            : native_viewport_.height;
+
+    return app_state_.orientation == Orientation::Portrait
+        ? Viewport{short_side, long_side}
+        : Viewport{long_side, short_side};
 }
 
 LibraryStatus ReaderRuntimeController::updateLibrarySummary(

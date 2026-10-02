@@ -2,6 +2,7 @@
 #include "enku/runtime/reader_overlay_runtime.hpp"
 #include "enku/runtime/search_runtime.hpp"
 #include "enku/runtime/contents_bookmarks_runtime.hpp"
+#include "enku/runtime/about_book_runtime.hpp"
 #include "enku/storage/posix_book_file_store.hpp"
 #include "enku/storage/posix_state_file_store.hpp"
 
@@ -217,6 +218,12 @@ int main() {
         storage.appState(),
         runtime,
         storage.bookmarks()
+    );
+
+    AboutBookRuntime about_book(
+        storage.appState(),
+        storage.library(),
+        runtime
     );
 
     const auto overlay_position =
@@ -485,6 +492,55 @@ int main() {
     assert(
         storage.appState().reading_position->text_offset <=
         bookmark_position->text_offset
+    );
+
+    // About Book is read-only and returns to the exact same reading
+    // position.
+    const auto about_position =
+        storage.appState().reading_position;
+    assert(about_position.has_value());
+
+    assert(
+        overlay.handle(
+            LogicalAction::OpenReaderMenu
+        ) == ReaderOverlayRuntimeResult::Applied
+    );
+    for (int i = 0; i < 5; ++i) {
+        assert(
+            overlay.handle(
+                LogicalAction::NavigateNext
+            ) == ReaderOverlayRuntimeResult::Applied
+        );
+    }
+    assert(
+        storage.appState().reader_overlay.focus_index == 5
+    );
+    assert(
+        overlay.handle(
+            LogicalAction::Confirm
+        ) == ReaderOverlayRuntimeResult::AboutBookRequested
+    );
+    assert(storage.appState().screen == Screen::Reading);
+
+    assert(
+        about_book.openFromReader() ==
+        AboutBookRuntimeResult::Applied
+    );
+    assert(storage.appState().screen == Screen::AboutBook);
+    assert(
+        storage.appState().reading_position->text_offset ==
+        about_position->text_offset
+    );
+
+    assert(
+        about_book.handle(
+            LogicalAction::Back
+        ) == AboutBookRuntimeResult::Applied
+    );
+    assert(storage.appState().screen == Screen::Reading);
+    assert(
+        storage.appState().reading_position->text_offset ==
+        about_position->text_offset
     );
 
     const auto orientation_position =

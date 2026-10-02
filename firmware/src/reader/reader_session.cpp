@@ -1,5 +1,7 @@
 #include "enku/reader/reader_session.hpp"
 
+#include <utility>
+
 namespace enku {
 
 ReaderSession::ReaderSession(ReaderEngine& engine)

@@ -31,6 +31,7 @@ include/enku/
     reader_engine.hpp
     document_reader_engine.hpp
     reader_session.hpp
+    book_loader.hpp
   runtime/
     reader_runtime.hpp
   services/
@@ -56,6 +57,7 @@ Architecture references:
 - [Reader Engine MVP](../docs/reader-engine-mvp.md)
 - [Reader Session MVP](../docs/reader-session-mvp.md)
 - [Reader Runtime Integration MVP](../docs/reader-runtime-mvp.md)
+- [Book Loader / Document Provider MVP](../docs/book-loader-mvp.md)
 - [Parser model](../docs/parser-model.md)
 - [Storage model](../docs/storage-model.md)
 - [Library data model & service interface](../docs/library-model.md)

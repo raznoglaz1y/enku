@@ -1032,6 +1032,188 @@ bool FreeTypeTextRenderer::renderLibrary(
 
 namespace enku::platform::esp_idf {
 
+bool FreeTypeTextRenderer::renderReadingSettings(
+    const AppState& app_state
+) {
+    if (!ready()) {
+        return false;
+    }
+
+    framebuffer_.clearWhite();
+
+    const auto orientation =
+        app_state.orientation;
+
+    if (!drawTextAt(
+            "READING SETTINGS",
+            25,
+            28,
+            50,
+            orientation
+        )) {
+        return false;
+    }
+
+    const char* preset = "STANDARD";
+
+    switch (app_state.typography.preset) {
+        case ReadingPreset::Spacious:
+            preset = "SPACIOUS";
+            break;
+        case ReadingPreset::Comfortable:
+            preset = "COMFORTABLE";
+            break;
+        case ReadingPreset::Standard:
+            preset = "STANDARD";
+            break;
+        case ReadingPreset::Compact:
+            preset = "COMPACT";
+            break;
+        case ReadingPreset::Dense:
+            preset = "DENSE";
+            break;
+        case ReadingPreset::Custom:
+            preset = "CUSTOM";
+            break;
+    }
+
+    char font_size[32] = {};
+    std::snprintf(
+        font_size,
+        sizeof(font_size),
+        "%u PX",
+        static_cast<unsigned>(
+            app_state.typography.font_size_px
+        )
+    );
+
+    char line_spacing[32] = {};
+    std::snprintf(
+        line_spacing,
+        sizeof(line_spacing),
+        "%.2f",
+        static_cast<double>(
+            app_state.typography.line_spacing
+        )
+    );
+
+    char margins[32] = {};
+    std::snprintf(
+        margins,
+        sizeof(margins),
+        "%u PX",
+        static_cast<unsigned>(
+            app_state.typography.margin_px
+        )
+    );
+
+    const char* labels[] = {
+        "PRESET",
+        "FONT SIZE",
+        "LINE SPACING",
+        "MARGINS",
+    };
+
+    const char* values[] = {
+        preset,
+        font_size,
+        line_spacing,
+        margins,
+    };
+
+    const int logical_width =
+        orientation == Orientation::Portrait
+            ? 480
+            : 800;
+
+    const int start_y =
+        orientation == Orientation::Portrait
+            ? 120
+            : 92;
+
+    const int row_height =
+        orientation == Orientation::Portrait
+            ? 92
+            : 66;
+
+    for (int i = 0; i < 4; ++i) {
+        const int top =
+            start_y + i * row_height;
+
+        const bool focused =
+            static_cast<int>(
+                app_state.reading_settings.focus
+            ) == i;
+
+        if (focused) {
+            drawRect(
+                20,
+                top,
+                logical_width - 40,
+                row_height - 10,
+                orientation,
+                app_state.reading_settings.editing
+                    ? 3
+                    : 2
+            );
+        }
+
+        if (!drawTextAt(
+                labels[i],
+                orientation == Orientation::Portrait
+                    ? 16
+                    : 14,
+                36,
+                top + (
+                    orientation == Orientation::Portrait
+                        ? 31
+                        : 25
+                ),
+                orientation
+            )) {
+            return false;
+        }
+
+        if (!drawTextAt(
+                values[i],
+                orientation == Orientation::Portrait
+                    ? 13
+                    : 12,
+                36,
+                top + (
+                    orientation == Orientation::Portrait
+                        ? 58
+                        : 47
+                ),
+                orientation
+            )) {
+            return false;
+        }
+    }
+
+    if (app_state.reading_settings.editing) {
+        return drawTextAt(
+            "UP/DOWN CHANGE  FUNCTION SAVE  BACK CANCEL",
+            12,
+            28,
+            orientation == Orientation::Portrait
+                ? 760
+                : 448,
+            orientation
+        );
+    }
+
+    return drawTextAt(
+        "UP/DOWN MOVE  FUNCTION EDIT  BACK SETTINGS",
+        12,
+        28,
+        orientation == Orientation::Portrait
+            ? 760
+            : 448,
+        orientation
+    );
+}
+
 bool FreeTypeTextRenderer::renderSettingsScreen(
     const AppState& app_state
 ) {

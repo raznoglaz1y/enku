@@ -239,6 +239,29 @@ EspIdfFsStatus EspIdfFilesystem::appendText(
     return EspIdfFsStatus::Ok;
 }
 
+EspIdfFsStatus EspIdfFilesystem::move(
+    const std::string& from,
+    const std::string& to
+) {
+    std::string source;
+    std::string target;
+
+    if (!resolve(from, source) ||
+        !resolve(to, target) ||
+        !ensureParentDirectories(target)) {
+        return EspIdfFsStatus::IoError;
+    }
+
+    if (std::rename(
+            source.c_str(),
+            target.c_str()
+        ) == 0) {
+        return EspIdfFsStatus::Ok;
+    }
+
+    return bookStatusFromErrno();
+}
+
 EspIdfFsStatus EspIdfFilesystem::remove(
     const std::string& path
 ) {
@@ -497,6 +520,15 @@ BookFileStatus EspIdfBookFileStore::append(
 ) {
     return toBookStatus(
         filesystem_.appendText(path, bytes)
+    );
+}
+
+BookFileStatus EspIdfBookFileStore::move(
+    const std::string& from,
+    const std::string& to
+) {
+    return toBookStatus(
+        filesystem_.move(from, to)
     );
 }
 

@@ -266,3 +266,33 @@ Current controls:
 - ESP32-S3 light sleep with GPIO wake on Up/Function/Down/BOOT.
 
 The bring-up smoke test only reads/logs telemetry. It does not power the board off automatically.
+
+
+## Platform composition root
+
+`EspIdfPlatform` now owns the board-specific service graph:
+
+```text
+EspIdfSdCard
+EspIdfFilesystem
+EspIdfStateFileStore
+EspIdfBookFileStore
+EspIdfEpaper
+OwnedMonoFramebuffer
+EpaperRefreshService
+EspIdfPowerService
+EspIdfButtons
+```
+
+`EspIdfPlatform::begin()` initializes those dependencies in hardware-safe order:
+
+```text
+SD mount
+→ e-paper transport / RefreshService
+→ AXP2101 power service
+→ buttons
+```
+
+The bring-up `app_main()` now consumes this composition root instead of constructing parallel board drivers itself.
+
+This is intentionally still a **platform** root rather than the final ENKU `DeviceRuntime`: Reader text measurement/rendering and the complete application renderer still need concrete implementations before the full application controller graph can be owned here.

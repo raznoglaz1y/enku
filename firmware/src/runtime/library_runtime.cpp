@@ -12,6 +12,7 @@ LibraryRuntimeController::LibraryRuntimeController(
     ReaderRuntimeController& reader,
     StagedBookImportService& importer,
     BookDeleteService& deleter,
+    SettingsRuntimeController& settings,
     RefreshService& refresh
 )
     : app_state_(app_state),
@@ -19,6 +20,7 @@ LibraryRuntimeController::LibraryRuntimeController(
       reader_(reader),
       importer_(importer),
       deleter_(deleter),
+      settings_(settings),
       refresh_(refresh) {}
 
 const LibraryPage& LibraryRuntimeController::page() const {
@@ -158,7 +160,9 @@ LibraryRuntimeResult LibraryRuntimeController::handle(
     const LibraryFilterChanged& event
 ) {
     app_state_.library.mode = LibraryQueryMode::Browse;
-    app_state_.library.filter = event.filter;
+    if (settings_.handle(event) != PersistStatus::Ok) {
+        return LibraryRuntimeResult::SettingsSaveFailed;
+    }
     app_state_.library.search_text.clear();
     app_state_.library.offset = 0;
     return reload();
@@ -167,10 +171,24 @@ LibraryRuntimeResult LibraryRuntimeController::handle(
 LibraryRuntimeResult LibraryRuntimeController::handle(
     const LibrarySortChanged& event
 ) {
-    app_state_.library.sort = event.sort;
-    app_state_.library.direction = event.direction;
+    if (settings_.handle(event) != PersistStatus::Ok) {
+        return LibraryRuntimeResult::SettingsSaveFailed;
+    }
     app_state_.library.offset = 0;
     return reload();
+}
+
+LibraryRuntimeResult LibraryRuntimeController::handle(
+    const LibraryViewChanged& event
+) {
+    if (settings_.handle(event) != PersistStatus::Ok) {
+        return LibraryRuntimeResult::SettingsSaveFailed;
+    }
+
+    return submitRefresh(
+        RefreshReason::ScreenChanged,
+        RefreshClass::Full
+    );
 }
 
 LibraryRuntimeResult LibraryRuntimeController::handle(

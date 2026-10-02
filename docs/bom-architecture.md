@@ -228,3 +228,28 @@ USB-C and Dock inputs will be combined through protected OR-ing / source selecti
 
 Detailed rationale:
 [Custom mainboard power R0.1](custom-mainboard-power-r01.md)
+
+
+## Power quality / cost shortlist
+
+Current R0.1 shortlist:
+
+| Block | Candidate | Status |
+| --- | --- | --- |
+| Charger + power path | TI BQ25185 | Primary |
+| USB / Dock input mux | TI TPS2121 | Quality baseline; compare against qualified discrete OR-ing |
+| 3.3 V regulator | TI TPS63031 | Primary bench-test candidate |
+| 3.3 V high-current fallback | TI TPS63070 | Use only if TPS63031 burst margin is inadequate |
+| Hall cover sensor | TI DRV5032 family | Keep where feature is populated |
+| Qi receiver | TI BQ51013C | Pro Wireless only |
+
+Cost policy:
+- do not remove a safety/reliability part for a trivial PLN saving;
+- prefer integrated solutions where they reduce failure modes, test burden or support cost;
+- cost-down first through sourcing, DNP population, common PCB, qualified connector substitutions and volume purchasing;
+- Base BOM must not carry Pro/Qi cost.
+
+See:
+- [Power architecture R0.1](custom-mainboard-power-r01.md)
+- [Power cost pass R0.1](power-cost-pass-r01.md)
+- [Open-source commercialization](open-source-commercialization.md)

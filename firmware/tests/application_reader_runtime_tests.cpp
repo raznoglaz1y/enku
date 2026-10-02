@@ -9,6 +9,7 @@
 #include "enku/runtime/locale_settings_runtime.hpp"
 #include "enku/runtime/about_device_runtime.hpp"
 #include "enku/runtime/power_off_confirm_runtime.hpp"
+#include "enku/runtime/wifi_settings_runtime.hpp"
 #include "enku/storage/posix_book_file_store.hpp"
 #include "enku/storage/posix_state_file_store.hpp"
 
@@ -73,7 +74,9 @@ public:
     std::uint32_t last_library_items{0};
 };
 
-class FakeNetworkService final : public NetworkService {
+class FakeNetworkService final
+    : public NetworkService,
+      public NetworkSettingsService {
 public:
     bool connected() const override {
         return connected_;
@@ -84,8 +87,58 @@ public:
         ++disconnects;
     }
 
+    NetworkPolicyStatus applyPolicy(
+        WiFiPolicy policy
+    ) override {
+        applied_policy = policy;
+        ++apply_calls;
+
+        if (policy == WiFiPolicy::Off ||
+            policy == WiFiPolicy::Manual) {
+            disconnect();
+            return NetworkPolicyStatus::Ok;
+        }
+
+        if (!trusted_ssid.has_value()) {
+            connected_ = false;
+            return NetworkPolicyStatus::NoTrustedNetwork;
+        }
+
+        connected_ = true;
+        return NetworkPolicyStatus::Ok;
+    }
+
+    NetworkPolicyStatus setTrustedNetwork(
+        std::string_view ssid,
+        std::string_view
+    ) override {
+        if (ssid.empty()) {
+            return NetworkPolicyStatus::InvalidCredentials;
+        }
+
+        trusted_ssid = std::string(ssid);
+        return NetworkPolicyStatus::Ok;
+    }
+
+    NetworkPolicyStatus forgetTrustedNetwork() override {
+        trusted_ssid.reset();
+        disconnect();
+        ++forget_calls;
+        return NetworkPolicyStatus::Ok;
+    }
+
+    std::optional<std::string> trustedSsid() const override {
+        return trusted_ssid;
+    }
+
     bool connected_{true};
     std::uint32_t disconnects{0};
+    std::uint32_t apply_calls{0};
+    std::uint32_t forget_calls{0};
+    WiFiPolicy applied_policy{WiFiPolicy::AutoConnectTrusted};
+    std::optional<std::string> trusted_ssid{
+        std::string{"TestNet"}
+    };
 };
 
 class FakePowerService final : public PowerService {
@@ -940,6 +993,16 @@ int main() {
         settings_nav
     );
 
+    FakeNetworkService wifi_network;
+
+    WiFiSettingsRuntime wifi_settings(
+        storage.appState(),
+        storage,
+        wifi_network,
+        wifi_network,
+        settings_nav
+    );
+
     const auto typography_before_settings =
         storage.appState().typography;
 
@@ -1154,6 +1217,118 @@ int main() {
             LogicalAction::NavigateNext
         ) == SettingsNavigationResult::Applied
     );
+    assert(
+        storage.appState().settings_nav.focus ==
+        SettingsItem::WiFi
+    );
+
+    assert(
+        wifi_settings.openFromSettings() ==
+        WiFiSettingsRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().screen ==
+        Screen::WiFiSettings
+    );
+    assert(
+        storage.appState().network.ssid ==
+        "TestNet"
+    );
+
+    assert(
+        wifi_settings.handle(
+            LogicalAction::Confirm
+        ) == WiFiSettingsRuntimeResult::Applied
+    );
+    assert(storage.appState().wifi_settings.editing_policy);
+
+    assert(
+        wifi_settings.handle(
+            LogicalAction::NavigateNext
+        ) == WiFiSettingsRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().wifi_settings.selected_policy ==
+        WiFiPolicy::Off
+    );
+
+    assert(
+        wifi_settings.handle(
+            LogicalAction::Confirm
+        ) == WiFiSettingsRuntimeResult::Applied
+    );
+    assert(!storage.appState().wifi_settings.editing_policy);
+    assert(storage.appState().wifi_policy == WiFiPolicy::Off);
+    assert(wifi_network.applied_policy == WiFiPolicy::Off);
+
+    GlobalSettings persisted_wifi;
+    assert(
+        storage.settingsStore().load(
+            persisted_wifi
+        ) == PersistStatus::Ok
+    );
+    assert(
+        persisted_wifi.wifi_policy ==
+        WiFiPolicy::Off
+    );
+
+    assert(
+        wifi_settings.handle(
+            LogicalAction::NavigateNext
+        ) == WiFiSettingsRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().wifi_settings.focus ==
+        WiFiSettingsFocus::ForgetTrusted
+    );
+
+    assert(
+        wifi_settings.handle(
+            LogicalAction::Confirm
+        ) == WiFiSettingsRuntimeResult::Applied
+    );
+    assert(storage.appState().wifi_settings.forget_confirm);
+    assert(!storage.appState().wifi_settings.confirm_forget);
+
+    assert(
+        wifi_settings.handle(
+            LogicalAction::Confirm
+        ) == WiFiSettingsRuntimeResult::Applied
+    );
+    assert(!storage.appState().wifi_settings.forget_confirm);
+    assert(wifi_network.trustedSsid().has_value());
+
+    assert(
+        wifi_settings.handle(
+            LogicalAction::Confirm
+        ) == WiFiSettingsRuntimeResult::Applied
+    );
+    assert(
+        wifi_settings.handle(
+            LogicalAction::NavigateNext
+        ) == WiFiSettingsRuntimeResult::Applied
+    );
+    assert(storage.appState().wifi_settings.confirm_forget);
+    assert(
+        wifi_settings.handle(
+            LogicalAction::Confirm
+        ) == WiFiSettingsRuntimeResult::Applied
+    );
+    assert(!wifi_network.trustedSsid().has_value());
+    assert(wifi_network.forget_calls == 1);
+    assert(storage.appState().network.ssid.empty());
+
+    assert(
+        wifi_settings.handle(
+            LogicalAction::Back
+        ) == WiFiSettingsRuntimeResult::Applied
+    );
+    assert(storage.appState().screen == Screen::Settings);
+    assert(
+        storage.appState().settings_nav.focus ==
+        SettingsItem::WiFi
+    );
+
     assert(
         settings_nav.handle(
             LogicalAction::NavigateNext

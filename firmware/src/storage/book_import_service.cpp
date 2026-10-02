@@ -1,13 +1,95 @@
 #include "enku/storage/book_import_service.hpp"
+#include "enku/reader/zip_archive.hpp"
 
 #include <algorithm>
 #include <cctype>
 #include <iomanip>
+#include <limits>
 #include <sstream>
 #include <utility>
 
 namespace enku {
 namespace {
+
+constexpr std::uint64_t kFnvOffset =
+    14695981039346656037ULL;
+constexpr std::uint64_t kFnvPrime =
+    1099511628211ULL;
+constexpr std::size_t kFingerprintChunkBytes =
+    64U * 1024U;
+
+void updateFingerprint(
+    std::uint64_t& hash,
+    std::string_view bytes
+) {
+    for (const unsigned char ch : bytes) {
+        hash ^= ch;
+        hash *= kFnvPrime;
+    }
+}
+
+std::string finishFingerprint(
+    std::uint64_t hash,
+    std::uint64_t size
+) {
+    std::ostringstream out;
+    out << "fnv1a64:"
+        << std::hex
+        << std::setfill('0')
+        << std::setw(16)
+        << hash
+        << ":"
+        << std::dec
+        << size;
+
+    return out.str();
+}
+
+class BookFileZipRangeSource final
+    : public ZipRangeSource {
+public:
+    BookFileZipRangeSource(
+        BookFileStore& files,
+        std::string path,
+        std::uint64_t size_bytes
+    )
+        : files_(files),
+          path_(std::move(path)),
+          size_bytes_(size_bytes) {}
+
+    std::uint64_t size() const override {
+        return size_bytes_;
+    }
+
+    bool readRange(
+        std::uint64_t offset,
+        std::size_t length,
+        std::string& out
+    ) const override {
+        last_status_ =
+            files_.readRange(
+                path_,
+                offset,
+                length,
+                out
+            );
+
+        return last_status_ ==
+            BookFileStatus::Ok;
+    }
+
+    BookFileStatus lastStatus() const {
+        return last_status_;
+    }
+
+private:
+    BookFileStore& files_;
+    std::string path_;
+    std::uint64_t size_bytes_{0};
+    mutable BookFileStatus last_status_{
+        BookFileStatus::Ok
+    };
+};
 
 std::string lowerExtension(const std::string& filename) {
     const auto slash = filename.find_last_of("/\\");
@@ -43,26 +125,17 @@ std::string BookImportService::fingerprint(
     const std::string& bytes
 ) {
     // Reader v1 import MVP: deterministic content fingerprint.
-    // This deliberately remains isolated behind the import service so it can
-    // later be replaced by SHA-256 without changing Library identity APIs.
-    std::uint64_t hash = 14695981039346656037ULL;
+    // Kept incremental so staged files can be fingerprinted without loading
+    // the entire book into RAM.
+    std::uint64_t hash = kFnvOffset;
+    updateFingerprint(hash, bytes);
 
-    for (const unsigned char ch : bytes) {
-        hash ^= ch;
-        hash *= 1099511628211ULL;
-    }
-
-    std::ostringstream out;
-    out << "fnv1a64:"
-        << std::hex
-        << std::setfill('0')
-        << std::setw(16)
-        << hash
-        << ":"
-        << std::dec
-        << bytes.size();
-
-    return out.str();
+    return finishFingerprint(
+        hash,
+        static_cast<std::uint64_t>(
+            bytes.size()
+        )
+    );
 }
 
 BookFormat BookImportService::detectFormat(
@@ -186,6 +259,214 @@ PreparedBookImport BookImportService::prepare(
 
     prepared.status = BookImportStatus::Ok;
     prepared.record = std::move(record);
+    return prepared;
+}
+
+PreparedBookImport BookImportService::prepareStored(
+    BookFileStore& files,
+    const std::string& source_path,
+    const std::string& source_filename,
+    std::uint64_t added_order
+) {
+    PreparedBookImport prepared;
+
+    std::uint64_t file_size = 0;
+    const auto size_status =
+        files.size(
+            source_path,
+            file_size
+        );
+
+    if (size_status != BookFileStatus::Ok) {
+        prepared.status =
+            BookImportStatus::SourceReadFailed;
+        return prepared;
+    }
+
+    if (file_size == 0U) {
+        prepared.status =
+            BookImportStatus::EmptySource;
+        return prepared;
+    }
+
+    bool supported = false;
+    const auto format =
+        detectFormat(
+            source_filename,
+            supported
+        );
+
+    if (!supported) {
+        prepared.status =
+            BookImportStatus::UnsupportedFormat;
+        return prepared;
+    }
+
+    std::uint64_t hash = kFnvOffset;
+    std::uint64_t offset = 0;
+
+    while (offset < file_size) {
+        const auto remaining =
+            file_size - offset;
+        const auto chunk_size =
+            static_cast<std::size_t>(
+                std::min<std::uint64_t>(
+                    remaining,
+                    kFingerprintChunkBytes
+                )
+            );
+
+        std::string chunk;
+        if (files.readRange(
+                source_path,
+                offset,
+                chunk_size,
+                chunk
+            ) != BookFileStatus::Ok) {
+            prepared.status =
+                BookImportStatus::SourceReadFailed;
+            return prepared;
+        }
+
+        updateFingerprint(
+            hash,
+            chunk
+        );
+
+        offset +=
+            static_cast<std::uint64_t>(
+                chunk_size
+            );
+    }
+
+    const auto content_fingerprint =
+        finishFingerprint(
+            hash,
+            file_size
+        );
+
+    if (library_.findByFingerprint(
+            content_fingerprint
+        ).has_value()) {
+        prepared.status =
+            BookImportStatus::Duplicate;
+        return prepared;
+    }
+
+    const auto id_suffix =
+        content_fingerprint.substr(
+            content_fingerprint.find(':') + 1,
+            16
+        );
+    const BookId book_id =
+        "book-" + id_suffix;
+
+    ParserSourceInfo parser_source{
+        book_id,
+        source_path,
+        source_filename,
+    };
+
+    ParseResult parsed;
+
+    if (format == BookFormat::Epub) {
+        BookFileZipRangeSource ranged(
+            files,
+            source_path,
+            file_size
+        );
+
+        parsed =
+            epub_parser_.parseMetadata(
+                ranged,
+                parser_source
+            );
+
+        if (!parsed.ok() &&
+            ranged.lastStatus() !=
+                BookFileStatus::Ok) {
+            prepared.status =
+                BookImportStatus::SourceReadFailed;
+            return prepared;
+        }
+    } else {
+        if (file_size >
+            static_cast<std::uint64_t>(
+                std::numeric_limits<
+                    std::size_t
+                >::max()
+            )) {
+            prepared.status =
+                BookImportStatus::SourceReadFailed;
+            return prepared;
+        }
+
+        std::string bytes;
+
+        if (files.readRange(
+                source_path,
+                0,
+                static_cast<std::size_t>(
+                    file_size
+                ),
+                bytes
+            ) != BookFileStatus::Ok) {
+            prepared.status =
+                BookImportStatus::SourceReadFailed;
+            return prepared;
+        }
+
+        switch (format) {
+            case BookFormat::Txt:
+                parsed =
+                    txt_parser_.parse(
+                        bytes,
+                        parser_source
+                    );
+                break;
+
+            case BookFormat::Fb2:
+                parsed =
+                    fb2_parser_.parseMetadata(
+                        bytes,
+                        parser_source
+                    );
+                break;
+
+            case BookFormat::Epub:
+                break;
+        }
+    }
+
+    if (!parsed.ok()) {
+        prepared.status =
+            BookImportStatus::ParseFailed;
+        return prepared;
+    }
+
+    BookRecord record;
+    record.book_id = book_id;
+    record.format = format;
+    record.metadata =
+        std::move(
+            parsed.document.metadata
+        );
+    record.source_path = source_path;
+    record.source_filename =
+        source_filename;
+    record.file_size = file_size;
+    record.fingerprint =
+        content_fingerprint;
+    record.reading_state =
+        ReadingState::New;
+    record.progress = 0.0F;
+    record.added_order = added_order;
+    record.last_opened_order = 0;
+
+    prepared.status =
+        BookImportStatus::Ok;
+    prepared.record =
+        std::move(record);
     return prepared;
 }
 

@@ -26,7 +26,7 @@ struct Glyph {
     std::array<std::uint8_t, 7> rows;
 };
 
-constexpr std::array<Glyph, 20> kGlyphs = {{
+constexpr std::array<Glyph, 21> kGlyphs = {{
     {'A', {0x0E,0x11,0x11,0x1F,0x11,0x11,0x11}},
     {'B', {0x1E,0x11,0x11,0x1E,0x11,0x11,0x1E}},
     {'D', {0x1E,0x11,0x11,0x11,0x11,0x11,0x1E}},
@@ -40,6 +40,7 @@ constexpr std::array<Glyph, 20> kGlyphs = {{
     {'P', {0x1E,0x11,0x11,0x1E,0x10,0x10,0x10}},
     {'R', {0x1E,0x11,0x11,0x1E,0x14,0x12,0x11}},
     {'S', {0x0F,0x10,0x10,0x0E,0x01,0x01,0x1E}},
+    {'T', {0x1F,0x04,0x04,0x04,0x04,0x04,0x04}},
     {'U', {0x11,0x11,0x11,0x11,0x11,0x11,0x0E}},
     {'Y', {0x11,0x11,0x0A,0x04,0x04,0x04,0x04}},
     {'-', {0x00,0x00,0x00,0x1F,0x00,0x00,0x00}},
@@ -226,6 +227,65 @@ bool storageSmokeTest(
     return true;
 }
 
+void setRegionBlack(
+    std::uint8_t* region,
+    int width,
+    int height,
+    int x,
+    int y
+) {
+    if (x < 0 || y < 0 || x >= width || y >= height) {
+        return;
+    }
+
+    const std::size_t row_bytes =
+        static_cast<std::size_t>((width + 7) / 8);
+    const std::size_t index =
+        static_cast<std::size_t>(y) * row_bytes +
+        static_cast<std::size_t>(x / 8);
+
+    region[index] &=
+        static_cast<std::uint8_t>(
+            ~(0x80U >> (x & 7))
+        );
+}
+
+void drawRegionGlyph(
+    std::uint8_t* region,
+    int width,
+    int height,
+    int x,
+    int y,
+    char character,
+    int scale
+) {
+    const auto* glyph = glyphFor(character);
+    if (glyph == nullptr) {
+        return;
+    }
+
+    for (int row = 0; row < 7; ++row) {
+        for (int column = 0; column < 5; ++column) {
+            if ((glyph->rows[row] &
+                 (1U << (4 - column))) == 0) {
+                continue;
+            }
+
+            for (int py = 0; py < scale; ++py) {
+                for (int px = 0; px < scale; ++px) {
+                    setRegionBlack(
+                        region,
+                        width,
+                        height,
+                        x + column * scale + px,
+                        y + row * scale + py
+                    );
+                }
+            }
+        }
+    }
+}
+
 bool displaySmokeTest() {
     EspIdfEpaper display;
 
@@ -316,6 +376,111 @@ bool displaySmokeTest() {
     if (status ==
         enku::platform::esp_idf::EpaperStatus::Ok) {
         ESP_LOGI(kTag, "Full refresh complete");
+        vTaskDelay(pdMS_TO_TICKS(1500));
+
+        fillRect(framebuffer, 180, 338, 440, 54);
+        drawText(
+            framebuffer,
+            250,
+            350,
+            "FAST REFRESH",
+            4
+        );
+
+        ESP_LOGI(kTag, "Initializing SSD1677 fast-refresh mode");
+        status = display.initializeFast();
+    }
+
+    if (status ==
+        enku::platform::esp_idf::EpaperStatus::Ok) {
+        ESP_LOGI(kTag, "Sending fast framebuffer");
+        status = display.fastBaseRefresh(
+            framebuffer,
+            EspIdfEpaper::kMonoBytes
+        );
+    }
+
+    constexpr std::uint16_t kPartialX = 616;
+    constexpr std::uint16_t kPartialY = 70;
+    constexpr std::uint16_t kPartialWidth = 96;
+    constexpr std::uint16_t kPartialHeight = 96;
+    constexpr std::size_t kPartialBytes =
+        (kPartialWidth / 8U) * kPartialHeight;
+
+    std::array<std::uint8_t, kPartialBytes> partial = {};
+
+    if (status ==
+        enku::platform::esp_idf::EpaperStatus::Ok) {
+        ESP_LOGI(kTag, "Starting partial refresh counter");
+
+        for (char digit : {'0', '1', '2'}) {
+            partial.fill(0xFF);
+
+            for (int x = 0; x < kPartialWidth; ++x) {
+                setRegionBlack(
+                    partial.data(),
+                    kPartialWidth,
+                    kPartialHeight,
+                    x,
+                    0
+                );
+                setRegionBlack(
+                    partial.data(),
+                    kPartialWidth,
+                    kPartialHeight,
+                    x,
+                    kPartialHeight - 1
+                );
+            }
+
+            for (int y = 0; y < kPartialHeight; ++y) {
+                setRegionBlack(
+                    partial.data(),
+                    kPartialWidth,
+                    kPartialHeight,
+                    0,
+                    y
+                );
+                setRegionBlack(
+                    partial.data(),
+                    kPartialWidth,
+                    kPartialHeight,
+                    kPartialWidth - 1,
+                    y
+                );
+            }
+
+            drawRegionGlyph(
+                partial.data(),
+                kPartialWidth,
+                kPartialHeight,
+                31,
+                13,
+                digit,
+                10
+            );
+
+            status = display.partialRefresh(
+                partial.data(),
+                partial.size(),
+                kPartialX,
+                kPartialY,
+                kPartialWidth,
+                kPartialHeight
+            );
+
+            if (status !=
+                enku::platform::esp_idf::EpaperStatus::Ok) {
+                break;
+            }
+
+            vTaskDelay(pdMS_TO_TICKS(700));
+        }
+    }
+
+    if (status ==
+        enku::platform::esp_idf::EpaperStatus::Ok) {
+        ESP_LOGI(kTag, "Full + fast + partial refresh passed");
         status = display.sleep();
     }
 

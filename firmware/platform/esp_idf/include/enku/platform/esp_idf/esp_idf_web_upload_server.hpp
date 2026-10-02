@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <cstdint>
 
 #include "esp_http_server.h"
@@ -20,11 +21,13 @@ public:
 
     bool sync(bool online);
     bool running() const;
+    bool takeUploadCompleted();
 
 private:
     WebUploadIngress& ingress_;
     LibraryService& library_;
     httpd_handle_t server_{nullptr};
+    std::atomic_bool upload_completed_{false};
 
     bool start();
     void stop();

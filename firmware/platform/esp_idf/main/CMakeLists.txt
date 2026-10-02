@@ -37,6 +37,7 @@ idf_component_register(
         "../../../src/reader/text_paginator.cpp"
         "../../../src/runtime/settings_runtime.cpp"
         "../../../src/runtime/settings_navigation_runtime.cpp"
+        "../../../src/runtime/reading_settings_runtime.cpp"
         "../../../src/runtime/storage_startup.cpp"
         "../../../src/storage/cbor_reader_checkpoint.cpp"
         "../../../src/storage/cbor_bookmark_service.cpp"

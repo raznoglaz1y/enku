@@ -72,6 +72,81 @@ const headerHtml = (pathname) => {
 </header>`;
 };
 
+const homeHtml = `
+<main class="enku-home" id="top">
+  <section class="enku-home-hero">
+    <div class="shell enku-home-hero-grid">
+      <div>
+        <p class="enku-kicker">OPEN-SOURCE E-READER</p>
+        <h1>Books first.<br>Everything else second.</h1>
+      </div>
+      <div class="enku-home-intro">
+        <p>ENKU is a compact open-source e-reader built around a 3.97″ e-paper display and ESP32-S3. Hardware, software, interface and the build itself are developed as one public project.</p>
+        <div class="enku-home-actions">
+          <a class="enku-button" href="/build">Build ENKU <span>→</span></a>
+          <a class="enku-text-link" href="https://github.com/raznoglaz1y/enku" target="_blank" rel="noreferrer">View GitHub ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="enku-home-explore">
+    <div class="shell">
+      <div class="enku-home-head">
+        <p class="enku-kicker">EXPLORE</p>
+        <h2>One reader. Four connected layers.</h2>
+        <p>Each section has its own depth, but they belong to the same device. Start anywhere and continue through the project without returning to the homepage.</p>
+      </div>
+      <div class="enku-home-cards">
+        <a class="enku-home-card" href="/hardware"><small>01 · HARDWARE</small><strong>The physical platform.</strong><p>Reference board, display, storage, controls, power and what still needs real-device validation.</p><span>Explore hardware →</span></a>
+        <a class="enku-home-card" href="/software"><small>02 · SOFTWARE</small><strong>The reader core.</strong><p>Application state, parsing, pagination, rendering, persistence and the ESP-IDF device target.</p><span>Explore software →</span></a>
+        <a class="enku-home-card" href="/design"><small>03 · DESIGN</small><strong>The interface system.</strong><p>E-paper-first layouts, physical navigation, typography, canonical screens and interaction rules.</p><span>Explore design →</span></a>
+        <a class="enku-home-card" href="/build"><small>04 · BUILD</small><strong>From parts to reader.</strong><p>BOM, preparation, enclosure, firmware, assembly and first boot—with prototype-dependent steps marked clearly.</p><span>Explore build →</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="enku-home-status">
+    <div class="shell enku-home-split">
+      <div>
+        <p class="enku-kicker">CURRENT STATUS</p>
+        <h2>Firmware first.<br>Hardware next.</h2>
+      </div>
+      <div>
+        <p>The reader architecture, host-tested behavior and ESP-IDF platform work are already in the repository. The decisive next step is physical validation on the Waveshare reference hardware, followed by the enclosure prototype.</p>
+        <div class="enku-home-status-grid">
+          <div><small>NOW</small><strong>Firmware + bring-up</strong></div>
+          <div><small>NEXT</small><strong>Physical validation</strong></div>
+          <div><small>THEN</small><strong>Mechanical prototype</strong></div>
+        </div>
+        <a class="enku-text-link" href="/status">Full project status →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="enku-home-work">
+    <div class="shell">
+      <div class="enku-home-head compact">
+        <p class="enku-kicker">LATEST WORK</p>
+        <h2>Follow the engineering record.</h2>
+      </div>
+      <div class="enku-home-work-grid">
+        <a href="/build-log" class="enku-work-main"><small>BUILD LOG</small><strong>From repository to reader.</strong><p>See the chronological record of firmware, UI, hardware and website milestones—with the failures and corrections kept visible.</p><span>Open build log →</span></a>
+        <div class="enku-work-side">
+          <a href="/downloads"><small>RELEASES</small><strong>Downloads</strong><span>No fake release files. Only reproducible artifacts when they are ready. →</span></a>
+          <a href="/contact"><small>OPEN PROJECT</small><strong>Contribute</strong><span>Questions, testing, code, documentation, hardware knowledge or support. →</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="enku-home-final">
+    <a class="shell enku-home-final-inner" href="/about">
+      <span><small>ABOUT ENKU</small><strong>Why this reader exists.</strong></span><b>→</b>
+    </a>
+  </section>
+</main>`;
+
 const nextPage = (pathname) => {
   const flow = {
     "/hardware": { href: "/software", eyebrow: "NEXT · SOFTWARE", title: "See how the reader works." },
@@ -155,6 +230,46 @@ const sharedChromeCss = `
   .site-header .mobile-nav{display:none!important}
   .site-header .mobile-nav-label{font-size:9px;font-weight:700;letter-spacing:.16em;color:#817b73;padding:18px 0 5px}
 
+  .enku-home{background:#f5f1e8}
+  .enku-home-hero{padding:104px 0 96px;border-bottom:1px solid rgba(20,20,20,.09)}
+  .enku-home-hero-grid,.enku-home-split{display:grid;grid-template-columns:.9fr 1.1fr;gap:96px;align-items:end}
+  .enku-kicker{margin:0 0 17px;font-size:10px;font-weight:700;letter-spacing:.17em;color:#777168}
+  .enku-home h1,.enku-home h2,.enku-home-card strong,.enku-work-main strong,.enku-work-side strong,.enku-home-final strong{font-family:"Newsreader",serif;font-weight:500;letter-spacing:-.04em}
+  .enku-home h1{font-size:clamp(68px,7.4vw,114px);line-height:.87;margin:0}
+  .enku-home-intro>p{font-size:18px;line-height:1.68;color:#5d5851;max-width:590px;margin:0}
+  .enku-home-actions{display:flex;align-items:center;gap:22px;margin-top:34px;flex-wrap:wrap}
+  .enku-button{min-height:50px;padding:0 20px;border:1px solid #171717;border-radius:5px;background:#171717;color:#f5f1e8;display:inline-flex;align-items:center;gap:26px;font-size:13px;font-weight:600}
+  .enku-text-link{font-size:13px;font-weight:600;border-bottom:1px solid rgba(20,20,20,.25);padding-bottom:3px}
+  .enku-home-explore,.enku-home-status,.enku-home-work{padding:98px 0;border-bottom:1px solid rgba(20,20,20,.09)}
+  .enku-home-head{display:grid;grid-template-columns:.45fr .9fr 1fr;gap:44px;align-items:start;margin-bottom:50px}
+  .enku-home-head h2,.enku-home-split h2{font-size:clamp(46px,4.8vw,68px);line-height:.94;margin:0}
+  .enku-home-head>p:last-child,.enku-home-split>div:last-child>p{font-size:15px;line-height:1.7;color:#625e57;margin:0}
+  .enku-home-cards{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid rgba(20,20,20,.16);border-bottom:1px solid rgba(20,20,20,.16)}
+  .enku-home-card{padding:26px 22px 28px 0;min-height:310px;display:flex;flex-direction:column}
+  .enku-home-card+.enku-home-card{border-left:1px solid rgba(20,20,20,.12);padding-left:22px}
+  .enku-home-card small,.enku-work-main small,.enku-work-side small,.enku-home-final small,.enku-home-status-grid small{font-size:9px;font-weight:700;letter-spacing:.13em;color:#7c766e}
+  .enku-home-card strong{font-size:31px;line-height:1.05;margin:48px 0 12px}
+  .enku-home-card p{font-size:12px;line-height:1.6;color:#666159;margin:0}
+  .enku-home-card span{margin-top:auto;padding-top:26px;font-size:12px;font-weight:600}
+  .enku-home-split{align-items:start}
+  .enku-home-status-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(20,20,20,.15);border-bottom:1px solid rgba(20,20,20,.15);margin:32px 0 28px}
+  .enku-home-status-grid div{padding:20px 18px 22px 0}
+  .enku-home-status-grid div+div{border-left:1px solid rgba(20,20,20,.12);padding-left:18px}
+  .enku-home-status-grid strong{display:block;font-family:"Newsreader",serif;font-size:23px;font-weight:500;margin-top:7px}
+  .enku-home-head.compact{grid-template-columns:.4fr 1.6fr;margin-bottom:42px}
+  .enku-home-work-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:28px}
+  .enku-work-main,.enku-work-side a{border:1px solid rgba(20,20,20,.13);padding:28px;display:flex;flex-direction:column}
+  .enku-work-main{min-height:310px}
+  .enku-work-main strong{font-size:42px;line-height:1;margin:54px 0 12px}
+  .enku-work-main p{font-size:13px;line-height:1.65;color:#645f58;max-width:580px;margin:0}
+  .enku-work-main span,.enku-work-side span{margin-top:auto;font-size:12px;font-weight:600;padding-top:26px}
+  .enku-work-side{display:grid;grid-template-rows:1fr 1fr;gap:18px}
+  .enku-work-side strong{font-size:28px;margin:20px 0 8px}
+  .enku-work-side span{font-weight:400;line-height:1.5;color:#625e57}
+  .enku-home-final{border-bottom:1px solid rgba(20,20,20,.09)}
+  .enku-home-final-inner{min-height:150px;display:flex;align-items:center;justify-content:space-between;gap:30px}
+  .enku-home-final strong{display:block;font-size:42px;margin-top:7px}
+  .enku-home-final b{font-size:34px;font-weight:400}
   .enku-next{border-top:1px solid rgba(20,20,20,.1);background:rgba(255,255,255,.13)}
   .enku-next-inner{min-height:132px;display:flex;align-items:center;justify-content:space-between;gap:32px}
   .enku-next small{display:block;font-size:9px;font-weight:700;letter-spacing:.16em;color:#837d75;margin-bottom:8px}
@@ -180,10 +295,29 @@ const sharedChromeCss = `
     .site-header .mobile-nav a{padding:11px 0;border-bottom:1px solid rgba(20,20,20,.07);font-size:14px}
     .site-header .mobile-nav a:last-child{border-bottom:0}
   }
+  @media(max-width:900px){
+    .enku-home-hero-grid,.enku-home-split{grid-template-columns:1fr;gap:34px}
+    .enku-home-head{grid-template-columns:1fr;gap:14px}
+    .enku-home-cards{grid-template-columns:1fr 1fr}
+    .enku-home-card:nth-child(3){border-left:0;border-top:1px solid rgba(20,20,20,.12);padding-left:0}
+    .enku-home-card:nth-child(4){border-top:1px solid rgba(20,20,20,.12)}
+    .enku-home-work-grid{grid-template-columns:1fr}
+  }
   @media(max-width:760px){
     .site-header .header-inner{height:66px!important}
     .enku-footer-grid{grid-template-columns:1fr 1fr!important;gap:38px 28px!important;padding-top:44px!important;padding-bottom:38px!important}
     .enku-footer-brand{grid-column:1/-1}
+    .enku-home-hero{padding:70px 0 70px}
+    .enku-home h1{font-size:clamp(58px,16vw,82px)}
+    .enku-home-explore,.enku-home-status,.enku-home-work{padding:72px 0}
+    .enku-home-cards{grid-template-columns:1fr}
+    .enku-home-card,.enku-home-card+.enku-home-card,.enku-home-card:nth-child(3),.enku-home-card:nth-child(4){border-left:0;border-top:1px solid rgba(20,20,20,.12);padding:24px 0;min-height:240px}
+    .enku-home-card:first-child{border-top:0}
+    .enku-home-card strong{margin-top:30px}
+    .enku-home-status-grid{grid-template-columns:1fr}
+    .enku-home-status-grid div,.enku-home-status-grid div+div{border-left:0;border-top:1px solid rgba(20,20,20,.1);padding:16px 0}
+    .enku-home-status-grid div:first-child{border-top:0}
+    .enku-home-final strong{font-size:32px}
   }
 </style>`;
 
@@ -225,6 +359,11 @@ export default {
         .on("header.site-header", {
           element(element) {
             element.replace(headerHtml(url.pathname), { html: true });
+          },
+        })
+        .on("main", {
+          element(element) {
+            if (url.pathname === "/") element.replace(homeHtml, { html: true });
           },
         })
         .on("footer.site-footer", {

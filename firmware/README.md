@@ -2,9 +2,7 @@
 
 This directory contains the ENKU firmware architecture scaffold.
 
-**Status:** interfaces and source layout only. This is **not yet a buildable reader firmware**.
-
-The scaffold intentionally avoids choosing Arduino vs ESP-IDF until the real Waveshare ESP32-S3-ePaper-3.97 board is available for bring-up and profiling.
+**Status:** the framework-neutral core is host-buildable and tested. The first board-specific target now exists under `platform/esp_idf/` for Waveshare ESP32-S3-ePaper-3.97 storage bring-up. It is not yet a complete reader UI firmware.
 
 ## Current scaffold
 
@@ -59,7 +57,7 @@ include/enku/
     posix_state_file_store.hpp
 ```
 
-The first framework-neutral implementations now include the TXT parser, paginator, DocumentReaderEngine, ReaderSession, reader runtime lifecycle (open/page/back/finished), and the first concrete A/B CBOR per-book checkpoint backend with CRC32 recovery, plus a POSIX filesystem adapter and host-side disk integration tests under `tests/`. A board-specific ESP32 filesystem adapter will be added after bring-up.
+The first framework-neutral implementations now include the TXT parser, paginator, DocumentReaderEngine, ReaderSession, reader runtime lifecycle (open/page/back/finished), and the first concrete A/B CBOR per-book checkpoint backend with CRC32 recovery, plus a POSIX filesystem adapter and host-side disk integration tests under `tests/`. A first ESP-IDF SDMMC/FAT filesystem adapter now exists under `platform/esp_idf/`, together with a minimal `app_main` storage smoke test. Display/input/power integration remains the next board bring-up work.
 
 Architecture references:
 
@@ -121,3 +119,23 @@ The host suite currently covers:
 - POSIX filesystem persistence for book files and checkpoints.
 
 GitHub Actions runs the same host suite on pushes to `main` and on pull requests.
+
+
+## ESP-IDF board target
+
+The first Waveshare ESP32-S3-ePaper-3.97 target lives at:
+
+```text
+firmware/platform/esp_idf/
+```
+
+It currently provides:
+
+- board pin constants for TF, e-paper and navigation controls;
+- 4-bit SDMMC FAT32 mount at `/sdcard`;
+- creation of ENKU `/books` and `/system/*` directories;
+- `EspIdfFileStore` implementing both `StateFileStore` and `BookFileStore`;
+- path-traversal rejection;
+- a serial storage smoke test in `app_main`.
+
+See [ESP-IDF platform bring-up](platform/esp_idf/README.md).

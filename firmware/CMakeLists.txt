@@ -14,6 +14,7 @@ add_library(enku_core STATIC
     src/parsers/txt/txt_parser.cpp
     src/parsers/epub/zip_archive.cpp
     src/parsers/epub/epub_parser.cpp
+    src/parsers/fb2/fb2_parser.cpp
     src/reader/text_paginator.cpp
     src/reader/document_reader_engine.cpp
     src/reader/reader_session.cpp
@@ -91,6 +92,7 @@ endfunction()
 
 enku_add_test(txt_parser_tests tests/txt_parser_tests.cpp)
 enku_add_test(epub_parser_tests tests/epub_parser_tests.cpp)
+enku_add_test(fb2_parser_tests tests/fb2_parser_tests.cpp)
 enku_add_test(txt_pagination_tests tests/txt_pagination_tests.cpp)
 enku_add_test(reader_engine_tests tests/reader_engine_tests.cpp)
 enku_add_test(reader_session_tests tests/reader_session_tests.cpp)

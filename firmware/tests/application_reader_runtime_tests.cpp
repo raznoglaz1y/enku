@@ -385,6 +385,32 @@ int main() {
         storage.appState().search.origin_position->text_offset ==
         search_origin->text_offset
     );
+
+    assert(
+        search.submitQuery("not-present") ==
+        SearchRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().search.phase ==
+        SearchPhase::NoResults
+    );
+    assert(storage.appState().search.total_matches == 0);
+    assert(storage.appState().search.matches.empty());
+
+    assert(
+        search.handle(LogicalAction::Back) ==
+        SearchRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().search.phase ==
+        SearchPhase::QueryEntry
+    );
+    assert(storage.appState().screen == Screen::Search);
+    assert(
+        storage.appState().search.origin_position->text_offset ==
+        search_origin->text_offset
+    );
+
     assert(
         search.submitQuery("beta") ==
         SearchRuntimeResult::Applied

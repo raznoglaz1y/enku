@@ -7,6 +7,7 @@
 #include "enku/runtime/reading_settings_runtime.hpp"
 #include "enku/runtime/display_settings_runtime.hpp"
 #include "enku/runtime/locale_settings_runtime.hpp"
+#include "enku/runtime/about_device_runtime.hpp"
 #include "enku/storage/posix_book_file_store.hpp"
 #include "enku/storage/posix_state_file_store.hpp"
 
@@ -887,6 +888,11 @@ int main() {
         settings_nav
     );
 
+    AboutDeviceRuntime about_device(
+        storage.appState(),
+        settings_nav
+    );
+
     const auto typography_before_settings =
         storage.appState().typography;
 
@@ -1156,6 +1162,41 @@ int main() {
     assert(
         storage.appState().settings_nav.focus ==
         SettingsItem::Language
+    );
+
+    assert(
+        settings_nav.handle(
+            LogicalAction::NavigateNext
+        ) == SettingsNavigationResult::Applied
+    );
+    assert(
+        settings_nav.handle(
+            LogicalAction::NavigateNext
+        ) == SettingsNavigationResult::Applied
+    );
+    assert(
+        storage.appState().settings_nav.focus ==
+        SettingsItem::About
+    );
+
+    assert(
+        about_device.openFromSettings() ==
+        AboutDeviceRuntimeResult::Applied
+    );
+    assert(
+        storage.appState().screen ==
+        Screen::AboutDevice
+    );
+
+    assert(
+        about_device.handle(
+            LogicalAction::Back
+        ) == AboutDeviceRuntimeResult::Applied
+    );
+    assert(storage.appState().screen == Screen::Settings);
+    assert(
+        storage.appState().settings_nav.focus ==
+        SettingsItem::About
     );
 
     assert(

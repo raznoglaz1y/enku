@@ -438,3 +438,13 @@ If automatic restore fails because the source disappeared, the checkpoint is inv
 If the app-context record itself is missing, ENKU initializes a safe Library context. If it is corrupt but writable, ENKU resets it to Library rather than treating a context-only failure as loss of the Library.
 
 The first host integration test models a cold reboot with new service/runtime objects and verifies that both the book and the persisted semantic offset are restored.
+
+
+## 27. Fast Wake vs cold boot
+
+`BootRestoreCoordinator` now exposes two entry paths:
+
+- `run()` — cold boot: perform `StorageStartupCoordinator` recovery first, then restore safe app context;
+- `restoreContextOnly()` — fast Wake from logical Suspended state: reuse current mounted storage/Library and restore only the persisted safe context.
+
+Both paths converge on the same ReaderRuntime open/checkpoint logic and the same fallback-to-Library behavior. This avoids maintaining separate cold-boot and wake-specific reader restoration implementations.

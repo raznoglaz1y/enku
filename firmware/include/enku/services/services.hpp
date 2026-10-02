@@ -68,6 +68,24 @@ struct ReaderCheckpoint {
     ReadingState reading_state{ReadingState::New};
 };
 
+struct AppRestoreContext {
+    Screen screen{Screen::Library};
+    std::optional<BookId> current_book;
+};
+
+class AppContextService {
+public:
+    virtual ~AppContextService() = default;
+
+    virtual PersistStatus load(
+        AppRestoreContext& context
+    ) = 0;
+
+    virtual PersistStatus save(
+        const AppRestoreContext& context
+    ) = 0;
+};
+
 class ReaderCheckpointService {
 public:
     virtual ~ReaderCheckpointService() = default;

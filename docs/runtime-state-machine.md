@@ -587,3 +587,36 @@ The e-paper service only knows:
 `OwnedMonoFramebuffer` is the first concrete implementation and supports byte-aligned region extraction for SSD1677 partial windows.
 
 The eventual Library/Reader renderer can write into this buffer without depending on ESP-IDF or SSD1677 APIs.
+
+
+## 34. Application storage runtime composition
+
+`ApplicationStorageRuntime` is now the first framework-neutral application composition layer above a pair of filesystem adapters.
+
+It owns:
+
+```text
+AppState
+CborSettingsService
+SettingsRuntimeController
+CborLibraryService
+BookImportService
+StagedBookImportService
+CborReaderCheckpointService
+CborAppContextService
+CborBootLoopService
+BookDeleteService
+StoredBookSourceService
+StorageStartupCoordinator
+```
+
+Construction requires only:
+
+```text
+StateFileStore
+BookFileStore
+```
+
+This means the same composition is exercised with POSIX stores in host tests and with the ESP-IDF SD/FAT stores on the real board target.
+
+The Reader controller graph is intentionally not owned here yet. Its remaining concrete dependency is a real `TextMeasurer`/render pipeline; introducing a fake device-side measurer would hide the actual integration work still required.

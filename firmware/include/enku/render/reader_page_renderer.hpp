@@ -10,7 +10,8 @@ public:
 
     virtual bool renderPage(
         const PageResult& page,
-        const TypographySettings& typography
+        const TypographySettings& typography,
+        Orientation orientation
     ) = 0;
 };
 

@@ -80,6 +80,7 @@ SdMountStatus EspIdfSdCard::mount() {
         "/sdcard/system",
         "/sdcard/system/state",
         "/sdcard/system/covers",
+        "/sdcard/system/fonts",
         "/sdcard/system/tmp",
     };
 

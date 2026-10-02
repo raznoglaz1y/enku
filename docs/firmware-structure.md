@@ -35,6 +35,7 @@ firmware/
       book_loader.hpp
     runtime/
       reader_runtime.hpp
+      storage_startup.hpp
     services/
       services.hpp
     storage/
@@ -51,6 +52,7 @@ firmware/
     core/
     runtime/
       reader_runtime.cpp
+      storage_startup.cpp
     reader/
       text_paginator.cpp
       document_reader_engine.cpp
@@ -164,7 +166,8 @@ Owns:
 - generation of refresh requests after successful visible changes;
 - Book Opening → Reading / failure transitions;
 - Back-to-Library progress checkpoint coordination;
-- Finished-state Library summary updates.
+- Finished-state Library summary updates;
+- startup coordination across Library persistence and staged import recovery.
 
 The runtime layer does not manipulate semantic offsets directly.
 

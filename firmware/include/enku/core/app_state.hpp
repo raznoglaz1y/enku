@@ -5,6 +5,7 @@
 #include <string>
 
 #include "types.hpp"
+#include "localization.hpp"
 
 namespace enku {
 
@@ -36,7 +37,7 @@ struct PowerState {
 struct AppState {
     Screen screen{Screen::Boot};
     Orientation orientation{Orientation::Portrait};
-    std::string ui_language{"en"};
+    LocaleId ui_locale{LocaleId::En};
 
     LibraryState library;
 

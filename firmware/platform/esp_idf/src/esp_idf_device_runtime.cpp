@@ -36,6 +36,10 @@ EspIdfDeviceRuntime::EspIdfDeviceRuntime(
           &text_renderer_,
           &platform_.refresh()
       ),
+      library_search_(
+          storage_.appState(),
+          reader_.library()
+      ),
       sleep_wake_(
           storage_.appState(),
           storage_.library(),
@@ -117,6 +121,11 @@ EspIdfDeviceRuntime::reader() {
 FreeTypeTextRenderer&
 EspIdfDeviceRuntime::textRenderer() {
     return text_renderer_;
+}
+
+LibrarySearchRuntime&
+EspIdfDeviceRuntime::librarySearch() {
+    return library_search_;
 }
 
 SleepWakeCoordinator&

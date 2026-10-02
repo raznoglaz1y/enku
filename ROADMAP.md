@@ -40,7 +40,8 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 
 - [ ] Receive and identify the exact production board revision
 - [ ] Measure the board and display stack
-- [ ] Verify onboard physical controls and GPIO mapping
+- [x] Verify control mapping against current official Waveshare source
+- [ ] Physically verify onboard controls and GPIO behavior on the received board
 - [ ] Verify microSD behavior and usable filesystem options
 - [ ] Bring up the e-paper panel from a minimal firmware project
 - [ ] Measure full-refresh timing
@@ -63,6 +64,7 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 - [ ] Implement application state model
 - [ ] Implement persistent settings storage
 - [ ] Implement reusable UI component layer
+- [x] Define physical-to-logical input mapping and press semantics
 - [ ] Implement deterministic focus navigation
 - [ ] Implement portrait/landscape layout switching
 - [ ] Implement localization string system

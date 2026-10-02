@@ -131,6 +131,15 @@ EspIdfDeviceRuntime::EspIdfDeviceRuntime(
           &text_renderer_,
           &platform_.refresh()
       ),
+      wifi_settings_(
+          storage_.appState(),
+          storage_,
+          platform_.network(),
+          platform_.network(),
+          settings_nav_,
+          &text_renderer_,
+          &platform_.refresh()
+      ),
       input_dispatcher_(
           storage_.appState(),
           reader_.library(),
@@ -149,7 +158,8 @@ EspIdfDeviceRuntime::EspIdfDeviceRuntime(
           &display_settings_,
           &locale_settings_,
           &about_device_,
-          &power_off_confirm_
+          &power_off_confirm_,
+          &wifi_settings_
       ) {
     text_renderer_.bindAppState(
         storage_.appState()
@@ -261,6 +271,11 @@ EspIdfDeviceRuntime::aboutDevice() {
 PowerOffConfirmRuntime&
 EspIdfDeviceRuntime::powerOffConfirm() {
     return power_off_confirm_;
+}
+
+WiFiSettingsRuntime&
+EspIdfDeviceRuntime::wifiSettings() {
+    return wifi_settings_;
 }
 
 SleepWakeCoordinator&

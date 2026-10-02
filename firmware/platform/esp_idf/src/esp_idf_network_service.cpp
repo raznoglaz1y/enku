@@ -215,10 +215,18 @@ bool EspIdfNetworkService::connected() const {
     return connected_.load();
 }
 
+NetworkLinkState
+EspIdfNetworkService::connectionState() const {
+    return link_state_.load();
+}
+
 void EspIdfNetworkService::disconnect() {
     manual_disconnect_.store(true);
     resetReconnect();
     connected_.store(false);
+    link_state_.store(
+        NetworkLinkState::Disconnected
+    );
 
     if (initialized_ && started_.load()) {
         esp_wifi_disconnect();
@@ -245,6 +253,9 @@ NetworkPolicyStatus EspIdfNetworkService::applyPolicy(
             }
 
             started_.store(false);
+            link_state_.store(
+                NetworkLinkState::Disconnected
+            );
             return NetworkPolicyStatus::Ok;
 
         case WiFiPolicy::Manual:
@@ -253,6 +264,9 @@ NetworkPolicyStatus EspIdfNetworkService::applyPolicy(
             }
 
             disconnect();
+            link_state_.store(
+                NetworkLinkState::Disconnected
+            );
             return NetworkPolicyStatus::Ok;
 
         case WiFiPolicy::AutoConnectTrusted: {
@@ -273,8 +287,14 @@ NetworkPolicyStatus EspIdfNetworkService::applyPolicy(
             }
 
             manual_disconnect_.store(false);
+            link_state_.store(
+                NetworkLinkState::Connecting
+            );
 
             if (esp_wifi_connect() != ESP_OK) {
+                link_state_.store(
+                    NetworkLinkState::Failed
+                );
                 return NetworkPolicyStatus::DriverError;
             }
 
@@ -480,11 +500,17 @@ NetworkPolicyStatus EspIdfNetworkService::connectToNetwork(
 
     connected_.store(false);
     manual_disconnect_.store(false);
+    link_state_.store(
+        NetworkLinkState::Connecting
+    );
 
     const auto connect_result =
         esp_wifi_connect();
 
     if (connect_result != ESP_OK) {
+        link_state_.store(
+            NetworkLinkState::Failed
+        );
         esp_wifi_set_config(
             WIFI_IF_STA,
             &previous_config
@@ -525,6 +551,10 @@ NetworkPolicyStatus EspIdfNetworkService::connectToNetwork(
         );
         return NetworkPolicyStatus::DriverError;
     }
+
+    link_state_.store(
+        NetworkLinkState::Failed
+    );
 
     ESP_LOGW(
         kTag,
@@ -649,6 +679,9 @@ void EspIdfNetworkService::handleWifiEvent(
     ) {
         self->started_.store(false);
         self->connected_.store(false);
+        self->link_state_.store(
+            NetworkLinkState::Disconnected
+        );
         self->resetReconnect();
     } else if (
         event_id == WIFI_EVENT_STA_CONNECTED
@@ -656,6 +689,9 @@ void EspIdfNetworkService::handleWifiEvent(
         // Association alone is not enough. connected() becomes true only
         // after IP_EVENT_STA_GOT_IP.
         self->connected_.store(false);
+        self->link_state_.store(
+            NetworkLinkState::Connecting
+        );
     } else if (
         event_id == WIFI_EVENT_STA_DISCONNECTED
     ) {
@@ -668,6 +704,10 @@ void EspIdfNetworkService::handleWifiEvent(
             self->active_policy_.load() ==
                 WiFiPolicy::AutoConnectTrusted) {
             self->scheduleReconnect();
+        } else {
+            self->link_state_.store(
+                NetworkLinkState::Disconnected
+            );
         }
     }
 }
@@ -687,6 +727,9 @@ void EspIdfNetworkService::handleIpEvent(
     }
 
     self->connected_.store(true);
+    self->link_state_.store(
+        NetworkLinkState::Online
+    );
     self->manual_disconnect_.store(false);
     self->resetReconnect();
 
@@ -720,6 +763,9 @@ void EspIdfNetworkService::scheduleReconnect() {
         reconnect_attempt_.load();
 
     if (attempt >= kMaxReconnectAttempts) {
+        link_state_.store(
+            NetworkLinkState::Failed
+        );
         ESP_LOGW(
             kTag,
             "Wi-Fi reconnect limit reached"
@@ -735,6 +781,9 @@ void EspIdfNetworkService::scheduleReconnect() {
 
     reconnect_attempt_.store(
         static_cast<std::uint8_t>(attempt + 1U)
+    );
+    link_state_.store(
+        NetworkLinkState::Connecting
     );
 
     if (esp_timer_is_active(reconnect_timer_)) {
@@ -784,6 +833,9 @@ void EspIdfNetworkService::reconnectTimerCallback(
         esp_wifi_connect();
 
     if (result != ESP_OK) {
+        self->link_state_.store(
+            NetworkLinkState::Failed
+        );
         ESP_LOGW(
             kTag,
             "Wi-Fi reconnect call failed: %s",

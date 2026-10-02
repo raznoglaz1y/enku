@@ -8,6 +8,8 @@ enum class PersistRecordType : std::uint8_t {
     LibraryIndex,
     GlobalSettings,
     BookState,
+    AppContext,
+    BootMarker,
 };
 
 struct PersistRecordHeader {

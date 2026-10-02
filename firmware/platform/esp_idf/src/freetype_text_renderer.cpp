@@ -1104,25 +1104,54 @@ bool FreeTypeTextRenderer::renderSearch(
     }
 
     if (app_state.search.phase == SearchPhase::Results) {
+        constexpr int kStartY = 198;
+        constexpr int kRowHeight = 62;
+        const std::size_t max_visible =
+            orientation == Orientation::Portrait
+                ? 8U
+                : 4U;
+
+        const std::size_t focus =
+            std::min<std::size_t>(
+                app_state.search.focus_index,
+                app_state.search.matches.empty()
+                    ? 0U
+                    : app_state.search.matches.size() - 1U
+            );
+
+        const std::size_t visible_start =
+            app_state.search.matches.empty()
+                ? 0U
+                : (focus / max_visible) * max_visible;
+
+        const auto visible =
+            std::min<std::size_t>(
+                app_state.search.matches.size() -
+                    visible_start,
+                max_visible
+            );
+
         char count_text[64] = {};
-        const auto visible_end =
+        const auto first_global =
+            app_state.search.matches.empty()
+                ? 0U
+                : app_state.search.window_start +
+                    static_cast<std::uint32_t>(
+                        visible_start
+                    ) +
+                    1U;
+        const auto last_global =
             app_state.search.window_start +
             static_cast<std::uint32_t>(
-                app_state.search.matches.size()
+                visible_start + visible
             );
 
         std::snprintf(
             count_text,
             sizeof(count_text),
             "%lu-%lu OF %lu",
-            static_cast<unsigned long>(
-                app_state.search.matches.empty()
-                    ? 0U
-                    : app_state.search.window_start + 1U
-            ),
-            static_cast<unsigned long>(
-                visible_end
-            ),
+            static_cast<unsigned long>(first_global),
+            static_cast<unsigned long>(last_global),
             static_cast<unsigned long>(
                 app_state.search.total_matches
             )
@@ -1138,25 +1167,16 @@ bool FreeTypeTextRenderer::renderSearch(
             return false;
         }
 
-        constexpr int kStartY = 198;
-        constexpr int kRowHeight = 62;
-        const std::size_t max_visible =
-            orientation == Orientation::Portrait
-                ? 8U
-                : 4U;
-
-        const auto visible =
-            std::min<std::size_t>(
-                app_state.search.matches.size(),
-                max_visible
-            );
-
-        for (std::size_t i = 0; i < visible; ++i) {
+        for (std::size_t row = 0;
+             row < visible;
+             ++row) {
+            const auto index =
+                visible_start + row;
             const int top =
                 kStartY +
-                static_cast<int>(i) * kRowHeight;
+                static_cast<int>(row) * kRowHeight;
 
-            if (app_state.search.focus_index == i) {
+            if (app_state.search.focus_index == index) {
                 drawRect(
                     24,
                     top,
@@ -1168,7 +1188,7 @@ bool FreeTypeTextRenderer::renderSearch(
             }
 
             if (!drawTextAt(
-                    app_state.search.matches[i].preview,
+                    app_state.search.matches[index].preview,
                     14,
                     38,
                     top + 32,

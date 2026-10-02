@@ -92,6 +92,10 @@ private:
         std::uint32_t offset,
         bool focus_last
     );
+    LibraryRuntimeResult revealBook(
+        const BookId& book_id,
+        RefreshReason reason
+    );
 };
 
 } // namespace enku

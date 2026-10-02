@@ -189,7 +189,9 @@ InputDispatchResult InputDispatcher::handle(
                     OpenFocusedBookRequested{}
                 );
 
-            return result == LibraryRuntimeResult::Applied
+            return result == LibraryRuntimeResult::Applied ||
+                   result == LibraryRuntimeResult::Ignored ||
+                   result == LibraryRuntimeResult::Empty
                 ? InputDispatchResult::Applied
                 : InputDispatchResult::Failed;
         }

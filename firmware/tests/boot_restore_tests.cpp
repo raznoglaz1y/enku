@@ -18,6 +18,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 using namespace enku;
 
@@ -79,6 +80,117 @@ void removeRoot(
     std::filesystem::remove_all(root, ec);
 }
 
+std::uint32_t legacyCrc32(
+    const std::vector<std::uint8_t>& bytes
+) {
+    std::uint32_t crc = 0xFFFFFFFFU;
+
+    for (const auto byte : bytes) {
+        crc ^= byte;
+
+        for (int bit = 0; bit < 8; ++bit) {
+            const auto mask =
+                static_cast<std::uint32_t>(
+                    -(static_cast<std::int32_t>(crc & 1U))
+                );
+            crc =
+                (crc >> 1U) ^
+                (0xEDB88320U & mask);
+        }
+    }
+
+    return ~crc;
+}
+
+void appendLegacyUnsigned(
+    std::vector<std::uint8_t>& out,
+    std::uint64_t value
+) {
+    if (value < 24U) {
+        out.push_back(
+            static_cast<std::uint8_t>(value)
+        );
+        return;
+    }
+
+    if (value <= 0xFFU) {
+        out.push_back(0x18U);
+        out.push_back(
+            static_cast<std::uint8_t>(value)
+        );
+        return;
+    }
+
+    if (value <= 0xFFFFU) {
+        out.push_back(0x19U);
+        out.push_back(
+            static_cast<std::uint8_t>(
+                value >> 8U
+            )
+        );
+        out.push_back(
+            static_cast<std::uint8_t>(value)
+        );
+        return;
+    }
+
+    out.push_back(0x1AU);
+    for (int shift = 24;
+         shift >= 0;
+         shift -= 8) {
+        out.push_back(
+            static_cast<std::uint8_t>(
+                value >> shift
+            )
+        );
+    }
+}
+
+std::vector<std::uint8_t> makeLegacyV1LibraryContext() {
+    std::vector<std::uint8_t> payload;
+    payload.push_back(0x82U);
+    appendLegacyUnsigned(
+        payload,
+        static_cast<std::uint8_t>(
+            Screen::Library
+        )
+    );
+    payload.push_back(0xF6U);
+
+    std::vector<std::uint8_t> out;
+    out.push_back(0x85U);
+    appendLegacyUnsigned(out, 1U);
+    appendLegacyUnsigned(out, 3U);
+    appendLegacyUnsigned(out, 1U);
+
+    if (payload.size() < 24U) {
+        out.push_back(
+            static_cast<std::uint8_t>(
+                0x40U | payload.size()
+            )
+        );
+    } else {
+        out.push_back(0x58U);
+        out.push_back(
+            static_cast<std::uint8_t>(
+                payload.size()
+            )
+        );
+    }
+
+    out.insert(
+        out.end(),
+        payload.begin(),
+        payload.end()
+    );
+    appendLegacyUnsigned(
+        out,
+        legacyCrc32(payload)
+    );
+
+    return out;
+}
+
 BookRecord makeBook(
     const std::string& book_id,
     const std::string& path,
@@ -105,6 +217,36 @@ BookRecord makeBook(
 int main() {
     const TypographySettings typography{16, 1.0F, 10};
     const Viewport viewport{140, 80};
+
+    // Schema v1 app-context records remain readable after the v2 upgrade.
+    {
+        const auto root =
+            makeRoot("enku-app-context-v1-compat");
+
+        PosixStateFileStore state_files(root);
+        assert(
+            state_files.write(
+                "/system/context.a.cbor",
+                makeLegacyV1LibraryContext()
+            ) == StateFileStatus::Ok
+        );
+
+        CborAppContextService context(state_files);
+        AppRestoreContext restored;
+
+        assert(
+            context.load(restored) ==
+            PersistStatus::Ok
+        );
+        assert(restored.screen == Screen::Library);
+        assert(!restored.current_book.has_value());
+        assert(restored.library_offset == 0);
+        assert(
+            !restored.library_focused_book.has_value()
+        );
+
+        removeRoot(root);
+    }
 
     // Power loss while Reading: persistent app context + checkpoint restore the
     // same book and semantic offset after constructing a completely new

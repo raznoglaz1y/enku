@@ -276,6 +276,115 @@ int main() {
         removeRoot(root);
     }
 
+    // Library context also restores the visible window and focus across
+    // a cold reboot.
+    {
+        const auto root =
+            makeRoot("enku-boot-restore-library-position");
+
+        PosixStateFileStore state_files(root);
+        PosixBookFileStore book_files(root);
+        CborLibraryService library(state_files);
+        assert(library.load() == LibraryStatus::Ok);
+
+        const auto record = makeBook(
+            "library-focus",
+            "/books/library-focus.txt",
+            "fp-library-focus"
+        );
+
+        assert(
+            library.upsert(record) ==
+            LibraryStatus::Ok
+        );
+
+        CborAppContextService context(state_files);
+        assert(
+            context.save(
+                AppRestoreContext{
+                    Screen::Library,
+                    std::nullopt,
+                    24,
+                    BookId{"library-focus"},
+                }
+            ) == PersistStatus::Ok
+        );
+
+        BookImportService importer(library);
+        AppState app;
+        CborSettingsService settings_service(state_files);
+        SettingsRuntimeController settings(
+            app,
+            settings_service
+        );
+        StorageStartupCoordinator startup(
+            app,
+            settings,
+            library,
+            book_files,
+            importer
+        );
+
+        StoredBookSourceService source(book_files);
+        FixedWidthMeasurer measurer;
+        ReaderBookLoader loader(
+            library,
+            source,
+            measurer
+        );
+        CborReaderCheckpointService checkpoint(
+            state_files
+        );
+        CborBootLoopService boot_loop(state_files);
+        FakeRefreshService refresh;
+
+        ReaderRuntimeController runtime(
+            app,
+            loader,
+            refresh,
+            library,
+            checkpoint,
+            context,
+            typography,
+            viewport
+        );
+
+        BootRestoreCoordinator boot(
+            app,
+            startup,
+            context,
+            boot_loop,
+            runtime,
+            library
+        );
+
+        const auto result = boot.run();
+
+        assert(
+            result.status ==
+            BootRestoreStatus::LibraryReady
+        );
+        assert(app.screen == Screen::Library);
+        assert(app.library.offset == 24);
+        assert(
+            app.library.focused_book ==
+            std::optional<BookId>{"library-focus"}
+        );
+
+        AppRestoreContext restored_context;
+        assert(
+            context.load(restored_context) ==
+            PersistStatus::Ok
+        );
+        assert(restored_context.library_offset == 24);
+        assert(
+            restored_context.library_focused_book ==
+            std::optional<BookId>{"library-focus"}
+        );
+
+        removeRoot(root);
+    }
+
     // If the previously-open book disappears, restore must fall back to
     // Library and rewrite the safe context so the next reboot does not retry
     // the same broken auto-open forever.

@@ -36,16 +36,9 @@ void BootRestoreCoordinator::settleLibrary() {
     app_state_.boot.boot_in_progress = false;
 }
 
-BootRestoreResult BootRestoreCoordinator::run() {
-    auto storage = storage_startup_.run();
-
-    if (!storage.ready()) {
-        return BootRestoreResult{
-            BootRestoreStatus::RecoveryRequired,
-            storage,
-        };
-    }
-
+BootRestoreResult BootRestoreCoordinator::restoreLoadedContext(
+    const StorageStartupResult& storage
+) {
     app_state_.boot.stage = BootStage::Restore;
     app_state_.boot.boot_in_progress = true;
 
@@ -163,6 +156,29 @@ BootRestoreResult BootRestoreCoordinator::run() {
         BootRestoreStatus::FallbackToLibrary,
         storage,
     };
+}
+
+BootRestoreResult BootRestoreCoordinator::restoreContextOnly() {
+    return restoreLoadedContext(
+        StorageStartupResult{
+            StorageStartupStatus::Ready,
+            0,
+            0,
+        }
+    );
+}
+
+BootRestoreResult BootRestoreCoordinator::run() {
+    auto storage = storage_startup_.run();
+
+    if (!storage.ready()) {
+        return BootRestoreResult{
+            BootRestoreStatus::RecoveryRequired,
+            storage,
+        };
+    }
+
+    return restoreLoadedContext(storage);
 }
 
 } // namespace enku

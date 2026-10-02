@@ -42,6 +42,11 @@ public:
         const std::string& bytes
     );
 
+    EspIdfFsStatus appendText(
+        const std::string& path,
+        const std::string& bytes
+    );
+
     EspIdfFsStatus remove(
         const std::string& path
     );
@@ -100,6 +105,11 @@ public:
     ) override;
 
     BookFileStatus write(
+        const std::string& path,
+        const std::string& bytes
+    ) override;
+
+    BookFileStatus append(
         const std::string& path,
         const std::string& bytes
     ) override;

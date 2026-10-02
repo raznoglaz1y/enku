@@ -116,12 +116,14 @@ firmware/
           esp_idf_buttons.hpp
           esp_idf_power_service.hpp
           epaper_refresh_service.hpp
+          esp_idf_platform.hpp
         src/
           esp_idf_sd_card.cpp
           esp_idf_file_store.cpp
           esp_idf_buttons.cpp
           esp_idf_power_service.cpp
           epaper_refresh_service.cpp
+          esp_idf_platform.cpp
     services/
 ```
 

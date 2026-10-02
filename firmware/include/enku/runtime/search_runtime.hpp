@@ -39,6 +39,9 @@ private:
 
     SearchRuntimeResult cancel();
     SearchRuntimeResult executeSearch();
+    SearchRuntimeResult populateWindow(
+        std::uint32_t window_start
+    );
     SearchRuntimeResult handleKeyboard(LogicalAction action);
     SearchRuntimeResult render();
     SearchRuntimeResult refreshCurrentFrame();

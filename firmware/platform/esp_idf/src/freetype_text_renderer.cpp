@@ -1032,6 +1032,307 @@ bool FreeTypeTextRenderer::renderLibrary(
 
 namespace enku::platform::esp_idf {
 
+bool FreeTypeTextRenderer::renderBookDetails(
+    const AppState& app_state,
+    const BookRecord& book
+) {
+    if (!ready()) {
+        return false;
+    }
+
+    framebuffer_.clearWhite();
+
+    const auto orientation =
+        app_state.orientation;
+    const int logical_width =
+        orientation == Orientation::Portrait
+            ? 480
+            : 800;
+
+    if (!drawTextAt(
+            "BOOK DETAILS",
+            26,
+            28,
+            50,
+            orientation
+        )) {
+        return false;
+    }
+
+    if (app_state.book_details.mode !=
+        BookDetailsMode::Details) {
+        const bool removing =
+            app_state.book_details.mode ==
+            BookDetailsMode::DeleteConfirm;
+
+        if (!drawTextAt(
+                removing
+                    ? "DELETE THIS BOOK?"
+                    : "RESTART READING?",
+                24,
+                32,
+                116,
+                orientation
+            )) {
+            return false;
+        }
+
+        const std::string copy =
+            removing
+                ? "THIS REMOVES THE LOCAL FILE AND READING DATA."
+                : "READING POSITION AND PROGRESS WILL RESET.";
+
+        if (!drawTextAt(
+                copy,
+                14,
+                32,
+                154,
+                orientation
+            )) {
+            return false;
+        }
+
+        const bool confirmed =
+            removing
+                ? app_state.book_details.confirm_delete
+                : app_state.book_details.confirm_restart;
+
+        const int gap = 16;
+        const int button_width =
+            (logical_width - 64 - gap) / 2;
+        const int top =
+            orientation == Orientation::Portrait
+                ? 250
+                : 220;
+
+        drawRect(
+            24,
+            top,
+            button_width,
+            54,
+            orientation,
+            confirmed ? 1 : 2
+        );
+        drawRect(
+            24 + button_width + gap,
+            top,
+            button_width,
+            54,
+            orientation,
+            confirmed ? 2 : 1
+        );
+
+        if (!drawTextAt(
+                "CANCEL",
+                17,
+                40,
+                top + 34,
+                orientation
+            )) {
+            return false;
+        }
+
+        if (!drawTextAt(
+                removing ? "DELETE" : "RESTART",
+                17,
+                40 + button_width + gap,
+                top + 34,
+                orientation
+            )) {
+            return false;
+        }
+
+        return drawTextAt(
+            "UP/DOWN CHOOSE  FUNCTION CONFIRM  BACK CANCEL",
+            12,
+            28,
+            orientation == Orientation::Portrait
+                ? 760
+                : 448,
+            orientation
+        );
+    }
+
+    if (!drawTextAt(
+            book.metadata.title.empty()
+                ? "UNTITLED"
+                : book.metadata.title,
+            24,
+            30,
+            98,
+            orientation
+        )) {
+        return false;
+    }
+
+    if (!drawTextAt(
+            book.metadata.author_display.empty()
+                ? "UNKNOWN AUTHOR"
+                : book.metadata.author_display,
+            15,
+            30,
+            128,
+            orientation
+        )) {
+        return false;
+    }
+
+    const char* state_label = "NEW";
+    const char* primary = "START";
+
+    if (book.reading_state == ReadingState::Reading) {
+        state_label = "READING";
+        primary = "CONTINUE";
+    } else if (
+        book.reading_state == ReadingState::Finished) {
+        state_label = "FINISHED";
+        primary = "READ AGAIN";
+    }
+
+    char progress[48] = {};
+    std::snprintf(
+        progress,
+        sizeof(progress),
+        "%s  %u%%",
+        state_label,
+        static_cast<unsigned>(
+            std::min(
+                100.0F,
+                std::max(
+                    0.0F,
+                    book.progress * 100.0F
+                )
+            )
+        )
+    );
+
+    if (!drawTextAt(
+            progress,
+            14,
+            30,
+            164,
+            orientation
+        )) {
+        return false;
+    }
+
+    const std::string language =
+        book.metadata.language.has_value()
+            ? "LANGUAGE: " + *book.metadata.language
+            : "LANGUAGE: UNKNOWN";
+
+    if (!drawTextAt(
+            language,
+            13,
+            30,
+            192,
+            orientation
+        )) {
+        return false;
+    }
+
+    std::string description =
+        book.metadata.description.has_value() &&
+        !book.metadata.description->empty()
+            ? *book.metadata.description
+            : "NO DESCRIPTION";
+
+    const std::size_t description_limit =
+        orientation == Orientation::Portrait
+            ? 72U
+            : 110U;
+
+    if (description.size() > description_limit) {
+        description.resize(description_limit);
+        description += "...";
+    }
+
+    if (!drawTextAt(
+            description,
+            13,
+            30,
+            222,
+            orientation
+        )) {
+        return false;
+    }
+
+    struct ActionRow {
+        BookDetailsFocus focus;
+        const char* label;
+        bool visible;
+    };
+
+    const ActionRow actions[] = {
+        {
+            BookDetailsFocus::Primary,
+            primary,
+            true,
+        },
+        {
+            BookDetailsFocus::RestartReading,
+            "RESTART READING",
+            book.reading_state != ReadingState::New ||
+                book.progress > 0.0F,
+        },
+        {
+            BookDetailsFocus::DeleteBook,
+            "DELETE BOOK",
+            true,
+        },
+    };
+
+    int row = 0;
+    const int start_y =
+        orientation == Orientation::Portrait
+            ? 300
+            : 282;
+    const int row_height = 58;
+
+    for (const auto& action : actions) {
+        if (!action.visible) {
+            continue;
+        }
+
+        const int top =
+            start_y + row * row_height;
+
+        if (app_state.book_details.focus ==
+            action.focus) {
+            drawRect(
+                24,
+                top,
+                logical_width - 48,
+                row_height - 8,
+                orientation,
+                2
+            );
+        }
+
+        if (!drawTextAt(
+                action.label,
+                17,
+                40,
+                top + 32,
+                orientation
+            )) {
+            return false;
+        }
+
+        ++row;
+    }
+
+    return drawTextAt(
+        "UP/DOWN  FUNCTION SELECT  BACK LIBRARY",
+        12,
+        28,
+        orientation == Orientation::Portrait
+            ? 760
+            : 448,
+        orientation
+    );
+}
+
 bool FreeTypeTextRenderer::renderReaderOverlay(
     const AppState& app_state
 ) {

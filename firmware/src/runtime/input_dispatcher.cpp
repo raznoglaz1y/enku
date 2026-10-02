@@ -53,7 +53,8 @@ InputDispatcher::InputDispatcher(
     ReaderOverlayRuntime* reader_overlay,
     SearchRuntime* search,
     LibrarySearchRuntime* library_search,
-    BookDetailsRuntime* book_details
+    BookDetailsRuntime* book_details,
+    BookFinishedRuntime* book_finished
 )
     : app_state_(app_state),
       library_(library),
@@ -63,7 +64,8 @@ InputDispatcher::InputDispatcher(
       reader_overlay_(reader_overlay),
       search_(search),
       library_search_(library_search),
-      book_details_(book_details) {}
+      book_details_(book_details),
+      book_finished_(book_finished) {}
 
 InputDispatchResult InputDispatcher::handle(
     const PhysicalInputEvent& input
@@ -76,6 +78,25 @@ InputDispatchResult InputDispatcher::handle(
 
     if (!action.has_value()) {
         return InputDispatchResult::Ignored;
+    }
+
+    if (app_state_.screen == Screen::BookFinished) {
+        if (book_finished_ == nullptr) {
+            return InputDispatchResult::Unhandled;
+        }
+
+        const auto result =
+            book_finished_->handle(*action);
+
+        if (result == BookFinishedRuntimeResult::Applied) {
+            return InputDispatchResult::Applied;
+        }
+
+        if (result == BookFinishedRuntimeResult::Failed) {
+            return InputDispatchResult::Failed;
+        }
+
+        return InputDispatchResult::Unhandled;
     }
 
     if (app_state_.screen == Screen::BookDetails) {
@@ -235,8 +256,18 @@ InputDispatchResult InputDispatcher::handle(
                     PageNextRequested{}
                 );
 
-            return result == ReaderRuntimeResult::Applied ||
-                   result == ReaderRuntimeResult::EndOfBook
+            if (result == ReaderRuntimeResult::EndOfBook) {
+                if (book_finished_ == nullptr) {
+                    return InputDispatchResult::Applied;
+                }
+
+                return book_finished_->openFromReader() ==
+                    BookFinishedRuntimeResult::Applied
+                    ? InputDispatchResult::Applied
+                    : InputDispatchResult::Failed;
+            }
+
+            return result == ReaderRuntimeResult::Applied
                 ? InputDispatchResult::Applied
                 : InputDispatchResult::Failed;
         }

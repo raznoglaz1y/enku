@@ -393,6 +393,209 @@ int main() {
         removeRoot(root);
     }
 
+    // Stale Library offset/focus are normalized against the current
+    // post-startup Library contents.
+    {
+        const auto root =
+            makeRoot("enku-boot-restore-library-normalize");
+
+        PosixStateFileStore state_files(root);
+        PosixBookFileStore book_files(root);
+        CborLibraryService library(state_files);
+        assert(library.load() == LibraryStatus::Ok);
+
+        auto first = makeBook(
+            "first",
+            "/books/first.txt",
+            "fp-first"
+        );
+        first.metadata.title = "First";
+        first.added_order = 1;
+
+        auto second = makeBook(
+            "second",
+            "/books/second.txt",
+            "fp-second"
+        );
+        second.metadata.title = "Second";
+        second.added_order = 2;
+
+        assert(library.upsert(first) == LibraryStatus::Ok);
+        assert(library.upsert(second) == LibraryStatus::Ok);
+
+        CborAppContextService context(state_files);
+        assert(
+            context.save(
+                AppRestoreContext{
+                    Screen::Library,
+                    std::nullopt,
+                    99,
+                    BookId{"deleted-focus"},
+                }
+            ) == PersistStatus::Ok
+        );
+
+        BookImportService importer(library);
+        AppState app;
+        CborSettingsService settings_service(state_files);
+        SettingsRuntimeController settings(
+            app,
+            settings_service
+        );
+        StorageStartupCoordinator startup(
+            app,
+            settings,
+            library,
+            book_files,
+            importer
+        );
+
+        app.library.limit = 1;
+
+        StoredBookSourceService source(book_files);
+        FixedWidthMeasurer measurer;
+        ReaderBookLoader loader(
+            library,
+            source,
+            measurer
+        );
+        CborReaderCheckpointService checkpoint(
+            state_files
+        );
+        CborBootLoopService boot_loop(state_files);
+        FakeRefreshService refresh;
+
+        ReaderRuntimeController runtime(
+            app,
+            loader,
+            refresh,
+            library,
+            checkpoint,
+            context,
+            typography,
+            viewport
+        );
+
+        BootRestoreCoordinator boot(
+            app,
+            startup,
+            context,
+            boot_loop,
+            runtime,
+            library
+        );
+
+        const auto result = boot.run();
+
+        assert(
+            result.status ==
+            BootRestoreStatus::LibraryReady
+        );
+        assert(app.screen == Screen::Library);
+        assert(app.library.offset == 1);
+        assert(
+            app.library.focused_book ==
+            std::optional<BookId>{"second"}
+        );
+
+        AppRestoreContext normalized;
+        assert(
+            context.load(normalized) ==
+            PersistStatus::Ok
+        );
+        assert(normalized.library_offset == 1);
+        assert(
+            normalized.library_focused_book ==
+            std::optional<BookId>{"second"}
+        );
+
+        removeRoot(root);
+    }
+
+    // Empty Library normalizes stale restore state to offset 0 / no focus
+    // without entering recovery mode.
+    {
+        const auto root =
+            makeRoot("enku-boot-restore-empty-library");
+
+        PosixStateFileStore state_files(root);
+        PosixBookFileStore book_files(root);
+        CborLibraryService library(state_files);
+        assert(library.load() == LibraryStatus::Ok);
+
+        CborAppContextService context(state_files);
+        assert(
+            context.save(
+                AppRestoreContext{
+                    Screen::Library,
+                    std::nullopt,
+                    48,
+                    BookId{"gone"},
+                }
+            ) == PersistStatus::Ok
+        );
+
+        BookImportService importer(library);
+        AppState app;
+        CborSettingsService settings_service(state_files);
+        SettingsRuntimeController settings(
+            app,
+            settings_service
+        );
+        StorageStartupCoordinator startup(
+            app,
+            settings,
+            library,
+            book_files,
+            importer
+        );
+
+        StoredBookSourceService source(book_files);
+        FixedWidthMeasurer measurer;
+        ReaderBookLoader loader(
+            library,
+            source,
+            measurer
+        );
+        CborReaderCheckpointService checkpoint(
+            state_files
+        );
+        CborBootLoopService boot_loop(state_files);
+        FakeRefreshService refresh;
+
+        ReaderRuntimeController runtime(
+            app,
+            loader,
+            refresh,
+            library,
+            checkpoint,
+            context,
+            typography,
+            viewport
+        );
+
+        BootRestoreCoordinator boot(
+            app,
+            startup,
+            context,
+            boot_loop,
+            runtime,
+            library
+        );
+
+        const auto result = boot.run();
+
+        assert(
+            result.status ==
+            BootRestoreStatus::LibraryReady
+        );
+        assert(app.screen == Screen::Library);
+        assert(app.library.offset == 0);
+        assert(!app.library.focused_book.has_value());
+
+        removeRoot(root);
+    }
+
     // If the previously-open book disappears, restore must fall back to
     // Library and rewrite the safe context so the next reboot does not retry
     // the same broken auto-open forever.

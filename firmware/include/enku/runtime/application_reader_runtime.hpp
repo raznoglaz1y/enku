@@ -2,6 +2,7 @@
 
 #include "../reader/book_loader.hpp"
 #include "../render/reader_page_renderer.hpp"
+#include "../render/library_page_renderer.hpp"
 #include "../services/services.hpp"
 #include "application_storage_runtime.hpp"
 #include "boot_restore.hpp"
@@ -16,7 +17,8 @@ public:
         ApplicationStorageRuntime& storage,
         RefreshService& refresh,
         const TextMeasurer& measurer,
-        ReaderPageRenderer& renderer,
+        ReaderPageRenderer& reader_renderer,
+        LibraryPageRenderer& library_renderer,
         TypographySettings typography,
         Viewport viewport
     );

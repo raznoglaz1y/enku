@@ -17,6 +17,7 @@ add_library(enku_core STATIC
     src/runtime/reader_runtime.cpp
     src/runtime/storage_startup.cpp
     src/runtime/boot_restore.cpp
+    src/runtime/sleep_wake.cpp
     src/storage/cbor_reader_checkpoint.cpp
     src/storage/cbor_library_service.cpp
     src/storage/cbor_app_context_service.cpp
@@ -61,4 +62,5 @@ enku_add_test(book_import_service_tests tests/book_import_service_tests.cpp)
 enku_add_test(staged_book_import_tests tests/staged_book_import_tests.cpp)
 enku_add_test(storage_startup_tests tests/storage_startup_tests.cpp)
 enku_add_test(boot_restore_tests tests/boot_restore_tests.cpp)
+enku_add_test(sleep_wake_tests tests/sleep_wake_tests.cpp)
 enku_add_test(posix_checkpoint_integration_tests tests/posix_checkpoint_integration_tests.cpp)

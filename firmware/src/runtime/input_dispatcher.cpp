@@ -78,7 +78,8 @@ InputDispatcher::InputDispatcher(
     ContentsBookmarksRuntime* contents_bookmarks,
     AboutBookRuntime* about_book,
     SettingsNavigationRuntime* settings_nav,
-    ReadingSettingsRuntime* reading_settings
+    ReadingSettingsRuntime* reading_settings,
+    DisplaySettingsRuntime* display_settings
 )
     : app_state_(app_state),
       library_(library),
@@ -93,7 +94,8 @@ InputDispatcher::InputDispatcher(
       contents_bookmarks_(contents_bookmarks),
       about_book_(about_book),
       settings_nav_(settings_nav),
-      reading_settings_(reading_settings) {}
+      reading_settings_(reading_settings),
+      display_settings_(display_settings) {}
 
 InputDispatchResult InputDispatcher::handle(
     const PhysicalInputEvent& input
@@ -106,6 +108,25 @@ InputDispatchResult InputDispatcher::handle(
 
     if (!action.has_value()) {
         return InputDispatchResult::Ignored;
+    }
+
+    if (app_state_.screen == Screen::DisplaySettings) {
+        if (display_settings_ == nullptr) {
+            return InputDispatchResult::Unhandled;
+        }
+
+        const auto result =
+            display_settings_->handle(*action);
+
+        if (result == DisplaySettingsRuntimeResult::Applied) {
+            return InputDispatchResult::Applied;
+        }
+
+        if (result == DisplaySettingsRuntimeResult::Failed) {
+            return InputDispatchResult::Failed;
+        }
+
+        return InputDispatchResult::Unhandled;
     }
 
     if (app_state_.screen == Screen::ReadingSettings) {
@@ -145,6 +166,15 @@ InputDispatchResult InputDispatcher::handle(
                 }
                 return reading_settings_->openFromSettings() ==
                     ReadingSettingsRuntimeResult::Applied
+                    ? InputDispatchResult::Applied
+                    : InputDispatchResult::Failed;
+
+            case SettingsNavigationResult::DisplayRequested:
+                if (display_settings_ == nullptr) {
+                    return InputDispatchResult::Unhandled;
+                }
+                return display_settings_->openFromSettings() ==
+                    DisplaySettingsRuntimeResult::Applied
                     ? InputDispatchResult::Applied
                     : InputDispatchResult::Failed;
 

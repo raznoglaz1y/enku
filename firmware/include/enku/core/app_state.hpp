@@ -107,6 +107,19 @@ enum class PowerOffConfirmFocus : std::uint8_t {
     PowerOff,
 };
 
+enum class WiFiSettingsFocus : std::uint8_t {
+    Policy,
+    ForgetTrusted,
+};
+
+struct WiFiSettingsState {
+    WiFiSettingsFocus focus{WiFiSettingsFocus::Policy};
+    bool editing_policy{false};
+    WiFiPolicy selected_policy{WiFiPolicy::AutoConnectTrusted};
+    bool forget_confirm{false};
+    bool confirm_forget{false};
+};
+
 struct PowerOffConfirmState {
     PowerOffConfirmFocus focus{PowerOffConfirmFocus::Cancel};
 };

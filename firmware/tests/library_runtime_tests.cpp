@@ -540,6 +540,42 @@ int main() {
 
     app.library.limit = 24;
 
+    // Deleting the only item on the last page must clamp
+    // the offset back to the previous valid page.
+    app.library.limit = 1;
+    app.library.offset = 1;
+    app.library.focused_book = "beta";
+    assert(
+        runtime.handle(LibraryRefreshRequested{}) ==
+        LibraryRuntimeResult::Applied
+    );
+    assert(runtime.page().offset == 1);
+    assert(runtime.page().items[0].book_id == "beta");
+
+    assert(
+        runtime.handle(
+            DeleteFocusedBookRequested{}
+        ) == LibraryRuntimeResult::Applied
+    );
+    assert(app.library.offset == 0);
+    assert(runtime.page().offset == 0);
+    assert(runtime.page().total_matches == 1);
+    assert(runtime.page().items.size() == 1);
+    assert(runtime.page().items[0].book_id == "alpha");
+    assert(
+        app.library.focused_book ==
+        std::optional<BookId>{"alpha"}
+    );
+
+    // Restore beta for the remaining import tests.
+    assert(library.upsert(beta) == LibraryStatus::Ok);
+    assert(
+        book_files.write(
+            beta.source_path,
+            "Beta book text with enough words for pagination."
+        ) == BookFileStatus::Ok
+    );
+
     const std::string staged_path =
         "/system/tmp/gamma-upload.txt";
     assert(
@@ -550,6 +586,16 @@ int main() {
     );
 
     assert(!app.import_active);
+
+    app.library.limit = 1;
+    assert(
+        runtime.handle(
+            LibrarySortChanged{
+                LibrarySort::RecentlyAdded,
+                SortDirection::Ascending,
+            }
+        ) == LibraryRuntimeResult::Applied
+    );
 
     assert(
         runtime.handle(
@@ -568,6 +614,12 @@ int main() {
     );
     assert(runtime.page().total_matches == 3);
     assert(app.library.focused_book.has_value());
+    assert(runtime.page().items.size() == 1);
+    assert(
+        runtime.page().items[0].book_id ==
+        *app.library.focused_book
+    );
+    assert(runtime.page().offset == 2);
 
     const auto imported =
         library.get(*app.library.focused_book);

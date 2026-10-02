@@ -423,3 +423,16 @@ Transient state can be rebuilt after reboot.
 - Progress writes are debounced/checkpointed rather than blocking every page turn.
 - Display/layout work is serialized.
 - Errors must return to a safe usable state without corrupting book/library data.
+
+
+## Refresh back-pressure
+
+The detailed refresh queue and e-paper update policy are defined in [Refresh Manager & E-Paper Update Policy](refresh-model.md).
+
+Runtime rules:
+
+- only one physical display update executes at a time;
+- stale queued render work may be discarded when newer full-screen state supersedes it;
+- page-turn input cannot create an unbounded refresh queue;
+- display failure does not roll back authoritative AppState;
+- hidden state changes do not produce display work.

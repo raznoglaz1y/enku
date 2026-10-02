@@ -38,6 +38,66 @@ public:
         const BookRecord& record,
         std::string& bytes
     ) = 0;
+
+    virtual std::optional<std::uint64_t> sourceSize(
+        const BookRecord& record
+    ) {
+        std::string bytes;
+        if (readSource(
+                record,
+                bytes
+            ) != BookSourceStatus::Ok) {
+            return std::nullopt;
+        }
+
+        return static_cast<std::uint64_t>(
+            bytes.size()
+        );
+    }
+
+    virtual BookSourceStatus readSourceRange(
+        const BookRecord& record,
+        std::uint64_t offset,
+        std::size_t length,
+        std::string& bytes
+    ) {
+        std::string content;
+        const auto status =
+            readSource(
+                record,
+                content
+            );
+
+        if (status != BookSourceStatus::Ok) {
+            bytes.clear();
+            return status;
+        }
+
+        if (offset >
+                static_cast<std::uint64_t>(
+                    content.size()
+                ) ||
+            static_cast<std::uint64_t>(
+                length
+            ) >
+                static_cast<std::uint64_t>(
+                    content.size()
+                ) -
+                    offset) {
+            bytes.clear();
+            return BookSourceStatus::ReadFailed;
+        }
+
+        bytes.assign(
+            content,
+            static_cast<std::size_t>(
+                offset
+            ),
+            length
+        );
+
+        return BookSourceStatus::Ok;
+    }
 };
 
 class LibraryService {

@@ -111,6 +111,10 @@ public:
         const AppState& app_state
     ) override;
 
+    bool renderReadingSettings(
+        const AppState& app_state
+    ) override;
+
 private:
     OwnedMonoFramebuffer& framebuffer_;
     const AppState* app_state_{nullptr};

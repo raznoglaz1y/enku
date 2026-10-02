@@ -32,6 +32,7 @@ enum class Screen : std::uint8_t {
     ContentsBookmarks = 12,
     AboutBook = 13,
     ReadingSettings = 14,
+    DisplaySettings = 15,
 };
 
 static_assert(

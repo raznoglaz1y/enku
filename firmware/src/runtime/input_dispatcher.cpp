@@ -6,6 +6,7 @@ namespace {
 
 InputDispatchResult dispatchOverlay(
     ReaderOverlayRuntime* overlay,
+    SleepWakeCoordinator& sleep_wake,
     LogicalAction action
 ) {
     if (overlay == nullptr) {
@@ -15,6 +16,12 @@ InputDispatchResult dispatchOverlay(
     switch (overlay->handle(action)) {
         case ReaderOverlayRuntimeResult::Applied:
             return InputDispatchResult::Applied;
+
+        case ReaderOverlayRuntimeResult::SleepRequested:
+            return sleep_wake.sleep() ==
+                SleepWakeStatus::Applied
+                ? InputDispatchResult::Applied
+                : InputDispatchResult::Failed;
 
         case ReaderOverlayRuntimeResult::Ignored:
             return InputDispatchResult::Unhandled;
@@ -61,6 +68,7 @@ InputDispatchResult InputDispatcher::handle(
                 Screen::ReaderOverlay) {
                 return dispatchOverlay(
                     reader_overlay_,
+                    sleep_wake_,
                     *action
                 );
             }
@@ -81,6 +89,7 @@ InputDispatchResult InputDispatcher::handle(
                 Screen::ReaderOverlay) {
                 return dispatchOverlay(
                     reader_overlay_,
+                    sleep_wake_,
                     *action
                 );
             }
@@ -101,6 +110,7 @@ InputDispatchResult InputDispatcher::handle(
                 Screen::ReaderOverlay) {
                 return dispatchOverlay(
                     reader_overlay_,
+                    sleep_wake_,
                     *action
                 );
             }
@@ -148,6 +158,7 @@ InputDispatchResult InputDispatcher::handle(
                 Screen::ReaderOverlay) {
                 return dispatchOverlay(
                     reader_overlay_,
+                    sleep_wake_,
                     *action
                 );
             }
@@ -171,6 +182,7 @@ InputDispatchResult InputDispatcher::handle(
         case LogicalAction::OpenQuickTypography:
             return dispatchOverlay(
                 reader_overlay_,
+                sleep_wake_,
                 *action
             );
 

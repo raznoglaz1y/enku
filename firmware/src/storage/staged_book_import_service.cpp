@@ -101,10 +101,18 @@ StagedImportResult StagedBookImportService::import(
 
     prepared.record.source_path = result.final_path;
 
-    const auto write_status =
-        files_.write(result.final_path, bytes);
+    // Parsing is complete. Release the raw book buffer before any filesystem
+    // or Library commit work so large sources do not remain live longer than
+    // necessary.
+    std::string{}.swap(bytes);
 
-    if (write_status != BookFileStatus::Ok) {
+    const auto move_status =
+        files_.move(
+            staged_path,
+            result.final_path
+        );
+
+    if (move_status != BookFileStatus::Ok) {
         result.status =
             StagedImportStatus::FinalWriteFailed;
         return result;
@@ -115,7 +123,10 @@ StagedImportResult StagedBookImportService::import(
 
     if (!commit_result.ok()) {
         const auto rollback_status =
-            files_.remove(result.final_path);
+            files_.move(
+                result.final_path,
+                staged_path
+            );
 
         if (rollback_status != BookFileStatus::Ok) {
             result.status =
@@ -125,15 +136,6 @@ StagedImportResult StagedBookImportService::import(
 
         result.status =
             StagedImportStatus::LibraryCommitFailed;
-        return result;
-    }
-
-    const auto cleanup_status =
-        files_.remove(staged_path);
-
-    if (cleanup_status != BookFileStatus::Ok) {
-        result.status =
-            StagedImportStatus::CleanupFailed;
         return result;
     }
 

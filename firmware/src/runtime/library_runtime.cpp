@@ -235,7 +235,7 @@ LibraryRuntimeResult LibraryRuntimeController::handle(
     const LibrarySearchChanged& event
 ) {
     app_state_.library.search_text = event.text;
-    app_state_.library.offset = 0;
+    resetQueryWindow();
     app_state_.library.mode =
         event.text.empty()
             ? LibraryQueryMode::Browse
@@ -458,7 +458,7 @@ LibraryRuntimeResult LibraryRuntimeController::handle(
 
     app_state_.library.mode = LibraryQueryMode::Browse;
     app_state_.library.search_text.clear();
-    app_state_.library.offset = 0;
+    resetQueryWindow();
     app_state_.library.focused_book = imported.book_id;
 
     return reload(RefreshReason::ScreenChanged);

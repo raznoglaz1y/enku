@@ -11,16 +11,79 @@ namespace enku {
 
 namespace {
 
-std::string asciiFold(std::string value) {
-    std::transform(
-        value.begin(),
-        value.end(),
-        value.begin(),
-        [](unsigned char ch) {
-            return static_cast<char>(std::tolower(ch));
+std::string simpleUtf8Fold(
+    std::string_view value
+) {
+    std::string out;
+    out.reserve(value.size());
+
+    std::size_t offset = 0;
+
+    while (offset < value.size()) {
+        const auto first =
+            static_cast<unsigned char>(
+                value[offset]
+            );
+
+        if (first < 0x80U) {
+            char ch =
+                static_cast<char>(first);
+
+            if (ch >= 'A' && ch <= 'Z') {
+                ch = static_cast<char>(
+                    ch - 'A' + 'a'
+                );
+            }
+
+            out.push_back(ch);
+            ++offset;
+            continue;
         }
-    );
-    return value;
+
+        if (offset + 1U < value.size() &&
+            (first & 0xE0U) == 0xC0U) {
+            const auto second =
+                static_cast<unsigned char>(
+                    value[offset + 1U]
+                );
+
+            if ((second & 0xC0U) == 0x80U) {
+                std::uint32_t codepoint =
+                    ((first & 0x1FU) << 6U) |
+                    (second & 0x3FU);
+
+                if (codepoint >= 0x0410U &&
+                    codepoint <= 0x042FU) {
+                    codepoint += 0x20U;
+                } else if (codepoint == 0x0401U) {
+                    codepoint = 0x0451U;
+                }
+
+                out.push_back(
+                    static_cast<char>(
+                        0xC0U |
+                        ((codepoint >> 6U) &
+                         0x1FU)
+                    )
+                );
+                out.push_back(
+                    static_cast<char>(
+                        0x80U |
+                        (codepoint & 0x3FU)
+                    )
+                );
+                offset += 2U;
+                continue;
+            }
+        }
+
+        out.push_back(
+            static_cast<char>(first)
+        );
+        ++offset;
+    }
+
+    return out;
 }
 
 std::string previewAround(
@@ -246,11 +309,11 @@ SearchRuntimeResult SearchRuntime::executeSearch() {
         return SearchRuntimeResult::Failed;
     }
 
-    const auto needle = asciiFold(app.search.query);
+    const auto needle = simpleUtf8Fold(app.search.query);
 
     for (const auto& section : document->sections) {
         for (const auto& block : section.blocks) {
-            const auto haystack = asciiFold(block.text);
+            const auto haystack = simpleUtf8Fold(block.text);
             std::size_t from = 0;
 
             while (from < haystack.size()) {
@@ -298,7 +361,7 @@ SearchRuntimeResult SearchRuntime::populateWindow(
     }
 
     constexpr std::size_t kBatchLimit = 24;
-    const auto needle = asciiFold(app.search.query);
+    const auto needle = simpleUtf8Fold(app.search.query);
 
     app.search.matches.clear();
     app.search.window_start = window_start;
@@ -307,7 +370,7 @@ SearchRuntimeResult SearchRuntime::populateWindow(
 
     for (const auto& section : document->sections) {
         for (const auto& block : section.blocks) {
-            const auto haystack = asciiFold(block.text);
+            const auto haystack = simpleUtf8Fold(block.text);
             std::size_t from = 0;
 
             while (from < haystack.size()) {

@@ -13,6 +13,7 @@
 #include "enku/runtime/about_book_runtime.hpp"
 #include "enku/runtime/settings_navigation_runtime.hpp"
 #include "enku/runtime/reading_settings_runtime.hpp"
+#include "enku/runtime/display_settings_runtime.hpp"
 #include "enku/runtime/power_off.hpp"
 #include "enku/runtime/reader_overlay_runtime.hpp"
 #include "enku/runtime/search_runtime.hpp"
@@ -59,6 +60,7 @@ public:
     AboutBookRuntime& aboutBook();
     SettingsNavigationRuntime& settingsNavigation();
     ReadingSettingsRuntime& readingSettings();
+    DisplaySettingsRuntime& displaySettings();
 
     SleepWakeCoordinator& sleepWake();
     PowerOffCoordinator& powerOff();
@@ -100,6 +102,7 @@ private:
     AboutBookRuntime about_book_;
     SettingsNavigationRuntime settings_nav_;
     ReadingSettingsRuntime reading_settings_;
+    DisplaySettingsRuntime display_settings_;
 
     SleepWakeCoordinator sleep_wake_;
     PowerOffCoordinator power_off_;

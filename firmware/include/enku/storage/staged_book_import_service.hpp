@@ -12,6 +12,7 @@ enum class StagedImportStatus : std::uint8_t {
     Ok,
     StageNotFound,
     StageReadFailed,
+    EmptySource,
     UnsupportedFormat,
     ParseFailed,
     Duplicate,

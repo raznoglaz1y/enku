@@ -47,8 +47,8 @@ const headerHtml = (pathname) => {
 
     <nav class="desktop-nav" aria-label="Main navigation">
       ${primaryLinks(pathname)}
-      <details class="project-menu"${projectActive ? " open" : ""}>
-        <summary${projectActive ? ' class="active"' : ""}>Project <span aria-hidden="true">⌄</span></summary>
+      <details class="project-menu">
+        <summary${projectActive ? ' class="active"' : ""}>Project <span class="project-chevron" aria-hidden="true"></span></summary>
         <div class="project-popover">
           ${projectLinks(pathname)}
         </div>
@@ -213,13 +213,13 @@ const sharedChromeCss = `
   .site-header .logo-link{display:flex!important;align-items:center!important;justify-self:start!important}
   .site-header .logo-link img{width:116px!important;height:32px!important;object-fit:contain!important;display:block!important}
   .site-header .desktop-nav{display:flex!important;align-items:center!important;justify-content:center!important;gap:clamp(18px,2vw,30px)!important;font-size:13px!important;white-space:nowrap!important}
-  .site-header .desktop-nav>a,.site-header .project-menu>summary{position:relative;opacity:.68;cursor:pointer;list-style:none}
-  .site-header .desktop-nav>a:hover,.site-header .desktop-nav>a.active,.site-header .project-menu>summary:hover,.site-header .project-menu>summary.active{opacity:1}
-  .site-header .desktop-nav>a.active:after,.site-header .project-menu>summary.active:after{content:"";position:absolute;left:0;right:0;bottom:-10px;height:1px;background:#171717}
+  .site-header .desktop-nav>a,.site-header .project-menu>summary{position:relative;opacity:.68;cursor:pointer;list-style:none;padding:7px 8px;border-radius:5px;transition:opacity .16s ease,background .16s ease}
+  .site-header .desktop-nav>a:hover,.site-header .project-menu>summary:hover{opacity:1;background:rgba(20,20,20,.04)}
+  .site-header .desktop-nav>a.active,.site-header .project-menu>summary.active{opacity:1;font-weight:600;background:rgba(20,20,20,.055)}
   .site-header .project-menu{position:relative}
   .site-header .project-menu>summary::-webkit-details-marker{display:none}
-  .site-header .project-menu>summary span{display:inline-block;margin-left:4px;font-size:10px;transition:transform .18s ease}
-  .site-header .project-menu[open]>summary span{transform:rotate(180deg)}
+  .site-header .project-chevron{display:inline-block!important;width:7px!important;height:7px!important;margin-left:7px!important;border-right:1px solid currentColor;border-bottom:1px solid currentColor;transform:translateY(-2px) rotate(45deg);transition:transform .18s ease}
+  .site-header .project-menu[open] .project-chevron{transform:translateY(2px) rotate(225deg)}
   .site-header .project-popover{position:absolute;top:30px;right:-18px;width:178px;padding:8px;background:#f5f1e8;border:1px solid rgba(20,20,20,.12);box-shadow:0 14px 36px rgba(20,20,20,.08)}
   .site-header .project-popover a{display:block;padding:10px 11px;font-size:12px;border-radius:3px}
   .site-header .project-popover a:hover,.site-header .project-popover a.active{background:rgba(20,20,20,.055)}

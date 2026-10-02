@@ -738,6 +738,7 @@ LibraryStatus CborLibraryService::readSlot(
 }
 
 LibraryStatus CborLibraryService::load() {
+    std::lock_guard<std::mutex> lock(mutex_);
     DecodedIndex a;
     DecodedIndex b;
 
@@ -830,6 +831,7 @@ LibraryStatus CborLibraryService::commit() {
 LibraryStatus CborLibraryService::upsert(
     const BookRecord& record
 ) {
+    std::lock_guard<std::mutex> lock(mutex_);
     if (record.book_id.empty() ||
         !std::isfinite(record.progress) ||
         record.progress < 0.0F ||
@@ -864,6 +866,7 @@ LibraryStatus CborLibraryService::upsert(
 LibraryStatus CborLibraryService::remove(
     const BookId& book_id
 ) {
+    std::lock_guard<std::mutex> lock(mutex_);
     const auto it = std::find_if(
         records_.begin(),
         records_.end(),
@@ -890,6 +893,7 @@ LibraryStatus CborLibraryService::remove(
 std::optional<BookRecord> CborLibraryService::get(
     const BookId& book_id
 ) const {
+    std::lock_guard<std::mutex> lock(mutex_);
     const auto it = std::find_if(
         records_.begin(),
         records_.end(),
@@ -909,6 +913,7 @@ std::optional<BookId>
 CborLibraryService::findByFingerprint(
     const std::string& fingerprint
 ) const {
+    std::lock_guard<std::mutex> lock(mutex_);
     const auto it = std::find_if(
         records_.begin(),
         records_.end(),
@@ -928,6 +933,7 @@ LibraryStatus CborLibraryService::query(
     const LibraryQuery& query_request,
     LibraryPage& page
 ) const {
+    std::lock_guard<std::mutex> lock(mutex_);
     if (query_request.limit == 0) {
         return LibraryStatus::InvalidQuery;
     }
@@ -1046,6 +1052,7 @@ LibraryStatus CborLibraryService::updateSummary(
     float progress,
     std::uint64_t last_opened_order
 ) {
+    std::lock_guard<std::mutex> lock(mutex_);
     if (!std::isfinite(progress) ||
         progress < 0.0F ||
         progress > 1.0F) {

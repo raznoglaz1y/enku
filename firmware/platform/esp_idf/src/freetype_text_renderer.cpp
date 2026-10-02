@@ -811,11 +811,47 @@ bool FreeTypeTextRenderer::renderPage(
             face_->size->metrics.ascender >> 6
         );
 
+    const int reader_line_height =
+        static_cast<int>(
+            lineHeightPx(typography)
+        );
+
     for (const auto& line : page.lines) {
         int pen_x = line.x;
         const int baseline =
             static_cast<int>(line.y) +
             ascender;
+
+        if (line.kind == PageLineKind::Quote) {
+            drawRect(
+                std::max(
+                    0,
+                    static_cast<int>(line.x) - 12
+                ),
+                static_cast<int>(line.y) + 1,
+                2,
+                std::max(
+                    2,
+                    reader_line_height - 3
+                ),
+                orientation,
+                1
+            );
+        } else if (
+            line.kind == PageLineKind::ListItem
+        ) {
+            drawRect(
+                std::max(
+                    0,
+                    static_cast<int>(line.x) - 13
+                ),
+                baseline - 5,
+                4,
+                4,
+                orientation,
+                1
+            );
+        }
 
         FT_UInt previous_glyph = 0;
         std::size_t offset = 0;
@@ -880,6 +916,27 @@ bool FreeTypeTextRenderer::renderPage(
                 );
 
             previous_glyph = glyph;
+        }
+
+        if (line.kind == PageLineKind::Heading) {
+            const int heading_width =
+                static_cast<int>(
+                    measureWidthPx(
+                        line.text,
+                        typography
+                    )
+                );
+
+            if (heading_width > 0) {
+                drawRect(
+                    static_cast<int>(line.x),
+                    baseline + 2,
+                    heading_width,
+                    1,
+                    orientation,
+                    1
+                );
+            }
         }
 
         if (app_state_ != nullptr &&

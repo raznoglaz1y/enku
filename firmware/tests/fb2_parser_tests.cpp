@@ -39,7 +39,7 @@ int main() {
  <body>
   <section>
    <title><p>First Chapter</p></title>
-   <p>First paragraph.</p>
+   <p>First &#x2014; paragraph.</p>
    <cite><p>A cited sentence.</p></cite>
    <subtitle>Small heading</subtitle>
    <p>Second paragraph.</p>
@@ -112,6 +112,11 @@ int main() {
         result.document.sections[0].
             blocks[0].type ==
         TextBlockType::Paragraph
+    );
+    assert(
+        result.document.sections[0].
+            blocks[0].text ==
+        "First — paragraph."
     );
     assert(
         result.document.sections[0].

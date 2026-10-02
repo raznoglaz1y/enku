@@ -228,6 +228,7 @@ const sharedChromeCss = `
   .site-header .project-popover{position:absolute;top:30px;right:-18px;width:178px;padding:8px;background:#f5f1e8;border:1px solid rgba(20,20,20,.12);box-shadow:0 14px 36px rgba(20,20,20,.08)}
   .site-header .project-popover a{display:block;padding:10px 11px;font-size:12px;border-radius:3px}
   .site-header .project-popover a:hover,.site-header .project-popover a.active{background:rgba(20,20,20,.055)}
+  .site-header .project-popover a.active:after{content:none!important;display:none!important}
   .site-header .github-icon{justify-self:end!important;width:28px!important;height:28px!important;display:grid!important;place-items:center!important}
   .site-header .github-icon svg{width:23px!important;height:23px!important;fill:currentColor}
   .site-header .menu-button{display:none!important;background:transparent;border:0;padding:8px;gap:4px;flex-direction:column;justify-content:center}

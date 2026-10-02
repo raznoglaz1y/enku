@@ -30,6 +30,7 @@ firmware/
       pagination.hpp
       reader_types.hpp
       reader_engine.hpp
+      document_reader_engine.hpp
     services/
       services.hpp
 
@@ -37,6 +38,7 @@ firmware/
     core/
     reader/
       text_paginator.cpp
+      document_reader_engine.cpp
     parsers/
       epub/
       fb2/
@@ -48,7 +50,7 @@ firmware/
     services/
 ```
 
-Framework-independent interfaces are committed at this stage, plus the first host-testable TXT parser and forward text-pagination implementations.
+Framework-independent interfaces are committed at this stage, plus host-testable TXT parser, forward text-pagination and concrete Reader Engine implementations.
 
 ## 2. Module ownership
 

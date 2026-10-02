@@ -10,6 +10,8 @@
 #include "boot.hpp"
 #include "refresh.hpp"
 #include "library.hpp"
+#include "localization.hpp"
+#include "settings.hpp"
 
 namespace enku {
 
@@ -34,6 +36,25 @@ struct LibraryFilterChanged {
 struct LibrarySortChanged {
     LibrarySort sort{LibrarySort::RecentlyOpened};
     SortDirection direction{SortDirection::Descending};
+};
+
+struct LibraryViewChanged {
+    LibraryView view{LibraryView::Grid};
+};
+
+struct LocaleChanged {
+    LocaleId locale{LocaleId::En};
+};
+
+struct TypographyDefaultsChanged {
+    ReadingPreset preset{ReadingPreset::Standard};
+    std::uint16_t font_size_px{18};
+    float line_spacing{1.35F};
+    std::uint16_t margin_px{24};
+};
+
+struct WiFiPolicyChanged {
+    WiFiPolicy policy{WiFiPolicy::AutoConnectTrusted};
 };
 
 struct LibrarySearchChanged {
@@ -137,6 +158,10 @@ using AppEvent = std::variant<
     LibraryRefreshRequested,
     LibraryFilterChanged,
     LibrarySortChanged,
+    LibraryViewChanged,
+    LocaleChanged,
+    TypographyDefaultsChanged,
+    WiFiPolicyChanged,
     LibrarySearchChanged,
     LibraryFocusNextRequested,
     LibraryFocusPreviousRequested,

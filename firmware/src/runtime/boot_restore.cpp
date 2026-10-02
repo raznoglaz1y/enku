@@ -53,7 +53,8 @@ void BootRestoreCoordinator::settleLibrary() {
 }
 
 BootRestoreResult BootRestoreCoordinator::restoreLoadedContext(
-    const StorageStartupResult& storage
+    const StorageStartupResult& storage,
+    bool finalize_boot_marker
 ) {
     app_state_.boot.stage = BootStage::Restore;
     app_state_.boot.boot_in_progress = true;
@@ -76,7 +77,8 @@ BootRestoreResult BootRestoreCoordinator::restoreLoadedContext(
         }
 
         settleLibrary();
-        if (!markBootStable()) {
+        if (finalize_boot_marker &&
+            !markBootStable()) {
             return BootRestoreResult{
                 BootRestoreStatus::RecoveryRequired,
                 storage,
@@ -102,7 +104,8 @@ BootRestoreResult BootRestoreCoordinator::restoreLoadedContext(
         }
 
         settleLibrary();
-        if (!markBootStable()) {
+        if (finalize_boot_marker &&
+            !markBootStable()) {
             return BootRestoreResult{
                 BootRestoreStatus::RecoveryRequired,
                 storage,
@@ -117,7 +120,8 @@ BootRestoreResult BootRestoreCoordinator::restoreLoadedContext(
     if (restore.screen != Screen::Reading ||
         !restore.current_book.has_value()) {
         settleLibrary();
-        if (!markBootStable()) {
+        if (finalize_boot_marker &&
+            !markBootStable()) {
             return BootRestoreResult{
                 BootRestoreStatus::RecoveryRequired,
                 storage,
@@ -145,6 +149,13 @@ BootRestoreResult BootRestoreCoordinator::restoreLoadedContext(
         app_state_.library.focused_book =
             restore.current_book;
         settleLibrary();
+        if (finalize_boot_marker &&
+            !markBootStable()) {
+            return BootRestoreResult{
+                BootRestoreStatus::RecoveryRequired,
+                storage,
+            };
+        }
         return BootRestoreResult{
             BootRestoreStatus::FallbackToLibrary,
             storage,
@@ -164,7 +175,8 @@ BootRestoreResult BootRestoreCoordinator::restoreLoadedContext(
         app_state_.boot.stage = BootStage::Stable;
         app_state_.boot.boot_in_progress = false;
 
-        if (!markBootStable()) {
+        if (finalize_boot_marker &&
+            !markBootStable()) {
             return BootRestoreResult{
                 BootRestoreStatus::RecoveryRequired,
                 storage,
@@ -212,7 +224,8 @@ BootRestoreResult BootRestoreCoordinator::restoreContextOnly() {
             StorageStartupStatus::Ready,
             0,
             0,
-        }
+        },
+        false
     );
 }
 
@@ -260,7 +273,7 @@ BootRestoreResult BootRestoreCoordinator::run() {
         };
     }
 
-    return restoreLoadedContext(storage);
+    return restoreLoadedContext(storage, true);
 }
 
 } // namespace enku

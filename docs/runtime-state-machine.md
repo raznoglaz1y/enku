@@ -520,3 +520,19 @@ DeleteFocusedBookRequested
 ```
 
 A failed delete returns `LibraryRuntimeResult::DeleteFailed` and does not masquerade as an empty Library or successful removal.
+
+
+## 31. Physical input dispatch
+
+Input now has three explicit layers:
+
+```text
+ESP-IDF GPIO polling
+→ PhysicalInputEvent
+→ InputActionMapper
+→ LogicalAction
+→ InputDispatcher
+→ Library / Reader / Sleep-Wake / Power-Off runtime
+```
+
+This prevents board GPIO semantics from leaking into application controllers and makes the same runtime path testable with synthetic physical events on the host.

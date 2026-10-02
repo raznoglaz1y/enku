@@ -248,10 +248,13 @@ std::string sampleEpub() {
    media-type="application/xhtml+xml"/>
   <item id="c2" href="Text/ch2.xhtml"
    media-type="application/xhtml+xml"/>
+  <item id="notes" href="Text/notes.xhtml"
+   media-type="application/xhtml+xml"/>
  </manifest>
  <spine>
   <itemref idref="c1"/>
   <itemref idref="c2"/>
+  <itemref idref="notes" linear="no"/>
  </spine>
 </package>)",
             true,
@@ -272,11 +275,16 @@ std::string sampleEpub() {
             "OEBPS/Text/ch1.xhtml",
             R"(<html><body>
 <h1>Chapter One</h1>
-<p>First &amp; important paragraph.</p>
+<p>First &#x2014; important<br/>paragraph.</p>
 <blockquote>A short quotation.</blockquote>
 <ul><li>A list item.</li></ul>
 <p>Second paragraph.</p>
 </body></html>)",
+            true,
+        },
+        {
+            "OEBPS/Text/notes.xhtml",
+            R"(<html><body><p>Should not appear in reading spine.</p></body></html>)",
             true,
         },
         {
@@ -457,7 +465,7 @@ int main() {
     assert(
         result.document.sections[0].
             blocks[1].text ==
-        "First & important paragraph."
+        "First — important paragraph."
     );
     assert(
         result.document.sections[0].

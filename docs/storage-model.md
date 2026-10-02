@@ -354,3 +354,14 @@ The POSIX implementation is exercised by host integration tests using real tempo
 - no original or canonical book file is deleted merely to make boot succeed.
 
 Host integration tests cover clean startup, stale tmp cleanup, pending upload preservation, and corrupt Library recovery.
+
+
+## 19. Delete transaction
+
+The storage layer now supports explicit state-file removal and per-book checkpoint erasure.
+
+`StateFileStore::remove()` is the low-level boundary. `CborReaderCheckpointService::erase(book_id)` owns the encoded checkpoint slot paths and treats already-missing A/B slots as a successful idempotent delete.
+
+`BookDeleteService` performs deletion as a compensating transaction. Source bytes and the latest valid checkpoint are retained in memory long enough to restore the book if a later delete step fails.
+
+This is intentionally separate from startup reconciliation: missing files discovered during boot are not auto-deleted from Library, while an explicit user delete is allowed to remove an indexed record even when the source file is already missing.

@@ -52,7 +52,8 @@ public:
 
     bool renderPage(
         const PageResult& page,
-        const TypographySettings& typography
+        const TypographySettings& typography,
+        Orientation orientation
     ) override;
 
     bool renderLibrary(
@@ -81,14 +82,22 @@ private:
     void drawMonoBitmap(
         const FT_Bitmap& bitmap,
         int x,
-        int y
+        int y,
+        Orientation orientation
+    );
+
+    void setLogicalBlack(
+        int x,
+        int y,
+        Orientation orientation
     );
 
     bool drawTextAt(
         std::string_view text,
         std::uint16_t size_px,
         int x,
-        int baseline
+        int baseline,
+        Orientation orientation
     );
 
     void drawRect(
@@ -96,6 +105,7 @@ private:
         int y,
         int width,
         int height,
+        Orientation orientation,
         int thickness = 1
     );
 };

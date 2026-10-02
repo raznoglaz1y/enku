@@ -22,6 +22,7 @@ public:
     ReaderSessionStatus open(const LayoutRequest& request);
     ReaderSessionStatus next();
     ReaderSessionStatus previous();
+    void close();
 
     void invalidateLayout(
         const TypographySettings& typography,

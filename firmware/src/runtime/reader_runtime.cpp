@@ -274,6 +274,10 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
         return ReaderRuntimeResult::RenderFailed;
     }
 
+    if (app_state_.screen == Screen::ReaderOverlay) {
+        return ReaderRuntimeResult::Applied;
+    }
+
     return submitRefresh(
         RefreshReason::ScreenChanged
     );

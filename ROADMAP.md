@@ -33,6 +33,7 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 - [ ] Finish Storage/Import board revisions
 - [ ] Finish Wi-Fi board revisions
 - [ ] Stress-test revised EN boards with long PL/DE/FR strings
+- [ ] Validate localization placeholders, plural variants and missing-key fallback
 - [ ] Replace temporary EN SVG boards with approved PNG review boards
 - [ ] Synchronize screen index and documentation with the approved Figma baseline
 
@@ -71,7 +72,10 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 - [x] Define physical-to-logical input mapping and press semantics
 - [ ] Implement deterministic focus navigation
 - [ ] Implement portrait/landscape layout switching
-- [ ] Implement localization string system
+- [x] Define localization key/fallback/plural architecture
+- [ ] Add canonical English string catalog
+- [ ] Add PL/DE/FR/ES/IT/RU translation catalogs
+- [ ] Implement generated runtime localization tables
 - [ ] Implement e-paper redraw scheduling / refresh policy
 - [ ] Add structured logging and debug diagnostics
 

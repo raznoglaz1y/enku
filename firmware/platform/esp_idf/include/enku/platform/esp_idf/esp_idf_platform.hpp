@@ -9,6 +9,7 @@
 #include "esp_idf_epaper.hpp"
 #include "esp_idf_file_store.hpp"
 #include "esp_idf_power_service.hpp"
+#include "esp_idf_network_service.hpp"
 #include "esp_idf_sd_card.hpp"
 
 namespace enku::platform::esp_idf {
@@ -18,6 +19,7 @@ enum class PlatformInitStatus : std::uint8_t {
     SdMountFailed,
     DisplayInitFailed,
     PowerInitFailed,
+    NetworkInitFailed,
     ButtonsInitFailed,
 };
 
@@ -37,6 +39,7 @@ public:
     EpaperRefreshService& refresh();
 
     EspIdfPowerService& power();
+    EspIdfNetworkService& network();
     EspIdfButtons& buttons();
 
 private:
@@ -50,6 +53,7 @@ private:
     EpaperRefreshService refresh_;
 
     EspIdfPowerService power_;
+    EspIdfNetworkService network_;
     EspIdfButtons buttons_;
 };
 

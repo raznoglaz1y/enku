@@ -1,13 +1,177 @@
 #include "enku/reader/book_loader.hpp"
 
 #include <cassert>
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 using namespace enku;
 
 namespace {
+
+void appendU16(
+    std::string& out,
+    std::uint16_t value
+) {
+    out.push_back(
+        static_cast<char>(
+            value & 0xFFU
+        )
+    );
+    out.push_back(
+        static_cast<char>(
+            (value >> 8U) & 0xFFU
+        )
+    );
+}
+
+void appendU32(
+    std::string& out,
+    std::uint32_t value
+) {
+    appendU16(
+        out,
+        static_cast<std::uint16_t>(
+            value & 0xFFFFU
+        )
+    );
+    appendU16(
+        out,
+        static_cast<std::uint16_t>(
+            value >> 16U
+        )
+    );
+}
+
+std::string sampleStoredEpub() {
+    struct Entry {
+        std::string name;
+        std::string bytes;
+        std::uint32_t offset{0};
+    };
+
+    std::vector<Entry> entries{
+        {
+            "META-INF/container.xml",
+            R"(<container><rootfiles><rootfile full-path="OEBPS/content.opf"/></rootfiles></container>)"
+        },
+        {
+            "OEBPS/content.opf",
+            R"(<package xmlns:dc="http://purl.org/dc/elements/1.1/"><metadata><dc:title>Loader EPUB</dc:title></metadata><manifest><item id="c1" href="ch1.xhtml" media-type="application/xhtml+xml"/></manifest><spine><itemref idref="c1"/></spine></package>)"
+        },
+        {
+            "OEBPS/ch1.xhtml",
+            R"(<html><body><h1>Chapter</h1><p>Range-loaded EPUB body.</p></body></html>)"
+        },
+    };
+
+    std::string out;
+
+    for (auto& entry : entries) {
+        entry.offset =
+            static_cast<std::uint32_t>(
+                out.size()
+            );
+
+        appendU32(out, 0x04034B50U);
+        appendU16(out, 20U);
+        appendU16(out, 0U);
+        appendU16(out, 0U);
+        appendU16(out, 0U);
+        appendU16(out, 0U);
+        appendU32(out, 0U);
+        appendU32(
+            out,
+            static_cast<std::uint32_t>(
+                entry.bytes.size()
+            )
+        );
+        appendU32(
+            out,
+            static_cast<std::uint32_t>(
+                entry.bytes.size()
+            )
+        );
+        appendU16(
+            out,
+            static_cast<std::uint16_t>(
+                entry.name.size()
+            )
+        );
+        appendU16(out, 0U);
+        out += entry.name;
+        out += entry.bytes;
+    }
+
+    const auto central_offset =
+        static_cast<std::uint32_t>(
+            out.size()
+        );
+
+    for (const auto& entry : entries) {
+        appendU32(out, 0x02014B50U);
+        appendU16(out, 20U);
+        appendU16(out, 20U);
+        appendU16(out, 0U);
+        appendU16(out, 0U);
+        appendU16(out, 0U);
+        appendU16(out, 0U);
+        appendU32(out, 0U);
+        appendU32(
+            out,
+            static_cast<std::uint32_t>(
+                entry.bytes.size()
+            )
+        );
+        appendU32(
+            out,
+            static_cast<std::uint32_t>(
+                entry.bytes.size()
+            )
+        );
+        appendU16(
+            out,
+            static_cast<std::uint16_t>(
+                entry.name.size()
+            )
+        );
+        appendU16(out, 0U);
+        appendU16(out, 0U);
+        appendU16(out, 0U);
+        appendU16(out, 0U);
+        appendU32(out, 0U);
+        appendU32(out, entry.offset);
+        out += entry.name;
+    }
+
+    const auto central_size =
+        static_cast<std::uint32_t>(
+            out.size()
+        ) - central_offset;
+
+    appendU32(out, 0x06054B50U);
+    appendU16(out, 0U);
+    appendU16(out, 0U);
+    appendU16(
+        out,
+        static_cast<std::uint16_t>(
+            entries.size()
+        )
+    );
+    appendU16(
+        out,
+        static_cast<std::uint16_t>(
+            entries.size()
+        )
+    );
+    appendU32(out, central_size);
+    appendU32(out, central_offset);
+    appendU16(out, 0U);
+
+    return out;
+}
 
 class FixedWidthMeasurer final : public TextMeasurer {
 public:
@@ -82,14 +246,73 @@ public:
         const BookRecord&,
         std::string& bytes
     ) override {
-        ++calls;
+        ++whole_reads;
         bytes = content;
         return status;
     }
 
+    BookSourceStatus sourceSize(
+        const BookRecord&,
+        std::uint64_t& size_bytes
+    ) override {
+        ++size_reads;
+
+        if (status != BookSourceStatus::Ok) {
+            size_bytes = 0;
+            return status;
+        }
+
+        size_bytes =
+            static_cast<std::uint64_t>(
+                content.size()
+            );
+        return BookSourceStatus::Ok;
+    }
+
+    BookSourceStatus readSourceRange(
+        const BookRecord&,
+        std::uint64_t offset,
+        std::size_t length,
+        std::string& bytes
+    ) override {
+        ++range_reads;
+
+        if (status != BookSourceStatus::Ok) {
+            bytes.clear();
+            return status;
+        }
+
+        if (offset >
+                static_cast<std::uint64_t>(
+                    content.size()
+                ) ||
+            static_cast<std::uint64_t>(
+                length
+            ) >
+                static_cast<std::uint64_t>(
+                    content.size()
+                ) -
+                    offset) {
+            bytes.clear();
+            return BookSourceStatus::ReadFailed;
+        }
+
+        bytes.assign(
+            content,
+            static_cast<std::size_t>(
+                offset
+            ),
+            length
+        );
+
+        return BookSourceStatus::Ok;
+    }
+
     BookSourceStatus status{BookSourceStatus::Ok};
     std::string content;
-    std::uint32_t calls{0};
+    std::uint32_t whole_reads{0};
+    std::uint32_t size_reads{0};
+    std::uint32_t range_reads{0};
 };
 
 } // namespace
@@ -151,7 +374,27 @@ int main() {
 
     source.status = BookSourceStatus::Ok;
     library.record->format = BookFormat::Epub;
-    const auto invalid_epub = loader.open(request);
+    source.content = sampleStoredEpub();
+    source.whole_reads = 0;
+    source.size_reads = 0;
+    source.range_reads = 0;
+
+    const auto epub_opened =
+        loader.open(request);
+
+    assert(epub_opened.ok());
+    assert(source.whole_reads == 0);
+    assert(source.size_reads == 1);
+    assert(source.range_reads > 0);
+    assert(loader.document() != nullptr);
+    assert(
+        loader.document()->metadata.title ==
+        "Loader EPUB"
+    );
+
+    source.content = "not an epub";
+    const auto invalid_epub =
+        loader.open(request);
     assert(
         invalid_epub.status ==
         BookLoadStatus::ParseFailed

@@ -8,6 +8,7 @@
 #include "document_reader_engine.hpp"
 #include "reader_session.hpp"
 #include "txt_parser.hpp"
+#include "epub_parser.hpp"
 
 namespace enku {
 
@@ -59,6 +60,7 @@ private:
     const TextMeasurer& measurer_;
 
     TxtParser txt_parser_;
+    EpubParser epub_parser_;
 
     std::optional<BookDocument> document_;
     std::unique_ptr<DocumentReaderEngine> engine_;

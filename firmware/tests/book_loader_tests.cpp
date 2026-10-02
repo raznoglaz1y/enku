@@ -151,10 +151,10 @@ int main() {
 
     source.status = BookSourceStatus::Ok;
     library.record->format = BookFormat::Epub;
-    const auto unsupported = loader.open(request);
+    const auto invalid_epub = loader.open(request);
     assert(
-        unsupported.status ==
-        BookLoadStatus::UnsupportedFormat
+        invalid_epub.status ==
+        BookLoadStatus::ParseFailed
     );
 
     library.record.reset();

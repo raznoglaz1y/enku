@@ -274,3 +274,18 @@ Detailed implementation:
 - [Power cost pass](power-cost-pass-r01.md)
 
 EPD-HV remains a BLOCKER until the official panel reference circuit is verified.
+
+
+## EPD / pin-map baseline
+
+New schematic inputs:
+- [EPD integration R0.1](epd-integration-r01.md)
+- [ESP32-S3 pin map R0.1](pin-map-r01.md)
+
+Current direction:
+- one shared SPI bus for EPD + microSD with separate chip selects;
+- current 24-pin SSD1677 family pinout used as the schematic baseline;
+- current Good Display panel PDFs still must be checked directly before connector orientation / HV values are frozen;
+- GPIO35–37 are reserved for the N16R8 memory topology;
+- native USB remains on GPIO19/20;
+- four direct page/navigation buttons remain separate GPIOs.

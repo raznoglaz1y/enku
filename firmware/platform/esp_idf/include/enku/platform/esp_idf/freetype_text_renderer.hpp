@@ -23,6 +23,7 @@
 #include "enku/render/locale_settings_renderer.hpp"
 #include "enku/render/about_device_renderer.hpp"
 #include "enku/render/power_off_confirm_renderer.hpp"
+#include "enku/render/wifi_settings_renderer.hpp"
 
 namespace enku::platform::esp_idf {
 
@@ -49,7 +50,8 @@ class FreeTypeTextRenderer final
       public DisplaySettingsRenderer,
       public LocaleSettingsRenderer,
       public AboutDeviceRenderer,
-      public PowerOffConfirmRenderer {
+      public PowerOffConfirmRenderer,
+      public WiFiSettingsRenderer {
 public:
     FreeTypeTextRenderer(
         OwnedMonoFramebuffer& framebuffer,
@@ -136,6 +138,10 @@ public:
     ) override;
 
     bool renderPowerOffConfirm(
+        const AppState& app_state
+    ) override;
+
+    bool renderWiFiSettings(
         const AppState& app_state
     ) override;
 

@@ -26,6 +26,7 @@
 
 #include "esp_idf_platform.hpp"
 #include "freetype_text_renderer.hpp"
+#include "esp_idf_web_upload_server.hpp"
 
 namespace enku::platform::esp_idf {
 
@@ -98,6 +99,7 @@ public:
 
 private:
     bool refreshStatusBarIfNeeded();
+    bool syncWebUploadServer();
 
 
     EspIdfPlatform& platform_;
@@ -118,6 +120,7 @@ private:
     LocaleSettingsRuntime locale_settings_;
     AboutDeviceRuntime about_device_;
     NetworkLifecycleCoordinator network_lifecycle_;
+    EspIdfWebUploadServer web_upload_server_;
 
     SleepWakeCoordinator sleep_wake_;
     PowerOffCoordinator power_off_;

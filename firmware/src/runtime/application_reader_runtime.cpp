@@ -6,7 +6,8 @@ ApplicationReaderRuntime::ApplicationReaderRuntime(
     ApplicationStorageRuntime& storage,
     RefreshService& refresh,
     const TextMeasurer& measurer,
-    ReaderPageRenderer& renderer,
+    ReaderPageRenderer& reader_renderer,
+    LibraryPageRenderer& library_renderer,
     TypographySettings typography,
     Viewport viewport
 )
@@ -25,7 +26,7 @@ ApplicationReaderRuntime::ApplicationReaderRuntime(
           storage_.appContext(),
           typography,
           viewport,
-          &renderer
+          &reader_renderer
       ),
       library_(
           storage_.appState(),
@@ -34,7 +35,8 @@ ApplicationReaderRuntime::ApplicationReaderRuntime(
           storage_.stagedImport(),
           storage_.deleteService(),
           storage_.settingsRuntime(),
-          refresh
+          refresh,
+          &library_renderer
       ),
       boot_restore_(
           storage_.appState(),

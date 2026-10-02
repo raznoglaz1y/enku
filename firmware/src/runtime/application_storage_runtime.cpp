@@ -18,7 +18,6 @@ ApplicationStorageRuntime::ApplicationStorageRuntime(
           import_core_
       ),
       web_upload_(
-          app_state_,
           book_files,
           staged_import_
       ),

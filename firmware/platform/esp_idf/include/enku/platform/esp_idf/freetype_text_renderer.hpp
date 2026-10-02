@@ -122,6 +122,12 @@ private:
         Orientation orientation,
         int thickness = 1
     );
+
+    bool drawKeyboardGrid(
+        const KeyboardState& keyboard,
+        Orientation orientation,
+        int top
+    );
 };
 
 } // namespace enku::platform::esp_idf

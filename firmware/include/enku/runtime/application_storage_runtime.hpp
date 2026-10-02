@@ -5,6 +5,7 @@
 #include "../storage/book_import_service.hpp"
 #include "../storage/cbor_app_context_service.hpp"
 #include "../storage/cbor_boot_loop_service.hpp"
+#include "../storage/cbor_bookmark_service.hpp"
 #include "../storage/cbor_library_service.hpp"
 #include "../storage/cbor_reader_checkpoint.hpp"
 #include "../storage/cbor_settings_service.hpp"
@@ -33,6 +34,7 @@ public:
     BookDeleteService& deleteService();
 
     CborReaderCheckpointService& checkpoints();
+    CborBookmarkService& bookmarks();
     CborAppContextService& appContext();
     CborBootLoopService& bootLoop();
     StoredBookSourceService& bookSource();
@@ -50,6 +52,7 @@ private:
     StagedBookImportService staged_import_;
 
     CborReaderCheckpointService checkpoints_;
+    CborBookmarkService bookmarks_;
     CborAppContextService app_context_;
     CborBootLoopService boot_loop_;
 

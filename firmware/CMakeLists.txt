@@ -33,7 +33,9 @@ function(enku_add_test target source)
     target_link_libraries(${target} PRIVATE enku_core)
 
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
-        target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic)
+        target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic -UNDEBUG)
+    elseif(MSVC)
+        target_compile_options(${target} PRIVATE /UNDEBUG)
     endif()
 
     add_test(NAME ${target} COMMAND ${target})

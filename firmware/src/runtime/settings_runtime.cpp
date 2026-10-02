@@ -89,4 +89,109 @@ SettingsRuntimeController::loadAndApply() {
     return SettingsRuntimeStatus::PersistenceFailure;
 }
 
+PersistStatus SettingsRuntimeController::handle(
+    const LocaleChanged& event
+) {
+    const auto previous = app_state_.ui_locale;
+    app_state_.ui_locale = event.locale;
+
+    const auto status = saveCurrent();
+    if (status != PersistStatus::Ok) {
+        app_state_.ui_locale = previous;
+    }
+    return status;
+}
+
+PersistStatus SettingsRuntimeController::handle(
+    const OrientationChanged& event
+) {
+    const auto previous = app_state_.orientation;
+    app_state_.orientation = event.orientation;
+
+    const auto status = saveCurrent();
+    if (status != PersistStatus::Ok) {
+        app_state_.orientation = previous;
+    }
+    return status;
+}
+
+PersistStatus SettingsRuntimeController::handle(
+    const LibraryViewChanged& event
+) {
+    const auto previous = app_state_.library.view;
+    app_state_.library.view = event.view;
+
+    const auto status = saveCurrent();
+    if (status != PersistStatus::Ok) {
+        app_state_.library.view = previous;
+    }
+    return status;
+}
+
+PersistStatus SettingsRuntimeController::handle(
+    const LibraryFilterChanged& event
+) {
+    const auto previous = app_state_.library.filter;
+    app_state_.library.filter = event.filter;
+
+    const auto status = saveCurrent();
+    if (status != PersistStatus::Ok) {
+        app_state_.library.filter = previous;
+    }
+    return status;
+}
+
+PersistStatus SettingsRuntimeController::handle(
+    const LibrarySortChanged& event
+) {
+    const auto previous_sort = app_state_.library.sort;
+    const auto previous_direction =
+        app_state_.library.direction;
+
+    app_state_.library.sort = event.sort;
+    app_state_.library.direction = event.direction;
+
+    const auto status = saveCurrent();
+    if (status != PersistStatus::Ok) {
+        app_state_.library.sort = previous_sort;
+        app_state_.library.direction =
+            previous_direction;
+    }
+    return status;
+}
+
+PersistStatus SettingsRuntimeController::handle(
+    const TypographyDefaultsChanged& event
+) {
+    const auto previous = app_state_.typography;
+
+    app_state_.typography.preset = event.preset;
+    app_state_.typography.font_size_px =
+        event.font_size_px;
+    app_state_.typography.line_spacing =
+        event.line_spacing;
+    app_state_.typography.margin_px =
+        event.margin_px;
+    app_state_.typography.per_book_override = false;
+
+    const auto status = saveCurrent();
+    if (status != PersistStatus::Ok) {
+        app_state_.typography = previous;
+    }
+    return status;
+}
+
+PersistStatus SettingsRuntimeController::handle(
+    const WiFiPolicyChanged& event
+) {
+    const auto previous = app_state_.wifi_policy;
+    app_state_.wifi_policy = event.policy;
+
+    const auto status = saveCurrent();
+    if (status != PersistStatus::Ok) {
+        app_state_.wifi_policy = previous;
+    }
+    return status;
+}
+
 } // namespace enku

@@ -62,6 +62,7 @@ struct KeyboardState {
     KeyboardMode mode{KeyboardMode::Latin};
     KeyboardShiftState shift{KeyboardShiftState::Lowercase};
     std::uint16_t focus_index{0};
+    std::string focused_label;
 };
 
 enum class SearchPhase : std::uint8_t {

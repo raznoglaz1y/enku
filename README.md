@@ -62,6 +62,19 @@ The goal is to build ENKU around readily available, reproducible parts rather th
 
 For partnership or supply discussions, please open an issue or contact the project owner through GitHub.
 
+## Support ENKU
+
+ENKU is developed in the open. You can help the project without spending money:
+
+- **Star the repository** to make the project easier to discover.
+- **Test and report issues** when firmware and hardware builds are available.
+- **Contribute** code, documentation, translations, UI feedback, hardware notes or enclosure work — see [CONTRIBUTING.md](CONTRIBUTING.md).
+- **Share ENKU** with people interested in open hardware, e-paper and compact readers.
+
+GitHub Sponsors is being prepared as the project's primary funding channel. Funding, when enabled, will be used for development hardware, prototype boards, batteries, enclosure iterations and other direct project costs.
+
+Project contact and support page: **https://enkureader.com/contact**
+
 ## Project goals
 
 ENKU is being designed around a deliberately narrow set of product goals:

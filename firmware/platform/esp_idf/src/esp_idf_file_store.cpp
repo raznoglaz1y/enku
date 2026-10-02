@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <cstring>
 #include <dirent.h>
+#include <limits>
 #include <sys/stat.h>
 #include <utility>
 
@@ -188,6 +189,105 @@ EspIdfFsStatus EspIdfFilesystem::writeBytes(
     if (std::fflush(file) != 0) {
         std::fclose(file);
         return EspIdfFsStatus::IoError;
+    }
+
+    std::fclose(file);
+    return EspIdfFsStatus::Ok;
+}
+
+EspIdfFsStatus EspIdfFilesystem::fileSize(
+    const std::string& path,
+    std::uint64_t& bytes
+) {
+    bytes = 0;
+
+    std::string physical;
+    if (!resolve(path, physical)) {
+        return EspIdfFsStatus::IoError;
+    }
+
+    FILE* file = std::fopen(
+        physical.c_str(),
+        "rb"
+    );
+
+    if (file == nullptr) {
+        return bookStatusFromErrno();
+    }
+
+    if (std::fseek(file, 0, SEEK_END) != 0) {
+        std::fclose(file);
+        return EspIdfFsStatus::IoError;
+    }
+
+    const long size = std::ftell(file);
+    std::fclose(file);
+
+    if (size < 0) {
+        return EspIdfFsStatus::IoError;
+    }
+
+    bytes =
+        static_cast<std::uint64_t>(
+            size
+        );
+    return EspIdfFsStatus::Ok;
+}
+
+EspIdfFsStatus EspIdfFilesystem::readTextRange(
+    const std::string& path,
+    std::uint64_t offset,
+    std::size_t length,
+    std::string& bytes
+) {
+    bytes.clear();
+
+    if (offset >
+        static_cast<std::uint64_t>(
+            std::numeric_limits<long>::max()
+        )) {
+        return EspIdfFsStatus::IoError;
+    }
+
+    std::string physical;
+    if (!resolve(path, physical)) {
+        return EspIdfFsStatus::IoError;
+    }
+
+    FILE* file = std::fopen(
+        physical.c_str(),
+        "rb"
+    );
+
+    if (file == nullptr) {
+        return bookStatusFromErrno();
+    }
+
+    if (std::fseek(
+            file,
+            static_cast<long>(offset),
+            SEEK_SET
+        ) != 0) {
+        std::fclose(file);
+        return EspIdfFsStatus::IoError;
+    }
+
+    bytes.resize(length);
+
+    if (length != 0U) {
+        const auto read_count =
+            std::fread(
+                bytes.data(),
+                1,
+                length,
+                file
+            );
+
+        if (read_count != length) {
+            std::fclose(file);
+            bytes.clear();
+            return EspIdfFsStatus::IoError;
+        }
     }
 
     std::fclose(file);
@@ -511,6 +611,34 @@ BookFileStatus EspIdfBookFileStore::write(
 ) {
     return toBookStatus(
         filesystem_.writeText(path, bytes)
+    );
+}
+
+BookFileStatus EspIdfBookFileStore::size(
+    const std::string& path,
+    std::uint64_t& bytes
+) {
+    return toBookStatus(
+        filesystem_.fileSize(
+            path,
+            bytes
+        )
+    );
+}
+
+BookFileStatus EspIdfBookFileStore::readRange(
+    const std::string& path,
+    std::uint64_t offset,
+    std::size_t length,
+    std::string& bytes
+) {
+    return toBookStatus(
+        filesystem_.readTextRange(
+            path,
+            offset,
+            length,
+            bytes
+        )
     );
 }
 

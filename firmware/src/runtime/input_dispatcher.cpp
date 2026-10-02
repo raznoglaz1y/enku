@@ -74,6 +74,21 @@ InputDispatchResult InputDispatcher::handle(
         return InputDispatchResult::Ignored;
     }
 
+    if (app_state_.screen == Screen::Search) {
+        if (search_ == nullptr) {
+            return InputDispatchResult::Unhandled;
+        }
+
+        const auto result = search_->handle(*action);
+        if (result == SearchRuntimeResult::Applied) {
+            return InputDispatchResult::Applied;
+        }
+        if (result == SearchRuntimeResult::Failed) {
+            return InputDispatchResult::Failed;
+        }
+        return InputDispatchResult::Unhandled;
+    }
+
     switch (*action) {
         case LogicalAction::NavigatePrevious: {
             if (app_state_.screen ==

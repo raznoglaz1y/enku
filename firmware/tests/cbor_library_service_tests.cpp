@@ -126,8 +126,8 @@ int main() {
 
     const auto gamma = makeBook(
         "gamma",
-        "Gamma",
-        "Ada",
+        "Преступление и наказание",
+        "Фёдор Достоевский",
         "fp-gamma",
         ReadingState::Finished,
         1.0F,
@@ -179,10 +179,19 @@ int main() {
         library.query(search_query, page) ==
         LibraryStatus::Ok
     );
-    assert(page.total_matches == 2);
-    assert(page.items.size() == 2);
+    assert(page.total_matches == 1);
+    assert(page.items.size() == 1);
     assert(page.items[0].book_id == "alpha");
-    assert(page.items[1].book_id == "gamma");
+
+    search_query.search_text = "ФЁДОР";
+
+    assert(
+        library.query(search_query, page) ==
+        LibraryStatus::Ok
+    );
+    assert(page.total_matches == 1);
+    assert(page.items.size() == 1);
+    assert(page.items[0].book_id == "gamma");
 
     LibraryQuery paged;
     paged.mode = LibraryQueryMode::Browse;

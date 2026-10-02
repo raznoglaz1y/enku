@@ -57,6 +57,8 @@ jobs:
                grep -Eq 'href="/design"[^>]*>Design</a>' /tmp/home.html &&
                grep -Eq 'href="/build"[^>]*>Build</a>' /tmp/home.html &&
                grep -q 'class="project-menu"' /tmp/home.html &&
+               grep -q 'class="enku-home"' /tmp/home.html &&
+               grep -q 'One reader. Four connected layers.' /tmp/home.html &&
                grep -q 'class="enku-footer-grid"' /tmp/home.html &&
                ! grep -q 'href="/#hardware"' /tmp/home.html &&
                ! grep -q 'href="/#software"' /tmp/home.html &&
@@ -99,6 +101,8 @@ jobs:
           grep -Eq 'href="/design"[^>]*>Design</a>' /tmp/home.html
           grep -Eq 'href="/build"[^>]*>Build</a>' /tmp/home.html
           grep -q 'class="project-menu"' /tmp/home.html
+          grep -q 'class="enku-home"' /tmp/home.html
+          grep -q 'One reader. Four connected layers.' /tmp/home.html
           grep -q 'class="enku-footer-grid"' /tmp/home.html
           ! grep -q 'href="/#hardware"' /tmp/home.html
           ! grep -q 'href="/#software"' /tmp/home.html

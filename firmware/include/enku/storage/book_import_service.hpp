@@ -23,6 +23,15 @@ struct BookImportSource {
     std::string bytes;
 };
 
+struct PreparedBookImport {
+    BookImportStatus status{BookImportStatus::ParseFailed};
+    BookRecord record;
+
+    bool ok() const {
+        return status == BookImportStatus::Ok;
+    }
+};
+
 struct BookImportResult {
     BookImportStatus status{BookImportStatus::ParseFailed};
     BookId book_id;
@@ -36,6 +45,15 @@ struct BookImportResult {
 class BookImportService {
 public:
     explicit BookImportService(LibraryService& library);
+
+    PreparedBookImport prepare(
+        const BookImportSource& source,
+        std::uint64_t added_order
+    );
+
+    BookImportResult commit(
+        const PreparedBookImport& prepared
+    );
 
     BookImportResult import(
         const BookImportSource& source,

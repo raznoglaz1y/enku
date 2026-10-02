@@ -164,6 +164,27 @@ The first target uses 4-bit SDMMC and mounts FAT at `/sdcard`.
 | MOSI | 12 |
 | RST | 46 |
 
-These display pins are recorded in the board layer but the current smoke firmware does not initialize the SSD1677 panel yet.
+These display pins are now used by the first ENKU SSD1677 driver. The current milestone implements vendor-aligned SPI3 full-refresh initialization, monochrome framebuffer transfer, BUSY timeout handling and panel deep sleep.
 
 The storage adapter implements the same `StateFileStore` and `BookFileStore` contracts already used by the tested host persistence/runtime code. This is the first direct bridge from framework-neutral ENKU storage architecture to the physical Waveshare board.
+
+
+## SSD1677 full-refresh baseline
+
+The first ENKU panel driver now follows the Waveshare reference full-refresh path:
+
+```text
+reset
+→ BUSY ready
+→ SWRESET
+→ SSD1677 full-mode registers
+→ 800×480 RAM window
+→ write 1-bit framebuffer
+→ display update
+→ BUSY ready
+→ deep sleep
+```
+
+The ESP-IDF target uses SPI3 mode 0 at 20 MHz with manual CS, matching the current official Waveshare example.
+
+The driver is compile-verified in GitHub Actions against ESP-IDF v5.5.5. Physical refresh quality, orientation, timing and ghosting still require validation on the delivered board.

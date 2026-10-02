@@ -1,0 +1,33 @@
+name: Website smoke test
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - "worker/**"
+      - "wrangler.jsonc"
+      - ".github/workflows/site-smoke.yml"
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for Cloudflare deployment
+        run: sleep 45
+
+      - name: Check Contact page
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 5 --retry-delay 10 https://enkureader.com/contact -o /tmp/contact.html
+          grep -q 'id="contact-form"' /tmp/contact.html
+          grep -q "fetch('/api/contact'" /tmp/contact.html
+
+      - name: Check contact Worker route
+        run: |
+          set -euo pipefail
+          code="$(curl -sS -o /tmp/contact-api.txt -w '%{http_code}' https://enkureader.com/api/contact)"
+          cat /tmp/contact-api.txt
+          test "$code" = "405"
+          grep -q '"error":"Method not allowed"' /tmp/contact-api.txt

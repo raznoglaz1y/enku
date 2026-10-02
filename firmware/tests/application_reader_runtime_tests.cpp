@@ -108,15 +108,43 @@ public:
         return NetworkPolicyStatus::Ok;
     }
 
+    NetworkPolicyStatus scanNetworks(
+        std::vector<WiFiNetworkInfo>& networks
+    ) override {
+        ++scan_calls;
+        networks = scan_results;
+        return NetworkPolicyStatus::Ok;
+    }
+
+    NetworkPolicyStatus connectToNetwork(
+        std::string_view ssid,
+        std::string_view password
+    ) override {
+        ++connect_calls;
+        last_connect_ssid = std::string(ssid);
+        last_connect_password = std::string(password);
+
+        if (ssid == "BadNet") {
+            connected_ = false;
+            return NetworkPolicyStatus::ConnectionFailed;
+        }
+
+        connected_ = true;
+        return NetworkPolicyStatus::Ok;
+    }
+
     NetworkPolicyStatus setTrustedNetwork(
         std::string_view ssid,
-        std::string_view
+        std::string_view password
     ) override {
+        ++set_trusted_calls;
+
         if (ssid.empty()) {
             return NetworkPolicyStatus::InvalidCredentials;
         }
 
         trusted_ssid = std::string(ssid);
+        last_saved_password = std::string(password);
         return NetworkPolicyStatus::Ok;
     }
 
@@ -134,11 +162,22 @@ public:
     bool connected_{true};
     std::uint32_t disconnects{0};
     std::uint32_t apply_calls{0};
+    std::uint32_t scan_calls{0};
+    std::uint32_t connect_calls{0};
+    std::uint32_t set_trusted_calls{0};
     std::uint32_t forget_calls{0};
     WiFiPolicy applied_policy{WiFiPolicy::AutoConnectTrusted};
     std::optional<std::string> trusted_ssid{
         std::string{"TestNet"}
     };
+    std::vector<WiFiNetworkInfo> scan_results{
+        WiFiNetworkInfo{"Cafe", -42, false},
+        WiFiNetworkInfo{"SecureNet", -55, true},
+        WiFiNetworkInfo{"BadNet", -70, true},
+    };
+    std::string last_connect_ssid;
+    std::string last_connect_password;
+    std::string last_saved_password;
 };
 
 class FakePowerService final : public PowerService {

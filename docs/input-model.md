@@ -286,3 +286,59 @@ Recovery/service mappings involving BOOT must be designed so they do not interfe
 - BOOT click returns/back; BOOT long press is reserved.
 - Held navigation may repeat in lists, but page-turn repeat is suppressed unless explicitly paced.
 - Wake-source details remain pending real-board verification.
+
+
+## 19. Concrete input runtime MVP
+
+The framework-neutral input mapper is now implemented as `InputActionMapper`.
+
+It consumes:
+
+```text
+AppState + PhysicalInputEvent
+→ optional LogicalAction
+```
+
+Current behavior matches the product rules above:
+
+- Library/menu Up click or repeat → NavigatePrevious;
+- Library/menu Down click or repeat → NavigateNext;
+- Function click → Confirm;
+- BOOT click → Back;
+- Reading Up click → PagePrevious;
+- Reading Down click → PageNext;
+- Reading Function click → OpenReaderMenu;
+- Reading Function long press → OpenQuickTypography;
+- Reading Up/Down repeat is discarded;
+- any ordinary click while Sleep is active → Wake;
+- Power long press maps to PowerOff at the logical layer.
+
+Press and Release are retained for diagnostics/state tracking but do not produce application actions by themselves.
+
+## 20. ESP-IDF button driver
+
+`EspIdfButtons` is the first board-specific implementation for GPIO4/GPIO5/GPIO6/GPIO0.
+
+Current bring-up constants:
+
+```text
+poll interval      5 ms
+debounce           20 ms
+long press         650 ms
+repeat delay       700 ms
+repeat interval    180 ms
+```
+
+All four inputs use internal pull-ups and are active-low.
+
+The driver emits at most one event per poll and rotates its starting scan position after an emitted event so simultaneous inputs do not permanently privilege one GPIO.
+
+The firmware smoke test opens a 12-second diagnostic window after storage/display bring-up and logs:
+
+```text
+control
+press type
+mapped logical action
+```
+
+This allows real-board tuning without changing Library/Reader code.

@@ -102,6 +102,19 @@ struct BookDetailsState {
     bool confirm_restart{false};
 };
 
+enum class ReadingSettingsItem : std::uint8_t {
+    Preset,
+    FontSize,
+    LineSpacing,
+    Margins,
+};
+
+struct ReadingSettingsState {
+    ReadingSettingsItem focus{ReadingSettingsItem::Preset};
+    bool editing{false};
+    TypographyState baseline;
+};
+
 enum class SettingsItem : std::uint8_t {
     Reading,
     Display,

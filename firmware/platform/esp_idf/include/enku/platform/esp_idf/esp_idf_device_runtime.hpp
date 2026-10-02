@@ -100,6 +100,7 @@ public:
 private:
     bool refreshStatusBarIfNeeded();
     bool syncWebUploadServer();
+    void processWebDeleteRequests();
     void refreshLibraryAfterUploadIfNeeded();
 
 

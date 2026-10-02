@@ -1,0 +1,19 @@
+menu "ENKU bring-up"
+
+config ENKU_BRINGUP_SMOKE_TESTS
+    bool "Run hardware smoke tests before application runtime"
+    default y
+    help
+        Run storage, display and power bring-up checks on boot.
+        Keep enabled while validating the first physical board.
+        Disable for normal reader operation after hardware bring-up is stable.
+
+config ENKU_RAW_INPUT_DIAGNOSTIC
+    bool "Run raw input diagnostic when Reader font is missing"
+    default y
+    depends on ENKU_BRINGUP_SMOKE_TESTS
+    help
+        If Noto Sans is not provisioned, keep GPIO button verification
+        available instead of immediately idling.
+
+endmenu

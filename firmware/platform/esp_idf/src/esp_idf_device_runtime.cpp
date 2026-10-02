@@ -431,6 +431,31 @@ bool EspIdfDeviceRuntime::syncWebUploadServer() {
     return web_upload_server_.sync(online);
 }
 
+void EspIdfDeviceRuntime::processWebDeleteRequests() {
+    std::string book_id;
+    if (!web_upload_server_.takeDeleteRequest(
+            book_id
+        )) {
+        return;
+    }
+
+    const auto& app = storage_.appState();
+
+    // Never remove the source of the book currently open in the reader.
+    // The browser can retry once the user returns to Library.
+    if (app.screen == Screen::Reading &&
+        app.current_book ==
+            std::optional<BookId>{book_id}) {
+        return;
+    }
+
+    if (storage_.deleteService().remove(
+            book_id
+        ) == BookDeleteStatus::Ok) {
+        library_refresh_pending_ = true;
+    }
+}
+
 void EspIdfDeviceRuntime::refreshLibraryAfterUploadIfNeeded() {
     if (web_upload_server_.takeUploadCompleted()) {
         library_refresh_pending_ = true;
@@ -553,6 +578,7 @@ InputDispatchResult EspIdfDeviceRuntime::pollInput(
     // instead of waiting for the next poll cycle.
     syncPlatformState();
     syncWebUploadServer();
+    processWebDeleteRequests();
     refreshLibraryAfterUploadIfNeeded();
 
     return result;

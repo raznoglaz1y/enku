@@ -21,6 +21,18 @@ public:
         const std::string& bytes
     ) override;
 
+    BookFileStatus size(
+        const std::string& path,
+        std::uint64_t& bytes
+    ) override;
+
+    BookFileStatus readRange(
+        const std::string& path,
+        std::uint64_t offset,
+        std::size_t length,
+        std::string& bytes
+    ) override;
+
     BookFileStatus append(
         const std::string& path,
         const std::string& bytes

@@ -9,13 +9,15 @@ namespace enku {
 namespace {
 
 constexpr std::array<const char*, 26> kLatin = {
-    "a","b","c","d","e","f","g","h","i","j","k","l","m",
-    "n","o","p","q","r","s","t","u","v","w","x","y","z",
+    "q","w","e","r","t","y","u","i","o","p",
+    "a","s","d","f","g","h","j","k","l",
+    "z","x","c","v","b","n","m",
 };
 
 constexpr std::array<const char*, 33> kCyrillic = {
-    "а","б","в","г","д","е","ё","ж","з","и","й","к","л","м","н","о",
-    "п","р","с","т","у","ф","х","ц","ч","ш","щ","ъ","ы","ь","э","ю","я",
+    "й","ц","у","к","е","н","г","ш","щ","з","х","ъ",
+    "ф","ы","в","а","п","р","о","л","д","ж","э",
+    "я","ч","с","м","и","т","ь","б","ю","ё",
 };
 
 constexpr std::array<const char*, 20> kSymbols = {
@@ -46,6 +48,79 @@ std::string asciiUpper(std::string value) {
 }
 
 } // namespace
+
+std::uint16_t keyboardCharacterKeyCount(
+    KeyboardMode mode
+) {
+    switch (mode) {
+        case KeyboardMode::Latin:
+            return static_cast<std::uint16_t>(kLatin.size());
+        case KeyboardMode::Cyrillic:
+            return static_cast<std::uint16_t>(kCyrillic.size());
+        case KeyboardMode::Symbols:
+            return static_cast<std::uint16_t>(kSymbols.size());
+        default:
+            return 0;
+    }
+}
+
+std::uint16_t keyboardKeyCount(
+    KeyboardMode mode
+) {
+    return keyboardCharacterKeyCount(mode) +
+           kSpecialCount;
+}
+
+std::string keyboardKeyLabel(
+    const KeyboardState& state,
+    std::uint16_t index
+) {
+    const auto chars =
+        keyboardCharacterKeyCount(state.mode);
+
+    std::string value;
+
+    if (index < chars) {
+        switch (state.mode) {
+            case KeyboardMode::Latin:
+                value = kLatin[index];
+                break;
+            case KeyboardMode::Cyrillic:
+                value = kCyrillic[index];
+                break;
+            case KeyboardMode::Symbols:
+                value = kSymbols[index];
+                break;
+            default:
+                return {};
+        }
+
+        if (state.mode == KeyboardMode::Latin &&
+            state.shift != KeyboardShiftState::Lowercase) {
+            return asciiUpper(value);
+        }
+
+        return value;
+    }
+
+    switch (index - chars) {
+        case 0: return "SPACE";
+        case 1: return "DELETE";
+        case 2:
+            return state.shift ==
+                       KeyboardShiftState::CapsLock
+                ? "CAPS"
+                : "SHIFT";
+        case 3:
+            return state.mode == KeyboardMode::Latin
+                ? "CYR"
+                : state.mode == KeyboardMode::Cyrillic
+                    ? "123"
+                    : "ABC";
+        case 4: return "DONE";
+        default: return {};
+    }
+}
 
 KeyboardRuntime::KeyboardRuntime(
     KeyboardState& state
@@ -186,57 +261,17 @@ KeyboardRuntimeResult KeyboardRuntime::activate(
 }
 
 std::uint16_t KeyboardRuntime::characterKeyCount() const {
-    switch (state_.mode) {
-        case KeyboardMode::Latin:
-            return static_cast<std::uint16_t>(kLatin.size());
-        case KeyboardMode::Cyrillic:
-            return static_cast<std::uint16_t>(kCyrillic.size());
-        case KeyboardMode::Symbols:
-            return static_cast<std::uint16_t>(kSymbols.size());
-        default:
-            return 0;
-    }
+    return keyboardCharacterKeyCount(state_.mode);
 }
 
 std::uint16_t KeyboardRuntime::keyCount() const {
-    return characterKeyCount() + kSpecialCount;
+    return keyboardKeyCount(state_.mode);
 }
 
 std::string KeyboardRuntime::keyLabel(
     std::uint16_t index
 ) const {
-    const auto chars = characterKeyCount();
-
-    if (index < chars) {
-        switch (state_.mode) {
-            case KeyboardMode::Latin:
-                return kLatin[index];
-            case KeyboardMode::Cyrillic:
-                return kCyrillic[index];
-            case KeyboardMode::Symbols:
-                return kSymbols[index];
-            default:
-                return {};
-        }
-    }
-
-    switch (index - chars) {
-        case 0: return "SPACE";
-        case 1: return "BACKSPACE";
-        case 2:
-            return state_.shift ==
-                       KeyboardShiftState::CapsLock
-                ? "CAPS"
-                : "SHIFT";
-        case 3:
-            return state_.mode == KeyboardMode::Latin
-                ? "CYR"
-                : state_.mode == KeyboardMode::Cyrillic
-                    ? "123"
-                    : "ABC";
-        case 4: return "DONE";
-        default: return {};
-    }
+    return keyboardKeyLabel(state_, index);
 }
 
 bool KeyboardRuntime::isLetterKey(

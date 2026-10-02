@@ -269,3 +269,21 @@ This keeps the open-source platform coherent and avoids maintaining separate fir
 8. Add a costed 4-pin pogo/dock charging footprint and input-protection/OR-ing reservation.
 9. Reserve Pro-only wireless charging coil/receiver geometry without burdening Base BOM.
 10. Produce a new portrait-first Gerber placement preview and keep a per-variant BOM/cost model.
+
+
+## ENKU Dock and Dock Mode
+
+A separate optional ENKU Dock is now part of the hardware roadmap.
+
+The mainboard should reserve a protected 4-contact pogo interface on the lower rear of the reader. Dock presence should be detected explicitly so firmware can distinguish a desk dock from ordinary USB charging.
+
+While docked, ENKU may enter a configurable low-refresh dashboard mode with options such as:
+- clock / date / battery;
+- current book and reading progress;
+- reading-goal dashboard;
+- cached weather or local status cards;
+- user-defined static text/dashboard presets.
+
+The first dock should stay passive: pogo contacts, alignment magnets/mechanics and USB-C power input. No dock MCU is required.
+
+See [Dock and Dock Mode](dock-mode.md) for the electrical, firmware and validation plan.

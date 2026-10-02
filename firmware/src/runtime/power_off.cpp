@@ -61,8 +61,8 @@ PowerOffStatus PowerOffCoordinator::powerOff() {
                 AppRestoreContext{
                     Screen::Reading,
                     book_id,
-                    app_state_.library.offset,
-                    app_state_.library.focused_book,
+                    app_state_.library.persistedOffset(),
+                    app_state_.library.persistedFocusedBook(),
                 }
             ) != PersistStatus::Ok) {
             return PowerOffStatus::ContextSaveFailed;
@@ -72,8 +72,8 @@ PowerOffStatus PowerOffCoordinator::powerOff() {
                 AppRestoreContext{
                     Screen::Library,
                     std::nullopt,
-                    app_state_.library.offset,
-                    app_state_.library.focused_book,
+                    app_state_.library.persistedOffset(),
+                    app_state_.library.persistedFocusedBook(),
                 }
             ) != PersistStatus::Ok) {
             return PowerOffStatus::ContextSaveFailed;

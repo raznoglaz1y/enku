@@ -359,7 +359,7 @@ It only produces the page content/display list.
 
 The UI/render layer converts that into a framebuffer/update region.
 
-The Refresh Manager then decides partial vs full refresh.
+The Refresh Manager then decides region/full/deferred/no-update behavior according to [Refresh Manager & E-Paper Update Policy](refresh-model.md).
 
 This keeps page layout independent from panel behavior.
 

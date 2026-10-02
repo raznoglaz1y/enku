@@ -1032,6 +1032,160 @@ bool FreeTypeTextRenderer::renderLibrary(
 
 namespace enku::platform::esp_idf {
 
+bool FreeTypeTextRenderer::renderDisplaySettings(
+    const AppState& app_state
+) {
+    if (!ready()) {
+        return false;
+    }
+
+    framebuffer_.clearWhite();
+
+    const auto orientation =
+        app_state.orientation;
+
+    if (!drawTextAt(
+            "DISPLAY",
+            26,
+            28,
+            50,
+            orientation
+        )) {
+        return false;
+    }
+
+    const int logical_width =
+        orientation == Orientation::Portrait
+            ? 480
+            : 800;
+
+    if (!drawTextAt(
+            "ORIENTATION",
+            16,
+            28,
+            112,
+            orientation
+        )) {
+        return false;
+    }
+
+    const int gap = 12;
+    const int button_width =
+        (logical_width - 56 - gap) / 2;
+    const int top = 132;
+
+    const bool selected_portrait =
+        app_state.display_settings.selected ==
+        Orientation::Portrait;
+
+    drawRect(
+        24,
+        top,
+        button_width,
+        48,
+        orientation,
+        selected_portrait ? 3 : 1
+    );
+
+    drawRect(
+        24 + button_width + gap,
+        top,
+        button_width,
+        48,
+        orientation,
+        selected_portrait ? 1 : 3
+    );
+
+    if (!drawTextAt(
+            "PORTRAIT",
+            15,
+            42,
+            top + 31,
+            orientation
+        )) {
+        return false;
+    }
+
+    if (!drawTextAt(
+            "LANDSCAPE",
+            15,
+            42 + button_width + gap,
+            top + 31,
+            orientation
+        )) {
+        return false;
+    }
+
+    std::string applied =
+        "APPLIED: ";
+
+    applied +=
+        app_state.orientation ==
+                Orientation::Portrait
+            ? "PORTRAIT"
+            : "LANDSCAPE";
+
+    if (!drawTextAt(
+            applied,
+            12,
+            28,
+            206,
+            orientation
+        )) {
+        return false;
+    }
+
+    if (!drawTextAt(
+            "REFRESH",
+            16,
+            28,
+            264,
+            orientation
+        )) {
+        return false;
+    }
+
+    if (!drawTextAt(
+            "HARDWARE VALIDATION PENDING",
+            14,
+            28,
+            296,
+            orientation
+        )) {
+        return false;
+    }
+
+    if (!drawTextAt(
+            "BALANCED / CLEAN AND MANUAL REFRESH ARE",
+            11,
+            28,
+            326,
+            orientation
+        )) {
+        return false;
+    }
+
+    if (!drawTextAt(
+            "NOT ENABLED UNTIL REAL PANEL GHOSTING TESTS.",
+            11,
+            28,
+            346,
+            orientation
+        )) {
+        return false;
+    }
+
+    return drawTextAt(
+        "UP/DOWN SELECT  FUNCTION APPLY  BACK SETTINGS",
+        12,
+        28,
+        orientation == Orientation::Portrait
+            ? 760
+            : 448,
+        orientation
+    );
+}
+
 bool FreeTypeTextRenderer::renderReadingSettings(
     const AppState& app_state
 ) {

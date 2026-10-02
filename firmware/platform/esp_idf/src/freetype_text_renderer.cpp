@@ -1032,6 +1032,175 @@ bool FreeTypeTextRenderer::renderLibrary(
 
 namespace enku::platform::esp_idf {
 
+bool FreeTypeTextRenderer::renderSettingsScreen(
+    const AppState& app_state
+) {
+    if (!ready()) {
+        return false;
+    }
+
+    framebuffer_.clearWhite();
+
+    const auto orientation =
+        app_state.orientation;
+
+    if (!drawTextAt(
+            "SETTINGS",
+            26,
+            28,
+            50,
+            orientation
+        )) {
+        return false;
+    }
+
+    const char* preset = "STANDARD";
+
+    switch (app_state.typography.preset) {
+        case ReadingPreset::Spacious:
+            preset = "SPACIOUS";
+            break;
+        case ReadingPreset::Comfortable:
+            preset = "COMFORTABLE";
+            break;
+        case ReadingPreset::Standard:
+            preset = "STANDARD";
+            break;
+        case ReadingPreset::Compact:
+            preset = "COMPACT";
+            break;
+        case ReadingPreset::Dense:
+            preset = "DENSE";
+            break;
+    }
+
+    const char* orient =
+        app_state.orientation ==
+                Orientation::Portrait
+            ? "PORTRAIT"
+            : "LANDSCAPE";
+
+    std::string wifi =
+        app_state.network.connected
+            ? (
+                app_state.network.ssid.empty()
+                    ? "CONNECTED"
+                    : app_state.network.ssid
+              )
+            : (
+                app_state.wifi_policy ==
+                        WiFiPolicy::AutoConnectTrusted
+                    ? "AUTO / OFFLINE"
+                    : "OFF"
+              );
+
+    const char* language =
+        app_state.ui_locale == LocaleId::En
+            ? "ENGLISH"
+            : "OTHER";
+
+    const char* labels[] = {
+        "READING",
+        "DISPLAY",
+        "WI-FI",
+        "LANGUAGE",
+        "STORAGE",
+        "SLEEP",
+        "ABOUT",
+        "POWER OFF",
+    };
+
+    std::string values[8];
+    values[0] = preset;
+    values[1] = orient;
+    values[2] = wifi;
+    values[3] = language;
+    values[4] =
+        std::to_string(
+            app_state.library.total_matches
+        ) + " BOOKS";
+    values[5] = "MANUAL AVAILABLE";
+    values[6] = "ENKU";
+    values[7] = "";
+
+    const int logical_width =
+        orientation == Orientation::Portrait
+            ? 480
+            : 800;
+
+    const int start_y =
+        orientation == Orientation::Portrait
+            ? 92
+            : 66;
+
+    const int row_height =
+        orientation == Orientation::Portrait
+            ? 68
+            : 46;
+
+    for (int i = 0; i < 8; ++i) {
+        const int top =
+            start_y + i * row_height;
+
+        if (static_cast<int>(
+                app_state.settings_nav.focus
+            ) == i) {
+            drawRect(
+                16,
+                top,
+                logical_width - 32,
+                row_height - 6,
+                orientation,
+                2
+            );
+        }
+
+        if (!drawTextAt(
+                labels[i],
+                orientation == Orientation::Portrait
+                    ? 16
+                    : 14,
+                30,
+                top + (
+                    orientation == Orientation::Portrait
+                        ? 27
+                        : 21
+                ),
+                orientation
+            )) {
+            return false;
+        }
+
+        if (!values[i].empty()) {
+            if (!drawTextAt(
+                    values[i],
+                    orientation == Orientation::Portrait
+                        ? 11
+                        : 10,
+                    30,
+                    top + (
+                        orientation == Orientation::Portrait
+                            ? 47
+                            : 36
+                    ),
+                    orientation
+                )) {
+                return false;
+            }
+        }
+    }
+
+    return drawTextAt(
+        "UP/DOWN MOVE  FUNCTION OPEN  BACK LIBRARY",
+        12,
+        28,
+        orientation == Orientation::Portrait
+            ? 760
+            : 448,
+        orientation
+    );
+}
+
 bool FreeTypeTextRenderer::renderAboutBook(
     const AppState& app_state,
     const BookRecord& book

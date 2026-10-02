@@ -1,4 +1,5 @@
 #include "enku/platform/esp_idf/freetype_text_renderer.hpp"
+#include "enku/core/product_info.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -1031,6 +1032,109 @@ bool FreeTypeTextRenderer::renderLibrary(
 } // namespace enku::platform::esp_idf
 
 namespace enku::platform::esp_idf {
+
+bool FreeTypeTextRenderer::renderAboutDevice(
+    const AppState& app_state
+) {
+    if (!ready()) {
+        return false;
+    }
+
+    framebuffer_.clearWhite();
+
+    const auto orientation =
+        app_state.orientation;
+
+    if (!drawTextAt(
+            "ABOUT",
+            26,
+            28,
+            50,
+            orientation
+        )) {
+        return false;
+    }
+
+    if (!drawTextAt(
+            kProductName,
+            30,
+            28,
+            118,
+            orientation
+        )) {
+        return false;
+    }
+
+    if (!drawTextAt(
+            kProductDescription,
+            15,
+            28,
+            148,
+            orientation
+        )) {
+        return false;
+    }
+
+    const struct {
+        const char* label;
+        std::string_view value;
+    } fields[] = {
+        {"FIRMWARE", kFirmwareVersion},
+        {"HARDWARE", kHardwareTarget},
+        {"DISPLAY", kDisplayDescription},
+        {"INPUT", kInputDescription},
+    };
+
+    const int start_y =
+        orientation == Orientation::Portrait
+            ? 222
+            : 112;
+
+    const int row_height =
+        orientation == Orientation::Portrait
+            ? 74
+            : 68;
+
+    const int value_x =
+        orientation == Orientation::Portrait
+            ? 28
+            : 420;
+
+    for (int i = 0; i < 4; ++i) {
+        const int top =
+            start_y + i * row_height;
+
+        if (!drawTextAt(
+                fields[i].label,
+                11,
+                value_x,
+                top,
+                orientation
+            )) {
+            return false;
+        }
+
+        if (!drawTextAt(
+                fields[i].value,
+                15,
+                value_x,
+                top + 24,
+                orientation
+            )) {
+            return false;
+        }
+    }
+
+    return drawTextAt(
+        "FUNCTION OR BACK  RETURN TO SETTINGS",
+        12,
+        28,
+        orientation == Orientation::Portrait
+            ? 760
+            : 448,
+        orientation
+    );
+}
 
 bool FreeTypeTextRenderer::renderLocaleSettings(
     const AppState& app_state

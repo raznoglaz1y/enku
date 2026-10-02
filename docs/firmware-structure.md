@@ -19,6 +19,7 @@ firmware/
       localization.hpp
       diagnostics.hpp
       boot.hpp
+      refresh.hpp
       events.hpp
       app_state.hpp
     reader/
@@ -92,6 +93,19 @@ Owns:
 - generated runtime locale tables.
 
 Human-reviewable source catalogs live under `locales/`. The runtime representation is generated and must not require parsing source JSON files on device startup.
+
+### refresh
+
+Owns:
+
+- render-plan/update classification;
+- dirty-region metadata;
+- bounded refresh queue;
+- update coalescing and stale-work removal;
+- full-refresh escalation policy;
+- refresh diagnostics/statistics.
+
+Refresh policy remains independent from raw panel-driver APIs. Hardware-specific capability mapping lives under `platform`.
 
 ### reader
 

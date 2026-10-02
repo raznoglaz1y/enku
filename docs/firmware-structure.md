@@ -38,6 +38,7 @@ firmware/
       reader_runtime.hpp
       library_runtime.hpp
       settings_runtime.hpp
+      input_runtime.hpp
       storage_startup.hpp
       boot_restore.hpp
       sleep_wake.hpp
@@ -65,6 +66,7 @@ firmware/
       reader_runtime.cpp
       library_runtime.cpp
       settings_runtime.cpp
+      input_runtime.cpp
       storage_startup.cpp
       boot_restore.cpp
       sleep_wake.cpp
@@ -104,9 +106,11 @@ firmware/
           board.hpp
           esp_idf_sd_card.hpp
           esp_idf_file_store.hpp
+          esp_idf_buttons.hpp
         src/
           esp_idf_sd_card.cpp
           esp_idf_file_store.cpp
+          esp_idf_buttons.cpp
     services/
 ```
 
@@ -208,7 +212,8 @@ Owns:
 - graceful Power Off persistence before platform shutdown;
 - persistent boot-loop marker management for cold-boot recovery gating;
 - Library query/focus/open coordination, transactional import event handling and focused-book deletion;
-- global settings loading, safe-default recovery and runtime persistence.
+- global settings loading, safe-default recovery and runtime persistence;
+- screen-aware physical-input to logical-action mapping plus ESP-IDF button polling.
 
 The runtime layer does not manipulate semantic offsets directly.
 

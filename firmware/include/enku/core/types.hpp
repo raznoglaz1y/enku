@@ -31,6 +31,19 @@ enum class Screen : std::uint8_t {
     BookFinished = 11,
 };
 
+static_assert(
+    static_cast<std::uint8_t>(Screen::Library) == 1,
+    "Persisted Screen::Library id must remain stable"
+);
+static_assert(
+    static_cast<std::uint8_t>(Screen::Reading) == 3,
+    "Persisted Screen::Reading id must remain stable"
+);
+static_assert(
+    static_cast<std::uint8_t>(Screen::ErrorRecovery) == 9,
+    "Legacy persisted Screen range must remain stable"
+);
+
 enum class ReadingState : std::uint8_t {
     New,
     Reading,

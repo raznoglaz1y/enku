@@ -397,3 +397,44 @@ Recovery decisions:
 The coordinator intentionally does not auto-import ambiguous tmp files after reboot. User/source data is preserved until a later recovery action explicitly retries or removes it.
 
 This MVP covers the storage/persistence part of boot only. Display, input, settings, boot-loop markers and automatic reading restore remain separate boot stages.
+
+
+## 26. Last-safe context and Reading restore MVP
+
+ENKU now persists a small independent application restore record:
+
+```text
+/system/context.a.cbor
+/system/context.b.cbor
+```
+
+The record intentionally stores only a safe top-level context:
+
+- `Library`; or
+- `Reading + book_id`.
+
+Transient overlays, search state, render state and page-cache data are never stored in this record.
+
+`ReaderRuntimeController` updates it at safe transitions:
+
+- successful book open → `Reading + book_id`;
+- successful Back-to-Library transition → `Library`.
+
+`BootRestoreCoordinator` runs after storage recovery:
+
+```text
+StorageStartupCoordinator
+→ load app context
+→ Library context: show Library
+→ Reading context: validate Library entry
+→ ReaderRuntimeController(OpenBookRequested)
+→ ReaderCheckpointService restore
+→ ReaderBookLoader
+→ Reading
+```
+
+If automatic restore fails because the source disappeared, the checkpoint is invalid, parsing/layout fails or the book cannot be opened, boot falls back to Library, focuses the affected book and rewrites the safe context to `Library`. This prevents repeated automatic reopen loops on subsequent boots.
+
+If the app-context record itself is missing, ENKU initializes a safe Library context. If it is corrupt but writable, ENKU resets it to Library rather than treating a context-only failure as loss of the Library.
+
+The first host integration test models a cold reboot with new service/runtime objects and verifies that both the book and the persisted semantic offset are restored.

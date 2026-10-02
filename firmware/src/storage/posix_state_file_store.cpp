@@ -117,4 +117,22 @@ StateFileStatus PosixStateFileStore::write(
     return StateFileStatus::Ok;
 }
 
+StateFileStatus PosixStateFileStore::remove(
+    const std::string& path
+) {
+    const auto full_path = resolve(path);
+
+    std::error_code ec;
+    const bool removed =
+        std::filesystem::remove(full_path, ec);
+
+    if (ec) {
+        return StateFileStatus::IoError;
+    }
+
+    return removed
+        ? StateFileStatus::Ok
+        : StateFileStatus::NotFound;
+}
+
 } // namespace enku

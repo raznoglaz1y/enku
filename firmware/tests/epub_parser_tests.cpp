@@ -1,4 +1,5 @@
 #include "enku/reader/epub_parser.hpp"
+#include "enku/reader/zip_archive.hpp"
 
 #include <algorithm>
 #include <cassert>

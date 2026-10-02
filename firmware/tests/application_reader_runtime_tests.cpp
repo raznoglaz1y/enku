@@ -12,7 +12,8 @@ namespace {
 
 class FixedWidthRenderer final
     : public TextMeasurer,
-      public ReaderPageRenderer {
+      public ReaderPageRenderer,
+      public LibraryPageRenderer {
 public:
     std::uint16_t measureWidthPx(
         std::string_view text,
@@ -41,8 +42,22 @@ public:
         return true;
     }
 
+    bool renderLibrary(
+        const AppState&,
+        const LibraryPage& page
+    ) override {
+        ++library_renders;
+        last_library_items =
+            static_cast<std::uint32_t>(
+                page.items.size()
+            );
+        return true;
+    }
+
     std::uint32_t renders{0};
     std::uint32_t last_lines{0};
+    std::uint32_t library_renders{0};
+    std::uint32_t last_library_items{0};
 };
 
 class FakeRefreshService final : public RefreshService {
@@ -95,6 +110,7 @@ int main() {
         refresh,
         renderer,
         renderer,
+        renderer,
         TypographySettings{18, 1.2F, 16},
         Viewport{300, 420}
     );
@@ -134,6 +150,8 @@ int main() {
             LibraryRefreshRequested{}
         ) == LibraryRuntimeResult::Applied
     );
+    assert(renderer.library_renders == 1);
+    assert(renderer.last_library_items == 1);
 
     storage.appState().library.focused_book =
         imported.book_id;

@@ -467,16 +467,9 @@ ReaderRuntimeResult ReaderRuntimeController::applySessionResult(
                 return ReaderRuntimeResult::LibraryUpdateFailed;
             }
 
-            const auto refresh_result = submitRefresh(
-                RefreshReason::StatusChanged,
-                true,
-                false
-            );
-
-            if (refresh_result == ReaderRuntimeResult::RefreshRejected) {
-                return refresh_result;
-            }
-
+            // BookFinishedRuntime owns the completion-screen refresh.
+            // Avoid refreshing the final reading framebuffer here, otherwise
+            // e-paper would perform two consecutive full refreshes.
             return ReaderRuntimeResult::EndOfBook;
         }
 

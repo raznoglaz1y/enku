@@ -59,6 +59,13 @@ EspIdfDeviceRuntime::EspIdfDeviceRuntime(
           &text_renderer_,
           &platform_.refresh()
       ),
+      contents_bookmarks_(
+          storage_.appState(),
+          reader_,
+          storage_.bookmarks(),
+          &text_renderer_,
+          &platform_.refresh()
+      ),
       sleep_wake_(
           storage_.appState(),
           storage_.library(),
@@ -86,7 +93,8 @@ EspIdfDeviceRuntime::EspIdfDeviceRuntime(
           &search_,
           &library_search_,
           &book_details_,
-          &book_finished_
+          &book_finished_,
+          &contents_bookmarks_
       ) {
     text_renderer_.bindAppState(
         storage_.appState()
@@ -158,6 +166,11 @@ EspIdfDeviceRuntime::bookDetails() {
 BookFinishedRuntime&
 EspIdfDeviceRuntime::bookFinished() {
     return book_finished_;
+}
+
+ContentsBookmarksRuntime&
+EspIdfDeviceRuntime::contentsBookmarks() {
+    return contents_bookmarks_;
 }
 
 SleepWakeCoordinator&

@@ -138,6 +138,8 @@ The initial source/module layout and framework-neutral interfaces are defined in
 
 The hardware-grounded button mapping and logical input actions are defined in [Input & Physical Controls](input-model.md).
 
+The separation between display sleep, system suspend and PMU power-off is defined in [Power, Sleep & Wake Model](power-model.md).
+
 ### Reader v1 format scope
 
 The first ENKU reader release targets three reflowable/text-oriented formats:

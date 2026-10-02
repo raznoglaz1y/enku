@@ -60,6 +60,7 @@ idf_component_register(
         "../../../src/parsers/txt/txt_parser.cpp"
         "../../../src/parsers/epub/zip_archive.cpp"
         "../../../src/parsers/epub/epub_parser.cpp"
+        "../../../src/parsers/fb2/fb2_parser.cpp"
     INCLUDE_DIRS
         "../include"
         "../../../include"

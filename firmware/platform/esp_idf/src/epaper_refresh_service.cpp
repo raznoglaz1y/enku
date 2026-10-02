@@ -200,8 +200,12 @@ bool EpaperRefreshService::submit(
         return false;
     }
 
-    if (request.generation <
-        minimum_generation_) {
+    // generation==0 is reserved for unsequenced system overlays such as
+    // the compact status bar. These updates must not be dropped by a newer
+    // screen generation and must not advance the screen refresh sequence.
+    if (request.generation != 0 &&
+        request.generation <
+            minimum_generation_) {
         ++stats_.dropped_obsolete;
         return true;
     }

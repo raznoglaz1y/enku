@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <initializer_list>
 
 #include "driver/gpio.h"
 #include "driver/spi_master.h"

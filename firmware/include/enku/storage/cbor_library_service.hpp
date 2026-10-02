@@ -15,7 +15,7 @@ public:
     explicit CborLibraryService(StateFileStore& files);
 
     LibraryStatus load();
-    LibraryStatus upsert(const BookRecord& record);
+    LibraryStatus upsert(const BookRecord& record) override;
 
     std::optional<BookRecord> get(
         const BookId& book_id

@@ -41,6 +41,7 @@ add_library(enku_core STATIC
     src/runtime/boot_restore.cpp
     src/runtime/sleep_wake.cpp
     src/runtime/power_off.cpp
+    src/runtime/power_off_confirm_runtime.cpp
     src/storage/cbor_reader_checkpoint.cpp
     src/storage/cbor_bookmark_service.cpp
     src/storage/cbor_library_service.cpp

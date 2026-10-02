@@ -372,6 +372,23 @@ int main() {
         "test.epub",
     };
 
+    const auto metadata_only =
+        parser.parseMetadata(
+            sampleEpub(),
+            source
+        );
+
+    assert(metadata_only.ok());
+    assert(metadata_only.document.sections.empty());
+    assert(
+        metadata_only.document.metadata.title ==
+        "ENKU & EPUB"
+    );
+    assert(
+        metadata_only.document.metadata.authors.size() ==
+        2
+    );
+
     const auto result =
         parser.parse(
             sampleEpub(),

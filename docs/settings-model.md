@@ -61,7 +61,7 @@ Reader v1 product policy values are:
 
 This field controls desired product behavior only.
 
-Trusted-network credentials/keys may later live in the platform secure storage mechanism and are intentionally not stored inside the ordinary settings CBOR record.
+Trusted-network credentials are intentionally not stored inside the ordinary settings CBOR record. On the ESP-IDF target, the Wi-Fi driver stores the configured STA network in its flash/NVS storage. Device-level NVS/flash encryption hardening remains a separate production-security step.
 
 ## 5. Persistence
 
@@ -160,3 +160,37 @@ Exact physical typography metrics can still be tuned after real-panel profiling;
 - Search/focus/current-book state is not global settings.
 - Wi-Fi credentials are not stored in ordinary settings CBOR.
 - Runtime settings changes persist atomically and roll back in-memory preference changes if commit fails.
+
+
+## 11. Wi-Fi policy application on ESP-IDF
+
+`EspIdfDeviceRuntime` applies the persisted `WiFiPolicy` after storage/settings boot restore.
+
+Current behavior:
+
+```text
+Off
+→ disconnect
+→ stop Wi-Fi STA
+
+Manual
+→ ensure STA stack is running
+→ do not auto-connect
+
+AutoConnectTrusted
+→ ensure STA stack is running
+→ read the Wi-Fi driver's saved STA configuration
+→ connect only when a trusted SSID exists
+```
+
+No saved trusted network is a normal disconnected state, not a boot failure.
+
+The device runtime exposes:
+
+- `setWiFiPolicy()`;
+- `setTrustedNetwork()`;
+- `forgetTrustedNetwork()`.
+
+Policy changes are persisted through `SettingsRuntimeController`. If applying a newly saved policy fails at the driver level, the runtime performs a best-effort rollback to the previous persisted policy so durable settings and hardware state do not intentionally diverge.
+
+`AppState.network` and battery/charging state are refreshed from the platform during the device loop.

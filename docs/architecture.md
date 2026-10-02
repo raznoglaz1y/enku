@@ -4,37 +4,194 @@ This document describes the intended high-level architecture of ENKU before the 
 
 The goal is to keep the reader understandable, testable and modular: display/input/storage code should not leak into book parsing, and reader logic should not depend directly on the web-management layer.
 
+## Architectural decisions
+
+The following decisions are now part of the ENKU firmware baseline:
+
+1. **Event-driven UI**  
+   ENKU does not use a continuous frame/redraw loop. Button presses, navigation, page turns, setting changes, Wi-Fi events, import events and power events produce application events. Rendering happens only when visible state actually changes.
+
+2. **Single application state model**  
+   Logical product state is centralized rather than duplicated inside screens. This includes current screen, current book, semantic reading position, orientation, focus, Library view/filter/sort, global settings, per-book settings, Wi-Fi state and power state.
+
+3. **Reader Engine is independent from UI**  
+   The UI requests laid-out reading content from the Reader Engine. Parser/layout/pagination internals remain separate from screen code.
+
+4. **Semantic reading position instead of page number**  
+   Reading progress is anchored to book structure/text position rather than a rendered page index. Page numbers are unstable because typography, margins and orientation can change pagination.
+
+5. **Dedicated Refresh Manager**  
+   UI code describes what became dirty; a separate refresh layer decides whether to use a regional/partial update, a full update, combine updates, or defer them.
+
+6. **No invisible redraws**  
+   If application state changes but nothing visible on the current screen changes, the e-paper panel is not refreshed. For example, saving reading progress or a hidden Wi-Fi state change must not redraw the reading page.
+
 ## System overview
 
 ```mermaid
 flowchart TD
-    HW[Hardware
-ESP32-S3 · E-paper · Buttons · microSD · Battery]
-    HAL[Hardware abstraction
-Display · Input · Storage · Power · Wi-Fi]
-    STATE[Application state
-Library · Settings · Current book · Network]
-    READER[Reader engine
-Parser · Layout · Pagination · Search · ToC]
-    UI[Device UI
-Focus navigation · Components · Localization]
-    WEB[Local web management
-Upload · Metadata · Covers · Storage]
-    DATA[Persistent data
-Books · Progress · Bookmarks · Settings]
+    INPUT[Physical controls / system events]
+    EVENTS[Event queue]
+    STATE[Application state]
+    READER[Reader engine]
+    UI[UI composition]
+    PLAN[Render plan / dirty regions]
+    REFRESH[Refresh manager]
+    HW[Display driver / hardware]
+    DATA[Persistent data]
 
-    HW --> HAL
-    HAL --> STATE
-    HAL --> READER
+    INPUT --> EVENTS
+    EVENTS --> STATE
     STATE --> UI
+    STATE --> READER
     READER --> UI
-    STATE --> WEB
-    WEB --> DATA
-    READER --> DATA
+    UI --> PLAN
+    PLAN --> REFRESH
+    REFRESH --> HW
     STATE --> DATA
+    READER --> DATA
 ```
 
-## 1. Hardware layer
+## 1. Event model
+
+ENKU firmware should react to discrete events instead of continuously repainting UI state.
+
+Examples:
+
+- ButtonPressed
+- ButtonReleased / ButtonHeld
+- PageNext
+- PagePrevious
+- ScreenOpened
+- SettingChanged
+- OrientationChanged
+- BookOpened
+- BookPositionChanged
+- ImportProgressChanged
+- ImportCompleted
+- WiFiConnected
+- WiFiDisconnected
+- BatteryStateChanged
+- SleepRequested
+- WakeRequested
+
+Events update application state first. Rendering is a consequence of state changes, not the primary control flow.
+
+This is important for e-paper because it reduces unnecessary refreshes, ghosting and power use.
+
+## 2. Application state
+
+A single logical state model should own product-level state such as:
+
+- current screen / overlay;
+- current book;
+- semantic reading position;
+- current focus target;
+- orientation;
+- UI language;
+- Library view mode;
+- Library filter and sort;
+- focused/visible Library item;
+- global reading settings;
+- per-book reading overrides;
+- bookmarks;
+- saved/trusted networks;
+- Wi-Fi state;
+- battery/power state;
+- active import/transfer state.
+
+Screens should not own long-lived product state that must survive navigation, orientation change, sleep or reboot.
+
+## 3. Reader engine
+
+The Reader Engine is responsible for turning structured book content into renderable reading pages.
+
+A conceptual request from the UI looks like:
+
+```text
+layoutPage(
+    book,
+    semanticPosition,
+    typography,
+    viewport
+)
+```
+
+The engine returns:
+
+- renderable page content;
+- semantic position represented by the page;
+- previous semantic position;
+- next semantic position;
+- reading-progress information;
+- optional structural context such as chapter/section.
+
+The UI does not need to know how EPUB, FB2 or another format is internally parsed.
+
+## 4. Semantic reading position
+
+ENKU must not use rendered page number as the authoritative reading position.
+
+Rendered pages are unstable because changing any of the following can repaginate the book:
+
+- font size;
+- line spacing;
+- margins;
+- font metrics;
+- portrait/landscape orientation;
+- viewport size;
+- parser/layout fixes.
+
+The stored reading position should instead identify a stable logical point in the book.
+
+The exact representation will be selected per format, but conceptually it should resemble:
+
+```text
+book_id
++ structural location (spine/chapter/section)
++ text/character offset or equivalent stable anchor
+```
+
+When layout changes, the Reader Engine repaginates around this anchor and restores the nearest valid logical position.
+
+## 5. Render plan
+
+UI composition produces a render plan rather than writing directly to the panel.
+
+The render plan describes:
+
+- what region changed;
+- whether content is new or only state decoration changed;
+- whether a full page changed;
+- whether an overlay opened/closed;
+- whether the update may safely wait;
+- whether multiple dirty regions can be merged.
+
+Examples:
+
+- page turn → whole reading viewport dirty;
+- focused row changed → old/new focus regions dirty;
+- hidden Wi-Fi state changed → no visible dirty region;
+- transfer progress changed → progress region dirty, throttled;
+- orientation changed → full screen dirty.
+
+## 6. Refresh Manager
+
+The Refresh Manager owns e-paper update policy.
+
+Responsibilities:
+
+- choose full vs partial/region refresh;
+- coalesce multiple UI updates;
+- throttle rapidly changing states;
+- force full refresh after measured ghosting thresholds;
+- avoid refreshing invisible state;
+- serialize display access;
+- expose measured driver limitations to higher layers without leaking driver details into UI code.
+
+The exact thresholds and partial-refresh rules are not fixed until the real Waveshare panel is characterized.
+
+## 7. Hardware layer
 
 Reference platform:
 
@@ -56,7 +213,7 @@ Responsibilities:
 
 Hardware behavior remains provisional until tested on the real board.
 
-## 2. Hardware abstraction
+## 8. Hardware abstraction
 
 The rest of the application should not need to know raw GPIO numbers or panel-driver details.
 
@@ -71,58 +228,7 @@ Planned interfaces include:
 
 This layer is also where board-revision differences should be isolated.
 
-## 3. Application state
-
-Central state should own product-level information such as:
-
-- Library index;
-- focused/visible book;
-- current book;
-- semantic reading position;
-- reading progress;
-- bookmarks;
-- global settings;
-- per-book overrides;
-- saved/trusted networks;
-- orientation and UI language.
-
-The UI reads and changes application state; it should not directly manipulate raw files.
-
-## 4. Reader engine
-
-The reader engine is responsible for turning book content into pages.
-
-Planned responsibilities:
-
-- format parsing;
-- metadata and cover extraction;
-- structured table of contents;
-- text normalization;
-- typography application;
-- line breaking and pagination;
-- semantic-position mapping;
-- in-book search;
-- search-match navigation.
-
-A key design goal is to preserve the reader's logical position after typography or orientation changes.
-
-## 5. Device UI
-
-The UI is non-touch and controlled through physical input.
-
-Core principles:
-
-- deterministic focus navigation;
-- focus ≠ selected ≠ active;
-- reusable components;
-- portrait and landscape from the same state model;
-- English as the canonical UI language;
-- e-paper-aware redraws;
-- no animation assumptions.
-
-The visual source of truth is the approved design system and review boards.
-
-## 6. Persistent data
+## 9. Persistent data
 
 Book files and reader state are logically separate.
 
@@ -139,7 +245,7 @@ Examples:
 
 Safe import/replace operations should be transactional so a failed write never turns a valid Library item into a broken one.
 
-## 7. Local web management
+## 10. Local web management
 
 The local browser interface is a management companion, not the main reader UI.
 
@@ -158,7 +264,7 @@ Initial scope:
 
 It should remain local and session-scoped by default. Reading must not require a cloud account or an active connection.
 
-## 8. E-paper refresh model
+## 11. E-paper refresh model
 
 The exact driver strategy will be chosen after hardware characterization.
 
@@ -170,7 +276,7 @@ Expected rules:
 - use periodic full refresh when real ghosting measurements justify it;
 - expose user-facing refresh settings only if they have a clear product meaning.
 
-## 9. Open decisions
+## 12. Open decisions
 
 The following are intentionally not frozen yet:
 
@@ -178,7 +284,7 @@ The following are intentionally not frozen yet:
 - initial book format set;
 - parser library/stack;
 - exact persistence backend;
-- partial refresh policy;
+- partial refresh thresholds;
 - battery model and percentage calibration;
 - hard power-off implementation;
 - final enclosure geometry.

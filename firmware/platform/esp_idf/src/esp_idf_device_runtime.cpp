@@ -532,6 +532,7 @@ InputDispatchResult EspIdfDeviceRuntime::pollInput(
     // Network services follow the same authoritative lifecycle state as
     // the UI. The uploader exists only while the reader is online and awake.
     syncWebUploadServer();
+    refreshLibraryAfterUploadIfNeeded();
 
     // Status changes are independent of user input. Keep the e-ink update
     // constrained to the compact top bar instead of refreshing the screen.

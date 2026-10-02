@@ -9,6 +9,7 @@
 #include "enku/reader/pagination.hpp"
 #include "enku/reader/reader_types.hpp"
 #include "enku/render/owned_mono_framebuffer.hpp"
+#include "enku/render/reader_page_renderer.hpp"
 
 namespace enku::platform::esp_idf {
 
@@ -20,9 +21,12 @@ enum class FontInitStatus : std::uint8_t {
     SizeFailed,
 };
 
-class FreeTypeTextRenderer final : public TextMeasurer {
+class FreeTypeTextRenderer final
+    : public TextMeasurer,
+      public ReaderPageRenderer {
 public:
-    explicit FreeTypeTextRenderer(
+    FreeTypeTextRenderer(
+        OwnedMonoFramebuffer& framebuffer,
         std::string font_path =
             "/sdcard/system/fonts/NotoSans-Regular.ttf"
     );
@@ -46,11 +50,11 @@ public:
 
     bool renderPage(
         const PageResult& page,
-        const TypographySettings& typography,
-        OwnedMonoFramebuffer& framebuffer
-    ) const;
+        const TypographySettings& typography
+    ) override;
 
 private:
+    OwnedMonoFramebuffer& framebuffer_;
     std::string font_path_;
 
     mutable FT_Library library_{nullptr};
@@ -67,8 +71,7 @@ private:
         std::uint32_t& codepoint
     );
 
-    static void drawMonoBitmap(
-        OwnedMonoFramebuffer& framebuffer,
+    void drawMonoBitmap(
         const FT_Bitmap& bitmap,
         int x,
         int y

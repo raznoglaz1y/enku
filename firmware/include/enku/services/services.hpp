@@ -44,6 +44,18 @@ public:
     virtual PersistStatus commit(PersistRecordType type) = 0;
 };
 
+class ReaderCheckpointService {
+public:
+    virtual ~ReaderCheckpointService() = default;
+
+    virtual PersistStatus checkpoint(
+        const BookId& book_id,
+        const SemanticPosition& position,
+        float progress,
+        ReadingState reading_state
+    ) = 0;
+};
+
 class RefreshService {
 public:
     virtual ~RefreshService() = default;

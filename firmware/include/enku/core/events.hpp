@@ -8,6 +8,7 @@
 #include "input.hpp"
 #include "diagnostics.hpp"
 #include "boot.hpp"
+#include "refresh.hpp"
 
 namespace enku {
 
@@ -70,6 +71,18 @@ struct BootStageChanged {
 
 struct BootStable {};
 
+struct RefreshRequested {
+    RefreshRequest request;
+};
+
+struct RefreshCompleted {
+    std::uint32_t generation{0};
+};
+
+struct RefreshFailed {
+    std::uint32_t generation{0};
+};
+
 using AppEvent = std::variant<
     InputReceived,
     ActionRequested,
@@ -91,7 +104,10 @@ using AppEvent = std::variant<
     ErrorReported,
     RecoveryModeRequested,
     BootStageChanged,
-    BootStable
+    BootStable,
+    RefreshRequested,
+    RefreshCompleted,
+    RefreshFailed
 >;
 
 } // namespace enku

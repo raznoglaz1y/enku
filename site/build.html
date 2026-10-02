@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f5f1e8">
+  <meta name="description" content="Build ENKU: bill of materials, preparation, enclosure, firmware, assembly and first-boot guidance for the open-source ESP32-S3 e-paper reader.">
+  <title>Build — ENKU</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="canonical" href="https://enkureader.com/build">
+  <meta property="og:title" content="Build — ENKU">
+  <meta property="og:description" content="From reference hardware to first boot: the current ENKU build path, with verified steps separated from prototype-dependent work.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://enkureader.com/build">
+  <meta property="og:image" content="https://enkureader.com/assets/og-enku.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:alt" content="ENKU — open-source pocket e-reader">
+  <meta property="og:image:width" content="2752">
+  <meta property="og:image:height" content="2200">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Build — ENKU">
+  <meta name="twitter:description" content="The ENKU build path: BOM, preparation, enclosure, firmware, assembly and first boot.">
+  <meta name="twitter:image" content="https://enkureader.com/assets/og-enku.png">
+  <style>
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f5f1e8;color:#171717;font-family:"Noto Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration:none}.shell{width:min(1180px,calc(100% - 48px));margin:0 auto}
+    .site-header{position:sticky;top:0;z-index:30;background:rgba(245,241,232,.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(20,20,20,.08)}.header-inner{height:82px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center}.logo-link{justify-self:start;display:flex;align-items:center}.logo-link img{width:124px}.desktop-nav{justify-self:center;display:flex;gap:30px;font-size:14px}.desktop-nav a{position:relative;opacity:.76}.desktop-nav a:hover,.desktop-nav a.active{opacity:1}.desktop-nav a.active:after{content:"";position:absolute;left:0;right:0;bottom:-12px;height:1px;background:#171717}.github-icon{justify-self:end;width:28px;height:28px;display:grid;place-items:center}.github-icon svg{width:24px;height:24px;fill:currentColor}.menu-button,.mobile-nav{display:none}
+    .hero{padding:104px 0 92px;border-bottom:1px solid rgba(20,20,20,.09)}.hero-grid,.intro,.cta-inner{display:grid;grid-template-columns:.82fr 1.18fr;gap:96px;align-items:end}.eyebrow{margin:0 0 18px;font-size:11px;font-weight:600;letter-spacing:.18em;color:#5f5c55}.hero h1,.intro h2,.cta h2{font-family:"Newsreader",serif;font-weight:500;letter-spacing:-.045em}.hero h1{font-size:clamp(70px,7.2vw,112px);line-height:.88;margin:0}.lead{font-size:18px;line-height:1.65;color:#56524c;max-width:610px;margin:0}
+    .status-strip{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid rgba(20,20,20,.09)}.status-card{padding:28px 28px 30px 0}.status-card+.status-card{border-left:1px solid rgba(20,20,20,.09);padding-left:28px}.status-card small{font-size:10px;font-weight:700;letter-spacing:.13em;color:#777169}.status-card strong{display:block;font-family:"Newsreader",serif;font-size:28px;font-weight:500;margin-top:10px}.status-card p{font-size:12px;line-height:1.55;color:#6a655e;margin:8px 0 0}
+    .section{padding:106px 0;border-bottom:1px solid rgba(20,20,20,.09)}.intro{align-items:start;margin-bottom:56px}.intro h2{font-size:clamp(48px,5vw,72px);line-height:.95;margin:0}.intro>p{font-size:16px;line-height:1.7;color:#605c55;max-width:630px;margin:0}
+    .bom{border-top:1px solid rgba(20,20,20,.16)}.bom-row{display:grid;grid-template-columns:150px 1.1fr 1fr 130px;gap:26px;padding:24px 0;border-bottom:1px solid rgba(20,20,20,.12);align-items:start}.bom-row small{font-size:10px;font-weight:700;letter-spacing:.12em;color:#777169}.bom-row strong{font-family:"Newsreader",serif;font-size:26px;font-weight:500}.bom-row p{font-size:13px;line-height:1.55;color:#625e57;margin:0}.tag{justify-self:end;border:1px solid rgba(20,20,20,.24);border-radius:999px;padding:6px 9px;font-size:9px;font-weight:700;letter-spacing:.08em;white-space:nowrap}.tag.ready{background:#171717;color:#f5f1e8;border-color:#171717}
+    .steps{counter-reset:step;border-top:1px solid rgba(20,20,20,.16)}.step{counter-increment:step;display:grid;grid-template-columns:150px 1fr 1.15fr;gap:34px;padding:30px 0;border-bottom:1px solid rgba(20,20,20,.12)}.step-index:before{content:"0" counter(step);font-size:11px;font-weight:700;letter-spacing:.15em;color:#777169}.step h3{font-family:"Newsreader",serif;font-size:31px;font-weight:500;line-height:1.05;margin:0}.step-copy{font-size:13px;line-height:1.65;color:#625e57}.step-copy p{margin:0 0 12px}.step-copy p:last-child{margin-bottom:0}.state{display:inline-block;margin-bottom:10px;font-size:9px;font-weight:700;letter-spacing:.1em;border-bottom:1px solid currentColor}.state.verified{color:#171717}.state.pending{color:#7a746d}
+    .boot-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:26px}.boot-card{border:1px solid rgba(20,20,20,.13);padding:28px;min-height:210px}.boot-card small{font-size:10px;font-weight:700;letter-spacing:.12em;color:#777169}.boot-card h3{font-family:"Newsreader",serif;font-size:32px;font-weight:500;margin:18px 0 12px}.boot-card p{font-size:13px;line-height:1.65;color:#625e57;margin:0}
+    .note{margin-top:34px;padding:22px 24px;border-left:2px solid #171717;background:rgba(255,255,255,.18);font-size:13px;line-height:1.65;color:#5f5a53}
+    .cta{padding:94px 0 104px}.cta-inner{align-items:center}.cta h2{font-size:clamp(46px,4.7vw,70px);line-height:.95;margin:0 0 18px}.cta p{font-size:15px;line-height:1.65;color:#605b54;max-width:600px;margin:0}.cta-links{display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap}.button{border:1px solid #171717;border-radius:5px;min-height:50px;padding:0 20px;display:inline-flex;align-items:center;justify-content:center;gap:26px;font-size:13px;font-weight:600;background:#171717;color:#f5f1e8}.button.secondary{background:transparent;color:#171717}
+    .site-footer{border-top:1px solid rgba(20,20,20,.1);padding:34px 0 36px}.footer-inner{min-height:58px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:30px}.footer-logo{width:118px}.site-footer nav{display:flex;gap:23px;justify-self:center;font-size:12px;color:#55514b}.footer-meta{justify-self:end;display:flex;gap:24px;font-size:12px}.footer-meta a{font-weight:600}
+    @media(max-width:980px){.hero-grid,.intro,.cta-inner{gap:48px}.bom-row{grid-template-columns:110px 1fr 1fr}.bom-row .tag{grid-column:2/-1;justify-self:start}.step{grid-template-columns:110px 1fr 1.15fr}}
+    @media(max-width:760px){.shell{width:min(100% - 32px,1180px)}.header-inner{height:70px;grid-template-columns:1fr auto}.logo-link img{width:112px}.desktop-nav,.github-icon{display:none}.menu-button{display:flex;flex-direction:column;gap:5px;background:none;border:0;padding:8px}.menu-button span{display:block;width:27px;height:1px;background:#171717}.mobile-nav{display:none;position:absolute;top:70px;left:0;right:0;background:#f5f1e8;border-bottom:1px solid rgba(20,20,20,.1);padding:20px 16px 28px;flex-direction:column;gap:17px}.mobile-nav.open{display:flex}.mobile-nav a{font-size:15px}.hero{padding:68px 0 72px}.hero-grid,.intro,.cta-inner{grid-template-columns:1fr;gap:28px}.hero h1{font-size:clamp(58px,16vw,82px)}.lead{font-size:16px}.status-strip,.boot-grid{grid-template-columns:1fr}.status-card+.status-card{border-left:0;border-top:1px solid rgba(20,20,20,.09);padding-left:0}.section{padding:78px 0}.intro{margin-bottom:42px}.bom-row,.step{grid-template-columns:1fr;gap:10px}.bom-row .tag{grid-column:auto}.tag{justify-self:start}.cta{padding:72px 0}.cta-links{justify-content:flex-start}.footer-inner{grid-template-columns:1fr auto}.site-footer nav{display:none}.footer-meta span{display:none}}
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner shell">
+      <a class="logo-link" href="/" aria-label="ENKU home"><img src="/assets/enku-logo.svg" alt="ENKU"></a>
+      <nav class="desktop-nav" aria-label="Main navigation">
+        <a href="/">Home</a><a href="/hardware">Hardware</a><a href="/software">Software</a><a href="/design">Design</a><a href="/build" class="active">Build</a><a href="/about">About</a><a href="/status">Status</a><a href="/build-log">Log</a><a href="/downloads">Downloads</a><a href="/contact">Contact</a>
+      </nav>
+      <a class="github-icon" href="https://github.com/raznoglaz1y/enku" target="_blank" rel="noreferrer" aria-label="ENKU on GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .7a11.5 11.5 0 0 0-3.64 22.41c.58.11.79-.25.79-.56v-2.24c-3.23.7-3.91-1.37-3.91-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.78 2.72 1.27 3.39.97.1-.75.4-1.27.74-1.56-2.58-.29-5.29-1.29-5.29-5.68 0-1.25.45-2.28 1.2-3.08-.12-.29-.52-1.47.11-3.04 0 0 .98-.31 3.16 1.18a11 11 0 0 1 5.76 0c2.18-1.49 3.16-1.18 3.16-1.18.63 1.57.23 2.75.11 3.04.75.8 1.2 1.83 1.2 3.08 0 4.4-2.72 5.38-5.31 5.67.42.36.79 1.07.79 2.17v3.23c0 .31.21.68.8.56A11.5 11.5 0 0 0 12 .7Z"/></svg></a>
+      <button class="menu-button" aria-expanded="false" aria-label="Open menu"><span></span><span></span><span></span></button>
+    </div>
+    <nav class="mobile-nav" aria-label="Mobile navigation">
+      <a href="/">Home</a><a href="/hardware">Hardware</a><a href="/software">Software</a><a href="/design">Design</a><a href="/build" class="active">Build</a><a href="/about">About</a><a href="/status">Status</a><a href="/build-log">Log</a><a href="/downloads">Downloads</a><a href="/contact">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="shell hero-grid">
+        <div><p class="eyebrow">BUILD</p><h1>From parts to a real reader.</h1></div>
+        <p class="lead">This page tracks the practical ENKU build path without pretending the physical prototype is already finished. Software and interface work can be reproduced today; enclosure dimensions, battery fit and final assembly details will be locked only after the reference board is physically validated.</p>
+      </div>
+    </section>
+
+    <div class="shell status-strip">
+      <div class="status-card"><small>AVAILABLE NOW</small><strong>Source + design</strong><p>Firmware architecture, host-tested behavior, design references and project documentation are versioned in GitHub.</p></div>
+      <div class="status-card"><small>REFERENCE HARDWARE</small><strong>Waveshare 3.97″</strong><p>The project targets the ESP32-S3 e-Paper 3.97″ board with an 800 × 480 monochrome panel.</p></div>
+      <div class="status-card"><small>PHYSICAL VALIDATION</small><strong>Prototype pending</strong><p>Battery choice, enclosure tolerances and final assembly instructions remain intentionally provisional until hands-on testing.</p></div>
+    </div>
+
+    <section class="section" id="bom">
+      <div class="shell">
+        <div class="intro">
+          <div><p class="eyebrow">01 · BOM</p><h2>Start with the smallest useful stack.</h2></div>
+          <p>ENKU is being developed around ready-made modules first. The goal is a reproducible low-cost reader before any custom PCB work. Items below distinguish the reference platform from parts that still depend on the physical prototype.</p>
+        </div>
+        <div class="bom">
+          <div class="bom-row"><small>CORE</small><strong>Waveshare ESP32-S3 e-Paper 3.97″</strong><p>ESP32-S3, 800 × 480 e-paper, wireless connectivity and the project’s reference I/O in one board.</p><span class="tag ready">REFERENCE</span></div>
+          <div class="bom-row"><small>STORAGE</small><strong>microSD card</strong><p>Used for books and local content. Exact card capacity is not a firmware requirement.</p><span class="tag ready">SUPPORTED</span></div>
+          <div class="bom-row"><small>POWER</small><strong>Li-Po battery</strong><p>Final capacity and physical dimensions will be chosen after real enclosure measurements and power testing.</p><span class="tag">PENDING FIT</span></div>
+          <div class="bom-row"><small>CONTROL</small><strong>Physical buttons / rotary input</strong><p>Navigation is non-touch by design. The exact mechanical layout follows the reference control scheme and enclosure.</p><span class="tag">PROTOTYPE</span></div>
+          <div class="bom-row"><small>ENCLOSURE</small><strong>3D-printed shell + M2 hardware</strong><p>Designed to remain printable and serviceable. Final tolerances wait for board, battery and button measurements.</p><span class="tag">IN PROGRESS</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="preparation">
+      <div class="shell">
+        <div class="intro">
+          <div><p class="eyebrow">02 · PREPARATION</p><h2>Validate before closing the case.</h2></div>
+          <p>Bring up the electronics on the bench first. A working display, storage path, controls and power behavior are easier to diagnose before they are constrained by the enclosure.</p>
+        </div>
+        <div class="steps">
+          <div class="step"><div class="step-index"></div><h3>Inspect the board</h3><div class="step-copy"><span class="state pending">PHYSICAL CHECK</span><p>Confirm the delivered board revision, included accessories and connector placement against the reference documentation.</p></div></div>
+          <div class="step"><div class="step-index"></div><h3>Prepare storage</h3><div class="step-copy"><span class="state verified">SOFTWARE PATH DEFINED</span><p>Use a known-good microSD card and a small test library. Keep the first bring-up minimal so storage failures are obvious.</p></div></div>
+          <div class="step"><div class="step-index"></div><h3>Flash a clean build</h3><div class="step-copy"><span class="state verified">CI COVERED</span><p>Build from the current repository state rather than an old binary. Host tests and ESP-IDF builds are used to catch regressions before hardware testing.</p></div></div>
+          <div class="step"><div class="step-index"></div><h3>Bench-test input</h3><div class="step-copy"><span class="state pending">HARDWARE VALIDATION</span><p>Check directional navigation, confirm/back behavior and the first-start flow before committing to final button geometry.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="enclosure">
+      <div class="shell">
+        <div class="intro">
+          <div><p class="eyebrow">03 · ENCLOSURE</p><h2>Dimension from reality, not a render.</h2></div>
+          <p>The enclosure is deliberately downstream of the electronics. CAD should reflect measured board outlines, connector clearances, battery thickness, button travel and practical print tolerances.</p>
+        </div>
+        <div class="steps">
+          <div class="step"><div class="step-index"></div><h3>Measure the reference stack</h3><div class="step-copy"><span class="state pending">AFTER DELIVERY</span><p>Record the real PCB, display, connector and control geometry. Vendor drawings are a starting point, not the final mechanical truth.</p></div></div>
+          <div class="step"><div class="step-index"></div><h3>Lock service access</h3><div class="step-copy"><span class="state pending">PROTOTYPE RULE</span><p>Keep charging, power switching and assembly screws accessible without forcing the display or battery out of the shell.</p></div></div>
+          <div class="step"><div class="step-index"></div><h3>Print and revise</h3><div class="step-copy"><span class="state pending">ITERATIVE</span><p>The first case is a fit test. Button feel, bezel spacing, panel support and back-cover retention are expected to change before release files are marked stable.</p></div></div>
+        </div>
+        <div class="note"><strong>Release rule:</strong> enclosure files will only be presented as production-ready after a real print has been assembled, opened again and used long enough to expose fit and access problems.</div>
+      </div>
+    </section>
+
+    <section class="section" id="firmware">
+      <div class="shell">
+        <div class="intro">
+          <div><p class="eyebrow">04 · FIRMWARE</p><h2>Build software independently of the shell.</h2></div>
+          <p>ENKU firmware is developed as a real product surface, not a late hardware demo. Search, reader overlays, typography state, navigation rules and other behavior are exercised in host tests before they reach the device.</p>
+        </div>
+        <div class="boot-grid">
+          <article class="boot-card"><small>BUILD</small><h3>ESP-IDF target</h3><p>The hardware build stays reproducible in CI so firmware changes do not silently break the ESP32-S3 target while UI logic evolves.</p></article>
+          <article class="boot-card"><small>TEST</small><h3>Host behavior</h3><p>Logic that does not require the physical display is tested on the host, keeping navigation and reader behavior faster to iterate.</p></article>
+          <article class="boot-card"><small>CONTENT</small><h3>Library + reader</h3><p>Core reading flows are implemented around local content, persistent state and a predictable physical-navigation model.</p></article>
+          <article class="boot-card"><small>E-PAPER</small><h3>Refresh discipline</h3><p>Hardware bring-up will validate partial/full refresh behavior, ghosting and timing against the interaction rules defined in Design.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="assembly">
+      <div class="shell">
+        <div class="intro">
+          <div><p class="eyebrow">05 · ASSEMBLY</p><h2>Only freeze what has been tested.</h2></div>
+          <p>The final assembly order will be published after the first complete device is built. Until then, the sequence below is the intended engineering path rather than a claim that every tolerance has already been verified.</p>
+        </div>
+        <div class="steps">
+          <div class="step"><div class="step-index"></div><h3>Fit controls and switch</h3><div class="step-copy"><span class="state pending">PROTOTYPE</span><p>Install physical controls first so travel and alignment can be checked before the board and battery restrict access.</p></div></div>
+          <div class="step"><div class="step-index"></div><h3>Seat the display board</h3><div class="step-copy"><span class="state pending">PROTOTYPE</span><p>Support the PCB without loading the e-paper glass. Confirm port and microSD access before fastening the shell.</p></div></div>
+          <div class="step"><div class="step-index"></div><h3>Install the battery</h3><div class="step-copy"><span class="state pending">CAPACITY TBD</span><p>Use the battery geometry validated for the enclosure; avoid compressing the cell or routing wiring across sharp printed edges.</p></div></div>
+          <div class="step"><div class="step-index"></div><h3>Close, reopen, inspect</h3><div class="step-copy"><span class="state pending">RELEASE GATE</span><p>A successful first closure is not enough. The design must survive service access and reassembly before instructions are finalized.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="first-boot">
+      <div class="shell">
+        <div class="intro">
+          <div><p class="eyebrow">06 · FIRST BOOT</p><h2>Verify the reader, not just the screen.</h2></div>
+          <p>A useful first boot checks the complete path from power-up to reading. The exact hardware checklist will grow as measurements from the first assembled prototype arrive.</p>
+        </div>
+        <div class="boot-grid">
+          <article class="boot-card"><small>01</small><h3>Power + display</h3><p>Confirm stable startup, correct panel orientation and a clean initial refresh without unexpected resets.</p></article>
+          <article class="boot-card"><small>02</small><h3>Controls</h3><p>Walk through first start, Library navigation, Back behavior and reader overlays using only the intended physical inputs.</p></article>
+          <article class="boot-card"><small>03</small><h3>Storage</h3><p>Load a test title from microSD, reopen it and verify that the reading position and settings persist as expected.</p></article>
+          <article class="boot-card"><small>04</small><h3>Power behavior</h3><p>Validate sleep, wake and hard power-off behavior before measuring realistic battery life.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="shell cta-inner">
+        <div><p class="eyebrow">FOLLOW THE BUILD</p><h2>The instructions evolve with the prototype.</h2><p>Build stays the stable entry point; the engineering log records what changed, what failed and what became verified as the physical reader comes together.</p></div>
+        <div class="cta-links">
+          <a class="button secondary" href="/hardware">Reference hardware <span>→</span></a>
+          <a class="button" href="/build-log">Build log <span>→</span></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell footer-inner">
+      <img class="footer-logo" src="/assets/enku-logo.svg" alt="ENKU">
+      <nav aria-label="Footer"><a href="/">Home</a><a href="/hardware">Hardware</a><a href="/software">Software</a><a href="/design">Design</a><a href="/build">Build</a><a href="/about">About</a><a href="/status">Status</a><a href="/build-log">Log</a><a href="/downloads">Downloads</a><a href="/contact">Contact</a></nav>
+      <div class="footer-meta"><a href="https://github.com/raznoglaz1y/enku" target="_blank" rel="noreferrer">GitHub</a><span>enkureader.com</span></div>
+    </div>
+  </footer>
+  <script>
+    const menu=document.querySelector('.menu-button'),mobileNav=document.querySelector('.mobile-nav');
+    menu?.addEventListener('click',()=>{const open=mobileNav.classList.toggle('open');menu.setAttribute('aria-expanded',String(open));});
+    mobileNav?.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{mobileNav.classList.remove('open');menu?.setAttribute('aria-expanded','false');}));
+  </script>
+</body>
+</html>

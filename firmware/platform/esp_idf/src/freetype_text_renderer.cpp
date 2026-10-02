@@ -1032,6 +1032,149 @@ bool FreeTypeTextRenderer::renderLibrary(
 
 namespace enku::platform::esp_idf {
 
+bool FreeTypeTextRenderer::renderLocaleSettings(
+    const AppState& app_state
+) {
+    if (!ready()) {
+        return false;
+    }
+
+    framebuffer_.clearWhite();
+
+    const auto orientation =
+        app_state.orientation;
+
+    if (!drawTextAt(
+            "LANGUAGE",
+            26,
+            28,
+            50,
+            orientation
+        )) {
+        return false;
+    }
+
+    struct Entry {
+        const char* code;
+        const char* name;
+    };
+
+    constexpr Entry entries[] = {
+        {"EN", "English"},
+        {"RU", "Русский"},
+        {"PL", "Polski"},
+        {"DE", "Deutsch"},
+        {"FR", "Français"},
+        {"ES", "Español"},
+        {"IT", "Italiano"},
+    };
+
+    const int logical_width =
+        orientation == Orientation::Portrait
+            ? 480
+            : 800;
+
+    const std::uint8_t visible =
+        orientation == Orientation::Portrait
+            ? 7U
+            : 5U;
+
+    const int start_y =
+        orientation == Orientation::Portrait
+            ? 96
+            : 76;
+
+    const int row_height =
+        orientation == Orientation::Portrait
+            ? 82
+            : 64;
+
+    const auto start =
+        app_state.locale_settings.window_start;
+
+    const auto end =
+        static_cast<std::uint8_t>(
+            std::min<int>(
+                7,
+                static_cast<int>(start) +
+                static_cast<int>(visible)
+            )
+        );
+
+    for (std::uint8_t i = start;
+         i < end;
+         ++i) {
+        const int row =
+            static_cast<int>(i - start);
+
+        const int top =
+            start_y + row * row_height;
+
+        if (app_state.locale_settings.focus_index == i) {
+            drawRect(
+                20,
+                top,
+                logical_width - 40,
+                row_height - 8,
+                orientation,
+                2
+            );
+        }
+
+        if (!drawTextAt(
+                entries[i].code,
+                17,
+                36,
+                top + 30,
+                orientation
+            )) {
+            return false;
+        }
+
+        if (!drawTextAt(
+                entries[i].name,
+                14,
+                92,
+                top + 30,
+                orientation
+            )) {
+            return false;
+        }
+
+        const LocaleId locale_map[] = {
+            LocaleId::En,
+            LocaleId::Ru,
+            LocaleId::Pl,
+            LocaleId::De,
+            LocaleId::Fr,
+            LocaleId::Es,
+            LocaleId::It,
+        };
+
+        if (app_state.ui_locale == locale_map[i]) {
+            if (!drawTextAt(
+                    "ACTIVE",
+                    11,
+                    logical_width - 88,
+                    top + 30,
+                    orientation
+                )) {
+                return false;
+            }
+        }
+    }
+
+    return drawTextAt(
+        "UP/DOWN MOVE  FUNCTION APPLY  BACK SETTINGS",
+        12,
+        28,
+        orientation == Orientation::Portrait
+            ? 760
+            : 448,
+        orientation
+    );
+}
+
 bool FreeTypeTextRenderer::renderDisplaySettings(
     const AppState& app_state
 ) {

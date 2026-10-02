@@ -77,7 +77,9 @@ public:
     std::uint32_t submitted{0};
 };
 
-class FakeNetworkService final : public NetworkService {
+class FakeNetworkService final
+    : public NetworkService,
+      public NetworkSettingsService {
 public:
     bool connected() const override {
         return connected_;
@@ -87,7 +89,54 @@ public:
         connected_ = false;
     }
 
+    NetworkPolicyStatus applyPolicy(
+        WiFiPolicy policy
+    ) override {
+        if (policy == WiFiPolicy::Off ||
+            policy == WiFiPolicy::Manual) {
+            connected_ = false;
+            return NetworkPolicyStatus::Ok;
+        }
+
+        return trusted_.has_value()
+            ? NetworkPolicyStatus::Ok
+            : NetworkPolicyStatus::NoTrustedNetwork;
+    }
+
+    NetworkPolicyStatus scanNetworks(
+        std::vector<WiFiNetworkInfo>&
+    ) override {
+        return NetworkPolicyStatus::Ok;
+    }
+
+    NetworkPolicyStatus connectToNetwork(
+        std::string_view,
+        std::string_view
+    ) override {
+        connected_ = true;
+        return NetworkPolicyStatus::Ok;
+    }
+
+    NetworkPolicyStatus setTrustedNetwork(
+        std::string_view ssid,
+        std::string_view
+    ) override {
+        trusted_ = std::string(ssid);
+        return NetworkPolicyStatus::Ok;
+    }
+
+    NetworkPolicyStatus forgetTrustedNetwork() override {
+        trusted_.reset();
+        connected_ = false;
+        return NetworkPolicyStatus::Ok;
+    }
+
+    std::optional<std::string> trustedSsid() const override {
+        return trusted_;
+    }
+
     bool connected_{false};
+    std::optional<std::string> trusted_;
 };
 
 class FakePowerService final : public PowerService {
@@ -876,12 +925,17 @@ int main() {
     );
     FakeNetworkService network;
     FakePowerService power;
+    NetworkLifecycleCoordinator network_lifecycle(
+        app,
+        network,
+        network
+    );
     SleepWakeCoordinator sleep_wake(
         app,
         library,
         checkpoint,
         context,
-        network,
+        network_lifecycle,
         power,
         boot_restore
     );

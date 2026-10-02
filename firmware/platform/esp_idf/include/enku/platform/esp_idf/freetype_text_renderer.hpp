@@ -22,6 +22,7 @@
 #include "enku/render/display_settings_renderer.hpp"
 #include "enku/render/locale_settings_renderer.hpp"
 #include "enku/render/about_device_renderer.hpp"
+#include "enku/render/power_off_confirm_renderer.hpp"
 
 namespace enku::platform::esp_idf {
 
@@ -47,7 +48,8 @@ class FreeTypeTextRenderer final
       public ReadingSettingsRenderer,
       public DisplaySettingsRenderer,
       public LocaleSettingsRenderer,
-      public AboutDeviceRenderer {
+      public AboutDeviceRenderer,
+      public PowerOffConfirmRenderer {
 public:
     FreeTypeTextRenderer(
         OwnedMonoFramebuffer& framebuffer,
@@ -130,6 +132,10 @@ public:
     ) override;
 
     bool renderAboutDevice(
+        const AppState& app_state
+    ) override;
+
+    bool renderPowerOffConfirm(
         const AppState& app_state
     ) override;
 

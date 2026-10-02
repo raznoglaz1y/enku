@@ -15,6 +15,8 @@ enum class ReaderOverlayRuntimeResult : std::uint8_t {
     Ignored,
     Applied,
     SearchRequested,
+    ContentsBookmarksRequested,
+    AboutBookRequested,
     SleepRequested,
     Failed,
 };

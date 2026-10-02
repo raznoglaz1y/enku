@@ -34,25 +34,25 @@ The project is being developed as a complete product system rather than only a f
 
 > **Current status:** design system, UX specification and project architecture are actively being developed. Firmware bring-up begins after the target hardware is in hand. Features listed below are planned unless explicitly marked as completed.
 
-### We are looking for contributors
+### Looking for hardware partners and component suppliers
 
-ENKU is actively looking for contributors who want to help turn the current product/UI foundation into a working reader.
+ENKU is currently looking for **hardware partners, distributors and component suppliers** interested in supporting the development of the project.
 
-The most useful areas right now are:
+The most useful forms of support at this stage are:
 
-- ESP32-S3 firmware and low-power work;
-- e-paper driver and refresh behavior;
-- embedded UI architecture and physical-control navigation;
-- EPUB/FB2/text parsing, pagination and search;
-- font rendering / Unicode;
-- local web management on embedded devices;
-- localization;
-- CAD and 3D-printable enclosure development;
-- technical documentation and testing.
+- Waveshare ESP32-S3-ePaper-3.97 development units;
+- Li-Po batteries suitable for a compact e-reader enclosure;
+- buttons, switches, fasteners and other enclosure hardware;
+- prototype and replacement components for hardware testing;
+- project discounts or sample units;
+- technical information about supplied components;
+- support for future hardware revisions and enclosure prototypes.
 
-You do not need to take ownership of a whole subsystem. A focused review, experiment, measurement, driver fix, parser prototype or enclosure contribution is useful.
+Partners can be credited in the project documentation and repository as hardware partners or component suppliers where appropriate.
 
-See [Project Status](docs/status.md) and [Contributing](CONTRIBUTING.md), or open an issue describing where you would like to help.
+The goal is to build ENKU around readily available, reproducible parts rather than one-off or inaccessible hardware.
+
+For partnership or supply discussions, please open an issue or contact the project owner through GitHub.
 
 ## Why ENKU?
 

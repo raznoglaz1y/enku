@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 
 namespace enku {
 
@@ -38,6 +39,7 @@ struct RefreshRequest {
     RefreshClass refresh_class{RefreshClass::None};
     RefreshReason reason{RefreshReason::Unknown};
     std::uint32_t generation{0};
+    std::optional<Rect> dirty_region;
     bool may_coalesce{true};
     bool may_defer{false};
 };

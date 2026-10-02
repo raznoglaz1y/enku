@@ -55,8 +55,9 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 
 ## 4. Firmware foundation
 
-- [ ] Create the firmware project structure
+- [x] Create the framework-neutral firmware project structure
 - [ ] Add reproducible build instructions
+- [x] Define initial core/service interface boundaries
 - [ ] Implement hardware abstraction for display, input, storage and power
 - [x] Define reader runtime/state-machine behavior
 - [ ] Implement application state model

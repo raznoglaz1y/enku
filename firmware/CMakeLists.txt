@@ -15,6 +15,7 @@ add_library(enku_core STATIC
     src/reader/document_reader_engine.cpp
     src/reader/reader_session.cpp
     src/reader/book_loader.cpp
+    src/reader/document_search.cpp
     src/runtime/reader_runtime.cpp
     src/runtime/library_runtime.cpp
     src/runtime/settings_runtime.cpp
@@ -69,6 +70,7 @@ enku_add_test(txt_parser_tests tests/txt_parser_tests.cpp)
 enku_add_test(txt_pagination_tests tests/txt_pagination_tests.cpp)
 enku_add_test(reader_engine_tests tests/reader_engine_tests.cpp)
 enku_add_test(reader_session_tests tests/reader_session_tests.cpp)
+enku_add_test(document_search_tests tests/document_search_tests.cpp)
 enku_add_test(book_loader_tests tests/book_loader_tests.cpp)
 enku_add_test(reader_runtime_tests tests/reader_runtime_tests.cpp)
 enku_add_test(library_runtime_tests tests/library_runtime_tests.cpp)

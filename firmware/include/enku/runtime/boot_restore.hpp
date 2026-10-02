@@ -1,0 +1,47 @@
+#pragma once
+
+#include <cstdint>
+
+#include "../core/app_state.hpp"
+#include "../services/services.hpp"
+#include "reader_runtime.hpp"
+#include "storage_startup.hpp"
+
+namespace enku {
+
+enum class BootRestoreStatus : std::uint8_t {
+    LibraryReady,
+    ReadingRestored,
+    FallbackToLibrary,
+    RecoveryRequired,
+};
+
+struct BootRestoreResult {
+    BootRestoreStatus status{BootRestoreStatus::LibraryReady};
+    StorageStartupResult storage;
+};
+
+class BootRestoreCoordinator {
+public:
+    BootRestoreCoordinator(
+        AppState& app_state,
+        StorageStartupCoordinator& storage_startup,
+        AppContextService& context,
+        ReaderRuntimeController& reader_runtime,
+        LibraryService& library
+    );
+
+    BootRestoreResult run();
+
+private:
+    AppState& app_state_;
+    StorageStartupCoordinator& storage_startup_;
+    AppContextService& context_;
+    ReaderRuntimeController& reader_runtime_;
+    LibraryService& library_;
+
+    bool persistLibraryContext();
+    void settleLibrary();
+};
+
+} // namespace enku

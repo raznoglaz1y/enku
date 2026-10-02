@@ -219,7 +219,8 @@ const sharedChromeCss = `
   .site-header .desktop-nav{display:flex!important;align-items:center!important;justify-content:center!important;gap:clamp(18px,2vw,30px)!important;font-size:13px!important;white-space:nowrap!important}
   .site-header .desktop-nav>a,.site-header .project-menu>summary{position:relative;opacity:.68;cursor:pointer;list-style:none;padding:7px 8px;border-radius:5px;transition:opacity .16s ease,background .16s ease}
   .site-header .desktop-nav>a:hover,.site-header .project-menu>summary:hover{opacity:1;background:rgba(20,20,20,.04)}
-  .site-header .desktop-nav>a.active,.site-header .project-menu>summary.active{opacity:1;font-weight:600;background:rgba(20,20,20,.055)}
+  .site-header .desktop-nav>a.active,.site-header .project-menu>summary.active{opacity:1;font-weight:600;background:transparent}
+  .site-header .desktop-nav>a.active:after,.site-header .project-menu>summary.active:after{content:none!important;display:none!important}
   .site-header .project-menu{position:relative}
   .site-header .project-menu>summary::-webkit-details-marker{display:none}
   .site-header .project-chevron{display:inline-block!important;width:7px!important;height:7px!important;margin-left:7px!important;border-right:1px solid currentColor;border-bottom:1px solid currentColor;transform:translateY(-2px) rotate(45deg);transition:transform .18s ease}

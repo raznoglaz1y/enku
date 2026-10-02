@@ -6,6 +6,7 @@
 #include "../services/services.hpp"
 #include "../reader/txt_parser.hpp"
 #include "../reader/epub_parser.hpp"
+#include "../reader/fb2_parser.hpp"
 
 namespace enku {
 
@@ -65,6 +66,7 @@ private:
     LibraryService& library_;
     TxtParser txt_parser_;
     EpubParser epub_parser_;
+    Fb2Parser fb2_parser_;
 
     static std::string fingerprint(
         const std::string& bytes

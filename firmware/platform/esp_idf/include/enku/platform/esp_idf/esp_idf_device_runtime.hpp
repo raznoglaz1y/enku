@@ -97,6 +97,9 @@ public:
     const BootRestoreResult& bootResult() const;
 
 private:
+    bool refreshStatusBarIfNeeded();
+
+
     EspIdfPlatform& platform_;
 
     ApplicationStorageRuntime storage_;
@@ -126,6 +129,16 @@ private:
         NetworkPolicyStatus::Ok
     };
     BootRestoreResult boot_result_{};
+
+    bool status_snapshot_valid_{false};
+    NetworkRuntimeStatus rendered_network_status_{
+        NetworkRuntimeStatus::Idle
+    };
+    std::uint8_t rendered_battery_percent_{0};
+    bool rendered_charging_{false};
+    Orientation rendered_orientation_{
+        Orientation::Portrait
+    };
 };
 
 } // namespace enku::platform::esp_idf

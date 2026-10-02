@@ -5,19 +5,16 @@
 #include <variant>
 
 #include "types.hpp"
+#include "input.hpp"
 
 namespace enku {
 
-struct ButtonPressed {
-    std::uint16_t action{0};
+struct InputReceived {
+    PhysicalInputEvent input;
 };
 
-struct ButtonReleased {
-    std::uint16_t action{0};
-};
-
-struct ButtonHeld {
-    std::uint16_t action{0};
+struct ActionRequested {
+    LogicalAction action{LogicalAction::None};
 };
 
 struct OpenBookRequested {
@@ -60,9 +57,8 @@ struct BatteryStateChanged {
 };
 
 using AppEvent = std::variant<
-    ButtonPressed,
-    ButtonReleased,
-    ButtonHeld,
+    InputReceived,
+    ActionRequested,
     OpenBookRequested,
     PageNextRequested,
     PagePreviousRequested,

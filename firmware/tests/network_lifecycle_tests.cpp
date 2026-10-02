@@ -28,6 +28,10 @@ public:
         return link_state;
     }
 
+    std::optional<std::string> localAddress() const override {
+        return address;
+    }
+
     NetworkPolicyStatus applyPolicy(
         WiFiPolicy policy
     ) override {
@@ -99,6 +103,7 @@ public:
     WiFiPolicy last_policy{WiFiPolicy::Manual};
     NetworkPolicyStatus forced_status{NetworkPolicyStatus::Ok};
     std::optional<std::string> trusted;
+    std::optional<std::string> address;
 };
 
 } // namespace
@@ -160,11 +165,16 @@ int main() {
 
     network.connected_ = true;
     network.link_state = NetworkLinkState::Online;
+    network.address = std::string{"192.168.1.42"};
     lifecycle.sync();
     assert(app.network.connected);
     assert(
         app.network.status ==
         NetworkRuntimeStatus::Connected
+    );
+    assert(
+        app.network.address ==
+        "192.168.1.42"
     );
 
     lifecycle.disconnectForSuspend();
@@ -173,6 +183,9 @@ int main() {
         app.network.status ==
         NetworkRuntimeStatus::Idle
     );
+    network.address.reset();
+    lifecycle.sync();
+    assert(app.network.address.empty());
 
     network.connect_immediately = true;
     assert(

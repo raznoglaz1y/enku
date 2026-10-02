@@ -118,6 +118,72 @@ int main() {
         ) == BookFileStatus::NotFound
     );
 
+    assert(
+        ingress.begin(
+            "chunked.txt",
+            11
+        ).ok()
+    );
+    assert(app.import_active);
+    assert(
+        ingress.appendChunk("hello ").ok()
+    );
+    assert(
+        ingress.appendChunk("world").ok()
+    );
+
+    const auto chunked =
+        ingress.finish(44);
+
+    assert(chunked.ok());
+    assert(!app.import_active);
+
+    const auto chunked_record =
+        library.get(chunked.book_id);
+    assert(chunked_record.has_value());
+
+    std::string chunked_bytes;
+    assert(
+        book_files.read(
+            chunked_record->source_path,
+            chunked_bytes
+        ) == BookFileStatus::Ok
+    );
+    assert(chunked_bytes == "hello world");
+
+    assert(
+        ingress.begin(
+            "short.txt",
+            8
+        ).ok()
+    );
+    assert(
+        ingress.appendChunk("short").ok()
+    );
+    assert(
+        ingress.finish(45).status ==
+        WebUploadStatus::PayloadLengthMismatch
+    );
+    assert(!app.import_active);
+
+    assert(
+        ingress.begin(
+            "cancel.txt",
+            6
+        ).ok()
+    );
+    assert(
+        ingress.appendChunk("cancel").ok()
+    );
+    ingress.cancel();
+    assert(!app.import_active);
+    assert(
+        book_files.read(
+            "/system/incoming/web-upload.tmp",
+            stale_stage
+        ) == BookFileStatus::NotFound
+    );
+
     const auto duplicate =
         ingress.upload(
             "duplicate.txt",

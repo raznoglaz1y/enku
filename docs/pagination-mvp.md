@@ -89,6 +89,12 @@ The paginator returns anchors in the same normalized document coordinate system.
 
 This is sufficient for the first TXT pipeline, but EPUB/FB2 adapters may need richer structural anchors while preserving the same `SemanticPosition` product contract.
 
+## Reader Engine integration
+
+The first concrete Reader Engine bridge is now implemented in `DocumentReaderEngine` and documented in [Reader Engine MVP](reader-engine-mvp.md).
+
+It maps this paginator's result into a Reader-level `PageResult` while deliberately leaving deterministic Previous to the upcoming ReaderSession/history layer.
+
 ## Next integration point
 
 After hardware/font bring-up:

@@ -111,10 +111,10 @@ private:
     DisplaySettingsRuntime display_settings_;
     LocaleSettingsRuntime locale_settings_;
     AboutDeviceRuntime about_device_;
-    PowerOffConfirmRuntime power_off_confirm_;
 
     SleepWakeCoordinator sleep_wake_;
     PowerOffCoordinator power_off_;
+    PowerOffConfirmRuntime power_off_confirm_;
     InputDispatcher input_dispatcher_;
 
     NetworkPolicyStatus network_policy_status_{

@@ -1389,10 +1389,29 @@ bool FreeTypeTextRenderer::renderWiFiSettings(
         return false;
     }
 
+    const auto connectionLabel =
+        [](NetworkRuntimeStatus status) -> const char* {
+            switch (status) {
+                case NetworkRuntimeStatus::Off:
+                    return "OFF";
+                case NetworkRuntimeStatus::Idle:
+                    return "IDLE";
+                case NetworkRuntimeStatus::Connecting:
+                    return "CONNECTING";
+                case NetworkRuntimeStatus::Connected:
+                    return "CONNECTED";
+                case NetworkRuntimeStatus::NoTrustedNetwork:
+                    return "NO TRUSTED NETWORK";
+                case NetworkRuntimeStatus::Error:
+                    return "ERROR";
+            }
+            return "UNKNOWN";
+        };
+
     const char* connection =
-        app_state.network.connected
-            ? "CONNECTED"
-            : "OFFLINE";
+        connectionLabel(
+            app_state.network.status
+        );
 
     if (!drawTextAt(
             "STATUS",

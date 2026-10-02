@@ -7,12 +7,10 @@ namespace enku {
 
 StagedBookImportService::StagedBookImportService(
     BookFileStore& files,
-    BookImportService& importer,
-    LibraryService& library
+    BookImportService& importer
 )
     : files_(files),
-      importer_(importer),
-      library_(library) {}
+      importer_(importer) {}
 
 std::string StagedBookImportService::extension(
     const std::string& filename

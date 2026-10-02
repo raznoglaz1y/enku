@@ -563,8 +563,8 @@ esp_err_t EspIdfWebUploadServer::deleteBook(
         request->uri
     );
 
-    if (!uri.starts_with(kPrefix) ||
-        uri.size() <= kPrefix.size()) {
+    if (uri.size() <= kPrefix.size() ||
+        uri.substr(0, kPrefix.size()) != kPrefix) {
         sendJson(
             request,
             "400 Bad Request",

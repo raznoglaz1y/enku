@@ -119,6 +119,7 @@ firmware/
           esp_idf_power_service.hpp
           epaper_refresh_service.hpp
           esp_idf_platform.hpp
+          freetype_text_renderer.hpp
         src/
           esp_idf_sd_card.cpp
           esp_idf_file_store.cpp
@@ -126,6 +127,7 @@ firmware/
           esp_idf_power_service.cpp
           epaper_refresh_service.cpp
           esp_idf_platform.cpp
+          freetype_text_renderer.cpp
     services/
 ```
 

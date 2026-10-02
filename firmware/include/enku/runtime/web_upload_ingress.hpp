@@ -1,11 +1,11 @@
 #pragma once
 
+#include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <string>
 #include <string_view>
 
-#include "../core/app_state.hpp"
 #include "../storage/book_file_store.hpp"
 #include "../storage/staged_book_import_service.hpp"
 
@@ -41,7 +41,6 @@ public:
         8U * 1024U * 1024U;
 
     WebUploadIngress(
-        AppState& app_state,
         BookFileStore& files,
         StagedBookImportService& staged_import,
         std::size_t max_payload_bytes =
@@ -62,6 +61,7 @@ public:
     );
 
     void cancel();
+    bool active() const;
 
     WebUploadResult upload(
         std::string_view source_filename,
@@ -70,11 +70,10 @@ public:
     );
 
 private:
-    AppState& app_state_;
     BookFileStore& files_;
     StagedBookImportService& staged_import_;
     std::size_t max_payload_bytes_;
-    bool session_active_{false};
+    std::atomic_bool session_active_{false};
     std::string source_filename_;
     std::size_t expected_bytes_{0};
     std::size_t received_bytes_{0};

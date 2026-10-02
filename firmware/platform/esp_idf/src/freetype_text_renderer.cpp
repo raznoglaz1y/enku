@@ -1677,20 +1677,36 @@ bool FreeTypeTextRenderer::renderWiFiSettings(
         return false;
     }
 
-    const std::string address =
-        app_state.network.address.empty()
-            ? "WEB: NOT AVAILABLE"
-            : "WEB: http://" +
-                app_state.network.address;
+    const std::string web_address =
+        app_state.network.status ==
+                NetworkRuntimeStatus::Connected
+            ? "WEB: http://enku.local"
+            : "WEB: NOT AVAILABLE";
 
     if (!drawTextAt(
-            address,
+            web_address,
             13,
             28,
             address_y,
             orientation
         )) {
         return false;
+    }
+
+    if (!app_state.network.address.empty()) {
+        const std::string ip_fallback =
+            "IP: http://" +
+            app_state.network.address;
+
+        if (!drawTextAt(
+                ip_fallback,
+                11,
+                28,
+                address_y + 22,
+                orientation
+            )) {
+            return false;
+        }
     }
 
     const int forget_top =

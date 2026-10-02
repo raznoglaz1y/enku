@@ -128,6 +128,91 @@ EspIdfDeviceRuntime::applyNetworkPolicy() {
     return status;
 }
 
+DeviceNetworkUpdateStatus
+EspIdfDeviceRuntime::setWiFiPolicy(
+    WiFiPolicy policy
+) {
+    auto& app = storage_.appState();
+    const auto previous = app.wifi_policy;
+
+    if (storage_.settingsRuntime().handle(
+            WiFiPolicyChanged{policy}
+        ) != PersistStatus::Ok) {
+        return DeviceNetworkUpdateStatus::SettingsSaveFailed;
+    }
+
+    const auto status =
+        platform_.network().applyPolicy(policy);
+
+    if (status == NetworkPolicyStatus::DriverError) {
+        // Best-effort rollback keeps durable policy aligned with hardware.
+        storage_.settingsRuntime().handle(
+            WiFiPolicyChanged{previous}
+        );
+        platform_.network().applyPolicy(previous);
+        syncPlatformState();
+        return DeviceNetworkUpdateStatus::DriverError;
+    }
+
+    syncPlatformState();
+
+    if (status ==
+        NetworkPolicyStatus::NoTrustedNetwork) {
+        return DeviceNetworkUpdateStatus::NoTrustedNetwork;
+    }
+
+    return DeviceNetworkUpdateStatus::Ok;
+}
+
+DeviceNetworkUpdateStatus
+EspIdfDeviceRuntime::setTrustedNetwork(
+    std::string_view ssid,
+    std::string_view password
+) {
+    const auto stored =
+        platform_.network().setTrustedNetwork(
+            ssid,
+            password
+        );
+
+    if (stored ==
+        NetworkPolicyStatus::InvalidCredentials) {
+        return DeviceNetworkUpdateStatus::InvalidCredentials;
+    }
+
+    if (stored != NetworkPolicyStatus::Ok) {
+        return DeviceNetworkUpdateStatus::DriverError;
+    }
+
+    if (storage_.appState().wifi_policy ==
+        WiFiPolicy::AutoConnectTrusted) {
+        const auto applied =
+            platform_.network().applyPolicy(
+                WiFiPolicy::AutoConnectTrusted
+            );
+
+        if (applied == NetworkPolicyStatus::DriverError) {
+            return DeviceNetworkUpdateStatus::DriverError;
+        }
+    }
+
+    syncPlatformState();
+    return DeviceNetworkUpdateStatus::Ok;
+}
+
+DeviceNetworkUpdateStatus
+EspIdfDeviceRuntime::forgetTrustedNetwork() {
+    const auto status =
+        platform_.network().forgetTrustedNetwork();
+
+    if (status != NetworkPolicyStatus::Ok) {
+        return DeviceNetworkUpdateStatus::DriverError;
+    }
+
+    syncPlatformState();
+    return DeviceNetworkUpdateStatus::Ok;
+}
+
 void EspIdfDeviceRuntime::syncPlatformState() {
     auto& app = storage_.appState();
 

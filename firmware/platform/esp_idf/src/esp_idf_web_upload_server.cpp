@@ -7,6 +7,7 @@
 #include <string>
 
 #include "esp_log.h"
+#include "mdns.h"
 
 namespace enku::platform::esp_idf {
 namespace {
@@ -234,6 +235,18 @@ bool EspIdfWebUploadServer::takeDeleteRequest(
     return true;
 }
 
+void EspIdfWebUploadServer::completeDelete(
+    const std::string& book_id,
+    const std::string& status
+) {
+    std::lock_guard<std::mutex> lock(
+        delete_mutex_
+    );
+
+    delete_result_book_id_ = book_id;
+    delete_result_status_ = status;
+}
+
 bool EspIdfWebUploadServer::sync(bool online) {
     if (online) {
         return running() || start();
@@ -251,7 +264,7 @@ bool EspIdfWebUploadServer::start() {
     httpd_config_t config =
         HTTPD_DEFAULT_CONFIG();
 
-    config.max_uri_handlers = 6;
+    config.max_uri_handlers = 7;
     config.uri_match_fn =
         httpd_uri_match_wildcard;
     config.stack_size = 6144;
@@ -291,6 +304,13 @@ bool EspIdfWebUploadServer::start() {
         &EspIdfWebUploadServer::handleLibrary;
     library_uri.user_ctx = this;
 
+    httpd_uri_t delete_status_uri = {};
+    delete_status_uri.uri = "/api/delete-status/*";
+    delete_status_uri.method = HTTP_GET;
+    delete_status_uri.handler =
+        &EspIdfWebUploadServer::handleDeleteStatus;
+    delete_status_uri.user_ctx = this;
+
     httpd_uri_t delete_uri = {};
     delete_uri.uri = "/api/book/*";
     delete_uri.method = HTTP_DELETE;
@@ -325,6 +345,10 @@ bool EspIdfWebUploadServer::start() {
         httpd_register_uri_handler(
             server_,
             &delete_uri
+        ) == ESP_OK &&
+        httpd_register_uri_handler(
+            server_,
+            &delete_status_uri
         ) == ESP_OK;
 
     if (!registered) {
@@ -334,6 +358,13 @@ bool EspIdfWebUploadServer::start() {
         );
         stop();
         return false;
+    }
+
+    if (!startMdns()) {
+        ESP_LOGW(
+            kTag,
+            "mDNS unavailable; IP access remains active"
+        );
     }
 
     ESP_LOGI(
@@ -351,6 +382,7 @@ void EspIdfWebUploadServer::stop() {
     }
 
     ingress_.cancel();
+    stopMdns();
     httpd_stop(server_);
     server_ = nullptr;
 
@@ -451,6 +483,19 @@ esp_err_t EspIdfWebUploadServer::handleDeleteBook(
     return self == nullptr
         ? ESP_FAIL
         : self->deleteBook(request);
+}
+
+esp_err_t EspIdfWebUploadServer::handleDeleteStatus(
+    httpd_req_t* request
+) {
+    auto* self =
+        static_cast<EspIdfWebUploadServer*>(
+            request->user_ctx
+        );
+
+    return self == nullptr
+        ? ESP_FAIL
+        : self->deleteStatus(request);
 }
 
 esp_err_t EspIdfWebUploadServer::library(
@@ -603,12 +648,114 @@ esp_err_t EspIdfWebUploadServer::deleteBook(
         pending_delete_book_id_ = book_id;
     }
 
+    delete_result_book_id_.clear();
+    delete_result_status_.clear();
+
     sendJson(
         request,
         "202 Accepted",
         "{\"status\":\"queued\"}"
     );
     return ESP_OK;
+}
+
+esp_err_t EspIdfWebUploadServer::deleteStatus(
+    httpd_req_t* request
+) {
+    constexpr std::string_view kPrefix =
+        "/api/delete-status/";
+
+    const std::string_view uri(
+        request->uri
+    );
+
+    if (uri.size() <= kPrefix.size() ||
+        uri.substr(0, kPrefix.size()) != kPrefix) {
+        sendJson(
+            request,
+            "400 Bad Request",
+            "{\"error\":\"invalid_book_id\"}"
+        );
+        return ESP_OK;
+    }
+
+    const std::string book_id(
+        uri.substr(kPrefix.size())
+    );
+
+    std::lock_guard<std::mutex> lock(
+        delete_mutex_
+    );
+
+    if (pending_delete_book_id_ == book_id) {
+        sendJson(
+            request,
+            "200 OK",
+            "{\"status\":\"pending\"}"
+        );
+        return ESP_OK;
+    }
+
+    if (delete_result_book_id_ == book_id &&
+        !delete_result_status_.empty()) {
+        sendJson(
+            request,
+            "200 OK",
+            std::string("{\"status\":\"") +
+                jsonEscape(delete_result_status_) +
+                "\"}"
+        );
+        return ESP_OK;
+    }
+
+    sendJson(
+        request,
+        "404 Not Found",
+        "{\"status\":\"unknown\"}"
+    );
+    return ESP_OK;
+}
+
+bool EspIdfWebUploadServer::startMdns() {
+    if (mdns_started_) {
+        return true;
+    }
+
+    if (mdns_init() != ESP_OK) {
+        return false;
+    }
+
+    if (mdns_hostname_set("enku") != ESP_OK ||
+        mdns_instance_name_set("ENKU Reader") != ESP_OK ||
+        mdns_service_add(
+            "ENKU Web Library",
+            "_http",
+            "_tcp",
+            80,
+            nullptr,
+            0
+        ) != ESP_OK) {
+        mdns_free();
+        return false;
+    }
+
+    mdns_started_ = true;
+
+    ESP_LOGI(
+        kTag,
+        "mDNS active at http://enku.local"
+    );
+
+    return true;
+}
+
+void EspIdfWebUploadServer::stopMdns() {
+    if (!mdns_started_) {
+        return;
+    }
+
+    mdns_free();
+    mdns_started_ = false;
 }
 
 esp_err_t EspIdfWebUploadServer::upload(

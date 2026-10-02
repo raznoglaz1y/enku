@@ -20,7 +20,12 @@ LibrarySearchRuntime::open() {
         LibraryQueryMode::Search;
     keyboard_.open();
 
-    return LibrarySearchRuntimeResult::Applied;
+    const auto redraw =
+        library_.redraw();
+
+    return redraw == LibraryRuntimeResult::Applied
+        ? LibrarySearchRuntimeResult::Applied
+        : LibrarySearchRuntimeResult::Failed;
 }
 
 LibrarySearchRuntimeResult
@@ -45,7 +50,15 @@ LibrarySearchRuntime::handle(
         }
 
         if (result == KeyboardRuntimeResult::Changed) {
-            return LibrarySearchRuntimeResult::Applied;
+            const auto redraw =
+                library_.redraw(
+                    RefreshReason::FocusChanged,
+                    RefreshClass::Region
+                );
+
+            return redraw == LibraryRuntimeResult::Applied
+                ? LibrarySearchRuntimeResult::Applied
+                : LibrarySearchRuntimeResult::Failed;
         }
 
         if (result == KeyboardRuntimeResult::Closed) {
@@ -59,7 +72,13 @@ LibrarySearchRuntime::handle(
         keyboard_.open(
             app_state_.keyboard.mode
         );
-        return LibrarySearchRuntimeResult::Applied;
+
+        const auto redraw =
+            library_.redraw();
+
+        return redraw == LibraryRuntimeResult::Applied
+            ? LibrarySearchRuntimeResult::Applied
+            : LibrarySearchRuntimeResult::Failed;
     }
 
     if (action == LogicalAction::Back) {

@@ -248,7 +248,7 @@ ENKU is still in the pre-firmware stage, so several important decisions remain i
 - a framework-neutral C++ firmware scaffold now exists under `firmware/`;
 - the firmware architecture, Library/storage model, parser abstraction, pagination model and runtime state machine are specified, while hardware integration and reader implementation remain pending;
 - Reader v1 is scoped to EPUB, FB2 and TXT; PDF support is deferred and not yet designed;
-- the exact CBOR codec library, localization table generator and parser/rendering stack are not selected;
+- the exact CBOR codec library, localization table generator, diagnostics backend and parser/rendering stack are not selected;
 - the final system suspend mechanism and wake-source mapping have not yet been measured on the real board;
 - partial-refresh behavior has not yet been measured on the real panel;
 - battery model and real-world runtime are not finalized;
@@ -309,7 +309,14 @@ Firmware has not yet been published as a working reader. The planned implementat
    - debounced progress checkpoints;
    - schema migration and integrity validation.
 
-7. **Local management service**
+7. **Diagnostics and recovery**
+   - stable structured error codes;
+   - localized user-facing error mapping;
+   - bounded in-memory logs;
+   - compact critical/reboot diagnostics;
+   - boot-loop detection and Recovery/Safe Mode.
+
+8. **Local management service**
    - upload/import;
    - metadata operations;
    - storage status;
@@ -416,6 +423,7 @@ No final mechanical dimensions will be published as authoritative until the actu
 - [ ] Run portrait/landscape layout validation
 - [ ] Test malformed books, missing storage and interrupted transfers
 - [ ] Validate reboot and power-loss recovery
+- [ ] Validate boot-loop detection, Recovery Mode and diagnostic export
 - [ ] Publish reproducible build instructions
 - [ ] Select final code/design licenses
 - [ ] Tag the first public reader release
@@ -452,6 +460,7 @@ Useful documents:
 - [Library & storage model](docs/storage-model.md)
 - [Persistence backend](docs/persistence-model.md)
 - [Localization architecture](docs/localization-model.md)
+- [Errors, logging & diagnostics](docs/diagnostics-model.md)
 - [Hardware baseline](docs/hardware.md)
 - [BOM status](docs/bom.md)
 - [UI specification](docs/ui-spec.md)
@@ -485,6 +494,7 @@ docs/
   storage-model.md          Library identity, state and transactional storage
   persistence-model.md      CBOR records, schema versioning and crash recovery
   localization-model.md     string keys, fallback, plurals and locale packaging
+  diagnostics-model.md      structured errors, bounded logs and Recovery Mode
   hardware.md              verified/planned hardware baseline
   bom.md                   parts/BOM status and sourcing priorities
   status.md                current project status

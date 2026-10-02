@@ -2,7 +2,7 @@
 
 This document defines the initial firmware source layout and module boundaries.
 
-The scaffold is intentionally **framework-neutral**. Board-specific build files, ESP-IDF/Arduino integration and hardware drivers will be added only after the target Waveshare board is in hand and the bring-up path is verified.
+The application/core remains **framework-neutral**. A first isolated ESP-IDF board target now exists for Waveshare ESP32-S3-ePaper-3.97 storage bring-up; board-specific code remains confined under `firmware/platform/esp_idf`.
 
 ## 1. Directory layout
 
@@ -93,6 +93,20 @@ firmware/
       posix_state_file_store.cpp
     ui/
     platform/
+      esp_idf/
+        CMakeLists.txt
+        sdkconfig.defaults
+        README.md
+        main/
+          CMakeLists.txt
+          app_main.cpp
+        include/enku/platform/esp_idf/
+          board.hpp
+          esp_idf_sd_card.hpp
+          esp_idf_file_store.hpp
+        src/
+          esp_idf_sd_card.cpp
+          esp_idf_file_store.cpp
     services/
 ```
 
@@ -363,11 +377,11 @@ Exact methods will evolve during implementation, but service boundaries are fixe
 
 ## 8. What is intentionally not committed yet
 
-Not selected yet:
+The first board bring-up path now uses ESP-IDF because Waveshare publishes an official ESP-IDF reference implementation for the selected board.
 
-- Arduino vs ESP-IDF as the final firmware framework;
-- build system files;
-- exact display library;
+Still not selected/frozen:
+
+- exact display abstraction/library used by ENKU above the vendor panel driver;
 - EPUB/FB2 parser libraries;
 
 - task/thread model;

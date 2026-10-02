@@ -45,6 +45,11 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
     typography_.margin_px =
         app_state_.typography.margin_px;
 
+    viewport_ =
+        app_state_.orientation == Orientation::Portrait
+            ? Viewport{480, 800}
+            : Viewport{800, 480};
+
     app_state_.screen = Screen::BookOpening;
     app_state_.current_book = event.book_id;
     app_state_.current_book_finished = false;
@@ -339,7 +344,8 @@ ReaderRuntimeResult ReaderRuntimeController::commitVisiblePage(
     if (page_renderer_ != nullptr &&
         !page_renderer_->renderPage(
             *current,
-            typography_
+            typography_,
+            app_state_.orientation
         )) {
         return ReaderRuntimeResult::RenderFailed;
     }

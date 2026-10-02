@@ -9,8 +9,13 @@
 #include "esp_heap_caps.h"
 #include "esp_log.h"
 #include "esp_system.h"
+#include "esp_timer.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 #include "enku/platform/esp_idf/board.hpp"
+#include "enku/platform/esp_idf/esp_idf_buttons.hpp"
+#include "enku/runtime/input_runtime.hpp"
 #include "enku/platform/esp_idf/esp_idf_epaper.hpp"
 #include "enku/platform/esp_idf/esp_idf_file_store.hpp"
 #include "enku/platform/esp_idf/esp_idf_sd_card.hpp"
@@ -284,6 +289,103 @@ void drawRegionGlyph(
             }
         }
     }
+}
+
+const char* controlName(enku::PhysicalControl control) {
+    switch (control) {
+        case enku::PhysicalControl::Up: return "Up";
+        case enku::PhysicalControl::Function: return "Function";
+        case enku::PhysicalControl::Down: return "Down";
+        case enku::PhysicalControl::Boot: return "Boot";
+        case enku::PhysicalControl::Power: return "Power";
+        default: return "Unknown";
+    }
+}
+
+const char* pressName(enku::PressType press) {
+    switch (press) {
+        case enku::PressType::Press: return "Press";
+        case enku::PressType::Release: return "Release";
+        case enku::PressType::Click: return "Click";
+        case enku::PressType::LongPress: return "LongPress";
+        case enku::PressType::Repeat: return "Repeat";
+        default: return "Unknown";
+    }
+}
+
+const char* actionName(enku::LogicalAction action) {
+    switch (action) {
+        case enku::LogicalAction::None: return "None";
+        case enku::LogicalAction::NavigatePrevious: return "NavigatePrevious";
+        case enku::LogicalAction::NavigateNext: return "NavigateNext";
+        case enku::LogicalAction::Confirm: return "Confirm";
+        case enku::LogicalAction::Back: return "Back";
+        case enku::LogicalAction::OpenReaderMenu: return "OpenReaderMenu";
+        case enku::LogicalAction::OpenQuickTypography: return "OpenQuickTypography";
+        case enku::LogicalAction::PagePrevious: return "PagePrevious";
+        case enku::LogicalAction::PageNext: return "PageNext";
+        case enku::LogicalAction::Sleep: return "Sleep";
+        case enku::LogicalAction::Wake: return "Wake";
+        case enku::LogicalAction::PowerOff: return "PowerOff";
+        default: return "Unknown";
+    }
+}
+
+bool inputSmokeTest() {
+    enku::platform::esp_idf::EspIdfButtons buttons;
+
+    if (!buttons.begin()) {
+        ESP_LOGE(kTag, "Button GPIO initialization failed");
+        return false;
+    }
+
+    enku::AppState app;
+    app.screen = enku::Screen::Library;
+
+    ESP_LOGI(
+        kTag,
+        "Input smoke test: press Up / Function / Down / BOOT for 12 seconds"
+    );
+
+    const std::int64_t start_us = esp_timer_get_time();
+
+    while ((esp_timer_get_time() - start_us) <
+           12LL * 1000LL * 1000LL) {
+        const auto now_ms =
+            static_cast<std::uint32_t>(
+                esp_timer_get_time() / 1000LL
+            );
+
+        const auto input = buttons.poll(now_ms);
+
+        if (input.has_value()) {
+            const auto action =
+                enku::InputActionMapper::map(
+                    app,
+                    *input
+                );
+
+            ESP_LOGI(
+                kTag,
+                "INPUT control=%s press=%s action=%s",
+                controlName(input->control),
+                pressName(input->press),
+                action.has_value()
+                    ? actionName(*action)
+                    : "-"
+            );
+        }
+
+        vTaskDelay(
+            pdMS_TO_TICKS(
+                enku::platform::esp_idf::
+                    EspIdfButtons::kPollIntervalMs
+            )
+        );
+    }
+
+    ESP_LOGI(kTag, "Input smoke test complete");
+    return true;
 }
 
 bool displaySmokeTest() {
@@ -578,8 +680,16 @@ extern "C" void app_main(void) {
         return;
     }
 
+    if (!inputSmokeTest()) {
+        ESP_LOGE(
+            kTag,
+            "Platform input verification failed"
+        );
+        return;
+    }
+
     ESP_LOGI(
         kTag,
-        "ENKU storage + display bring-up complete"
+        "ENKU storage + display + input bring-up complete"
     );
 }

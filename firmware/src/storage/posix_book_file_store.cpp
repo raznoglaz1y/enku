@@ -103,6 +103,42 @@ BookFileStatus PosixBookFileStore::write(
         : BookFileStatus::IoError;
 }
 
+BookFileStatus PosixBookFileStore::append(
+    const std::string& path,
+    const std::string& bytes
+) {
+    const auto full_path = resolve(path);
+
+    std::error_code ec;
+    std::filesystem::create_directories(
+        full_path.parent_path(),
+        ec
+    );
+    if (ec) {
+        return BookFileStatus::IoError;
+    }
+
+    std::ofstream output(
+        full_path,
+        std::ios::binary | std::ios::app
+    );
+    if (!output) {
+        return BookFileStatus::IoError;
+    }
+
+    if (!bytes.empty()) {
+        output.write(
+            bytes.data(),
+            static_cast<std::streamsize>(bytes.size())
+        );
+    }
+    output.flush();
+
+    return output
+        ? BookFileStatus::Ok
+        : BookFileStatus::IoError;
+}
+
 BookFileStatus PosixBookFileStore::remove(
     const std::string& path
 ) {

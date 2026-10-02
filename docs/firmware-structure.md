@@ -35,6 +35,7 @@ firmware/
       book_loader.hpp
     runtime/
       reader_runtime.hpp
+      library_runtime.hpp
       storage_startup.hpp
       boot_restore.hpp
       sleep_wake.hpp
@@ -58,6 +59,7 @@ firmware/
     core/
     runtime/
       reader_runtime.cpp
+      library_runtime.cpp
       storage_startup.cpp
       boot_restore.cpp
       sleep_wake.cpp
@@ -183,7 +185,8 @@ Owns:
 - safe restoration of the last persisted Library/Reading context after reboot;
 - Sleep/Wake orchestration across reader persistence, network shutdown and PowerService;
 - graceful Power Off persistence before platform shutdown;
-- persistent boot-loop marker management for cold-boot recovery gating.
+- persistent boot-loop marker management for cold-boot recovery gating;
+- Library query/focus/open coordination and transactional import event handling.
 
 The runtime layer does not manipulate semantic offsets directly.
 

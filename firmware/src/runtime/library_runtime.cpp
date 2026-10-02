@@ -239,6 +239,50 @@ LibraryRuntimeResult LibraryRuntimeController::handle(
     return reload();
 }
 
+LibraryRuntimeResult LibraryRuntimeController::moveToOffset(
+    std::uint32_t offset,
+    bool focus_last
+) {
+    app_state_.library.offset = offset;
+
+    LibraryPage next_page;
+    const auto status =
+        library_.query(
+            queryFromState(),
+            next_page
+        );
+
+    if (status != LibraryStatus::Ok) {
+        return LibraryRuntimeResult::QueryFailed;
+    }
+
+    page_ = std::move(next_page);
+    app_state_.library.total_matches =
+        page_.total_matches;
+
+    if (page_.items.empty()) {
+        app_state_.library.focused_book.reset();
+    } else {
+        app_state_.library.focused_book =
+            focus_last
+                ? page_.items.back().book_id
+                : page_.items.front().book_id;
+    }
+
+    if (page_renderer_ != nullptr &&
+        !page_renderer_->renderLibrary(
+            app_state_,
+            page_
+        )) {
+        return LibraryRuntimeResult::RenderFailed;
+    }
+
+    return submitRefresh(
+        RefreshReason::FocusChanged,
+        RefreshClass::Full
+    );
+}
+
 LibraryRuntimeResult LibraryRuntimeController::handle(
     const LibraryFocusNextRequested&
 ) {
@@ -247,17 +291,30 @@ LibraryRuntimeResult LibraryRuntimeController::handle(
     }
 
     const auto current = focusedIndex();
-    const std::size_t next =
-        current.has_value()
-            ? std::min(
-                *current + 1U,
-                page_.items.size() - 1U
-            )
-            : 0U;
 
-    if (current.has_value() && next == *current) {
+    if (current.has_value() &&
+        *current + 1U >= page_.items.size()) {
+        const auto next_offset =
+            page_.offset +
+            static_cast<std::uint32_t>(
+                page_.items.size()
+            );
+
+        if (next_offset <
+            page_.total_matches) {
+            return moveToOffset(
+                next_offset,
+                false
+            );
+        }
+
         return LibraryRuntimeResult::Ignored;
     }
+
+    const std::size_t next =
+        current.has_value()
+            ? *current + 1U
+            : 0U;
 
     app_state_.library.focused_book =
         page_.items[next].book_id;
@@ -284,15 +341,32 @@ LibraryRuntimeResult LibraryRuntimeController::handle(
     }
 
     const auto current = focusedIndex();
-    const std::size_t previous =
-        current.has_value() && *current > 0
-            ? *current - 1U
-            : 0U;
 
     if (current.has_value() &&
-        previous == *current) {
-        return LibraryRuntimeResult::Ignored;
+        *current == 0U) {
+        if (page_.offset == 0U) {
+            return LibraryRuntimeResult::Ignored;
+        }
+
+        const auto step =
+            static_cast<std::uint32_t>(
+                app_state_.library.limit
+            );
+        const auto previous_offset =
+            page_.offset > step
+                ? page_.offset - step
+                : 0U;
+
+        return moveToOffset(
+            previous_offset,
+            true
+        );
     }
+
+    const std::size_t previous =
+        current.has_value()
+            ? *current - 1U
+            : 0U;
 
     app_state_.library.focused_book =
         page_.items[previous].book_id;

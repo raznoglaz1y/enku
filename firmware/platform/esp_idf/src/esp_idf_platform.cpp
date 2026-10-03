@@ -1,6 +1,7 @@
 #include "enku/platform/esp_idf/esp_idf_platform.hpp"
 
 #include "enku/platform/esp_idf/board.hpp"
+#include "enku/platform/esp_idf/board_profiles.hpp"
 
 namespace enku::platform::esp_idf {
 
@@ -76,6 +77,10 @@ EspIdfNetworkService& EspIdfPlatform::network() {
 
 EspIdfButtons& EspIdfPlatform::buttons() {
     return buttons_;
+}
+
+const BoardProfile& EspIdfPlatform::boardProfile() const {
+    return board_profiles::kWaveshareEsp32S3Epaper397;
 }
 
 } // namespace enku::platform::esp_idf

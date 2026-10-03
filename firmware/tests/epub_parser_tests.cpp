@@ -209,6 +209,85 @@ std::string makeStoredZip(
     return out;
 }
 
+std::string oversizedDeclaredZip() {
+    const std::string name = "huge.xhtml";
+    std::string out;
+
+    appendU32(out, 0x04034B50U);
+    appendU16(out, 20U);
+    appendU16(out, 0U);
+    appendU16(out, 0U);
+    appendU16(out, 0U);
+    appendU16(out, 0U);
+    appendU32(out, 0U);
+    appendU32(out, 1U);
+    appendU32(
+        out,
+        static_cast<std::uint32_t>(
+            ZipArchive::kMaxEntryBytes + 1U
+        )
+    );
+    appendU16(
+        out,
+        static_cast<std::uint16_t>(
+            name.size()
+        )
+    );
+    appendU16(out, 0U);
+    out += name;
+    out.push_back('x');
+
+    const auto central_offset =
+        static_cast<std::uint32_t>(
+            out.size()
+        );
+
+    appendU32(out, 0x02014B50U);
+    appendU16(out, 20U);
+    appendU16(out, 20U);
+    appendU16(out, 0U);
+    appendU16(out, 0U);
+    appendU16(out, 0U);
+    appendU16(out, 0U);
+    appendU32(out, 0U);
+    appendU32(out, 1U);
+    appendU32(
+        out,
+        static_cast<std::uint32_t>(
+            ZipArchive::kMaxEntryBytes + 1U
+        )
+    );
+    appendU16(
+        out,
+        static_cast<std::uint16_t>(
+            name.size()
+        )
+    );
+    appendU16(out, 0U);
+    appendU16(out, 0U);
+    appendU16(out, 0U);
+    appendU16(out, 0U);
+    appendU32(out, 0U);
+    appendU32(out, 0U);
+    out += name;
+
+    const auto central_size =
+        static_cast<std::uint32_t>(
+            out.size()
+        ) - central_offset;
+
+    appendU32(out, 0x06054B50U);
+    appendU16(out, 0U);
+    appendU16(out, 0U);
+    appendU16(out, 1U);
+    appendU16(out, 1U);
+    appendU32(out, central_size);
+    appendU32(out, central_offset);
+    appendU16(out, 0U);
+
+    return out;
+}
+
 std::string sampleEpub() {
     return makeStoredZip({
         {
@@ -704,6 +783,27 @@ int main() {
     assert(
         ranged_source.max_read <= 65557U
     );
+
+    {
+        const auto bomb_bytes =
+            oversizedDeclaredZip();
+        ZipArchive bomb(bomb_bytes);
+
+        assert(
+            bomb.status() ==
+            ZipArchiveStatus::Ok
+        );
+
+        std::string ignored;
+        assert(
+            bomb.read(
+                "huge.xhtml",
+                ignored
+            ) ==
+            ZipArchiveStatus::EntryTooLarge
+        );
+        assert(ignored.empty());
+    }
 
     const auto invalid =
         parser.parse(

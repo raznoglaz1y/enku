@@ -9,7 +9,7 @@ namespace enku {
 namespace {
 
 constexpr std::size_t kInflateInputChunkBytes =
-    32U * 1024U;
+    ParserMemoryBudget::kRangeChunkBytes;
 
 std::uint16_t readU16(
     std::string_view bytes,
@@ -147,7 +147,7 @@ bool ZipArchive::parseCentralDirectory() {
     constexpr std::uint32_t kCentralSignature =
         0x02014B50U;
     constexpr std::uint64_t kMaxEocdWindow =
-        65557U;
+        ParserMemoryBudget::kZipEocdWindowBytes;
 
     const auto total = sourceSize();
 

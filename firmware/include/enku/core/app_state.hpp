@@ -33,6 +33,17 @@ struct LibraryState {
     std::uint16_t limit{24};
     std::uint32_t total_matches{0};
     std::optional<BookId> focused_book;
+    std::vector<BookId> unavailable_books;
+
+    bool bookAvailable(const BookId& book_id) const {
+        for (const auto& unavailable :
+             unavailable_books) {
+            if (unavailable == book_id) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     bool search_origin_valid{false};
     std::uint32_t search_origin_offset{0};

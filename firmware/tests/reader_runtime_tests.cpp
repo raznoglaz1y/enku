@@ -297,9 +297,12 @@ int main() {
     FakeCheckpointService checkpoint;
     FakeAppContextService context;
 
-    const std::string text =
-        "Alpha beta gamma delta epsilon zeta eta theta iota kappa lambda "
-        "mu nu xi omicron pi rho sigma tau upsilon phi chi psi omega.";
+    std::string text;
+    for (std::uint32_t i = 0; i < 24U; ++i) {
+        text +=
+            "Alpha beta gamma delta epsilon zeta eta theta iota kappa lambda "
+            "mu nu xi omicron pi rho sigma tau upsilon phi chi psi omega. ";
+    }
 
     BookRecord record;
     record.book_id = "runtime-test";
@@ -393,6 +396,9 @@ int main() {
     assert(state.reading_position.has_value());
     assert(state.reading_position->text_offset == saved_offset);
 
+    const auto checkpoints_before_long_read =
+        checkpoint.calls;
+
     while (true) {
         const auto refresh_before =
             refresh.submitted;
@@ -411,6 +417,10 @@ int main() {
         assert(result == ReaderRuntimeResult::Applied);
     }
 
+    assert(
+        checkpoint.calls >
+        checkpoints_before_long_read
+    );
     assert(state.current_book_finished);
     assert(state.reading_progress == 1.0F);
     assert(state.progress_dirty);

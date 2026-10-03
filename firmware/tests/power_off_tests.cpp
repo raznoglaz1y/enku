@@ -94,10 +94,16 @@ public:
 
     bool requestPowerOff() override {
         ++power_off_requests;
+
+        if (!power_off_success) {
+            return false;
+        }
+
         state = DevicePowerState::PoweredOff;
         return true;
     }
 
+    bool power_off_success{true};
     DevicePowerState state{DevicePowerState::Active};
     std::uint32_t power_off_requests{0};
 };
@@ -294,6 +300,25 @@ int main() {
     assert(
         power.power_off_requests ==
         power_off_before
+    );
+
+    // A failed or unavailable PMU shutdown must never be reported as
+    // successfully powered off.
+    app.import_active = false;
+    power.power_off_success = false;
+    power.state = DevicePowerState::Active;
+
+    assert(
+        coordinator.powerOff() ==
+        PowerOffStatus::PowerUnavailable
+    );
+    assert(
+        power.power_off_requests ==
+        power_off_before + 1U
+    );
+    assert(
+        power.powerState() ==
+        DevicePowerState::Active
     );
 
     std::error_code ec;

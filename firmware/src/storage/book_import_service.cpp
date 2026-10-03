@@ -1,4 +1,5 @@
 #include "enku/storage/book_import_service.hpp"
+#include "enku/storage/book_fingerprint.hpp"
 #include "enku/reader/zip_archive.hpp"
 
 #include <algorithm>
@@ -9,178 +10,6 @@
 
 namespace enku {
 namespace {
-
-constexpr std::uint64_t kFnvOffset =
-    14695981039346656037ULL;
-constexpr std::uint64_t kFnvPrime =
-    1099511628211ULL;
-constexpr std::size_t kFingerprintChunkBytes =
-    64U * 1024U;
-
-void updateFingerprint(
-    std::uint64_t& hash,
-    std::string_view bytes
-) {
-    for (const unsigned char ch : bytes) {
-        hash ^= ch;
-        hash *= kFnvPrime;
-    }
-}
-
-std::string finishFingerprint(
-    std::uint64_t hash,
-    std::uint64_t size
-) {
-    std::ostringstream out;
-    out << "fnv1a64:"
-        << std::hex
-        << std::setfill('0')
-        << std::setw(16)
-        << hash
-        << ":"
-        << std::dec
-        << size;
-
-    return out.str();
-}
-
-class BookFileTextRangeSource final
-    : public TextRangeSource {
-public:
-    BookFileTextRangeSource(
-        BookFileStore& files,
-        std::string path,
-        std::uint64_t size_bytes
-    )
-        : files_(files),
-          path_(std::move(path)),
-          size_bytes_(size_bytes) {}
-
-    std::uint64_t size() const override {
-        return size_bytes_;
-    }
-
-    bool readRange(
-        std::uint64_t offset,
-        std::size_t length,
-        std::string& out
-    ) const override {
-        last_status_ =
-            files_.readRange(
-                path_,
-                offset,
-                length,
-                out
-            );
-
-        return last_status_ ==
-            BookFileStatus::Ok;
-    }
-
-    BookFileStatus lastStatus() const {
-        return last_status_;
-    }
-
-private:
-    BookFileStore& files_;
-    std::string path_;
-    std::uint64_t size_bytes_{0};
-    mutable BookFileStatus last_status_{
-        BookFileStatus::Ok
-    };
-};
-
-class BookFileFb2RangeSource final
-    : public Fb2RangeSource {
-public:
-    BookFileFb2RangeSource(
-        BookFileStore& files,
-        std::string path,
-        std::uint64_t size_bytes
-    )
-        : files_(files),
-          path_(std::move(path)),
-          size_bytes_(size_bytes) {}
-
-    std::uint64_t size() const override {
-        return size_bytes_;
-    }
-
-    bool readRange(
-        std::uint64_t offset,
-        std::size_t length,
-        std::string& out
-    ) const override {
-        last_status_ =
-            files_.readRange(
-                path_,
-                offset,
-                length,
-                out
-            );
-
-        return last_status_ ==
-            BookFileStatus::Ok;
-    }
-
-    BookFileStatus lastStatus() const {
-        return last_status_;
-    }
-
-private:
-    BookFileStore& files_;
-    std::string path_;
-    std::uint64_t size_bytes_{0};
-    mutable BookFileStatus last_status_{
-        BookFileStatus::Ok
-    };
-};
-
-class BookFileZipRangeSource final
-    : public ZipRangeSource {
-public:
-    BookFileZipRangeSource(
-        BookFileStore& files,
-        std::string path,
-        std::uint64_t size_bytes
-    )
-        : files_(files),
-          path_(std::move(path)),
-          size_bytes_(size_bytes) {}
-
-    std::uint64_t size() const override {
-        return size_bytes_;
-    }
-
-    bool readRange(
-        std::uint64_t offset,
-        std::size_t length,
-        std::string& out
-    ) const override {
-        last_status_ =
-            files_.readRange(
-                path_,
-                offset,
-                length,
-                out
-            );
-
-        return last_status_ ==
-            BookFileStatus::Ok;
-    }
-
-    BookFileStatus lastStatus() const {
-        return last_status_;
-    }
-
-private:
-    BookFileStore& files_;
-    std::string path_;
-    std::uint64_t size_bytes_{0};
-    mutable BookFileStatus last_status_{
-        BookFileStatus::Ok
-    };
-};
 
 std::string lowerExtension(const std::string& filename) {
     const auto slash = filename.find_last_of("/\\");
@@ -212,24 +41,7 @@ BookImportService::BookImportService(
 )
     : library_(library) {}
 
-std::string BookImportService::fingerprint(
-    const std::string& bytes
-) {
-    // Reader v1 import MVP: deterministic content fingerprint.
-    // Kept incremental so staged files can be fingerprinted without loading
-    // the entire book into RAM.
-    std::uint64_t hash = kFnvOffset;
-    updateFingerprint(hash, bytes);
-
-    return finishFingerprint(
-        hash,
-        static_cast<std::uint64_t>(
-            bytes.size()
-        )
-    );
-}
-
-BookFormat BookImportService::detectFormat(
+std::string BookFormat BookImportService::detectFormat(
     const std::string& filename,
     bool& supported
 ) {
@@ -276,7 +88,7 @@ PreparedBookImport BookImportService::prepare(
     }
 
     const auto content_fingerprint =
-        fingerprint(source.bytes);
+        fingerprintBookBytes(source.bytes);
 
     if (library_.findByFingerprint(
             content_fingerprint
@@ -393,48 +205,21 @@ PreparedBookImport BookImportService::prepareStored(
         return prepared;
     }
 
-    std::uint64_t hash = kFnvOffset;
-    std::uint64_t offset = 0;
-
-    while (offset < file_size) {
-        const auto remaining =
-            file_size - offset;
-        const auto chunk_size =
-            static_cast<std::size_t>(
-                std::min<std::uint64_t>(
-                    remaining,
-                    kFingerprintChunkBytes
-                )
-            );
-
-        std::string chunk;
-        if (files.readRange(
-                source_path,
-                offset,
-                chunk_size,
-                chunk
-            ) != BookFileStatus::Ok) {
-            prepared.status =
-                BookImportStatus::SourceReadFailed;
-            return prepared;
-        }
-
-        updateFingerprint(
-            hash,
-            chunk
+    const auto fingerprint_result =
+        fingerprintStoredBook(
+            files,
+            source_path
         );
 
-        offset +=
-            static_cast<std::uint64_t>(
-                chunk_size
-            );
+    if (!fingerprint_result.ok() ||
+        fingerprint_result.file_size != file_size) {
+        prepared.status =
+            BookImportStatus::SourceReadFailed;
+        return prepared;
     }
 
-    const auto content_fingerprint =
-        finishFingerprint(
-            hash,
-            file_size
-        );
+    const auto& content_fingerprint =
+        fingerprint_result.fingerprint;
 
     if (library_.findByFingerprint(
             content_fingerprint

@@ -264,7 +264,7 @@
 	(global_label "EPD_RST" (shape output) (at 103.54 66.76 180) (effects (font (size 0.88 0.88)) (justify right bottom)) (uuid "74000000-0000-4000-8000-000000000062"))
 	(global_label "EPD_BUSY" (shape output) (at 103.54 69.3 180) (effects (font (size 0.88 0.88)) (justify right bottom)) (uuid "74000000-0000-4000-8000-000000000063"))
 	(global_label "BOOT" (shape output) (at 103.54 74.38 180) (effects (font (size 0.88 0.88)) (justify right bottom)) (uuid "74000000-0000-4000-8000-000000000064"))
-	(global_label "SPARE_GPIO38" (shape output) (at 103.54 84.54 180) (effects (font (size 0.88 0.88)) (justify right bottom)) (uuid "74000000-0000-4000-8000-000000000065"))
+	(label "SPARE_GPIO38" (at 103.54 84.54 180) (effects (font (size 0.88 0.88)) (justify right bottom)) (uuid "74000000-0000-4000-8000-000000000065"))
 	(global_label "FL_WARM_PWM" (shape output) (at 103.54 87.08 180) (effects (font (size 0.88 0.88)) (justify right bottom)) (uuid "74000000-0000-4000-8000-000000000066"))
 	(global_label "FL_COOL_PWM" (shape output) (at 103.54 89.62 180) (effects (font (size 0.88 0.88)) (justify right bottom)) (uuid "74000000-0000-4000-8000-000000000067"))
 	(global_label "FL_ENABLE" (shape output) (at 103.54 92.16 180) (effects (font (size 0.88 0.88)) (justify right bottom)) (uuid "74000000-0000-4000-8000-000000000068"))

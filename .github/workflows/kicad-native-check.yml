@@ -36,6 +36,22 @@ jobs:
           kicad-cli pcb drc             --output /tmp/enku-r01-drc.rpt             hardware/kicad/enku-mainboard-r0.1/enku-mainboard-r0.1.kicad_pcb
           cat /tmp/enku-r01-drc.rpt
 
+      - name: Gate first-spin critical violations
+        run: |
+          failed=0
+
+          if grep -E '^\[(pin_to_pin|power_pin_not_driven|lib_symbol_issues|pin_not_connected|label_dangling|global_label_dangling)\]:' /tmp/enku-r01-erc.rpt; then
+            echo "Critical schematic ERC violation detected."
+            failed=1
+          fi
+
+          if grep -E '^\[(shorting_items|clearance|hole_clearance)\]:' /tmp/enku-r01-drc.rpt; then
+            echo "Critical PCB copper/clearance violation detected."
+            failed=1
+          fi
+
+          exit "$failed"
+
       - name: Export native schematic netlist
         run: |
           kicad-cli sch export netlist \

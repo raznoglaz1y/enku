@@ -92,6 +92,12 @@ SdMountStatus EspIdfSdCard::mount() {
                 path,
                 errno
             );
+
+            // The FAT volume itself mounted, but the platform is not usable
+            // until the required directory layout exists. Roll back the
+            // mount completely so a later recovery retry cannot observe a
+            // false mounted_=true state.
+            unmount();
             return SdMountStatus::DirectorySetupFailed;
         }
     }

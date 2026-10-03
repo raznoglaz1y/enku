@@ -218,6 +218,22 @@ def main() -> int:
     if "GCT USB4105-GF-A-120" not in conn:
         fail(errors, "connector sheet missing exact GCT USB-C MPN")
 
+    exact_bindings = {
+        "power": ("ENKU:TPS2121_RUX0012A", "ENKU:BQ25185_DLH0010A"),
+        "mcu": ("ENKU:BMI270_Bosch_LGA14",),
+        "epd": ("ENKU:FH34SRJ-24S-0.5SH",),
+        "frontlight": ("ENKU:TPS923610_DRL0006A", "ENKU:FH34SRJ-6S-0.5SH"),
+    }
+    for sheet, tokens in exact_bindings.items():
+        for token in tokens:
+            if token not in texts.get(sheet, ""):
+                fail(errors, f"{FILES[sheet].name}: exact local footprint binding missing: {token}")
+
+    if '(number "S1"' not in epd or '(number "S2"' not in epd:
+        fail(errors, "EPD connector symbol must include grounded S1/S2 retention tabs")
+    if '(number "S1"' not in fl or '(number "S2"' not in fl:
+        fail(errors, "frontlight connector symbol must include grounded S1/S2 retention tabs")
+
     if errors:
         print(f"\nENKU schematic structural gate: FAIL ({len(errors)} issue(s))")
         return 1

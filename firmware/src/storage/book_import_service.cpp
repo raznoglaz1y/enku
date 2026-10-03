@@ -11,6 +11,144 @@
 namespace enku {
 namespace {
 
+class BookFileTextRangeSource final
+    : public TextRangeSource {
+public:
+    BookFileTextRangeSource(
+        BookFileStore& files,
+        std::string path,
+        std::uint64_t size_bytes
+    )
+        : files_(files),
+          path_(std::move(path)),
+          size_bytes_(size_bytes) {}
+
+    std::uint64_t size() const override {
+        return size_bytes_;
+    }
+
+    bool readRange(
+        std::uint64_t offset,
+        std::size_t length,
+        std::string& out
+    ) const override {
+        last_status_ =
+            files_.readRange(
+                path_,
+                offset,
+                length,
+                out
+            );
+
+        return last_status_ ==
+            BookFileStatus::Ok;
+    }
+
+    BookFileStatus lastStatus() const {
+        return last_status_;
+    }
+
+private:
+    BookFileStore& files_;
+    std::string path_;
+    std::uint64_t size_bytes_{0};
+    mutable BookFileStatus last_status_{
+        BookFileStatus::Ok
+    };
+};
+
+class BookFileFb2RangeSource final
+    : public Fb2RangeSource {
+public:
+    BookFileFb2RangeSource(
+        BookFileStore& files,
+        std::string path,
+        std::uint64_t size_bytes
+    )
+        : files_(files),
+          path_(std::move(path)),
+          size_bytes_(size_bytes) {}
+
+    std::uint64_t size() const override {
+        return size_bytes_;
+    }
+
+    bool readRange(
+        std::uint64_t offset,
+        std::size_t length,
+        std::string& out
+    ) const override {
+        last_status_ =
+            files_.readRange(
+                path_,
+                offset,
+                length,
+                out
+            );
+
+        return last_status_ ==
+            BookFileStatus::Ok;
+    }
+
+    BookFileStatus lastStatus() const {
+        return last_status_;
+    }
+
+private:
+    BookFileStore& files_;
+    std::string path_;
+    std::uint64_t size_bytes_{0};
+    mutable BookFileStatus last_status_{
+        BookFileStatus::Ok
+    };
+};
+
+class BookFileZipRangeSource final
+    : public ZipRangeSource {
+public:
+    BookFileZipRangeSource(
+        BookFileStore& files,
+        std::string path,
+        std::uint64_t size_bytes
+    )
+        : files_(files),
+          path_(std::move(path)),
+          size_bytes_(size_bytes) {}
+
+    std::uint64_t size() const override {
+        return size_bytes_;
+    }
+
+    bool readRange(
+        std::uint64_t offset,
+        std::size_t length,
+        std::string& out
+    ) const override {
+        last_status_ =
+            files_.readRange(
+                path_,
+                offset,
+                length,
+                out
+            );
+
+        return last_status_ ==
+            BookFileStatus::Ok;
+    }
+
+    BookFileStatus lastStatus() const {
+        return last_status_;
+    }
+
+private:
+    BookFileStore& files_;
+    std::string path_;
+    std::uint64_t size_bytes_{0};
+    mutable BookFileStatus last_status_{
+        BookFileStatus::Ok
+    };
+};
+
 std::string lowerExtension(const std::string& filename) {
     const auto slash = filename.find_last_of("/\\");
     const auto base = slash == std::string::npos
@@ -41,7 +179,7 @@ BookImportService::BookImportService(
 )
     : library_(library) {}
 
-std::string BookFormat BookImportService::detectFormat(
+BookFormat BookImportService::detectFormat(
     const std::string& filename,
     bool& supported
 ) {

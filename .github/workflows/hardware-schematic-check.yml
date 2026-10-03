@@ -33,3 +33,6 @@ jobs:
 
       - name: Validate ENKU R0.1 footprint consistency
         run: python hardware/kicad/enku-mainboard-r0.1/check_footprint_consistency.py
+
+      - name: Validate ENKU R0.1 PCB population
+        run: python hardware/kicad/enku-mainboard-r0.1/check_pcb_population.py

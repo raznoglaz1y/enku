@@ -497,7 +497,8 @@ bool inputSmokeTest(
 }
 
 bool showStorageRecovery(
-    enku::platform::esp_idf::EspIdfPlatform& platform
+    enku::platform::esp_idf::EspIdfPlatform& platform,
+    enku::platform::esp_idf::PlatformInitStatus status
 ) {
     auto& framebuffer = platform.framebuffer();
     framebuffer.clearWhite();
@@ -517,20 +518,39 @@ bool showStorageRecovery(
         "ENKU",
         16
     );
-    drawText(
-        framebuffer.mutableData(),
-        250,
-        285,
-        "SD FAIL",
-        8
-    );
-    drawText(
-        framebuffer.mutableData(),
-        220,
-        350,
-        "INSERT SD",
-        5
-    );
+    if (status ==
+        enku::platform::esp_idf::PlatformInitStatus::
+            SdDirectorySetupFailed) {
+        drawText(
+            framebuffer.mutableData(),
+            170,
+            285,
+            "SD SETUP FAIL",
+            6
+        );
+        drawText(
+            framebuffer.mutableData(),
+            235,
+            350,
+            "REPAIR SD",
+            5
+        );
+    } else {
+        drawText(
+            framebuffer.mutableData(),
+            250,
+            285,
+            "SD FAIL",
+            8
+        );
+        drawText(
+            framebuffer.mutableData(),
+            220,
+            350,
+            "INSERT SD",
+            5
+        );
+    }
 
     enku::RefreshRequest request;
     request.refresh_class = enku::RefreshClass::Full;
@@ -822,13 +842,28 @@ extern "C" void app_main(void) {
     const auto platform_status = platform.begin();
 
     if (platform_status ==
-        enku::platform::esp_idf::PlatformInitStatus::SdMountFailed) {
+            enku::platform::esp_idf::PlatformInitStatus::
+                SdMountFailed ||
+        platform_status ==
+            enku::platform::esp_idf::PlatformInitStatus::
+                SdDirectorySetupFailed) {
+        const char* recovery_reason =
+            platform_status ==
+                enku::platform::esp_idf::PlatformInitStatus::
+                    SdDirectorySetupFailed
+                ? "storage directory setup failed"
+                : "storage mount failed";
+
         ESP_LOGE(
             kTag,
-            "microSD unavailable; entering visible recovery mode"
+            "%s; entering visible recovery mode",
+            recovery_reason
         );
 
-        if (!showStorageRecovery(platform)) {
+        if (!showStorageRecovery(
+                platform,
+                platform_status
+            )) {
             ESP_LOGE(
                 kTag,
                 "Unable to render storage recovery screen"
@@ -837,7 +872,7 @@ extern "C" void app_main(void) {
 
         idleRecoveryScreen(
             platform,
-            "storage unavailable"
+            recovery_reason
         );
     }
 

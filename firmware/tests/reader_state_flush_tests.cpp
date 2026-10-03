@@ -172,6 +172,30 @@ int main() {
     assert(context.saves == 2U);
 
     app.progress_dirty = true;
+    app.reading_position->text_offset = 180U;
+    app.reading_progress = 0.5F;
+
+    const auto library_updates_before_checkpoint =
+        library.updates;
+    const auto context_saves_before_checkpoint =
+        context.saves;
+
+    assert(
+        flush.checkpointProgress() ==
+        ReaderStateFlushStatus::Applied
+    );
+    assert(checkpoint.writes == 2U);
+    assert(!app.progress_dirty);
+    assert(
+        library.updates ==
+        library_updates_before_checkpoint
+    );
+    assert(
+        context.saves ==
+        context_saves_before_checkpoint
+    );
+
+    app.progress_dirty = true;
     app.reading_position->text_offset = 240U;
     app.reading_progress = 0.6F;
 
@@ -180,7 +204,7 @@ int main() {
             ReaderStateFlushTarget::ReturnToLibrary
         ) == ReaderStateFlushStatus::Applied
     );
-    assert(checkpoint.writes == 2U);
+    assert(checkpoint.writes == 3U);
     assert(!app.progress_dirty);
     assert(context.last.screen == Screen::Library);
     assert(!context.last.current_book.has_value());

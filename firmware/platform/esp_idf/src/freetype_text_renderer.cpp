@@ -1111,6 +1111,37 @@ bool FreeTypeTextRenderer::renderLibrary(
 
     int start_y = 78;
 
+    if (!search_mode &&
+        app_state.storage.removable !=
+            RemovableStorageStatus::Ready) {
+        drawRect(
+            24,
+            70,
+            logical_width - 48,
+            42,
+            orientation,
+            2
+        );
+
+        const char* storage_message =
+            app_state.storage.removable ==
+                RemovableStorageStatus::SetupError
+                ? "SD CARD ERROR"
+                : "SD CARD UNAVAILABLE";
+
+        if (!drawTextAt(
+                storage_message,
+                14,
+                38,
+                96,
+                orientation
+            )) {
+            return false;
+        }
+
+        start_y = 126;
+    }
+
     if (search_mode) {
         drawRect(
             24,
@@ -1302,15 +1333,22 @@ bool FreeTypeTextRenderer::renderLibrary(
             return false;
         }
 
-        if (!search_mode &&
-            !drawTextAt(
-                "IMPORT A TXT BOOK TO START",
-                14,
-                32,
-                start_y + 72,
-                orientation
-            )) {
-            return false;
+        if (!search_mode) {
+            const char* empty_hint =
+                app_state.storage.removable ==
+                    RemovableStorageStatus::Ready
+                    ? "IMPORT A TXT BOOK TO START"
+                    : "INSERT OR REPAIR SD CARD";
+
+            if (!drawTextAt(
+                    empty_hint,
+                    14,
+                    32,
+                    start_y + 72,
+                    orientation
+                )) {
+                return false;
+            }
         }
     }
 

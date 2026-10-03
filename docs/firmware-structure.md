@@ -307,6 +307,8 @@ Owns hardware-specific implementations:
 
 Board-specific capability declarations use `BoardProfile` / `BoardCapabilities`: the platform exposes what a board supports without leaking GPIO wiring into reader/runtime code. Reference hardware and unvalidated design targets have distinct maturity states.
 
+Critical system typography is also platform-owned on ESP-IDF. Noto Sans Regular is embedded in the application image and opened by FreeType from memory, so reader pagination and UI rendering do not require removable storage. A valid SD font may override the embedded face, but an absent or invalid override falls back to the firmware asset.
+
 Raw board details stay here.
 
 ### services

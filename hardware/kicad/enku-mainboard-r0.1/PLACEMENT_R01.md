@@ -176,12 +176,13 @@ The first collision review found and corrected:
 
 ### Routing state — 03 Oct 2026
 
-The PCB is no longer a placement-only shell. The current `main` board contains **128 copper segments and 30 vias** plus the board zone definition.
+The PCB is no longer a placement-only shell. The current `main` board has passed the native first-spin critical geometry gate: **ERC 0 errors / 0 warnings**, with no gated short, crossing, copper-clearance, hole-clearance or board-edge violations. The remaining routing baseline is **251 unconnected items**; schematic↔PCB parity and silkscreen/library warnings remain cleanup work rather than fabrication claims.
 
 Completed or materially routed areas now include:
 - USB-C VBUS entry and Dock input toward the TPS2121 source selector;
 - a substantial part of the lower power island;
 - EPD VSH2 path from the display connector into the local HV island;
+- EPD VGH moved onto the existing In1.Cu via-to-via corridor to remove the VGH/VDD crossing without adding another dense HV through-via;
 - controlled layer transitions already present in the active layout.
 
 Still open before routing freeze:

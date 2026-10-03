@@ -740,6 +740,183 @@ std::optional<std::size_t> matchingSectionClose(
     return std::nullopt;
 }
 
+bool asciiIEquals(
+    std::string_view value,
+    std::string_view expected
+) {
+    if (value.size() != expected.size()) {
+        return false;
+    }
+
+    for (std::size_t i = 0;
+         i < value.size();
+         ++i) {
+        if (std::tolower(
+                static_cast<unsigned char>(
+                    value[i]
+                )
+            ) !=
+            std::tolower(
+                static_cast<unsigned char>(
+                    expected[i]
+                )
+            )) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+std::optional<std::pair<
+    std::size_t,
+    std::size_t
+>> nextOpenTag(
+    std::string_view markup,
+    std::size_t cursor,
+    std::string_view name
+) {
+    while (cursor < markup.size()) {
+        const auto open =
+            markup.find('<', cursor);
+
+        if (open == std::string_view::npos ||
+            open + 1U >= markup.size()) {
+            return std::nullopt;
+        }
+
+        const auto first =
+            markup[open + 1U];
+
+        if (first == '/' ||
+            first == '!' ||
+            first == '?') {
+            cursor = open + 2U;
+            continue;
+        }
+
+        const auto name_start =
+            open + 1U;
+        std::size_t name_end =
+            name_start;
+
+        while (name_end < markup.size()) {
+            const unsigned char ch =
+                static_cast<unsigned char>(
+                    markup[name_end]
+                );
+
+            if (!(std::isalnum(ch) ||
+                  ch == ':' ||
+                  ch == '-' ||
+                  ch == '_')) {
+                break;
+            }
+
+            ++name_end;
+        }
+
+        if (asciiIEquals(
+                markup.substr(
+                    name_start,
+                    name_end - name_start
+                ),
+                name
+            )) {
+            const auto gt =
+                markup.find('>', name_end);
+
+            if (gt == std::string_view::npos) {
+                return std::nullopt;
+            }
+
+            return std::pair{
+                open,
+                gt,
+            };
+        }
+
+        cursor =
+            name_end > open
+                ? name_end
+                : open + 1U;
+    }
+
+    return std::nullopt;
+}
+
+std::optional<std::pair<
+    std::size_t,
+    std::size_t
+>> closingTag(
+    std::string_view markup,
+    std::size_t cursor,
+    std::string_view name
+) {
+    while (cursor < markup.size()) {
+        const auto open =
+            markup.find('<', cursor);
+
+        if (open == std::string_view::npos ||
+            open + 2U >= markup.size()) {
+            return std::nullopt;
+        }
+
+        if (markup[open + 1U] != '/') {
+            cursor = open + 1U;
+            continue;
+        }
+
+        const auto name_start =
+            open + 2U;
+        std::size_t name_end =
+            name_start;
+
+        while (name_end < markup.size()) {
+            const unsigned char ch =
+                static_cast<unsigned char>(
+                    markup[name_end]
+                );
+
+            if (!(std::isalnum(ch) ||
+                  ch == ':' ||
+                  ch == '-' ||
+                  ch == '_')) {
+                break;
+            }
+
+            ++name_end;
+        }
+
+        if (asciiIEquals(
+                markup.substr(
+                    name_start,
+                    name_end - name_start
+                ),
+                name
+            )) {
+            const auto gt =
+                markup.find('>', name_end);
+
+            if (gt == std::string_view::npos) {
+                return std::nullopt;
+            }
+
+            return std::pair{
+                open,
+                gt,
+            };
+        }
+
+        cursor =
+            name_end > open
+                ? name_end
+                : open + 1U;
+    }
+
+    return std::nullopt;
+}
+
 struct BodyBlock {
     TextBlockType type;
     std::string text;
@@ -749,8 +926,6 @@ std::vector<BodyBlock> parseSectionBlocks(
     std::string_view section
 ) {
     std::vector<BodyBlock> blocks;
-    const auto lower_section =
-        lower(section);
     std::size_t cursor = 0;
 
     struct Spec {
@@ -765,92 +940,70 @@ std::vector<BodyBlock> parseSectionBlocks(
     };
 
     while (cursor < section.size()) {
-        std::optional<std::size_t> best;
-        const Spec* spec = nullptr;
+        std::optional<std::pair<
+            std::size_t,
+            std::size_t
+        >> best_open;
+        const Spec* best_spec = nullptr;
 
-        for (const auto& candidate :
-             kSpecs) {
-            const std::string needle =
-                "<" +
-                std::string(candidate.name);
-
-            const auto pos =
-                lower_section.find(
-                    needle,
-                    cursor
+        for (const auto& spec : kSpecs) {
+            const auto candidate =
+                nextOpenTag(
+                    section,
+                    cursor,
+                    spec.name
                 );
 
-            if (pos == std::string::npos) {
+            if (!candidate.has_value()) {
                 continue;
             }
 
-            const auto boundary =
-                pos + needle.size();
-
-            if (boundary < lower_section.size() &&
-                lower_section[boundary] != '>' &&
-                !std::isspace(
-                    static_cast<unsigned char>(
-                        lower_section[boundary]
-                    )
-                )) {
-                continue;
-            }
-
-            if (!best.has_value() ||
-                pos < *best) {
-                best = pos;
-                spec = &candidate;
+            if (!best_open.has_value() ||
+                candidate->first <
+                    best_open->first) {
+                best_open = candidate;
+                best_spec = &spec;
             }
         }
 
-        if (!best.has_value() ||
-            spec == nullptr) {
+        if (!best_open.has_value() ||
+            best_spec == nullptr) {
             break;
         }
 
-        const auto gt =
-            lower_section.find(
-                '>',
-                *best
+        const auto close =
+            closingTag(
+                section,
+                best_open->second + 1U,
+                best_spec->name
             );
 
-        const std::string close =
-            "</" +
-            std::string(spec->name) +
-            ">";
-
-        const auto end =
-            gt == std::string::npos
-                ? std::string::npos
-                : lower_section.find(
-                      close,
-                      gt + 1U
-                  );
-
-        if (gt == std::string::npos ||
-            end == std::string::npos) {
-            break;
+        if (!close.has_value()) {
+            cursor =
+                best_open->second + 1U;
+            continue;
         }
 
-        const auto text =
+        auto text =
             stripTags(
                 section.substr(
-                    gt + 1U,
-                    end - gt - 1U
+                    best_open->second + 1U,
+                    close->first -
+                        best_open->second - 1U
                 )
             );
 
         if (!text.empty()) {
             blocks.push_back(
                 BodyBlock{
-                    spec->type,
-                    text,
+                    best_spec->type,
+                    std::move(text),
                 }
             );
         }
 
-        cursor = end + close.size();
+        cursor =
+            close->second + 1U;
     }
 
     return blocks;

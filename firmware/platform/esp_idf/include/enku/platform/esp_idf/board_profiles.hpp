@@ -1,0 +1,123 @@
+#pragma once
+
+#include "enku/core/board_profile.hpp"
+
+namespace enku::platform::esp_idf::board_profiles {
+
+inline constexpr BoardProfile kWaveshareEsp32S3Epaper397{
+    BoardProfileId::WaveshareEsp32S3Epaper397,
+    BoardProfileMaturity::ReferenceHardware,
+    "Waveshare ESP32-S3 ePaper 3.97",
+    BoardCapabilities{
+        .has_psram = true,
+        .has_removable_storage = true,
+        .has_native_usb = true,
+        .has_hard_power_switch = false,
+        .has_battery_measurement = true,
+        .has_imu = false,
+        .has_hall_sensor = false,
+        .has_dock_detect = false,
+        .has_frontlight = false,
+        .has_dual_channel_frontlight = false,
+        .has_wireless_charging = false,
+        .supports_rtc_wake_sources = false,
+        .reading_controls = 4,
+        .storage_bus = StorageBus::SdMmc4Bit,
+        .display_controller = DisplayControllerFamily::Ssd1677,
+        .display_width = 800,
+        .display_height = 480,
+        .portrait = true,
+        .landscape = true,
+        .inverted_portrait = true,
+        .inverted_landscape = true,
+    },
+};
+
+inline constexpr BoardProfile kEnkuR01Base{
+    BoardProfileId::EnkuR01Base,
+    BoardProfileMaturity::DesignTarget,
+    "ENKU R0.1 Base",
+    BoardCapabilities{
+        .has_psram = true,
+        .has_removable_storage = true,
+        .has_native_usb = true,
+        .has_hard_power_switch = true,
+        .has_battery_measurement = true,
+        .has_imu = true,
+        .has_hall_sensor = true,
+        .has_dock_detect = true,
+        .has_frontlight = false,
+        .has_dual_channel_frontlight = false,
+        .has_wireless_charging = false,
+        .supports_rtc_wake_sources = true,
+        .reading_controls = 4,
+        .storage_bus = StorageBus::Spi,
+        .display_controller = DisplayControllerFamily::Ssd1677,
+        .display_width = 800,
+        .display_height = 480,
+        .portrait = true,
+        .landscape = true,
+        .inverted_portrait = true,
+        .inverted_landscape = true,
+    },
+};
+
+inline constexpr BoardProfile kEnkuR01Pro{
+    BoardProfileId::EnkuR01Pro,
+    BoardProfileMaturity::DesignTarget,
+    "ENKU R0.1 Pro",
+    BoardCapabilities{
+        .has_psram = true,
+        .has_removable_storage = true,
+        .has_native_usb = true,
+        .has_hard_power_switch = true,
+        .has_battery_measurement = true,
+        .has_imu = true,
+        .has_hall_sensor = true,
+        .has_dock_detect = true,
+        .has_frontlight = true,
+        .has_dual_channel_frontlight = true,
+        .has_wireless_charging = false,
+        .supports_rtc_wake_sources = true,
+        .reading_controls = 4,
+        .storage_bus = StorageBus::Spi,
+        .display_controller = DisplayControllerFamily::Ssd1677,
+        .display_width = 800,
+        .display_height = 480,
+        .portrait = true,
+        .landscape = true,
+        .inverted_portrait = true,
+        .inverted_landscape = true,
+    },
+};
+
+inline constexpr BoardProfile kEnkuR01ProWireless{
+    BoardProfileId::EnkuR01ProWireless,
+    BoardProfileMaturity::DesignTarget,
+    "ENKU R0.1 Pro Wireless",
+    BoardCapabilities{
+        .has_psram = true,
+        .has_removable_storage = true,
+        .has_native_usb = true,
+        .has_hard_power_switch = true,
+        .has_battery_measurement = true,
+        .has_imu = true,
+        .has_hall_sensor = true,
+        .has_dock_detect = true,
+        .has_frontlight = true,
+        .has_dual_channel_frontlight = true,
+        .has_wireless_charging = true,
+        .supports_rtc_wake_sources = true,
+        .reading_controls = 4,
+        .storage_bus = StorageBus::Spi,
+        .display_controller = DisplayControllerFamily::Ssd1677,
+        .display_width = 800,
+        .display_height = 480,
+        .portrait = true,
+        .landscape = true,
+        .inverted_portrait = true,
+        .inverted_landscape = true,
+    },
+};
+
+} // namespace enku::platform::esp_idf::board_profiles

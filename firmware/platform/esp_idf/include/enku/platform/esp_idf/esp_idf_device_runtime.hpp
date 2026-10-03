@@ -104,6 +104,7 @@ public:
 private:
     bool refreshStatusBarIfNeeded();
     bool syncWebUploadServer();
+    bool syncRemovableStorage(std::uint32_t now_ms);
     void processWebDeleteRequests();
     void refreshLibraryAfterUploadIfNeeded();
 
@@ -149,6 +150,7 @@ private:
         Orientation::Portrait
     };
     bool library_refresh_pending_{false};
+    std::uint32_t last_storage_retry_ms_{0};
 };
 
 } // namespace enku::platform::esp_idf

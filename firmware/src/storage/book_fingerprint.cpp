@@ -56,15 +56,20 @@ std::string fingerprintBookBytes(
 
 BookFingerprintResult fingerprintStoredBook(
     BookFileStore& files,
-    const std::string& source_path
+    const std::string& source_path,
+    std::uint64_t known_size
 ) {
     BookFingerprintResult result;
 
-    const auto size_status =
-        files.size(source_path, result.file_size);
-    if (size_status != BookFileStatus::Ok) {
-        result.status = size_status;
-        return result;
+    if (known_size == UINT64_MAX) {
+        const auto size_status =
+            files.size(source_path, result.file_size);
+        if (size_status != BookFileStatus::Ok) {
+            result.status = size_status;
+            return result;
+        }
+    } else {
+        result.file_size = known_size;
     }
 
     std::uint64_t hash = kFnvOffset;

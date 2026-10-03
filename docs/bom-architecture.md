@@ -370,3 +370,16 @@ The exact frontlight connector pin map remains blocked on direct verification of
 
 See:
 [Frontlight components R0.1](frontlight-components-r01.md)
+
+
+## R0.1 blocker-closure parts
+
+The PCB-stage baseline now includes:
+- EPD inductor: Laird TYS5040470M-10, 47 µH, 1 A rated / 1.1 A Isat;
+- EPD boost switch: IRLML6346TRPBF preferred for prototype;
+- EPD rectifiers: 40 V / 1 A Schottky class;
+- EPD HV capacitors: 50 V class for R0.1 prototype margin;
+- EPD connector: Hirose FH34SRJ-24S-0.5SH(50);
+- Pro frontlight connector: Hirose FH34SRJ-6S-0.5SH(50) with a temporary remap matrix.
+
+These choices prioritize first-board debugability and margin; production cost-down comes only after measured rail validation.

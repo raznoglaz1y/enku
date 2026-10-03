@@ -172,6 +172,10 @@ int main() {
             "Case Author"
         );
         assert(
+            mixed.document.metadata.authors.size() ==
+            1U
+        );
+        assert(
             mixed.document.metadata.language ==
             std::optional<std::string>{"en"}
         );

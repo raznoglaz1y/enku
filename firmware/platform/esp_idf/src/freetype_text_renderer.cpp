@@ -18,9 +18,9 @@ namespace {
 constexpr const char* kTag = "ENKU_FONT";
 
 extern const std::uint8_t kEmbeddedNotoSansStart[]
-    asm("_binary_assets_NotoSans_Regular_ttf_start");
+    asm("_binary_NotoSans_Regular_ttf_start");
 extern const std::uint8_t kEmbeddedNotoSansEnd[]
-    asm("_binary_assets_NotoSans_Regular_ttf_end");
+    asm("_binary_NotoSans_Regular_ttf_end");
 
 } // namespace
 

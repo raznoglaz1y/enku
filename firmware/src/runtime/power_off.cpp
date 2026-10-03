@@ -47,8 +47,9 @@ PowerOffStatus PowerOffCoordinator::powerOff() {
         network_.disconnect();
     }
 
-    power_.requestPowerOff();
-    return PowerOffStatus::Applied;
+    return power_.requestPowerOff()
+        ? PowerOffStatus::Applied
+        : PowerOffStatus::PowerUnavailable;
 }
 
 } // namespace enku

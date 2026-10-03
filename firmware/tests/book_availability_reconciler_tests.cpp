@@ -67,6 +67,17 @@ int main() {
     assert(!app.library.bookAvailable("first"));
     assert(!app.library.bookAvailable("second"));
 
+    // Matching size alone is not identity. A replacement card can contain a
+    // different file at the same path with exactly the same byte length.
+    assert(
+        book_files.write(
+            "/books/first.txt",
+            "abcde"
+        ) == BookFileStatus::Ok
+    );
+    reconciler.reconcile();
+    assert(!app.library.bookAvailable("first"));
+
     // Restore the original first source. Only that record becomes available.
     assert(
         book_files.write(

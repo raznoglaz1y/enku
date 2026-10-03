@@ -32,3 +32,17 @@ Next:
 5. route;
 6. run ERC/DRC in KiCad;
 7. generate PCBWay files only from the checked KiCad project.
+
+
+## Schematic hierarchy
+
+R0.1 now has a real KiCad hierarchical capture baseline:
+
+- `enku-mainboard-r0.1.kicad_sch` — root sheet
+- `power.kicad_sch` — USB/Dock arbitration, charger, hard-off 3.3 V path
+- `mcu_io.kicad_sch` — ESP32-S3-WROOM-1-N16R8, shared SPI, I2C, buttons, Hall/IMU/ADC assignments
+- `epd_hv.kicad_sch` — 24-pin EPD FPC and SSD1677 external-HV interface boundary
+- `frontlight.kicad_sch` — TPS923610 path, 6-pin raw FPC and 0R/DNP remap boundary
+- `connectors.kicad_sch` — USB-C, dock, debug and DNP Qi interface
+
+These files are schematic-capture baselines, not a fabrication release. The next gate is to expand the remaining block-level circuits into exact discrete symbols, review every footprint, and run KiCad ERC before routing is treated as electrically authoritative.

@@ -468,6 +468,59 @@ bool EspIdfDeviceRuntime::syncWebUploadServer() {
     return web_upload_server_.sync(online);
 }
 
+bool EspIdfDeviceRuntime::syncRemovableStorage(
+    std::uint32_t now_ms
+) {
+    auto& app = storage_.appState();
+
+    if (app.storage.removable ==
+        RemovableStorageStatus::Ready) {
+        return false;
+    }
+
+    constexpr std::uint32_t kRetryIntervalMs = 2000U;
+
+    if (now_ms - last_storage_retry_ms_ <
+        kRetryIntervalMs) {
+        return false;
+    }
+
+    last_storage_retry_ms_ = now_ms;
+
+    const auto status =
+        platform_.retryRemovableStorage();
+
+    const auto previous =
+        app.storage.removable;
+
+    switch (status) {
+        case SdMountStatus::Ok:
+            app.storage.removable =
+                RemovableStorageStatus::Ready;
+            break;
+        case SdMountStatus::DirectorySetupFailed:
+            app.storage.removable =
+                RemovableStorageStatus::SetupError;
+            break;
+        case SdMountStatus::MountFailed:
+        default:
+            app.storage.removable =
+                RemovableStorageStatus::Unavailable;
+            break;
+    }
+
+    if (previous !=
+            RemovableStorageStatus::Ready &&
+        app.storage.removable ==
+            RemovableStorageStatus::Ready) {
+        library_refresh_pending_ = true;
+        return true;
+    }
+
+    return false;
+}
+
+
 void EspIdfDeviceRuntime::processWebDeleteRequests() {
     std::string book_id;
     if (!web_upload_server_.takeDeleteRequest(
@@ -617,6 +670,7 @@ bool EspIdfDeviceRuntime::refreshStatusBarIfNeeded() {
 InputDispatchResult EspIdfDeviceRuntime::pollInput(
     std::uint32_t now_ms
 ) {
+    syncRemovableStorage(now_ms);
     syncPlatformState();
 
     // Network services follow the same authoritative lifecycle state as

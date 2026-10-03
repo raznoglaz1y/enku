@@ -612,7 +612,7 @@ InputDispatchResult EspIdfDeviceRuntime::pollInput(
     // A persistent renderer/refresh failure must propagate to the outer
     // application loop instead of being silently ignored.
     if (!refreshStatusBarIfNeeded()) {
-        return InputDispatchResult::Failed;
+        return InputDispatchResult::RuntimeFailed;
     }
 
     const auto event =

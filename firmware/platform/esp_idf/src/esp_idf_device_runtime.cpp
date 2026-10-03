@@ -461,7 +461,9 @@ bool EspIdfDeviceRuntime::syncWebUploadServer() {
     const bool online =
         app.network.status ==
             NetworkRuntimeStatus::Connected &&
-        app.screen != Screen::Sleep;
+        app.screen != Screen::Sleep &&
+        app.storage.removable ==
+            RemovableStorageStatus::Ready;
 
     return web_upload_server_.sync(online);
 }

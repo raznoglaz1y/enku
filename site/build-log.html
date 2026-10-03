@@ -135,6 +135,14 @@
           <div class="entries">
 
             <article class="entry">
+              <div class="entry-top"><span class="entry-type">FIRMWARE · STORAGE RECOVERY</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/37f1954236dd560433b4c257f45d77803dbedb24" target="_blank" rel="noreferrer">37f1954 ↗</a></div>
+              <h2>Storage failure becomes visible and recoverable.</h2>
+              <p>The ESP-IDF platform no longer aborts before the display starts when microSD bring-up fails. ENKU now keeps the user-visible/control path alive, renders a storage recovery screen and retries the card until the storage layer becomes usable.</p>
+              <ul><li>display, power, network and controls initialize before removable storage;</li><li>failed directory setup rolls the FAT mount back completely instead of leaving a false mounted state;</li><li>mount/init failure and directory-setup failure get distinct recovery guidance;</li><li>recovery retries every two seconds and cleanly restarts after a successful remount.</li></ul>
+              <div class="entry-note">The reference board has no dedicated card-detect signal, so firmware deliberately avoids claiming that a failed mount proves the card is physically absent.</div>
+            </article>
+
+            <article class="entry">
               <div class="entry-top"><span class="entry-type">FIRMWARE · POWER-LOSS RESILIENCE</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/0a4561ab0d3506fa84ce000e672f37226ccf4546" target="_blank" rel="noreferrer">0a4561a ↗</a></div>
               <h2>Long reading sessions now checkpoint themselves.</h2>
               <p>ENKU no longer relies only on Back, Sleep or Power Off to persist recent reading progress. A lightweight checkpoint is written every eight successful page turns without rewriting Library summary or application context on every page.</p>

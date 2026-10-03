@@ -1,4 +1,5 @@
 #include "enku/runtime/book_availability_reconciler.hpp"
+#include "enku/storage/book_fingerprint.hpp"
 
 namespace enku {
 
@@ -27,12 +28,15 @@ void BookAvailabilityReconciler::reconcile() {
     }
 
     for (const auto& record : records) {
-        std::uint64_t actual_size = 0;
-        const auto status =
-            files_.size(record.source_path, actual_size);
+        const auto actual =
+            fingerprintStoredBook(
+                files_,
+                record.source_path
+            );
 
-        if (status != BookFileStatus::Ok ||
-            actual_size != record.file_size) {
+        if (!actual.ok() ||
+            actual.file_size != record.file_size ||
+            actual.fingerprint != record.fingerprint) {
             unavailable.push_back(record.book_id);
         }
     }

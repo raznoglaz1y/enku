@@ -208,12 +208,23 @@ EspIdfDeviceRuntime::begin() {
         return DeviceRuntimeInitStatus::RecoveryRequired;
     }
 
-    network_policy_status_ =
-        applyNetworkPolicy();
+    if (platform_.networkAvailable()) {
+        network_policy_status_ =
+            applyNetworkPolicy();
 
-    if (network_policy_status_ ==
-        NetworkPolicyStatus::DriverError) {
-        return DeviceRuntimeInitStatus::NetworkPolicyFailed;
+        if (network_policy_status_ ==
+            NetworkPolicyStatus::DriverError) {
+            storage_.appState().network.status =
+                NetworkRuntimeStatus::Error;
+        }
+    } else {
+        network_policy_status_ =
+            NetworkPolicyStatus::DriverError;
+        storage_.appState().network.connected = false;
+        storage_.appState().network.status =
+            NetworkRuntimeStatus::Error;
+        storage_.appState().network.ssid.clear();
+        storage_.appState().network.address.clear();
     }
 
     syncPlatformState();

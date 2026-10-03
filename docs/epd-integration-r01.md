@@ -218,3 +218,14 @@ EPD integration is not fully closed until:
 - [ ] ghosting / waveform behavior tested on both panel variants.
 
 Until those are complete, the EPD block is suitable for **schematic development**, not fabrication approval.
+
+
+## 11. Current-product freeze matrix
+
+Current Good Display product/specification/drawing availability and the remaining fabrication blockers are tracked separately:
+
+[Display freeze matrix R0.1](display-freeze-r01.md)
+
+The KiCad schematic should follow the named-net/block structure defined here:
+
+[Schematic net/block baseline R0.1](schematic-netlist-r01.md)

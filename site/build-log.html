@@ -135,6 +135,14 @@
           <div class="entries">
 
             <article class="entry">
+              <div class="entry-top"><span class="entry-type">FIRMWARE · READER ROBUSTNESS</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/647eb0e27908b03cf94de8b258f068202278fe25" target="_blank" rel="noreferrer">647eb0e ↗</a></div>
+              <h2>Reader state becomes lifecycle-safe.</h2>
+              <p>The reader stack moved from isolated parser and checkpoint pieces toward a more fault-tolerant device lifecycle. Semantic resume is now regression-tested across section boundaries and relayouts, stale checkpoints recover to a safe book start, and Back, Sleep and Power Off share one controlled persistence path.</p>
+              <ul><li>stable semantic resume across chapter boundaries and layout changes;</li><li>safe fallback for missing sections and impossible saved offsets;</li><li>centralized dirty-state flush for Back, Sleep and Power Off;</li><li>clean flushes avoid unnecessary checkpoint writes;</li><li>TXT, EPUB and FB2 all run through the concrete Book Loader path.</li></ul>
+              <div class="entry-note">The goal is no longer just “open a book.” ENKU is being hardened around interruptions, changed files, sleep, shutdown and the failure modes expected on a constrained physical reader.</div>
+            </article>
+
+            <article class="entry">
               <div class="entry-top"><span class="entry-type">FIRMWARE · EPUB / FB2</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/96dc56bf1a9e46796773750cfa0d8a1f3f0e8703" target="_blank" rel="noreferrer">96dc56b ↗</a></div>
               <h2>Book parsing moves toward bounded random access.</h2>
               <p>The book pipeline no longer assumes that an entire archive must be treated as one in-memory blob. ZIP-backed EPUB work gained ranged reads, POSIX file-store support and regression coverage, while metadata-only EPUB and FB2 paths are exercised independently.</p>

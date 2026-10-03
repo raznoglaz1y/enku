@@ -99,6 +99,7 @@ struct BookOpenFailed {
 struct PageNextRequested {};
 struct PagePreviousRequested {};
 struct BackRequested {};
+struct RemovableStorageLost {};
 struct OpenReaderMenuRequested {};
 struct OpenSearchRequested {};
 struct OpenSettingsRequested {};
@@ -193,6 +194,7 @@ using AppEvent = std::variant<
     PageNextRequested,
     PagePreviousRequested,
     BackRequested,
+    RemovableStorageLost,
     OpenReaderMenuRequested,
     OpenSearchRequested,
     OpenSettingsRequested,

@@ -196,11 +196,7 @@ def main() -> int:
         if 31.0 < x < 63.0 and 54.0 < y < 86.0:
             errors.append(f"{ref} origin is inside Pro Wireless Qi keepout")
 
-    # Baseline B intentionally has no copper routing yet.
-    if re.search(r'\n\s*\(segment\s', text):
-        errors.append("copper segment found before schematic-to-PCB net synchronization gate")
-    if re.search(r'\n\s*\(via\s', text):
-        errors.append("via found before schematic-to-PCB net synchronization gate")
+    # Baseline C permits routed copper; native KiCad DRC validates copper integrity.
 
     if "PLACEMENT BASELINE C" not in text:
         errors.append("placement baseline C banner missing")

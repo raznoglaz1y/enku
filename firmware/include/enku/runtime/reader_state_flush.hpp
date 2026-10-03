@@ -28,6 +28,8 @@ public:
         AppContextService& context
     );
 
+    ReaderStateFlushStatus checkpointProgress();
+
     ReaderStateFlushStatus flush(
         ReaderStateFlushTarget target
     );

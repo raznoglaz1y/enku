@@ -245,3 +245,17 @@ Key state:
 - 47 µH inductor value frozen, production MPN still open;
 - SSD1677 capacitor electrical classes frozen;
 - panel-specific FPC/contact-side verification remains a fabrication blocker.
+
+
+## 13. R0.1 blocker closure
+
+R0.1 now uses:
+- Hirose FH34SRJ-24S-0.5SH(50), whose dual-sided contacts remove top/bottom-contact connector ambiguity;
+- TYS5040470M-10 as the fixed 47 µH prototype inductor;
+- IRLML6346TRPBF as the preferred roomy prototype EPD boost switch;
+- 40 V / 1 A Schottky rectifiers and 50 V-class HV MLCCs for prototype margin.
+
+See:
+[R0.1 blocker closure](r01-blocker-closure.md)
+
+Remaining panel continuity checks are first-board validation gates rather than reasons to keep the CAD worktree blocked.

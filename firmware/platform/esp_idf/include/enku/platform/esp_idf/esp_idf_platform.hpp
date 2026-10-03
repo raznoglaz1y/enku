@@ -18,6 +18,7 @@ namespace enku::platform::esp_idf {
 enum class PlatformInitStatus : std::uint8_t {
     Ok,
     SdMountFailed,
+    SdDirectorySetupFailed,
     DisplayInitFailed,
     PowerInitFailed,
     NetworkInitFailed,

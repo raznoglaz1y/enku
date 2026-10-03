@@ -705,6 +705,34 @@ extern "C" void app_main(void) {
 
     enku::platform::esp_idf::EspIdfPlatform platform;
 
+    const auto& board_profile = platform.boardProfile();
+    const auto& board_caps = board_profile.capabilities;
+
+    ESP_LOGI(
+        kTag,
+        "Board profile: %.*s maturity=%u display=%ux%u storage=%u controls=%u",
+        static_cast<int>(board_profile.name.size()),
+        board_profile.name.data(),
+        static_cast<unsigned>(board_profile.maturity),
+        static_cast<unsigned>(board_caps.display_width),
+        static_cast<unsigned>(board_caps.display_height),
+        static_cast<unsigned>(board_caps.storage_bus),
+        static_cast<unsigned>(board_caps.reading_controls)
+    );
+
+    ESP_LOGI(
+        kTag,
+        "Capabilities: psram=%s usb=%s hard-off=%s imu=%s hall=%s dock=%s frontlight=%s qi=%s",
+        board_caps.has_psram ? "yes" : "no",
+        board_caps.has_native_usb ? "yes" : "no",
+        board_caps.has_hard_power_switch ? "yes" : "no",
+        board_caps.has_imu ? "yes" : "no",
+        board_caps.has_hall_sensor ? "yes" : "no",
+        board_caps.has_dock_detect ? "yes" : "no",
+        board_caps.has_frontlight ? "yes" : "no",
+        board_caps.has_wireless_charging ? "yes" : "no"
+    );
+
     const auto platform_status = platform.begin();
 
     if (platform_status !=

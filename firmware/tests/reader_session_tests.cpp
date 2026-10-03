@@ -81,8 +81,11 @@ int main() {
         ReaderSessionStatus::BeginningOfBook
     );
 
+    assert(session.next() == ReaderSessionStatus::Ready);
+    assert(session.currentPage().has_value());
+
     const auto before_relayout =
-        session.currentPage()->first_position.text_offset;
+        session.currentPage()->first_position;
 
     session.invalidateLayout(
         TypographySettings{18, 1.1F, 12},
@@ -92,8 +95,39 @@ int main() {
     assert(session.status() == ReaderSessionStatus::Ready);
     assert(session.currentPage().has_value());
     assert(
+        session.currentPage()->first_position.book_id ==
+        before_relayout.book_id
+    );
+    assert(
+        session.currentPage()->first_position.section_id ==
+        before_relayout.section_id
+    );
+    assert(
         session.currentPage()->first_position.text_offset >=
-        before_relayout
+        before_relayout.text_offset
+    );
+
+    const auto after_typography =
+        session.currentPage()->first_position;
+
+    session.invalidateLayout(
+        TypographySettings{18, 1.1F, 12},
+        Viewport{100, 160}
+    );
+
+    assert(session.status() == ReaderSessionStatus::Ready);
+    assert(session.currentPage().has_value());
+    assert(
+        session.currentPage()->first_position.book_id ==
+        after_typography.book_id
+    );
+    assert(
+        session.currentPage()->first_position.section_id ==
+        after_typography.section_id
+    );
+    assert(
+        session.currentPage()->first_position.text_offset >=
+        after_typography.text_offset
     );
 
     return 0;

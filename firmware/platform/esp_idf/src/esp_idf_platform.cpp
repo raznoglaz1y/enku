@@ -16,10 +16,10 @@ EspIdfPlatform::EspIdfPlatform()
       refresh_(display_, framebuffer_) {}
 
 PlatformInitStatus EspIdfPlatform::begin() {
-    if (sd_card_.mount() != SdMountStatus::Ok) {
-        return PlatformInitStatus::SdMountFailed;
-    }
-
+    // Bring up the user-visible/control path before removable storage.
+    // If the SD card is missing or unreadable, app_main can still render a
+    // deterministic recovery screen instead of failing before the display
+    // and controls exist.
     if (!refresh_.begin()) {
         return PlatformInitStatus::DisplayInitFailed;
     }
@@ -34,6 +34,10 @@ PlatformInitStatus EspIdfPlatform::begin() {
 
     if (!buttons_.begin()) {
         return PlatformInitStatus::ButtonsInitFailed;
+    }
+
+    if (sd_card_.mount() != SdMountStatus::Ok) {
+        return PlatformInitStatus::SdMountFailed;
     }
 
     return PlatformInitStatus::Ok;

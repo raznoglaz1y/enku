@@ -761,11 +761,11 @@ std::vector<std::string> authors(
 }
 
 std::optional<std::size_t> matchingSectionClose(
-    std::string_view lower_xml,
+    std::string_view xml,
     std::size_t open_start
 ) {
     const auto open_end =
-        lower_xml.find('>', open_start);
+        xml.find('>', open_start);
 
     if (open_end == std::string_view::npos) {
         return std::nullopt;
@@ -774,14 +774,16 @@ std::optional<std::size_t> matchingSectionClose(
     std::size_t cursor = open_end + 1U;
     std::uint32_t depth = 1U;
 
-    while (cursor < lower_xml.size()) {
+    while (cursor < xml.size()) {
         const auto next_open =
-            lower_xml.find(
+            asciiIFind(
+                xml,
                 "<section",
                 cursor
             );
         const auto next_close =
-            lower_xml.find(
+            asciiIFind(
+                xml,
                 "</section>",
                 cursor
             );
@@ -795,11 +797,11 @@ std::optional<std::size_t> matchingSectionClose(
             const auto boundary =
                 next_open + 8U;
 
-            if (boundary >= lower_xml.size() ||
-                lower_xml[boundary] == '>' ||
+            if (boundary >= xml.size() ||
+                xml[boundary] == '>' ||
                 std::isspace(
                     static_cast<unsigned char>(
-                        lower_xml[boundary]
+                        xml[boundary]
                     )
                 )) {
                 ++depth;
@@ -1434,34 +1436,32 @@ ParseResult Fb2Parser::parse(
         return result;
     }
 
-    const auto lower_body =
-        lower(*body);
-
     std::size_t cursor = 0;
     std::uint64_t global_offset = 0;
     std::uint32_t section_number = 0;
 
     while (true) {
         const auto begin =
-            lower_body.find(
+            asciiIFind(
+                *body,
                 "<section",
                 cursor
             );
 
-        if (begin == std::string::npos) {
+        if (begin == std::string_view::npos) {
             break;
         }
 
         const auto gt =
-            lower_body.find('>', begin);
+            body->find('>', begin);
 
-        if (gt == std::string::npos) {
+        if (gt == std::string_view::npos) {
             break;
         }
 
         const auto matched_end =
             matchingSectionClose(
-                lower_body,
+                *body,
                 begin
             );
 
@@ -1479,9 +1479,10 @@ ParseResult Fb2Parser::parse(
             );
 
         const bool has_nested_sections =
-            lower(section_xml).find(
+            asciiIFind(
+                section_xml,
                 "<section"
-            ) != std::string::npos;
+            ) != std::string_view::npos;
 
         if (has_nested_sections) {
             // Parent sections are structural containers. Advance only past
@@ -1496,30 +1497,32 @@ ParseResult Fb2Parser::parse(
         );
 
         std::optional<std::string> section_title;
-        const auto lower_section =
-            lower(section_xml);
         const auto title_begin =
-            lower_section.find("<title");
+            asciiIFind(
+                section_xml,
+                "<title"
+            );
 
-        if (title_begin != std::string::npos) {
+        if (title_begin != std::string_view::npos) {
             const auto title_open_end =
-                lower_section.find(
+                section_xml.find(
                     '>',
                     title_begin
                 );
             const auto title_end =
                 title_open_end ==
-                        std::string::npos
-                    ? std::string::npos
-                    : lower_section.find(
+                        std::string_view::npos
+                    ? std::string_view::npos
+                    : asciiIFind(
+                          section_xml,
                           "</title>",
                           title_open_end + 1U
                       );
 
             if (title_open_end !=
-                    std::string::npos &&
+                    std::string_view::npos &&
                 title_end !=
-                    std::string::npos) {
+                    std::string_view::npos) {
                 const auto title_text =
                     stripTags(
                         section_xml.substr(

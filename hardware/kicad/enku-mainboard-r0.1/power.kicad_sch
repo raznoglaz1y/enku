@@ -226,7 +226,7 @@
 	(global_label "MUX_PR1" (shape input) (at 45.46 60.73 0) (effects (font (size 0.95 0.95)) (justify right bottom)) (uuid "70000000-0000-4000-8000-000000000019"))
 	(global_label "VBUS_USB" (shape input) (at 45.46 55.65 0) (effects (font (size 0.95 0.95)) (justify right bottom)) (uuid "70000000-0000-4000-8000-000000000020"))
 	(global_label "VBUS_EXT" (shape output) (at 78.54 58.19 180) (effects (font (size 0.95 0.95)) (justify right bottom)) (uuid "70000000-0000-4000-8000-000000000021"))
-	(global_label "SRC_MUX_ST" (shape output) (at 78.54 60.73 180) (effects (font (size 0.95 0.95)) (justify right bottom)) (uuid "70000000-0000-4000-8000-000000000022"))
+	(label "SRC_MUX_ST" (at 78.54 60.73 180) (effects (font (size 0.95 0.95)) (justify right bottom)) (uuid "70000000-0000-4000-8000-000000000022"))
 	(global_label "MUX_ILIM" (shape output) (at 78.54 63.27 180) (effects (font (size 0.95 0.95)) (justify right bottom)) (uuid "70000000-0000-4000-8000-000000000023"))
 	(global_label "MUX_SS" (shape output) (at 78.54 65.81 180) (effects (font (size 0.95 0.95)) (justify right bottom)) (uuid "70000000-0000-4000-8000-000000000024"))
 	(global_label "GND" (shape output) (at 78.54 68.35 180) (effects (font (size 0.95 0.95)) (justify right bottom)) (uuid "70000000-0000-4000-8000-000000000025"))

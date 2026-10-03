@@ -28,6 +28,9 @@ void BookAvailabilityReconciler::reconcile() {
     incremental_active_ = false;
     pending_records_.clear();
     next_record_ = 0;
+    app_state_.library.availability_check_active = false;
+    app_state_.library.availability_checked = 0;
+    app_state_.library.availability_total = 0;
 
     markAllUnavailable();
 
@@ -66,10 +69,15 @@ void BookAvailabilityReconciler::beginIncremental() {
     markAllUnavailable();
     pending_records_ = library_.records();
     next_record_ = 0;
+    app_state_.library.availability_checked = 0;
+    app_state_.library.availability_total =
+        static_cast<std::uint32_t>(pending_records_.size());
     incremental_active_ =
         app_state_.storage.removable ==
             RemovableStorageStatus::Ready &&
         !pending_records_.empty();
+    app_state_.library.availability_check_active =
+        incremental_active_;
 }
 
 bool BookAvailabilityReconciler::step(
@@ -84,6 +92,9 @@ bool BookAvailabilityReconciler::step(
         incremental_active_ = false;
         pending_records_.clear();
         next_record_ = 0;
+        app_state_.library.availability_check_active = false;
+        app_state_.library.availability_checked = 0;
+        app_state_.library.availability_total = 0;
         markAllUnavailable();
         return true;
     }
@@ -117,12 +128,15 @@ bool BookAvailabilityReconciler::step(
         }
 
         ++processed;
+        app_state_.library.availability_checked =
+            static_cast<std::uint32_t>(next_record_);
     }
 
     if (next_record_ >= pending_records_.size()) {
         incremental_active_ = false;
         pending_records_.clear();
         next_record_ = 0;
+        app_state_.library.availability_check_active = false;
         return true;
     }
 

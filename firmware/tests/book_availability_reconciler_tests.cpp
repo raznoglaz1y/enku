@@ -1,6 +1,7 @@
 #include "enku/runtime/book_availability_reconciler.hpp"
 #include "enku/storage/posix_book_file_store.hpp"
 #include "enku/storage/posix_state_file_store.hpp"
+#include "enku/storage/book_fingerprint.hpp"
 
 #include <cassert>
 #include <filesystem>
@@ -25,6 +26,7 @@ int main() {
     first.source_path = "/books/first.txt";
     first.source_filename = "first.txt";
     first.file_size = 5;
+    first.fingerprint = fingerprintBookBytes("12345");
 
     BookRecord second;
     second.book_id = "second";
@@ -32,6 +34,7 @@ int main() {
     second.source_path = "/books/second.txt";
     second.source_filename = "second.txt";
     second.file_size = 6;
+    second.fingerprint = fingerprintBookBytes("123456");
 
     assert(library.upsert(first) == LibraryStatus::Ok);
     assert(library.upsert(second) == LibraryStatus::Ok);

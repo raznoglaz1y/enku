@@ -12,6 +12,11 @@ EspIdfDeviceRuntime::EspIdfDeviceRuntime(
           platform_.stateFiles(),
           platform_.bookFiles()
       ),
+      availability_reconciler_(
+          storage_.appState(),
+          storage_.library(),
+          platform_.bookFiles()
+      ),
       text_renderer_(
           platform_.framebuffer()
       ),
@@ -218,7 +223,7 @@ EspIdfDeviceRuntime::begin() {
     }
 
     boot_result_ = reader_.bootRestore().run();
-    reconcileBookAvailability();
+    availability_reconciler_.reconcile();
 
     if (boot_result_.status ==
         BootRestoreStatus::RecoveryRequired) {
@@ -469,40 +474,6 @@ bool EspIdfDeviceRuntime::syncWebUploadServer() {
     return web_upload_server_.sync(online);
 }
 
-void EspIdfDeviceRuntime::reconcileBookAvailability() {
-    auto& app = storage_.appState();
-    app.library.unavailable_books.clear();
-
-    const auto& records =
-        storage_.library().records();
-
-    if (app.storage.removable !=
-        RemovableStorageStatus::Ready) {
-        for (const auto& record : records) {
-            app.library.unavailable_books.push_back(
-                record.book_id
-            );
-        }
-        return;
-    }
-
-    for (const auto& record : records) {
-        std::uint64_t actual_size = 0;
-        const auto status =
-            platform_.bookFiles().size(
-                record.source_path,
-                actual_size
-            );
-
-        if (status != BookFileStatus::Ok ||
-            actual_size != record.file_size) {
-            app.library.unavailable_books.push_back(
-                record.book_id
-            );
-        }
-    }
-}
-
 bool EspIdfDeviceRuntime::syncRemovableStorage(
     std::uint32_t now_ms
 ) {
@@ -529,7 +500,7 @@ bool EspIdfDeviceRuntime::syncRemovableStorage(
         platform_.sdCard().unmount();
         app.storage.removable =
             RemovableStorageStatus::Unavailable;
-        reconcileBookAvailability();
+        availability_reconciler_.reconcile();
 
         if (app.current_book.has_value() &&
             app.reading_position.has_value()) {
@@ -569,7 +540,7 @@ bool EspIdfDeviceRuntime::syncRemovableStorage(
         case SdMountStatus::Ok:
             app.storage.removable =
                 RemovableStorageStatus::Ready;
-            reconcileBookAvailability();
+            availability_reconciler_.reconcile();
             break;
         case SdMountStatus::DirectorySetupFailed:
             app.storage.removable =

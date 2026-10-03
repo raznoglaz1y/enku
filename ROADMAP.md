@@ -282,6 +282,7 @@ Reproducible build, documentation, case files and first tagged version.
 - [ ] Select exact microSD connector after enclosure-edge test
 - [ ] Select final low-noise page tact switches
 - [x] Select Pro frontlight driver architecture: single TPS923610 boost + warm/cool selection
+- [x] Freeze Pro frontlight prototype component baseline: TPS923610 + 10 µH + 15 Ω + low-side selectors
 - [ ] Verify FL0426-S01C pin mapping and validate warm/cool current/blending on hardware
 - [ ] Validate Qi coil / receiver / ferrite stack for Pro Wireless
 - [ ] Complete per-variant populated / DNP BOM

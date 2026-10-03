@@ -1,4 +1,5 @@
 #include "enku/runtime/sleep_wake.hpp"
+#include "enku/runtime/reader_state_flush.hpp"
 
 namespace enku {
 
@@ -34,65 +35,24 @@ SleepWakeStatus SleepWakeCoordinator::sleep() {
 
     const auto previous_screen = app_state_.screen;
 
-    if (app_state_.screen == Screen::Reading &&
-        app_state_.current_book.has_value()) {
-        const BookId book_id = *app_state_.current_book;
-        const ReadingState reading_state =
-            app_state_.current_book_finished
-                ? ReadingState::Finished
-                : ReadingState::Reading;
+    ReaderStateFlushCoordinator flush(
+        app_state_,
+        library_,
+        checkpoint_,
+        context_
+    );
 
-        if (app_state_.reading_position.has_value()) {
-            const auto checkpoint_status =
-                checkpoint_.checkpoint(
-                    book_id,
-                    *app_state_.reading_position,
-                    app_state_.reading_progress,
-                    reading_state
-                );
-
-            if (checkpoint_status != PersistStatus::Ok) {
-                return SleepWakeStatus::CheckpointFailed;
-            }
-
-            app_state_.progress_dirty = false;
-        }
-
-        const auto record = library_.get(book_id);
-        if (!record.has_value()) {
+    switch (flush.flush(
+        ReaderStateFlushTarget::PreserveReading
+    )) {
+        case ReaderStateFlushStatus::Applied:
+            break;
+        case ReaderStateFlushStatus::CheckpointFailed:
+            return SleepWakeStatus::CheckpointFailed;
+        case ReaderStateFlushStatus::LibraryUpdateFailed:
             return SleepWakeStatus::LibraryUpdateFailed;
-        }
-
-        if (library_.updateSummary(
-                book_id,
-                reading_state,
-                app_state_.reading_progress,
-                record->last_opened_order
-            ) != LibraryStatus::Ok) {
-            return SleepWakeStatus::LibraryUpdateFailed;
-        }
-
-        if (context_.save(
-                AppRestoreContext{
-                    Screen::Reading,
-                    book_id,
-                    app_state_.library.persistedOffset(),
-                    app_state_.library.persistedFocusedBook(),
-                }
-            ) != PersistStatus::Ok) {
+        case ReaderStateFlushStatus::ContextSaveFailed:
             return SleepWakeStatus::ContextSaveFailed;
-        }
-    } else {
-        if (context_.save(
-                AppRestoreContext{
-                    Screen::Library,
-                    std::nullopt,
-                    app_state_.library.persistedOffset(),
-                    app_state_.library.persistedFocusedBook(),
-                }
-            ) != PersistStatus::Ok) {
-            return SleepWakeStatus::ContextSaveFailed;
-        }
     }
 
     network_lifecycle_.disconnectForSuspend();

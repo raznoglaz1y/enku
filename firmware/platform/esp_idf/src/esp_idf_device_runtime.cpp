@@ -473,11 +473,6 @@ bool EspIdfDeviceRuntime::syncRemovableStorage(
 ) {
     auto& app = storage_.appState();
 
-    if (app.storage.removable ==
-        RemovableStorageStatus::Ready) {
-        return false;
-    }
-
     constexpr std::uint32_t kRetryIntervalMs = 2000U;
 
     if (now_ms - last_storage_retry_ms_ <
@@ -487,11 +482,24 @@ bool EspIdfDeviceRuntime::syncRemovableStorage(
 
     last_storage_retry_ms_ = now_ms;
 
-    const auto status =
-        platform_.retryRemovableStorage();
-
     const auto previous =
         app.storage.removable;
+
+    if (previous ==
+        RemovableStorageStatus::Ready) {
+        if (platform_.sdCard().healthy()) {
+            return false;
+        }
+
+        platform_.sdCard().unmount();
+        app.storage.removable =
+            RemovableStorageStatus::Unavailable;
+        library_refresh_pending_ = true;
+        return true;
+    }
+
+    const auto status =
+        platform_.retryRemovableStorage();
 
     switch (status) {
         case SdMountStatus::Ok:
@@ -509,10 +517,7 @@ bool EspIdfDeviceRuntime::syncRemovableStorage(
             break;
     }
 
-    if (previous !=
-            RemovableStorageStatus::Ready &&
-        app.storage.removable ==
-            RemovableStorageStatus::Ready) {
+    if (previous != app.storage.removable) {
         library_refresh_pending_ = true;
         return true;
     }

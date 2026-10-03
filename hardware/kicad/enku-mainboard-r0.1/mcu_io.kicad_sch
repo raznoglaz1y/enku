@@ -133,7 +133,7 @@
 					(rectangle (start -8 5) (end 8 -5) (stroke (width 0.254) (type default)) (fill (type background)))
 					(pin power_in line (at -10.795 0 0) (length 2.54) (name "VCC" (effects (font (size 0.88 0.88)))) (number "1" (effects (font (size 0.88 0.88)))))
 					(pin output line (at 10.795 1.27 180) (length 2.54) (name "OUT" (effects (font (size 0.88 0.88)))) (number "2" (effects (font (size 0.88 0.88)))))
-					(pin power_in line (at 10.795 -1.27 180) (length 2.54) (name "GND" (effects (font (size 0.88 0.88)))) (number "3" (effects (font (size 0.88 0.88)))))
+					(pin passive line (at 10.795 -1.27 180) (length 2.54) (name "GND" (effects (font (size 0.88 0.88)))) (number "3" (effects (font (size 0.88 0.88)))))
 				)
 			)
 

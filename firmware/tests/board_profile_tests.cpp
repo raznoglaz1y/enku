@@ -9,6 +9,9 @@ int main() {
     capabilities.has_psram = true;
     capabilities.has_removable_storage = true;
     capabilities.has_native_usb = true;
+    capabilities.display_controller =
+        DisplayControllerFamily::Ssd1677;
+    capabilities.reading_controls = 4;
     capabilities.display_width = 800;
     capabilities.display_height = 480;
     capabilities.portrait = true;

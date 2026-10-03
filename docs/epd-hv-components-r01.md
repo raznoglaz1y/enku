@@ -22,19 +22,17 @@ https://files.waveshare.com/upload/2/2a/SSD1677_1.0.pdf
 
 ## Production-minded component decisions
 
-### Q1 — replace obsolete Si1304BDL reference with Si1308EDL-T1-GE3
+### Q1 — replace obsolete Si1304BDL reference with IRLML6346TRPBF
 
 The original Vishay Si1304BDL reference part is obsolete.
 
 Preferred R0.1 quality-baseline replacement:
 
-**Vishay SI1308EDL-T1-GE3**
-- 30 V N-channel;
-- SOT-323 / SC-70-3;
-- 1.5 A class;
-- RDS(on) max 0.185 Ω at VGS = 2.5 V;
-- 1.4 nC typical gate charge;
-- current distributor listings remain available.
+**Infineon IRLML6346TRPBF**
+- 30 V logic-level N-channel MOSFET;
+- SOT-23;
+- ample prototype current margin;
+- broad sourcing and easier first-board probing/rework.
 
 This is also listed as a direct/similar substitute for the obsolete Si1304BDL by distributors.
 
@@ -46,7 +44,7 @@ Why this is preferable to a no-name Si1304 clone:
 - small absolute BOM impact.
 
 Current sourcing example:
-https://www.lcsc.com/product-detail/mosfets_vishay-intertech-si1308edl-t1-ge3_C469327.html
+https://www.lcsc.com/product-detail/C67276.html
 
 Cost-down fallback:
 - qualify a lower-cost 30 V logic-level MOSFET only after EPD rail testing;
@@ -239,7 +237,7 @@ Therefore:
 | --- | --- |
 | R_RESE 2.2 Ω | electrically frozen |
 | D1–D3 MBR0530 | type frozen; vendor alternate allowed |
-| Q1 SI1308EDL-T1-GE3 | preferred prototype MPN |
+| Q1 IRLML6346TRPBF | preferred prototype MPN |
 | L1 47 µH | value frozen; exact production MPN not yet frozen |
 | C2–C7 4.7 µF/25 V | electrical spec frozen |
 | C8 1 µF/25 V | electrical spec frozen |

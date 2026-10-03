@@ -440,6 +440,22 @@ int main() {
     // Persistence failure during physical media loss must still tear down
     // the reader. A dead SD card must never leave Reading backed by an open
     // session merely because the best-effort checkpoint could not be saved.
+    //
+    // Move one page beyond the durable checkpoint first. If the emergency
+    // checkpoint then fails, reopening after the card returns must resume
+    // from the last durable position rather than the lost RAM-only position.
+    const auto durable_offset =
+        checkpoint.saved->position.text_offset;
+
+    assert(
+        runtime.handle(PageNextRequested{}) ==
+        ReaderRuntimeResult::Applied
+    );
+    assert(state.reading_position.has_value());
+    const auto volatile_offset =
+        state.reading_position->text_offset;
+    assert(volatile_offset > durable_offset);
+
     checkpoint.status = PersistStatus::IoError;
     state.progress_dirty = true;
 
@@ -453,6 +469,11 @@ int main() {
     assert(!state.reading_position.has_value());
     assert(!state.progress_dirty);
     assert(loader.session() == nullptr);
+    assert(checkpoint.saved.has_value());
+    assert(
+        checkpoint.saved->position.text_offset ==
+        durable_offset
+    );
 
     checkpoint.status = PersistStatus::Ok;
 
@@ -463,6 +484,11 @@ int main() {
     assert(state.screen == Screen::Reading);
     assert(loader.session() != nullptr);
     assert(loader.session()->isOpen());
+    assert(state.reading_position.has_value());
+    assert(
+        state.reading_position->text_offset ==
+        durable_offset
+    );
 
     const auto checkpoints_before_long_read =
         checkpoint.calls;

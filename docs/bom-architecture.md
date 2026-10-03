@@ -336,3 +336,21 @@ Cost-down alternatives may only replace these after the first real EPD rail meas
 
 See:
 [EPD-HV components R0.1](epd-hv-components-r01.md)
+
+
+## Pro frontlight production direction
+
+The Pro frontlight architecture now prefers **one TPS923610 synchronous boost LED driver** with warm/cool return selection rather than two independent boost drivers.
+
+Reason:
+- substantially lower component/assembly count;
+- active TI part;
+- 24.5 V output headroom for the <=15 V Good Display strings;
+- 200 mV current regulation;
+- analog PWM dimming down to 0.1%;
+- only a few PLN of IC cost.
+
+The exact 6-pin frontlight mapping remains blocked on the current Good Display FL0426-S01C drawing.
+
+See:
+[Pro frontlight R0.1](frontlight-r01.md)

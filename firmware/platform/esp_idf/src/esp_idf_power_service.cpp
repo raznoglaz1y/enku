@@ -303,9 +303,13 @@ bool EspIdfPowerService::requestSuspend() {
     return true;
 }
 
-void EspIdfPowerService::requestPowerOff() {
+bool EspIdfPowerService::requestPowerOff() {
     if (!ready_) {
-        return;
+        ESP_LOGW(
+            kTag,
+            "Software power-off unavailable: PMU not ready"
+        );
+        return false;
     }
 
     ESP_LOGI(
@@ -326,10 +330,11 @@ void EspIdfPowerService::requestPowerOff() {
             "AXP2101 shutdown command failed"
         );
         state_ = DevicePowerState::Active;
-        return;
+        return false;
     }
 
     vTaskDelay(pdMS_TO_TICKS(1000));
+    return true;
 }
 
 } // namespace enku::platform::esp_idf

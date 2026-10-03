@@ -526,12 +526,182 @@ struct ParsedBlock {
     std::string text;
 };
 
+bool asciiIEquals(
+    std::string_view value,
+    std::string_view expected
+) {
+    if (value.size() != expected.size()) {
+        return false;
+    }
+
+    for (std::size_t i = 0;
+         i < value.size();
+         ++i) {
+        if (std::tolower(
+                static_cast<unsigned char>(
+                    value[i]
+                )
+            ) !=
+            std::tolower(
+                static_cast<unsigned char>(
+                    expected[i]
+                )
+            )) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+std::optional<std::pair<
+    std::size_t,
+    std::size_t
+>> nextOpenTag(
+    std::string_view markup,
+    std::size_t cursor,
+    std::string_view name
+) {
+    while (cursor < markup.size()) {
+        const auto open =
+            markup.find('<', cursor);
+
+        if (open == std::string_view::npos ||
+            open + 1U >= markup.size()) {
+            return std::nullopt;
+        }
+
+        std::size_t name_start = open + 1U;
+
+        if (markup[name_start] == '/' ||
+            markup[name_start] == '!' ||
+            markup[name_start] == '?') {
+            cursor = name_start + 1U;
+            continue;
+        }
+
+        std::size_t name_end = name_start;
+
+        while (name_end < markup.size()) {
+            const unsigned char ch =
+                static_cast<unsigned char>(
+                    markup[name_end]
+                );
+
+            if (!(std::isalnum(ch) ||
+                  ch == ':' ||
+                  ch == '-' ||
+                  ch == '_')) {
+                break;
+            }
+
+            ++name_end;
+        }
+
+        if (asciiIEquals(
+                markup.substr(
+                    name_start,
+                    name_end - name_start
+                ),
+                name
+            )) {
+            const auto gt =
+                markup.find('>', name_end);
+
+            if (gt == std::string_view::npos) {
+                return std::nullopt;
+            }
+
+            return std::pair{
+                open,
+                gt,
+            };
+        }
+
+        cursor =
+            name_end > open
+                ? name_end
+                : open + 1U;
+    }
+
+    return std::nullopt;
+}
+
+std::optional<std::pair<
+    std::size_t,
+    std::size_t
+>> closingTag(
+    std::string_view markup,
+    std::size_t cursor,
+    std::string_view name
+) {
+    while (cursor < markup.size()) {
+        const auto open =
+            markup.find('<', cursor);
+
+        if (open == std::string_view::npos ||
+            open + 2U >= markup.size()) {
+            return std::nullopt;
+        }
+
+        if (markup[open + 1U] != '/') {
+            cursor = open + 1U;
+            continue;
+        }
+
+        const auto name_start =
+            open + 2U;
+        std::size_t name_end =
+            name_start;
+
+        while (name_end < markup.size()) {
+            const unsigned char ch =
+                static_cast<unsigned char>(
+                    markup[name_end]
+                );
+
+            if (!(std::isalnum(ch) ||
+                  ch == ':' ||
+                  ch == '-' ||
+                  ch == '_')) {
+                break;
+            }
+
+            ++name_end;
+        }
+
+        if (asciiIEquals(
+                markup.substr(
+                    name_start,
+                    name_end - name_start
+                ),
+                name
+            )) {
+            const auto gt =
+                markup.find('>', name_end);
+
+            if (gt == std::string_view::npos) {
+                return std::nullopt;
+            }
+
+            return std::pair{
+                open,
+                gt,
+            };
+        }
+
+        cursor =
+            name_end > open
+                ? name_end
+                : open + 1U;
+    }
+
+    return std::nullopt;
+}
+
 std::vector<ParsedBlock> parseXhtmlBlocks(
     std::string_view markup
 ) {
-    const std::string lower_markup =
-        lower(markup);
-
     struct TagSpec {
         const char* name;
         TextBlockType type;
@@ -553,110 +723,84 @@ std::vector<ParsedBlock> parseXhtmlBlocks(
     std::size_t cursor = 0;
 
     while (cursor < markup.size()) {
-        std::optional<std::size_t> best_pos;
+        std::optional<std::pair<
+            std::size_t,
+            std::size_t
+        >> best_open;
         const TagSpec* best_spec = nullptr;
 
         for (const auto& spec : kTags) {
-            const std::string needle =
-                "<" + std::string(spec.name);
-
-            const auto pos =
-                lower_markup.find(
-                    needle,
-                    cursor
+            const auto candidate =
+                nextOpenTag(
+                    markup,
+                    cursor,
+                    spec.name
                 );
 
-            if (pos == std::string::npos) {
+            if (!candidate.has_value()) {
                 continue;
             }
 
-            const auto boundary =
-                pos + needle.size();
-
-            if (boundary < lower_markup.size() &&
-                lower_markup[boundary] != '>' &&
-                lower_markup[boundary] != '/' &&
-                !std::isspace(
-                    static_cast<unsigned char>(
-                        lower_markup[boundary]
-                    )
-                )) {
-                continue;
-            }
-
-            if (!best_pos.has_value() ||
-                pos < *best_pos) {
-                best_pos = pos;
+            if (!best_open.has_value() ||
+                candidate->first <
+                    best_open->first) {
+                best_open = candidate;
                 best_spec = &spec;
             }
         }
 
-        if (!best_pos.has_value() ||
+        if (!best_open.has_value() ||
             best_spec == nullptr) {
             break;
         }
 
-        const auto open_end =
-            lower_markup.find(
-                '>',
-                *best_pos
+        const auto close =
+            closingTag(
+                markup,
+                best_open->second + 1U,
+                best_spec->name
             );
 
-        if (open_end == std::string::npos) {
-            break;
-        }
-
-        const std::string close =
-            "</" +
-            std::string(best_spec->name) +
-            ">";
-
-        const auto close_pos =
-            lower_markup.find(
-                close,
-                open_end + 1U
-            );
-
-        if (close_pos == std::string::npos) {
-            cursor = open_end + 1U;
+        if (!close.has_value()) {
+            cursor =
+                best_open->second + 1U;
             continue;
         }
 
         const auto inner =
             markup.substr(
-                open_end + 1U,
-                close_pos - open_end - 1U
+                best_open->second + 1U,
+                close->first -
+                    best_open->second - 1U
             );
 
-        const auto text =
+        auto text =
             stripInlineTags(inner);
 
         if (!text.empty()) {
             blocks.push_back(
                 ParsedBlock{
                     best_spec->type,
-                    text,
+                    std::move(text),
                 }
             );
         }
 
-        cursor =
-            close_pos +
-            close.size();
+        cursor = close->second + 1U;
     }
 
     if (!blocks.empty()) {
         return blocks;
     }
 
-    const auto fallback =
+    auto fallback =
         stripInlineTags(markup);
 
     if (!fallback.empty()) {
         blocks.push_back(
             ParsedBlock{
                 TextBlockType::Paragraph,
-                fallback,
+                std::move(fallback),
             }
         );
     }

@@ -334,13 +334,15 @@ The remaining application-runtime blocker is no longer persistence. It is the re
 
 The ESP-IDF target now depends on Espressif's FreeType component and includes `FreeTypeTextRenderer`.
 
-Default font asset:
+Default reader font: Noto Sans Regular is embedded directly in the ESP-IDF application image under SIL OFL 1.1.
+
+An optional SD override can still be provided at:
 
 ```text
 /system/fonts/NotoSans-Regular.ttf
 ```
 
-The SD mount creates `/system/fonts`, but the font binary itself is not embedded in firmware.
+If the override is absent or invalid, FreeType falls back to the embedded firmware asset.
 
 The renderer:
 
@@ -352,4 +354,4 @@ The renderer:
 
 This keeps Reader pagination and physical rendering on the same metric source.
 
-A missing Noto Sans file is a provisioning error, not a trigger for silent fallback to another font.
+The embedded Noto Sans asset is the deterministic baseline used for pagination and rendering. A broken SD override never blocks boot; an embedded FreeType initialization failure remains a visible recovery condition.

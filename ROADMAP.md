@@ -296,6 +296,7 @@ Reproducible build, documentation, case files and first tagged version.
 - [x] Freeze R0.1 EPD-HV inductor: TYS5040470M-10, 47 µH / 1 A / 1.1 A Isat
 - [x] Close R0.1 connector/frontlight-remap/EPD-HV placement blockers
 - [x] Start real KiCad R0.1 worktree with 54 × 94 mm portrait four-layer PCB shell
+- [x] Start PCB placement baseline with dual-contact EPD/FL connectors, EPD boost parts and Pro frontlight zone
 - [ ] Capture the first complete KiCad schematic and run ERC
 - [ ] Freeze schematic only after ERC + exact footprint review
 

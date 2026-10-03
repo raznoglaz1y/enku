@@ -1297,25 +1297,39 @@ bool FreeTypeTextRenderer::renderLibrary(
         }
 
         char progress[16] = {};
-        std::snprintf(
-            progress,
-            sizeof(progress),
-            "%u%%",
-            static_cast<unsigned>(
-                std::min(
-                    100.0F,
-                    std::max(
-                        0.0F,
-                        book.progress * 100.0F
+        const bool available =
+            app_state.library.bookAvailable(
+                book.book_id
+            );
+
+        if (available) {
+            std::snprintf(
+                progress,
+                sizeof(progress),
+                "%u%%",
+                static_cast<unsigned>(
+                    std::min(
+                        100.0F,
+                        std::max(
+                            0.0F,
+                            book.progress * 100.0F
+                        )
                     )
                 )
-            )
-        );
+            );
+        } else {
+            std::snprintf(
+                progress,
+                sizeof(progress),
+                "OFFLINE"
+            );
+        }
 
         if (!drawTextAt(
                 progress,
                 13,
-                kLeft + kWidth - 62,
+                kLeft + kWidth -
+                    (available ? 62 : 88),
                 top + 35,
                 orientation
             )) {

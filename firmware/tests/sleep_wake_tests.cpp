@@ -472,6 +472,29 @@ int main() {
     );
 
     app.import_active = false;
+
+    // A suspend request can fail after Wi-Fi was already disconnected.
+    // In that case the active screen is restored and connectivity is resumed
+    // best-effort instead of leaving the awake device stranded offline.
+    power.suspend_available = true;
+    power.suspend_success = false;
+    app.screen = Screen::Library;
+    network.is_connected = true;
+    const auto apply_calls_before_failed_suspend =
+        network.apply_calls;
+
+    assert(
+        sleep_wake.sleep() ==
+        SleepWakeStatus::SuspendFailed
+    );
+    assert(app.screen == Screen::Library);
+    assert(
+        network.apply_calls ==
+        apply_calls_before_failed_suspend + 1U
+    );
+    assert(app.network.connected);
+
+    power.suspend_success = true;
     power.suspend_available = false;
 
     assert(

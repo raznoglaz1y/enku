@@ -100,14 +100,14 @@
     <section class="status-hero">
       <div class="shell status-hero-grid">
         <div><p class="eyebrow">PROJECT STATUS · OCT 2026</p><h1>Building the real reader.</h1></div>
-        <p class="status-lead">ENKU has moved beyond product definition. The firmware architecture, reader core and first ESP-IDF platform integrations are now in the repository. The next decisive step is validating that work on the physical Waveshare board.</p>
+        <p class="status-lead">ENKU has moved beyond product definition and reference-board-only planning. The reader software is becoming memory-aware and device-oriented, while a portrait-first custom ENKU mainboard is now being specified in parallel with the Waveshare bring-up path.</p>
       </div>
     </section>
 
     <div class="shell stage-strip" aria-label="Current project stage">
-      <div class="stage-cell"><div class="stage-label">CURRENT STAGE</div><div class="stage-value">Firmware + bring-up</div></div>
-      <div class="stage-cell"><div class="stage-label">REFERENCE HARDWARE</div><div class="stage-value">ESP32-S3 · 3.97″ E Ink</div></div>
-      <div class="stage-cell"><div class="stage-label">NEXT PROOF POINT</div><div class="stage-value">First real-device reader loop</div></div>
+      <div class="stage-cell"><div class="stage-label">CURRENT STAGE</div><div class="stage-value">Firmware + custom R0.1</div></div>
+      <div class="stage-cell"><div class="stage-label">HARDWARE TRACKS</div><div class="stage-value">Waveshare bring-up + ENKU PCB</div></div>
+      <div class="stage-cell"><div class="stage-label">NEXT PROOF POINT</div><div class="stage-value">Validated schematic + real-device loop</div></div>
     </div>
 
     <section class="status-section">
@@ -118,9 +118,10 @@
         </div>
         <div class="timeline">
           <div class="timeline-row"><span class="state done">DONE</span><h3>Product & UI foundation</h3><p>Open-source scope, physical-control interaction model, e-paper UI principles, typography presets, localization architecture and the core Figma design system are defined.</p></div>
-          <div class="timeline-row"><span class="state done">DONE</span><h3>Reader core foundation</h3><p>Framework-neutral TXT parsing, pagination, DocumentReaderEngine, ReaderSession history and core reading-state transitions are implemented and host-testable.</p></div>
-          <div class="timeline-row"><span class="state done">DONE</span><h3>ESP-IDF platform baseline</h3><p>Storage, SSD1677 display paths, refresh service integration, input/power coordination and Wi-Fi service/policy work now exist in the device target and compile in CI.</p></div>
-          <div class="timeline-row"><span class="state now">NOW</span><h3>Compose the device runtime</h3><p>The application loop is being wired to physical buttons, network/power state and the display refresh path so the framework-neutral application can operate as one device runtime.</p></div>
+          <div class="timeline-row"><span class="state done">DONE</span><h3>Reader core foundation</h3><p>TXT parsing, deterministic pagination, ReaderSession history and core reading-state transitions are implemented. EPUB/FB2 work now includes metadata paths and bounded random-access ZIP/file-store infrastructure instead of assuming desktop-class memory.</p></div>
+          <div class="timeline-row"><span class="state done">DONE</span><h3>ESP-IDF platform baseline</h3><p>Storage, SSD1677 display paths, refresh service integration, physical input/power coordination, Wi-Fi policy and persistent application runtime work now exist in the device target and compile in CI.</p></div>
+          <div class="timeline-row"><span class="state now">NOW</span><h3>Custom mainboard R0.1</h3><p>A portrait-first ESP32-S3 mainboard is now an active engineering track with Base / Cover / Pro / Pro Wireless variants, Dock pogo charging, BMI270, Hall sensing, power-path architecture and an SSD1677 raw-panel integration baseline.</p></div>
+          <div class="timeline-row"><span class="state now">NOW</span><h3>Close schematic blockers</h3><p>The remaining work before a real PCB schematic freeze is current-panel FPC verification, Good Display high-voltage reference values, exact EPD power parts, microSD connector mechanics and Pro frontlight/Qi validation.</p></div>
           <div class="timeline-row"><span class="state now">NOW</span><h3>Canonical EN screens</h3><p>The English UI review boards still need to be finished and stress-tested with longer localized strings before they become the final implementation baseline.</p></div>
           <div class="timeline-row"><span class="state next">NEXT</span><h3>Physical hardware validation</h3><p>Board revision, controls, microSD, display orientation, full/fast/partial refresh, ghosting, charging and real power consumption must be measured on the delivered Waveshare hardware.</p></div>
           <div class="timeline-row"><span class="state next">NEXT</span><h3>First usable offline MVP</h3><p>Library indexing, real font metrics, persistence and the production reader layout come together into a minimal device that can open, paginate and resume a book offline.</p></div>
@@ -136,8 +137,8 @@
         </div>
         <div class="milestones">
           <article class="milestone"><span class="num">M1</span><h3>Design baseline</h3><p>Canonical rules, reusable components and the reviewed screen set.</p><span class="tag">IN PROGRESS</span></article>
-          <article class="milestone"><span class="num">M2</span><h3>Hardware prototype</h3><p>Display, controls, storage and power verified on the real board.</p><span class="tag">NEXT</span></article>
-          <article class="milestone"><span class="num">M3</span><h3>Reader MVP</h3><p>Library, reading and persistence working fully offline.</p><span class="tag">PLANNED</span></article>
+          <article class="milestone"><span class="num">M2</span><h3>Hardware prototype</h3><p>Reference hardware validated and ENKU R0.1 schematic/PCB brought through the first prototype build.</p><span class="tag">IN PROGRESS</span></article>
+          <article class="milestone"><span class="num">M3</span><h3>Reader MVP</h3><p>EPUB/FB2/TXT, Library, persistence and physical-first reading working fully offline.</p><span class="tag">IN PROGRESS</span></article>
           <article class="milestone"><span class="num">M4</span><h3>Connectivity</h3><p>Wi-Fi, local upload and browser-based library management.</p><span class="tag">PLANNED</span></article>
           <article class="milestone"><span class="num">M5</span><h3>Mechanical prototype</h3><p>A verified printable enclosure around the final hardware stack.</p><span class="tag">PLANNED</span></article>
           <article class="milestone"><span class="num">M6</span><h3>Open release</h3><p>Reproducible build, documentation, case files and the first tagged release.</p><span class="tag">PLANNED</span></article>

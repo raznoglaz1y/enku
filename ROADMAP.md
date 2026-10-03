@@ -299,6 +299,8 @@ Reproducible build, documentation, case files and first tagged version.
 - [x] Start real KiCad R0.1 worktree with 54 × 94 mm portrait four-layer PCB shell
 - [x] Start PCB placement baseline with dual-contact EPD/FL connectors, EPD boost parts and Pro frontlight zone
 - [x] Start hierarchical KiCad R0.1 schematic capture (Power / MCU+IO / EPD-HV / Frontlight / Connectors)
+- [x] Replace core placement placeholders with verified local footprints: TPS2121 / BQ25185 / BMI270 / TPS923610 / EPD+FL Hirose FPC
+- [x] Add project-local ENKU.pretty library and gate exact pad sets in CI
 - [ ] Capture the first complete KiCad schematic and run ERC
 - [ ] Freeze schematic only after ERC + exact footprint review
 

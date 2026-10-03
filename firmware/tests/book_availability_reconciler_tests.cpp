@@ -136,13 +136,37 @@ int main() {
     assert(app.library.bookAvailable("second"));
     assert(app.library.unavailable_books.empty());
 
-    // The complete remove/reinsert cycle remains repeatable.
-    app.storage.removable =
-        RemovableStorageStatus::Unavailable;
-    reconciler.reconcile();
+    // Incremental remount starts fail-closed and exposes only records whose
+    // full fingerprint has already been verified.
     app.storage.removable =
         RemovableStorageStatus::Ready;
-    reconciler.reconcile();
+    reconciler.beginIncremental();
+    assert(reconciler.active());
+    assert(!app.library.bookAvailable("first"));
+    assert(!app.library.bookAvailable("second"));
+
+    assert(!reconciler.step(1U));
+    assert(app.library.bookAvailable("first"));
+    assert(!app.library.bookAvailable("second"));
+
+    // Losing the card again while verification is in flight cancels the pass
+    // and returns every SD-backed book to unavailable.
+    app.storage.removable =
+        RemovableStorageStatus::Unavailable;
+    assert(reconciler.step(1U));
+    assert(!reconciler.active());
+    assert(!app.library.bookAvailable("first"));
+    assert(!app.library.bookAvailable("second"));
+
+    // A later remount starts a fresh pass and can complete normally.
+    app.storage.removable =
+        RemovableStorageStatus::Ready;
+    reconciler.beginIncremental();
+    assert(!reconciler.step(1U));
+    assert(reconciler.step(1U));
+    assert(!reconciler.active());
+    assert(app.library.bookAvailable("first"));
+    assert(app.library.bookAvailable("second"));
     assert(app.library.unavailable_books.empty());
 
     std::filesystem::remove_all(root, ec);

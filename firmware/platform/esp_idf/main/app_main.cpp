@@ -461,6 +461,52 @@ bool showRuntimeRecovery(
     return platform.refresh().submit(request);
 }
 
+bool showInputRecovery(
+    enku::platform::esp_idf::EspIdfPlatform& platform
+) {
+    auto& framebuffer = platform.framebuffer();
+    framebuffer.clearWhite();
+
+    drawRect(
+        framebuffer.mutableData(),
+        20,
+        20,
+        EspIdfEpaper::kWidth - 40,
+        EspIdfEpaper::kHeight - 40,
+        4
+    );
+    drawText(
+        framebuffer.mutableData(),
+        250,
+        120,
+        "ENKU",
+        16
+    );
+    drawText(
+        framebuffer.mutableData(),
+        175,
+        285,
+        "INPUT FAIL",
+        6
+    );
+    drawText(
+        framebuffer.mutableData(),
+        275,
+        350,
+        "REBOOT",
+        5
+    );
+
+    enku::RefreshRequest request;
+    request.refresh_class = enku::RefreshClass::Full;
+    request.reason = enku::RefreshReason::ErrorRecovery;
+    request.generation = 1;
+    request.may_coalesce = false;
+    request.may_defer = false;
+
+    return platform.refresh().submit(request);
+}
+
 [[noreturn]] void runApplicationLoop(
     enku::platform::esp_idf::EspIdfDeviceRuntime& device,
     enku::platform::esp_idf::EspIdfPlatform& platform
@@ -1096,6 +1142,26 @@ extern "C" void app_main(void) {
         );
     }
 
+    if (platform_status ==
+        enku::platform::esp_idf::PlatformInitStatus::
+            ButtonsInitFailed) {
+        ESP_LOGE(
+            kTag,
+            "Input initialization failed; entering visible recovery mode"
+        );
+
+        if (!showInputRecovery(platform)) {
+            ESP_LOGE(
+                kTag,
+                "Unable to render input recovery screen"
+            );
+        }
+
+        idleStaticRecoveryScreen(
+            "input initialization failed"
+        );
+    }
+
     if (platform_status !=
         enku::platform::esp_idf::PlatformInitStatus::Ok) {
         ESP_LOGE(
@@ -1257,7 +1323,17 @@ extern "C" void app_main(void) {
                     "Initial Library render failed with status %u",
                     static_cast<unsigned>(library_result)
                 );
-                return;
+
+                if (!showRuntimeRecovery(platform)) {
+                    ESP_LOGE(
+                        kTag,
+                        "Unable to render initial Library recovery screen"
+                    );
+                }
+
+                idleStaticRecoveryScreen(
+                    "initial Library render failed"
+                );
             }
         }
 

@@ -9,6 +9,7 @@
 #include "esp_idf_buttons.hpp"
 #include "esp_idf_epaper.hpp"
 #include "esp_idf_file_store.hpp"
+#include "esp_idf_internal_state_storage.hpp"
 #include "esp_idf_power_service.hpp"
 #include "esp_idf_network_service.hpp"
 #include "esp_idf_sd_card.hpp"
@@ -19,6 +20,7 @@ enum class PlatformInitStatus : std::uint8_t {
     Ok,
     SdMountFailed,
     SdDirectorySetupFailed,
+    StateStorageFailed,
     DisplayInitFailed,
     PowerInitFailed,
     NetworkInitFailed,
@@ -49,8 +51,10 @@ public:
     const BoardProfile& boardProfile() const;
 
 private:
+    EspIdfInternalStateStorage internal_state_storage_;
     EspIdfSdCard sd_card_;
-    EspIdfFilesystem filesystem_;
+    EspIdfFilesystem state_filesystem_;
+    EspIdfFilesystem book_filesystem_;
     EspIdfStateFileStore state_files_;
     EspIdfBookFileStore book_files_;
 

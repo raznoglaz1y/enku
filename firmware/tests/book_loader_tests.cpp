@@ -400,6 +400,63 @@ int main() {
         "Loader EPUB"
     );
 
+    library.record->format =
+        BookFormat::Fb2;
+    library.record->source_path =
+        "/books/loader.fb2";
+    library.record->source_filename =
+        "loader.fb2";
+
+    source.content =
+        R"(<?xml version="1.0" encoding="utf-8"?>
+<FictionBook>
+ <description>
+  <title-info>
+   <book-title>Loader FB2</book-title>
+  </title-info>
+ </description>
+ <body>
+  <section>
+   <title><p>FB2 Chapter</p></title>
+   <p>Range-loaded FB2 body.</p>
+  </section>
+ </body>
+</FictionBook>)";
+
+    source.whole_reads = 0;
+    source.size_reads = 0;
+    source.range_reads = 0;
+
+    const auto fb2_opened =
+        loader.open(request);
+
+    assert(fb2_opened.ok());
+    assert(source.whole_reads == 0);
+    assert(source.size_reads == 1);
+    assert(source.range_reads > 0);
+    assert(loader.document() != nullptr);
+    assert(
+        loader.document()->metadata.title ==
+        "Loader FB2"
+    );
+    assert(
+        loader.document()->sections.size() ==
+        1U
+    );
+    assert(
+        loader.document()->sections[0].title ==
+        std::optional<std::string>{
+            "FB2 Chapter"
+        }
+    );
+
+    library.record->format =
+        BookFormat::Epub;
+    library.record->source_path =
+        "/books/loader.epub";
+    library.record->source_filename =
+        "loader.epub";
+
     source.content = "not an epub";
     const auto invalid_epub =
         loader.open(request);

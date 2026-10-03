@@ -879,20 +879,128 @@ ParseResult Fb2Parser::parseMetadata(
             );
     }
 
-    const auto body =
-        tagSlice(bytes, "body");
+    const auto body_position =
+        lowered.find("<body");
 
-    if (!body.has_value()) {
-        result.status = ParserStatus::InvalidSource;
+    if (body_position ==
+        std::string::npos) {
+        result.status =
+            ParserStatus::InvalidSource;
         return result;
     }
 
     result.document.metadata.toc_available =
-        lower(*body).find("<title") !=
-        std::string::npos;
+        lowered.find(
+            "<title",
+            body_position
+        ) != std::string::npos;
 
     result.status = ParserStatus::Ok;
     return result;
+}
+
+ParseResult Fb2Parser::parseMetadata(
+    const Fb2RangeSource& source_bytes,
+    const ParserSourceInfo& source
+) const {
+    constexpr std::size_t kChunkBytes =
+        32U * 1024U;
+    constexpr std::size_t kMaxMetadataBytes =
+        512U * 1024U;
+
+    if (source_bytes.size() == 0U) {
+        ParseResult result;
+        result.document.book_id =
+            source.book_id;
+        result.status =
+            ParserStatus::EmptyDocument;
+        return result;
+    }
+
+    std::string buffer;
+    buffer.reserve(
+        std::min<std::uint64_t>(
+            source_bytes.size(),
+            kMaxMetadataBytes
+        )
+    );
+
+    std::uint64_t offset = 0;
+
+    while (offset < source_bytes.size() &&
+           buffer.size() <
+               kMaxMetadataBytes) {
+        const auto remaining =
+            source_bytes.size() - offset;
+
+        const auto allowed =
+            kMaxMetadataBytes -
+            buffer.size();
+
+        const auto requested =
+            static_cast<std::size_t>(
+                std::min<std::uint64_t>(
+                    remaining,
+                    std::min<std::size_t>(
+                        kChunkBytes,
+                        allowed
+                    )
+                )
+            );
+
+        if (requested == 0U) {
+            break;
+        }
+
+        std::string chunk;
+
+        if (!source_bytes.readRange(
+                offset,
+                requested,
+                chunk
+            ) ||
+            chunk.size() != requested) {
+            ParseResult result;
+            result.document.book_id =
+                source.book_id;
+            result.status =
+                ParserStatus::InvalidSource;
+            return result;
+        }
+
+        buffer += chunk;
+        offset +=
+            static_cast<std::uint64_t>(
+                requested
+            );
+
+        const auto lowered =
+            lower(buffer);
+
+        const auto description_end =
+            lowered.find(
+                "</description>"
+            );
+        const auto body_start =
+            lowered.find("<body");
+
+        if (description_end !=
+                std::string::npos &&
+            body_start !=
+                std::string::npos &&
+            body_start >
+                description_end) {
+            return parseMetadata(
+                buffer,
+                source
+            );
+        }
+    }
+
+    return parseMetadata(
+        buffer,
+        source
+    );
 }
 
 ParseResult Fb2Parser::parse(

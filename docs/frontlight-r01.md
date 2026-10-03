@@ -223,3 +223,10 @@ Before production freeze:
 - transition behavior measured;
 - minimum brightness judged acceptable in darkness;
 - frontlight off-current measured in Sleep and Hard OFF.
+
+
+## Component freeze companion
+
+Exact prototype component candidates and cost-down notes are tracked here:
+
+[Frontlight components R0.1](frontlight-components-r01.md)

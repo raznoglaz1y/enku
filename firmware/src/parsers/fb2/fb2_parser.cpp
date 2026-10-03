@@ -1,4 +1,5 @@
 #include "enku/reader/fb2_parser.hpp"
+#include "enku/reader/parser_memory_budget.hpp"
 
 #include <algorithm>
 #include <cctype>
@@ -1227,9 +1228,9 @@ ParseResult Fb2Parser::parseMetadata(
     const ParserSourceInfo& source
 ) const {
     constexpr std::size_t kChunkBytes =
-        32U * 1024U;
+        ParserMemoryBudget::kRangeChunkBytes;
     constexpr std::size_t kMaxMetadataBytes =
-        512U * 1024U;
+        ParserMemoryBudget::kFb2MetadataBytes;
 
     if (source_bytes.size() == 0U) {
         ParseResult result;
@@ -1663,9 +1664,9 @@ ParseResult Fb2Parser::parse(
     const ParserSourceInfo& source
 ) const {
     constexpr std::size_t kChunkBytes =
-        32U * 1024U;
+        ParserMemoryBudget::kRangeChunkBytes;
     constexpr std::size_t kMaxLeafSectionBytes =
-        4U * 1024U * 1024U;
+        ParserMemoryBudget::kTextResourceBytes;
 
     auto result =
         parseMetadata(

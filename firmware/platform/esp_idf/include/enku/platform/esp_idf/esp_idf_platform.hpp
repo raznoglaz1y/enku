@@ -44,6 +44,7 @@ public:
     EspIdfNetworkService& network();
     EspIdfButtons& buttons();
 
+    bool powerAvailable() const;
     bool networkAvailable() const;
     const BoardProfile& boardProfile() const;
 
@@ -60,6 +61,7 @@ private:
     EspIdfPowerService power_;
     EspIdfNetworkService network_;
     EspIdfButtons buttons_;
+    bool power_available_{false};
     bool network_available_{false};
 };
 

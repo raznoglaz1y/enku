@@ -1,6 +1,8 @@
 #include "enku/runtime/book_availability_reconciler.hpp"
 #include "enku/storage/book_fingerprint.hpp"
 
+#include <algorithm>
+
 namespace enku {
 
 BookAvailabilityReconciler::BookAvailabilityReconciler(
@@ -12,20 +14,31 @@ BookAvailabilityReconciler::BookAvailabilityReconciler(
       library_(library),
       files_(files) {}
 
-void BookAvailabilityReconciler::reconcile() {
+void BookAvailabilityReconciler::markAllUnavailable() {
     auto& unavailable =
         app_state_.library.unavailable_books;
     unavailable.clear();
 
-    const auto& records = library_.records();
+    for (const auto& record : library_.records()) {
+        unavailable.push_back(record.book_id);
+    }
+}
+
+void BookAvailabilityReconciler::reconcile() {
+    incremental_active_ = false;
+    pending_records_.clear();
+    next_record_ = 0;
+
+    markAllUnavailable();
 
     if (app_state_.storage.removable !=
         RemovableStorageStatus::Ready) {
-        for (const auto& record : records) {
-            unavailable.push_back(record.book_id);
-        }
         return;
     }
+
+    const auto records = library_.records();
+    auto& unavailable =
+        app_state_.library.unavailable_books;
 
     for (const auto& record : records) {
         const auto actual =
@@ -34,12 +47,90 @@ void BookAvailabilityReconciler::reconcile() {
                 record.source_path
             );
 
-        if (!actual.ok() ||
-            actual.file_size != record.file_size ||
-            actual.fingerprint != record.fingerprint) {
-            unavailable.push_back(record.book_id);
+        if (actual.ok() &&
+            actual.file_size == record.file_size &&
+            actual.fingerprint == record.fingerprint) {
+            unavailable.erase(
+                std::remove(
+                    unavailable.begin(),
+                    unavailable.end(),
+                    record.book_id
+                ),
+                unavailable.end()
+            );
         }
     }
+}
+
+void BookAvailabilityReconciler::beginIncremental() {
+    markAllUnavailable();
+    pending_records_ = library_.records();
+    next_record_ = 0;
+    incremental_active_ =
+        app_state_.storage.removable ==
+            RemovableStorageStatus::Ready &&
+        !pending_records_.empty();
+}
+
+bool BookAvailabilityReconciler::step(
+    std::size_t max_records
+) {
+    if (!incremental_active_) {
+        return true;
+    }
+
+    if (app_state_.storage.removable !=
+        RemovableStorageStatus::Ready) {
+        incremental_active_ = false;
+        pending_records_.clear();
+        next_record_ = 0;
+        markAllUnavailable();
+        return true;
+    }
+
+    auto& unavailable =
+        app_state_.library.unavailable_books;
+    std::size_t processed = 0;
+
+    while (next_record_ < pending_records_.size() &&
+           processed < max_records) {
+        const auto& record =
+            pending_records_[next_record_++];
+
+        const auto actual =
+            fingerprintStoredBook(
+                files_,
+                record.source_path
+            );
+
+        if (actual.ok() &&
+            actual.file_size == record.file_size &&
+            actual.fingerprint == record.fingerprint) {
+            unavailable.erase(
+                std::remove(
+                    unavailable.begin(),
+                    unavailable.end(),
+                    record.book_id
+                ),
+                unavailable.end()
+            );
+        }
+
+        ++processed;
+    }
+
+    if (next_record_ >= pending_records_.size()) {
+        incremental_active_ = false;
+        pending_records_.clear();
+        next_record_ = 0;
+        return true;
+    }
+
+    return false;
+}
+
+bool BookAvailabilityReconciler::active() const {
+    return incremental_active_;
 }
 
 } // namespace enku

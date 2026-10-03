@@ -400,6 +400,49 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
 }
 
 ReaderRuntimeResult ReaderRuntimeController::handle(
+    const RemovableStorageLost&
+) {
+    if (!app_state_.current_book.has_value() ||
+        !app_state_.reading_position.has_value()) {
+        return ReaderRuntimeResult::Ignored;
+    }
+
+    const BookId book_id =
+        *app_state_.current_book;
+
+    ReaderStateFlushCoordinator flush(
+        app_state_,
+        library_,
+        checkpoint_,
+        context_
+    );
+
+    switch (flush.flush(
+        ReaderStateFlushTarget::ReturnToLibrary
+    )) {
+        case ReaderStateFlushStatus::Applied:
+            break;
+        case ReaderStateFlushStatus::CheckpointFailed:
+            return ReaderRuntimeResult::CheckpointFailed;
+        case ReaderStateFlushStatus::LibraryUpdateFailed:
+            return ReaderRuntimeResult::LibraryUpdateFailed;
+        case ReaderStateFlushStatus::ContextSaveFailed:
+            return ReaderRuntimeResult::ContextSaveFailed;
+    }
+
+    page_turns_since_checkpoint_ = 0U;
+    loader_.close();
+    app_state_.library.focused_book = book_id;
+    app_state_.screen = Screen::Library;
+    app_state_.current_book.reset();
+    app_state_.reading_position.reset();
+    app_state_.reading_progress = 0.0F;
+    app_state_.current_book_finished = false;
+
+    return ReaderRuntimeResult::Applied;
+}
+
+ReaderRuntimeResult ReaderRuntimeController::handle(
     const BackRequested&
 ) {
     if (app_state_.screen != Screen::Reading ||

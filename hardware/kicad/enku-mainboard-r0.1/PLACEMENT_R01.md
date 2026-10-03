@@ -1,6 +1,6 @@
-# ENKU Mainboard R0.1 — placement baseline A
+# ENKU Mainboard R0.1 — placement baseline B
 
-Status: **first real component-placement pass / no routing / no ERC or DRC yet**
+Status: **mechanical placement baseline B / discrete schematic captured / no routing / no KiCad ERC or DRC yet**
 
 Board envelope remains 54 × 94 mm, portrait, four layers.
 
@@ -141,8 +141,61 @@ First-board debugability has priority over shaving the last millimetre of PCB ar
 
 ## Current KiCad status
 
-The PCB file now carries the first real display/frontlight placement footprints and exact R0.1 part labels.
+The PCB now carries the main R0.1 mechanical placement, not just the display island.
 
-It is **not routed** and has not been checked by KiCad ERC/DRC in the current environment.
+### Placement baseline B coordinates
 
-The schematic remains the authoritative next step. Once it is captured, footprints and net assignments must be synchronized from the schematic before routing.
+| Ref / group | PCB target |
+| --- | --- |
+| U1 ESP32-S3-WROOM-1-N16R8 | x=32.75, y=45.0, rotated 90°, antenna toward left edge |
+| U_IMU BMI270 | x=28.0, y=80.0, outside the central Qi keepout |
+| U_HALL DRV5032FBDBZR | x=71.0, y=44.5, above the button rail |
+| J_EPD | x=58.0, y=28.0 |
+| J_FL | x=67.0, y=34.0 |
+| J_SD | x=28.7, y=103.2, lower-left edge |
+| J_USB | x=47.0, y=110.0, bottom-center |
+| J_DOCK | x=47.0, y=99.0, rear copper side |
+| U_SRC / U_CHG / U_3V3 | x=43.5 / 48.5 / 54.0, y=91.0 |
+| J_BAT | x=66.0, y=93.5 |
+| SW_POWER | x=30.5, y=29.0 |
+| PREV / NEXT / SELECT / BACK | x=71.2, y=53 / 61 / 69 / 77 |
+
+The EPD HV and frontlight discretes are now also represented inside the upper display power island:
+- D1/D2/D3;
+- R_RESE;
+- VGH/VGL capacitors;
+- L_FL;
+- C_FL_OUT;
+- R_FL_SET;
+- Q_FL_WARM / Q_FL_COOL.
+
+The first collision review found and corrected:
+- U1 edge overlap with D2/C2 in the EPD island;
+- Hall sensor overlap with the frontlight cluster;
+- L_EPD clearances around D1/D2.
+
+### Automatic placement gate
+
+`check_pcb_placement.py` now verifies:
+- 54 × 94 mm board outline;
+- all critical R0.1 placement references;
+- key mechanical regions;
+- ESP32 orientation;
+- right-side button rail;
+- no component origins in the central Qi keepout;
+- no accidental copper routing before net synchronization;
+- balanced KiCad PCB S-expression.
+
+The GitHub hardware workflow runs this together with the schematic structural gate.
+
+### Next gate
+
+Pads on the placement-only footprints are intentionally **not electrically authoritative yet**.
+
+The next engineering step is:
+1. replace placement placeholders with final verified footprints where required;
+2. synchronize schematic nets / pad numbers into the PCB;
+3. run KiCad ERC;
+4. only then begin controlled routing and DRC.
+
+The board is therefore **placed enough to evaluate architecture and mechanics**, but it is not a fabrication release.

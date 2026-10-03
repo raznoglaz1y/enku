@@ -21,6 +21,7 @@ enum class LibraryRuntimeResult : std::uint8_t {
     QueryFailed,
     RefreshRejected,
     OpenFailed,
+    BookUnavailable,
     ImportDuplicate,
     ImportFailed,
     DeleteFailed,

@@ -457,6 +457,67 @@ bool inputSmokeTest(
     }
 }
 
+[[noreturn]] void idleRecoveryScreen(
+    const char* reason
+) {
+    ESP_LOGW(
+        kTag,
+        "Recovery screen active: %s; idling until reboot",
+        reason
+    );
+
+    while (true) {
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+}
+
+bool showStorageRecovery(
+    enku::platform::esp_idf::EspIdfPlatform& platform
+) {
+    auto& framebuffer = platform.framebuffer();
+    framebuffer.clearWhite();
+
+    drawRect(
+        framebuffer.mutableData(),
+        20,
+        20,
+        EspIdfEpaper::kWidth - 40,
+        EspIdfEpaper::kHeight - 40,
+        4
+    );
+    drawText(
+        framebuffer.mutableData(),
+        250,
+        120,
+        "ENKU",
+        16
+    );
+    drawText(
+        framebuffer.mutableData(),
+        250,
+        285,
+        "SD FAIL",
+        8
+    );
+    drawText(
+        framebuffer.mutableData(),
+        220,
+        350,
+        "INSERT SD",
+        5
+    );
+
+    enku::RefreshRequest request;
+    request.refresh_class = enku::RefreshClass::Full;
+    request.reason = enku::RefreshReason::ErrorRecovery;
+    request.generation = 1;
+    request.may_coalesce = false;
+    request.may_defer = false;
+
+    return platform.refresh().submit(request);
+}
+
+
 bool displaySmokeTest(
     EspIdfEpaper& display
 ) {
@@ -734,6 +795,23 @@ extern "C" void app_main(void) {
     );
 
     const auto platform_status = platform.begin();
+
+    if (platform_status ==
+        enku::platform::esp_idf::PlatformInitStatus::SdMountFailed) {
+        ESP_LOGE(
+            kTag,
+            "microSD unavailable; entering visible recovery mode"
+        );
+
+        if (!showStorageRecovery(platform)) {
+            ESP_LOGE(
+                kTag,
+                "Unable to render storage recovery screen"
+            );
+        }
+
+        idleRecoveryScreen("storage unavailable");
+    }
 
     if (platform_status !=
         enku::platform::esp_idf::PlatformInitStatus::Ok) {

@@ -77,59 +77,24 @@ the three EPD-HV diodes must remain an approved common part within one build. Do
 
 ### L1 — 47 µH
 
-Original SSD1677 reference:
-**Sumida CDRH2D18/LDNP-470NC**
+R0.1 exact prototype choice:
+
+**Laird TYS5040470M-10**
 - 47 µH;
-- 3.0–3.2 mm square;
-- 480 mA current rating;
-- 200 mA saturation-current listing depending distributor interpretation;
-- active, but current EU distributor stock/lead time is poor.
+- 1 A rated current;
+- 1.1 A saturation current;
+- 272 mΩ max DCR;
+- 5.0 × 5.0 mm class;
+- 4.2 mm max height.
 
-Reference:
-https://eu.mouser.com/en/ProductDetail/Sumida/CDRH2D18-LDNP-470NC
+Why:
+- significantly more current margin than the original compact SSD1677 reference inductor;
+- still fits the current EPD-HV placement zone;
+- low enough DCR for a conservative first prototype.
 
-Because supply is weak, ENKU should not hard-lock this exact MPN for Kickstarter production.
+The manufacturer land pattern must be used directly in KiCad.
 
-Preferred prototype / quality candidate if PCB area allows:
-
-**Bourns SRR0604-470KL**
-- 47 µH;
-- 600 mA current rating;
-- 800 mA saturation;
-- 360 mΩ DCR;
-- 6.5 × 6.5 mm.
-
-Source:
-https://www.lcsc.com/product-detail/Inductors-SMD_BOURNS_C2042403.html
-
-Compact production candidate:
-
-**TDK VLS3010CX-470M-1**
-- 47 µH;
-- 500 mA current rating;
-- 500 mA saturation;
-- 3 × 3 mm;
-- 1.16 Ω DCR.
-
-Source:
-https://www.lcsc.com/product-detail/power-inductors_tdk-vls3010cx-470m-1_C1513013.html
-
-Lower-cost sourcing candidate:
-
-**SHOU HAN CY43-47UH**
-- 47 µH;
-- 500 mA catalog current rating;
-- 4.5 × 4 mm;
-- ~820 mΩ DCR;
-- currently well stocked and very inexpensive.
-
-Source:
-https://www.lcsc.com/pl/product-detail/C2929422.html
-
-Decision:
-- R0.1 footprint should allow a robust 4–6 mm class inductor if mechanical space permits;
-- first assembled boards should use Bourns / Sumida / TDK-class parts rather than optimizing immediately for the cheapest inductor;
-- after VGH/VGL rail measurements, cost-down can qualify the smaller/lower-cost part.
+Production cost-down may qualify a smaller/lower-cost 47 µH part only after VGH/VGL waveform and thermal measurements.
 
 ### R_RESE — 2.2 Ω, 1%, 0805
 
@@ -238,7 +203,7 @@ Therefore:
 | R_RESE 2.2 Ω | electrically frozen |
 | D1–D3 MBR0530 | type frozen; vendor alternate allowed |
 | Q1 IRLML6346TRPBF | preferred prototype MPN |
-| L1 47 µH | value frozen; exact production MPN not yet frozen |
+| L1 TYS5040470M-10 | R0.1 prototype MPN frozen |
 | C2–C7 4.7 µF/25 V | electrical spec frozen |
 | C8 1 µF/25 V | electrical spec frozen |
 | C0–C1 1 µF | electrical spec frozen |
@@ -250,6 +215,5 @@ Therefore:
 - direct verification of current GDEY0426T82-FL01C FPC pin numbering/contact orientation;
 - direct verification of FL0426-S01C 6-pin assignment;
 - confirm actual panel-loading reference values do not override generic SSD1677 values;
-- choose exact L1 after PCB area is known;
 - verify effective capacitance under DC bias;
 - scope generated rails on first R0.1 board.

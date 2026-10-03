@@ -36,8 +36,15 @@ PlatformInitStatus EspIdfPlatform::begin() {
         return PlatformInitStatus::ButtonsInitFailed;
     }
 
-    if (sd_card_.mount() != SdMountStatus::Ok) {
+    const auto sd_status = sd_card_.mount();
+
+    if (sd_status == SdMountStatus::MountFailed) {
         return PlatformInitStatus::SdMountFailed;
+    }
+
+    if (sd_status ==
+        SdMountStatus::DirectorySetupFailed) {
+        return PlatformInitStatus::SdDirectorySetupFailed;
     }
 
     return PlatformInitStatus::Ok;

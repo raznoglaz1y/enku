@@ -378,6 +378,43 @@ std::string sampleEpub() {
     });
 }
 
+std::string sampleMixedCaseMetadataEpub() {
+    return makeStoredZip({
+        {
+            "META-INF/container.xml",
+            R"(<CoNtAiNeR><RoOtFiLeS><RoOtFiLe full-path="OPS/content.opf"/></RoOtFiLeS></CoNtAiNeR>)",
+            false,
+        },
+        {
+            "OPS/content.opf",
+            R"(<PaCkAgE xmlns:dc="http://purl.org/dc/elements/1.1/">
+<MeTaDaTa>
+ <Dc:TiTlE>Mixed Metadata EPUB</Dc:TiTlE>
+ <Dc:CrEaToR>Mixed Author</Dc:CrEaToR>
+</MeTaDaTa>
+<MaNiFeSt>
+ <ItEm id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="NAV"/>
+ <ItEm id="c1" href="chapter.xhtml" media-type="application/xhtml+xml"/>
+</MaNiFeSt>
+<SpInE>
+ <ItEmReF idref="c1"/>
+</SpInE>
+</PaCkAgE>)",
+            false,
+        },
+        {
+            "OPS/nav.xhtml",
+            R"(<HtMl><BoDy><NaV><Ol><Li><A href="chapter.xhtml">Mixed Chapter</A></Li></Ol></NaV></BoDy></HtMl>)",
+            false,
+        },
+        {
+            "OPS/chapter.xhtml",
+            R"(<HtMl><BoDy><H1>Mixed Chapter</H1><P>Mixed text.</P></BoDy></HtMl>)",
+            false,
+        },
+    });
+}
+
 std::string sampleEpub2() {
     return makeStoredZip({
         {
@@ -605,6 +642,36 @@ int main() {
             sampleEpub(),
             source
         );
+
+
+    const auto mixed_case =
+        parser.parse(
+            sampleMixedCaseMetadataEpub(),
+            source
+        );
+
+    assert(mixed_case.ok());
+    assert(
+        mixed_case.document.metadata.title ==
+        "Mixed Metadata EPUB"
+    );
+    assert(
+        mixed_case.document.metadata.author_display ==
+        "Mixed Author"
+    );
+    assert(
+        mixed_case.document.metadata.toc_available
+    );
+    assert(
+        mixed_case.document.sections.size() ==
+        1U
+    );
+    assert(
+        mixed_case.document.sections[0].title ==
+        std::optional<std::string>{
+            "Mixed Chapter"
+        }
+    );
 
     assert(result.ok());
     assert(

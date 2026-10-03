@@ -144,9 +144,66 @@ public:
         return status;
     }
 
+    BookSourceStatus sourceSize(
+        const BookRecord&,
+        std::uint64_t& size_bytes
+    ) override {
+        ++size_calls;
+
+        if (status != BookSourceStatus::Ok) {
+            size_bytes = 0;
+            return status;
+        }
+
+        size_bytes =
+            static_cast<std::uint64_t>(
+                content.size()
+            );
+        return BookSourceStatus::Ok;
+    }
+
+    BookSourceStatus readSourceRange(
+        const BookRecord&,
+        std::uint64_t offset,
+        std::size_t length,
+        std::string& bytes
+    ) override {
+        ++range_calls;
+
+        if (status != BookSourceStatus::Ok) {
+            bytes.clear();
+            return status;
+        }
+
+        if (offset >
+                static_cast<std::uint64_t>(
+                    content.size()
+                ) ||
+            static_cast<std::uint64_t>(
+                length
+            ) >
+                static_cast<std::uint64_t>(
+                    content.size()
+                ) - offset) {
+            bytes.clear();
+            return BookSourceStatus::ReadFailed;
+        }
+
+        bytes.assign(
+            content,
+            static_cast<std::size_t>(
+                offset
+            ),
+            length
+        );
+        return BookSourceStatus::Ok;
+    }
+
     BookSourceStatus status{BookSourceStatus::Ok};
     std::string content;
     std::uint32_t calls{0};
+    std::uint32_t size_calls{0};
+    std::uint32_t range_calls{0};
 };
 
 class FakeAppContextService final : public AppContextService {
@@ -280,7 +337,9 @@ int main() {
         runtime.handle(OpenBookRequested{"runtime-test"}) ==
         ReaderRuntimeResult::Applied
     );
-    assert(source.calls == 1);
+    assert(source.calls == 0);
+    assert(source.size_calls == 1);
+    assert(source.range_calls > 0);
     assert(loader.session() != nullptr);
     assert(loader.session()->isOpen());
     assert(state.screen == Screen::Reading);
@@ -326,7 +385,9 @@ int main() {
         runtime.handle(OpenBookRequested{"runtime-test"}) ==
         ReaderRuntimeResult::Applied
     );
-    assert(source.calls == 2);
+    assert(source.calls == 0);
+    assert(source.size_calls == 2);
+    assert(source.range_calls > 1);
     assert(checkpoint.loads >= 2);
     assert(state.screen == Screen::Reading);
     assert(state.reading_position.has_value());

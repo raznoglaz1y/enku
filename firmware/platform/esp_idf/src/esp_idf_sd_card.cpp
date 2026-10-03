@@ -124,6 +124,14 @@ bool EspIdfSdCard::mounted() const {
     return mounted_;
 }
 
+bool EspIdfSdCard::healthy() const {
+    if (!mounted_ || card_ == nullptr) {
+        return false;
+    }
+
+    return sdmmc_get_status(card_) == ESP_OK;
+}
+
 sdmmc_card_t* EspIdfSdCard::card() const {
     return card_;
 }

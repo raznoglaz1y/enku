@@ -346,7 +346,8 @@ PreparedBookImport BookImportService::prepareStored(
     const auto fingerprint_result =
         fingerprintStoredBook(
             files,
-            source_path
+            source_path,
+            file_size
         );
 
     if (!fingerprint_result.ok() ||

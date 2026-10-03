@@ -25,7 +25,7 @@ EXPECTED_SIZE = (54.0, 94.0)
 
 # Placement-only coordinate gates. These are broad regions, not final courtyard DRC.
 REGIONS = {
-    "U1": (20.0, 35.0, 46.0, 55.0),
+    "U1": (20.0, 31.0, 46.0, 59.0),
     "J_EPD": (48.0, 24.0, 72.0, 32.0),
     "J_FL": (62.0, 31.0, 72.0, 37.0),
     "J_SD": (20.0, 94.0, 38.0, 113.0),
@@ -167,8 +167,8 @@ def main() -> int:
     # Critical mechanical invariants.
     if "U1" in refs:
         x, y, rot = refs["U1"]
-        if abs(rot - 90.0) > 0.1:
-            errors.append("U1 must stay rotated 90 deg with antenna end toward left edge")
+        if abs(rot - 270.0) > 0.1:
+            errors.append("U1 must stay rotated 270 deg with antenna keepout toward left edge")
     for ref in ("SW_PREV","SW_NEXT","SW_SELECT","SW_BACK"):
         if ref in refs and refs[ref][0] < 68.5:
             errors.append(f"{ref} left the right-side thumb rail")

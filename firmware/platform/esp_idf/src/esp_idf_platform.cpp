@@ -24,9 +24,9 @@ PlatformInitStatus EspIdfPlatform::begin() {
         return PlatformInitStatus::DisplayInitFailed;
     }
 
-    if (!power_.begin()) {
-        return PlatformInitStatus::PowerInitFailed;
-    }
+    // PMU telemetry/suspend is valuable but not required for basic
+    // offline reading on an already powered device.
+    power_available_ = power_.begin();
 
     // Networking is optional for an offline-first reader. Preserve the
     // failure state for UI/diagnostics, but do not block Library/Reading.
@@ -84,6 +84,10 @@ EspIdfPowerService& EspIdfPlatform::power() {
 
 EspIdfNetworkService& EspIdfPlatform::network() {
     return network_;
+}
+
+bool EspIdfPlatform::powerAvailable() const {
+    return power_available_;
 }
 
 EspIdfButtons& EspIdfPlatform::buttons() {

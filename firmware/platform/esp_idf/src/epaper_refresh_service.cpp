@@ -105,6 +105,7 @@ bool EpaperRefreshService::refreshFull(
     if (status == EpaperStatus::Ok) {
         has_base_frame_ = true;
         fast_mode_ready_ = false;
+        ghosting_policy_.recordCleanFull();
         ++stats_.full;
         return true;
     }
@@ -139,6 +140,7 @@ bool EpaperRefreshService::refreshFastFull(
 
     if (status == EpaperStatus::Ok) {
         has_base_frame_ = true;
+        ghosting_policy_.recordNonCleanUpdate();
         ++stats_.full;
         return true;
     }
@@ -181,6 +183,7 @@ bool EpaperRefreshService::refreshRegion(
         );
 
     if (status == EpaperStatus::Ok) {
+        ghosting_policy_.recordNonCleanUpdate();
         ++stats_.region;
         return true;
     }
@@ -227,7 +230,16 @@ bool EpaperRefreshService::submit(
 
     bool ok = false;
 
-    switch (request.refresh_class) {
+    const bool force_clean_full =
+        request.refresh_class != RefreshClass::Full &&
+        ghosting_policy_.shouldForceCleanFull();
+
+    if (force_clean_full) {
+        ++stats_.escalated_to_full;
+        ++stats_.forced_clean_full;
+        ok = refreshFull(request);
+    } else {
+        switch (request.refresh_class) {
         case RefreshClass::Region:
             ok = refreshRegion(request);
             break;
@@ -244,6 +256,7 @@ bool EpaperRefreshService::submit(
         default:
             ok = false;
             break;
+        }
     }
 
     busy_ = false;

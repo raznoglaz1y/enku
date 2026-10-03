@@ -135,6 +135,14 @@
           <div class="entries">
 
             <article class="entry">
+              <div class="entry-top"><span class="entry-type">FIRMWARE · POWER-LOSS RESILIENCE</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/0a4561ab0d3506fa84ce000e672f37226ccf4546" target="_blank" rel="noreferrer">0a4561a ↗</a></div>
+              <h2>Long reading sessions now checkpoint themselves.</h2>
+              <p>ENKU no longer relies only on Back, Sleep or Power Off to persist recent reading progress. A lightweight checkpoint is written every eight successful page turns without rewriting Library summary or application context on every page.</p>
+              <ul><li>full lifecycle flush remains centralized for Back / Sleep / Power Off;</li><li>periodic flush writes only dirty semantic reading progress;</li><li>successful checkpoint clears the dirty flag and restarts the cadence;</li><li>a failed periodic write keeps progress dirty so the next safe point can retry.</li></ul>
+              <div class="entry-note">This reduces the amount of reading progress lost after an abrupt power interruption while avoiding write amplification from checkpointing every single page turn.</div>
+            </article>
+
+            <article class="entry">
               <div class="entry-top"><span class="entry-type">FIRMWARE · MEMORY DISCIPLINE</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/142fbe91874be692509347370b2e7e2717a95cbe" target="_blank" rel="noreferrer">142fbe9 ↗</a></div>
               <h2>Parser memory ceilings become an explicit contract.</h2>
               <p>EPUB ZIP handling and FB2 ranged parsing now consume one shared ParserMemoryBudget instead of carrying independent magic numbers through implementation files.</p>

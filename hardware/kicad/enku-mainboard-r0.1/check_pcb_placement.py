@@ -18,6 +18,8 @@ REQUIRED_REFS = {
     "L_FL", "R_FL_SET", "Q_FL_WARM", "Q_FL_COOL",
     "L_3V3", "R_3V3_FB_TOP", "R_3V3_FB_BOT", "R_3V3_PG_PU", "C_3V3_IN", "C_3V3_IN_HF", "C_3V3_OUT1", "C_3V3_OUT2", "SW_POWER",
     "SW_PREV", "SW_NEXT", "SW_SELECT", "SW_BACK",
+    "TP_GND_PWR", "TP_VBUS_USB", "TP_VBUS_DOCK", "TP_VBAT", "TP_VSYS", "TP_3V3", "TP_SYS_EN", "TP_REG_PG",
+    "TP_EPD_GDR", "TP_EPD_RESE", "TP_EPD_VGH", "TP_EPD_VGL", "TP_EPD_VCOM", "TP_GND_EPD", "TP_FL_LED_PLUS", "TP_FL_FB",
 }
 
 BOARD = (20.0, 20.0, 74.0, 114.0)
@@ -189,6 +191,23 @@ def main() -> int:
 
     if "PLACEMENT BASELINE B" not in text:
         errors.append("placement baseline B banner missing")
+
+    tp_refs = [r for r in REQUIRED_REFS if r.startswith("TP_")]
+    if len(tp_refs) < 16:
+        errors.append(f"expected at least 16 mandatory bring-up test points, gate has {len(tp_refs)}")
+    for ref in tp_refs:
+        marker = f'(property "Reference" "{ref}"'
+        p = text.find(marker)
+        if p < 0:
+            continue
+        fp_start = text.rfind("(footprint ", 0, p)
+        fp_end = text.find("\n  )", p)
+        block = text[fp_start:fp_end] if fp_start >= 0 and fp_end > p else ""
+        if '(layer "B.Cu")' not in block:
+            errors.append(f"{ref} must remain on accessible rear copper")
+        pad_line = next((ln for ln in block.splitlines() if '(pad "1"' in ln), "")
+        if '"B.Paste"' in pad_line:
+            errors.append(f"{ref} probe pad must not have solder paste")
     if "TPS63802DLAR" not in text:
         errors.append("PCB missing TPS63802DLAR first-spin regulator")
     if "TPS63031" in text:

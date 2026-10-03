@@ -36,6 +36,14 @@ jobs:
           kicad-cli pcb drc             --output /tmp/enku-r01-drc.rpt             hardware/kicad/enku-mainboard-r0.1/enku-mainboard-r0.1.kicad_pcb
           cat /tmp/enku-r01-drc.rpt
 
+      - name: Export native schematic netlist
+        run: |
+          kicad-cli sch export netlist \
+            --output /tmp/enku-r01.net \
+            hardware/kicad/enku-mainboard-r0.1/enku-mainboard-r0.1.kicad_sch
+          test -s /tmp/enku-r01.net
+          echo "Netlist components: $(grep -c '<comp ref=' /tmp/enku-r01.net || true)"
+
       - name: Preserve KiCad reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -44,4 +52,5 @@ jobs:
           path: |
             /tmp/enku-r01-erc.rpt
             /tmp/enku-r01-drc.rpt
+            /tmp/enku-r01.net
           if-no-files-found: warn

@@ -1589,7 +1589,7 @@
     )
   
   (footprint "Resistor_SMD:R_0603_1608Metric" (layer "F.Cu")
-    (at 69.6 82)
+    (at 69.2 82)
       (property "Reference" "R_CP2_GND" (at 0 -1.45 0) (layer "F.SilkS") hide)
       (property "Value" "0R STRAP" (at 0 1.45 0) (layer "F.Fab") hide)
       (fp_rect (start -0.8 -0.4) (end 0.8 0.4) (stroke (width 0.1) (type default)) (fill none) (layer "F.SilkS"))
@@ -1652,7 +1652,7 @@
     )
   
   (footprint "Resistor_SMD:R_0603_1608Metric" (layer "F.Cu")
-    (at 69.6 85)
+    (at 69.2 85)
       (property "Reference" "R_CHG_ISET" (at 0 -1.45 0) (layer "F.SilkS") hide)
       (property "Value" "1k 1%" (at 0 1.45 0) (layer "F.Fab") hide)
       (fp_rect (start -0.8 -0.4) (end 0.8 0.4) (stroke (width 0.1) (type default)) (fill none) (layer "F.SilkS"))
@@ -1679,7 +1679,7 @@
     )
   
   (footprint "Resistor_SMD:R_0603_1608Metric" (layer "F.Cu")
-    (at 69.6 88)
+    (at 69.2 88)
       (property "Reference" "R_STAT2_PU" (at 0 -1.45 0) (layer "F.SilkS") hide)
       (property "Value" "10k DNP" (at 0 1.45 0) (layer "F.Fab") hide)
       (fp_rect (start -0.8 -0.4) (end 0.8 0.4) (stroke (width 0.1) (type default)) (fill none) (layer "F.SilkS"))
@@ -1717,8 +1717,9 @@
   (segment (start 46.7 34.2) (end 46.0 33.15) (width 0.3) (layer "F.Cu") (net 30))
   (segment (start 46.0 29.85) (end 48.8 29.85) (width 0.3) (layer "F.Cu") (net 26))
   (via (at 48.8 29.85) (size 0.7) (drill 0.35) (layers "F.Cu" "B.Cu") (net 26))
-  (segment (start 48.8 29.85) (end 48.8 31.8) (width 0.3) (layer "B.Cu") (net 26))
-  (segment (start 48.8 31.8) (end 53.75 28.0) (width 0.3) (layer "B.Cu") (net 26))
+  (segment (start 48.8 29.85) (end 53.2 27.45) (width 0.3) (layer "In1.Cu") (net 26))
+  (via (at 53.2 27.45) (size 0.7) (drill 0.35) (layers "F.Cu" "B.Cu") (net 26))
+  (segment (start 53.2 27.45) (end 53.75 28.0) (width 0.3) (layer "B.Cu") (net 26))
   (via (at 53.75 28.0) (size 0.7) (drill 0.35) (layers "F.Cu" "B.Cu") (net 26))
   (segment (start 53.75 28.0) (end 53.75 26.75) (width 0.3) (layer "F.Cu") (net 26))
   (segment (start 46.0 29.85) (end 46.7 30.55) (width 0.3) (layer "F.Cu") (net 26))

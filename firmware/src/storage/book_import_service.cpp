@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <cctype>
 #include <iomanip>
-#include <limits>
 #include <sstream>
 #include <utility>
 
@@ -44,6 +43,98 @@ std::string finishFingerprint(
 
     return out.str();
 }
+
+class BookFileTextRangeSource final
+    : public TextRangeSource {
+public:
+    BookFileTextRangeSource(
+        BookFileStore& files,
+        std::string path,
+        std::uint64_t size_bytes
+    )
+        : files_(files),
+          path_(std::move(path)),
+          size_bytes_(size_bytes) {}
+
+    std::uint64_t size() const override {
+        return size_bytes_;
+    }
+
+    bool readRange(
+        std::uint64_t offset,
+        std::size_t length,
+        std::string& out
+    ) const override {
+        last_status_ =
+            files_.readRange(
+                path_,
+                offset,
+                length,
+                out
+            );
+
+        return last_status_ ==
+            BookFileStatus::Ok;
+    }
+
+    BookFileStatus lastStatus() const {
+        return last_status_;
+    }
+
+private:
+    BookFileStore& files_;
+    std::string path_;
+    std::uint64_t size_bytes_{0};
+    mutable BookFileStatus last_status_{
+        BookFileStatus::Ok
+    };
+};
+
+class BookFileFb2RangeSource final
+    : public Fb2RangeSource {
+public:
+    BookFileFb2RangeSource(
+        BookFileStore& files,
+        std::string path,
+        std::uint64_t size_bytes
+    )
+        : files_(files),
+          path_(std::move(path)),
+          size_bytes_(size_bytes) {}
+
+    std::uint64_t size() const override {
+        return size_bytes_;
+    }
+
+    bool readRange(
+        std::uint64_t offset,
+        std::size_t length,
+        std::string& out
+    ) const override {
+        last_status_ =
+            files_.readRange(
+                path_,
+                offset,
+                length,
+                out
+            );
+
+        return last_status_ ==
+            BookFileStatus::Ok;
+    }
+
+    BookFileStatus lastStatus() const {
+        return last_status_;
+    }
+
+private:
+    BookFileStore& files_;
+    std::string path_;
+    std::uint64_t size_bytes_{0};
+    mutable BookFileStatus last_status_{
+        BookFileStatus::Ok
+    };
+};
 
 class BookFileZipRangeSource final
     : public ZipRangeSource {
@@ -389,52 +480,45 @@ PreparedBookImport BookImportService::prepareStored(
                 BookImportStatus::SourceReadFailed;
             return prepared;
         }
+    } else if (format == BookFormat::Fb2) {
+        BookFileFb2RangeSource ranged(
+            files,
+            source_path,
+            file_size
+        );
+
+        parsed =
+            fb2_parser_.parseMetadata(
+                ranged,
+                parser_source
+            );
+
+        if (!parsed.ok() &&
+            ranged.lastStatus() !=
+                BookFileStatus::Ok) {
+            prepared.status =
+                BookImportStatus::SourceReadFailed;
+            return prepared;
+        }
     } else {
-        if (file_size >
-            static_cast<std::uint64_t>(
-                std::numeric_limits<
-                    std::size_t
-                >::max()
-            )) {
+        BookFileTextRangeSource ranged(
+            files,
+            source_path,
+            file_size
+        );
+
+        parsed =
+            txt_parser_.parse(
+                ranged,
+                parser_source
+            );
+
+        if (!parsed.ok() &&
+            ranged.lastStatus() !=
+                BookFileStatus::Ok) {
             prepared.status =
                 BookImportStatus::SourceReadFailed;
             return prepared;
-        }
-
-        std::string bytes;
-
-        if (files.readRange(
-                source_path,
-                0,
-                static_cast<std::size_t>(
-                    file_size
-                ),
-                bytes
-            ) != BookFileStatus::Ok) {
-            prepared.status =
-                BookImportStatus::SourceReadFailed;
-            return prepared;
-        }
-
-        switch (format) {
-            case BookFormat::Txt:
-                parsed =
-                    txt_parser_.parse(
-                        bytes,
-                        parser_source
-                    );
-                break;
-
-            case BookFormat::Fb2:
-                parsed =
-                    fb2_parser_.parseMetadata(
-                        bytes,
-                        parser_source
-                    );
-                break;
-
-            case BookFormat::Epub:
-                break;
         }
     }
 

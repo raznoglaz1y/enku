@@ -119,6 +119,8 @@
 				(pin passive line (at 11.54 2.54 180) (length 2.54) (name "RAW4" (effects (font (size 0.9 0.9)))) (number "4" (effects (font (size 0.9 0.9)))))
 				(pin passive line (at 11.54 0 180) (length 2.54) (name "RAW5" (effects (font (size 0.9 0.9)))) (number "5" (effects (font (size 0.9 0.9)))))
 				(pin passive line (at 11.54 -2.54 180) (length 2.54) (name "RAW6" (effects (font (size 0.9 0.9)))) (number "6" (effects (font (size 0.9 0.9)))))
+				(pin power_in line (at -11.54 -5.08 0) (length 2.54) (name "SHIELD" (effects (font (size 0.9 0.9)))) (number "S1" (effects (font (size 0.9 0.9)))))
+				(pin power_in line (at 11.54 -5.08 180) (length 2.54) (name "SHIELD" (effects (font (size 0.9 0.9)))) (number "S2" (effects (font (size 0.9 0.9)))))
 			)
 		)
 
@@ -323,6 +325,8 @@
 		(pin "4" (uuid "71000000-0000-4000-8000-000000000077"))
 		(pin "5" (uuid "71000000-0000-4000-8000-000000000078"))
 		(pin "6" (uuid "71000000-0000-4000-8000-000000000079"))
+		(pin "S1" (uuid "71000000-0000-4000-8000-000000009901"))
+		(pin "S2" (uuid "71000000-0000-4000-8000-000000009902"))
 		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "J_FL") (unit 1))))
 	)
 
@@ -566,6 +570,9 @@
 
 	(global_label "FL_RAW6" (shape input) (at 203.46 122 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000174"))
 	(global_label "FL_COOL_RETURN" (shape output) (at 218.54 122 180) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000175"))
+	(global_label "GND" (shape input) (at 213.46 76.92 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000009903"))
+	(global_label "GND" (shape input) (at 236.54 76.92 180) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000009904"))
+
 	(text "TPS923610 DRL pinout: VIN=1, ADIM=2, FB=3, GND=4, VOUT=5, SW=6. L_FL is between VSYS and SW; R_FL_SET is FB-to-GND." (exclude_from_sim no) (at 25 20 0) (effects (font (size 1.0 1.0)) (justify left bottom)) (uuid "71000000-0000-4000-8000-000000000176"))
 	(text "Warm/cool selectors switch each LED return into the common FB sense node. ADIM is the master brightness/shutdown input and has an explicit pulldown." (exclude_from_sim no) (at 25 25 0) (effects (font (size 1.0 1.0)) (justify left bottom)) (uuid "71000000-0000-4000-8000-000000000177"))
 	(text "18-position DNP 0R remap matrix intentionally keeps FL0426-S01C pin order first-article configurable without a PCB respin." (exclude_from_sim no) (at 25 30 0) (effects (font (size 1.0 1.0)) (justify left bottom)) (uuid "71000000-0000-4000-8000-000000000178"))

@@ -25,7 +25,7 @@ FILES = {
 REQUIRED_REFS = {
     "power": [
         "U_SRC", "U_CHG", "U_3V3", "J_BAT", "SW_POWER",
-        "R_CHG_ILIM_VSET", "R_CHG_ISET", "L_3V3", "R_3V3_FB_TOP", "R_3V3_FB_BOT", "R_3V3_PG_PU",
+        "R_CHG_ILIM_VSET", "R_CHG_ISET", "L_3V3", "R_3V3_FB_TOP", "R_3V3_FB_BOT", "R_3V3_PG_PU", "TP_GND_PWR", "TP_VBUS_USB", "TP_VBUS_DOCK", "TP_VBAT", "TP_VSYS", "TP_3V3", "TP_SYS_EN", "TP_REG_PG",
     ],
     "mcu": [
         "U1", "J_SD", "U_IMU", "U_HALL", "SW_BOOT",
@@ -37,10 +37,10 @@ REQUIRED_REFS = {
         "D1_EPD", "D2_EPD", "D3_EPD",
         "C0_EPD_VCI", "C1_EPD_VDD", "C2_EPD_VGH", "C3_EPD_FLY",
         "C4_EPD_VGL", "C5_EPD_VSH1", "C6_EPD_VSH2",
-        "C7_EPD_VSL", "C8_EPD_VCOM", "R_GDR_PD", "C_EPD_IN",
+        "C7_EPD_VSL", "C8_EPD_VCOM", "R_GDR_PD", "C_EPD_IN", "TP_EPD_GDR", "TP_EPD_RESE", "TP_EPD_VGH", "TP_EPD_VGL", "TP_EPD_VCOM", "TP_GND_EPD",
     ],
     "frontlight": [
-        "U_FL", "L_FL", "R_FL_SET", "Q_FL_WARM", "Q_FL_COOL", "J_FL",
+        "U_FL", "L_FL", "R_FL_SET", "Q_FL_WARM", "Q_FL_COOL", "J_FL", "TP_FL_LED_PLUS", "TP_FL_FB",
     ],
     "connectors": [
         "J_USB", "U_USB_ESD", "R_CC1", "R_CC2",

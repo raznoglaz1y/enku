@@ -229,3 +229,19 @@ Current Good Display product/specification/drawing availability and the remainin
 The KiCad schematic should follow the named-net/block structure defined here:
 
 [Schematic net/block baseline R0.1](schematic-netlist-r01.md)
+
+
+## 12. EPD-HV component freeze pass
+
+The generic SSD1677 reference values have now been translated into current sourcing candidates, including an active replacement for the obsolete Si1304BDL reference MOSFET.
+
+See:
+[EPD-HV components R0.1](epd-hv-components-r01.md)
+
+Key state:
+- R_RESE 2.2 Ω electrical value frozen;
+- MBR0530 diode type frozen;
+- SI1308EDL-T1-GE3 preferred as the R0.1 quality-baseline MOSFET;
+- 47 µH inductor value frozen, production MPN still open;
+- SSD1677 capacitor electrical classes frozen;
+- panel-specific FPC/contact-side verification remains a fabrication blocker.

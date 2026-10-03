@@ -21,6 +21,7 @@ add_library(enku_core STATIC
     src/reader/book_loader.cpp
     src/reader/document_search.cpp
     src/runtime/reader_runtime.cpp
+    src/runtime/reader_state_flush.cpp
     src/runtime/library_runtime.cpp
     src/runtime/library_search_runtime.cpp
     src/runtime/book_details_runtime.cpp

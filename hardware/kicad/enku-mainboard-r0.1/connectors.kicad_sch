@@ -408,5 +408,10 @@
 	(text "USB-C is now captured as the full 16-pin USB2 receptacle: all VBUS/GND pins joined, 5.1k Rd on CC1/CC2, SBU left NC." (exclude_from_sim no) (at 25 20 0) (effects (font (size 1.0 1.0)) (justify left bottom)) (uuid "73000000-0000-4000-8000-000000000128"))
 	(text "D+/D- get an ESD footprint and populated 0R tuning links; the links can be changed to 22R after SI/EMI validation without a respin." (exclude_from_sim no) (at 25 25 0) (effects (font (size 1.0 1.0)) (justify left bottom)) (uuid "73000000-0000-4000-8000-000000000129"))
 	(text "Dock detect now has a 10k series / 100k pulldown / 10nF filter baseline. Qi remains a DNP raw interface until the three-source architecture is bench-frozen." (exclude_from_sim no) (at 25 30 0) (effects (font (size 1.0 1.0)) (justify left bottom)) (uuid "73000000-0000-4000-8000-000000000130"))
+	(wire (pts (xy 212.46 135) (xy 209.92 135))
+		(stroke (width 0) (type default))
+		(uuid "75000000-0000-4000-8000-000000000003")
+	)
+
 	(sheet_instances (path "/" (page "6")))
 )

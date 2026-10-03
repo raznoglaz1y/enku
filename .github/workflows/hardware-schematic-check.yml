@@ -27,3 +27,6 @@ jobs:
 
       - name: Validate ENKU R0.1 schematics
         run: python hardware/kicad/enku-mainboard-r0.1/check_schematics.py
+
+      - name: Validate ENKU R0.1 PCB placement
+        run: python hardware/kicad/enku-mainboard-r0.1/check_pcb_placement.py

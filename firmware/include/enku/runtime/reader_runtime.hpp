@@ -47,6 +47,7 @@ public:
     ReaderRuntimeResult handle(const PageNextRequested&);
     ReaderRuntimeResult handle(const PagePreviousRequested&);
     ReaderRuntimeResult handle(const BackRequested&);
+    ReaderRuntimeResult handle(const RemovableStorageLost&);
     ReaderRuntimeResult handle(const OrientationChanged&);
     ReaderRuntimeResult handle(const TypographyDefaultsChanged&);
     ReaderRuntimeResult handle(const BookPositionChanged&);

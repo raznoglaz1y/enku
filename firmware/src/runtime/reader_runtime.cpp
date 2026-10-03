@@ -417,19 +417,30 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
         context_
     );
 
+    ReaderRuntimeResult recovery_result =
+        ReaderRuntimeResult::Applied;
+
     switch (flush.flush(
         ReaderStateFlushTarget::ReturnToLibrary
     )) {
         case ReaderStateFlushStatus::Applied:
             break;
         case ReaderStateFlushStatus::CheckpointFailed:
-            return ReaderRuntimeResult::CheckpointFailed;
+            recovery_result =
+                ReaderRuntimeResult::CheckpointFailed;
+            break;
         case ReaderStateFlushStatus::LibraryUpdateFailed:
-            return ReaderRuntimeResult::LibraryUpdateFailed;
+            recovery_result =
+                ReaderRuntimeResult::LibraryUpdateFailed;
+            break;
         case ReaderStateFlushStatus::ContextSaveFailed:
-            return ReaderRuntimeResult::ContextSaveFailed;
+            recovery_result =
+                ReaderRuntimeResult::ContextSaveFailed;
+            break;
     }
 
+    // Storage loss is a fail-safe boundary: even when persistence fails,
+    // never leave a live reader session backed by removed media.
     page_turns_since_checkpoint_ = 0U;
     loader_.close();
     app_state_.library.focused_book = book_id;
@@ -438,8 +449,9 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
     app_state_.reading_position.reset();
     app_state_.reading_progress = 0.0F;
     app_state_.current_book_finished = false;
+    app_state_.progress_dirty = false;
 
-    return ReaderRuntimeResult::Applied;
+    return recovery_result;
 }
 
 ReaderRuntimeResult ReaderRuntimeController::handle(

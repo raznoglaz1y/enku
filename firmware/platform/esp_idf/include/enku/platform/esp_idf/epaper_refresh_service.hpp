@@ -40,6 +40,7 @@ private:
     std::uint32_t minimum_generation_{0};
     std::uint32_t last_generation_{0};
     RefreshStats stats_{};
+    RefreshGhostingPolicy ghosting_policy_{};
 
     bool refreshFull(
         const RefreshRequest& request

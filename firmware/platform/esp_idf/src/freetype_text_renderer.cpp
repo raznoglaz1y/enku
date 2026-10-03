@@ -1057,10 +1057,14 @@ bool FreeTypeTextRenderer::renderLibrary(
         app_state.library.mode ==
         LibraryQueryMode::Search;
 
+    const bool storage_check =
+        !search_mode &&
+        app_state.library.availability_check_active;
     const bool storage_warning =
         !search_mode &&
-        app_state.storage.removable !=
-            RemovableStorageStatus::Ready;
+        (app_state.storage.removable !=
+             RemovableStorageStatus::Ready ||
+         storage_check);
 
     if (!drawTextAt(
             search_mode
@@ -1126,11 +1130,30 @@ bool FreeTypeTextRenderer::renderLibrary(
             2
         );
 
-        const char* storage_message =
-            app_state.storage.removable ==
-                RemovableStorageStatus::SetupError
-                ? "SD CARD ERROR"
-                : "SD CARD UNAVAILABLE";
+        char storage_message[64] = {};
+        if (storage_check) {
+            std::snprintf(
+                storage_message,
+                sizeof(storage_message),
+                "CHECKING SD LIBRARY %lu/%lu",
+                static_cast<unsigned long>(
+                    app_state.library.availability_checked
+                ),
+                static_cast<unsigned long>(
+                    app_state.library.availability_total
+                )
+            );
+        } else {
+            std::snprintf(
+                storage_message,
+                sizeof(storage_message),
+                "%s",
+                app_state.storage.removable ==
+                    RemovableStorageStatus::SetupError
+                    ? "SD CARD ERROR"
+                    : "SD CARD UNAVAILABLE"
+            );
+        }
 
         if (!drawTextAt(
                 storage_message,

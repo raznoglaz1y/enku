@@ -23,7 +23,8 @@ std::string fingerprintBookBytes(
 
 BookFingerprintResult fingerprintStoredBook(
     BookFileStore& files,
-    const std::string& source_path
+    const std::string& source_path,
+    std::uint64_t known_size = UINT64_MAX
 );
 
 } // namespace enku

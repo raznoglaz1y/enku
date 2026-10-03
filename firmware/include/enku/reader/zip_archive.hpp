@@ -41,8 +41,17 @@ public:
 
 class ZipArchive {
 public:
+    // Embedded safety ceilings. ENKU never needs to inflate artwork or
+    // arbitrary binary assets into RAM; textual EPUB resources are expected
+    // to stay comfortably below these bounds.
     static constexpr std::size_t kMaxEntryBytes =
-        16U * 1024U * 1024U;
+        4U * 1024U * 1024U;
+
+    static constexpr std::size_t kMaxCentralDirectoryBytes =
+        2U * 1024U * 1024U;
+
+    static constexpr std::uint16_t kMaxEntries =
+        4096U;
 
     explicit ZipArchive(
         std::string_view bytes

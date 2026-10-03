@@ -135,6 +135,14 @@
           <div class="entries">
 
             <article class="entry">
+              <div class="entry-top"><span class="entry-type">HARDWARE · CUSTOM PCB R0.1</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/6218142845af803c60449d922f7acc2682164ce6" target="_blank" rel="noreferrer">6218142 ↗</a></div>
+              <h2>R0.1 moves from placement into active board routing.</h2>
+              <p>The custom ENKU mainboard is now a routed engineering PCB rather than a placement-only shell. The current layout checkpoint contains 128 copper segments and 30 vias, with USB/Dock source entry, lower power routing and part of the EPD high-voltage island already established.</p>
+              <ul><li>native KiCad checks remain the source of truth for electrical/layout closure;</li><li>EPD GDR/RESE and remaining HV/frontlight nets are the immediate routing focus;</li><li>release remains blocked on zero unexplained DRC, zero unrouted connections and a final footprint/orientation audit;</li><li>the manufacturing package will be generated reproducibly from the tagged KiCad source: Gerber, NC drill, BOM, centroid/PnP and assembly guidance.</li></ul>
+              <div class="entry-note">This is an engineering checkpoint, not a fabrication claim. R0.1 will only be sent for prototype assembly after the manufacturing gate is clean.</div>
+            </article>
+
+            <article class="entry">
               <div class="entry-top"><span class="entry-type">FIRMWARE · REMOVABLE STORAGE</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/f2402413a06ce46caef8041628c478fd187fb1bf" target="_blank" rel="noreferrer">f240241 ↗</a></div>
               <h2>microSD stops being a boot dependency and becomes recoverable media.</h2>
               <p>System state now lives in internal flash while books remain on removable storage. ENKU can reach Library without a card, retry mounting it in the background and detect a card disappearing after boot through the SDMMC status path.</p>

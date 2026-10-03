@@ -1,0 +1,211 @@
+#!/usr/bin/env python3
+"""ENKU R0.1 KiCad schematic structural gate.
+
+This is deliberately dependency-free. It does not replace KiCad ERC; it catches
+repository-level damage before ERC is run: malformed S-expressions, missing
+hierarchical sheets, missing critical references/nets, and accidental return of
+old block placeholders.
+"""
+from __future__ import annotations
+
+from pathlib import Path
+import re
+import sys
+
+ROOT = Path(__file__).resolve().parent
+FILES = {
+    "root": ROOT / "enku-mainboard-r0.1.kicad_sch",
+    "power": ROOT / "power.kicad_sch",
+    "mcu": ROOT / "mcu_io.kicad_sch",
+    "epd": ROOT / "epd_hv.kicad_sch",
+    "frontlight": ROOT / "frontlight.kicad_sch",
+    "connectors": ROOT / "connectors.kicad_sch",
+}
+
+REQUIRED_REFS = {
+    "power": [
+        "U_SRC", "U_CHG", "U_3V3", "J_BAT", "SW_POWER",
+        "R_CHG_ILIM_VSET", "R_CHG_ISET", "L_3V3",
+    ],
+    "mcu": [
+        "U1", "J_SD", "U_IMU", "U_HALL", "SW_BOOT",
+        "SW_PREV", "SW_NEXT", "SW_SELECT", "SW_BACK",
+        "R_BAT_TOP", "R_BAT_BOT",
+    ],
+    "epd": [
+        "J_EPD", "L_EPD", "Q_EPD", "R_RESE",
+        "D1_EPD", "D2_EPD", "D3_EPD",
+        "C0_EPD_VCI", "C1_EPD_VDD", "C2_EPD_VGH", "C3_EPD_FLY",
+        "C4_EPD_VGL", "C5_EPD_VSH1", "C6_EPD_VSH2",
+        "C7_EPD_VSL", "C8_EPD_VCOM",
+    ],
+    "frontlight": [
+        "U_FL", "L_FL", "R_FL_SET", "Q_FL_WARM", "Q_FL_COOL", "J_FL",
+    ],
+    "connectors": [
+        "J_USB", "U_USB_ESD", "R_CC1", "R_CC2",
+        "J_DOCK", "J_DBG", "J_QI",
+    ],
+}
+
+REQUIRED_NETS = {
+    "power": [
+        "VBUS_USB", "VBUS_DOCK", "VBUS_EXT", "VBAT", "VSYS",
+        "3V3_SYS", "SYS_EN", "BAT_TS", "CHG_STAT1",
+    ],
+    "mcu": [
+        "3V3_SYS", "USB_DM", "USB_DP", "SPI_MOSI", "SPI_MISO", "SPI_SCLK",
+        "SD_CS", "EPD_CS", "EPD_DC", "EPD_RST", "EPD_BUSY",
+        "I2C_SDA", "I2C_SCL", "IMU_INT1", "HALL_INT",
+        "BAT_ADC", "DOCK_DETECT", "FL_ENABLE",
+    ],
+    "epd": [
+        "EPD_GDR", "EPD_RESE", "EPD_SW", "EPD_CP_NEG",
+        "EPD_VGH", "EPD_VGL", "EPD_VSH1", "EPD_VSH2",
+        "EPD_VSL", "EPD_VCOM", "EPD_VDD", "EPD_VCI",
+    ],
+    "frontlight": [
+        "VSYS", "FL_ADIM", "FL_FB", "FL_SW", "FL_LED_PLUS",
+        "FL_WARM_RETURN", "FL_COOL_RETURN", "FL_WARM_PWM", "FL_COOL_PWM",
+    ],
+    "connectors": [
+        "VBUS_USB", "USB_DP", "USB_DM", "VBUS_DOCK",
+        "DOCK_DETECT", "UART_TX", "UART_RX", "BOOT", "ESP_EN",
+    ],
+}
+
+BANNED_BLOCK_NAMES = [
+    "TPS2121_BLOCK",
+    "BQ25185_BLOCK",
+    "TPS63031_BLOCK",
+    "EPD_HV_NETWORK",
+    "TPS923610_BLOCK",
+    "FL_REMAP",
+]
+
+EXPECTED_CHILDREN = [
+    "power.kicad_sch",
+    "mcu_io.kicad_sch",
+    "epd_hv.kicad_sch",
+    "frontlight.kicad_sch",
+    "connectors.kicad_sch",
+]
+
+
+def balanced_sexpr(text: str) -> tuple[bool, str]:
+    depth = 0
+    in_string = False
+    escaped = False
+    for idx, ch in enumerate(text):
+        if in_string:
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == '"':
+                in_string = False
+            continue
+        if ch == '"':
+            in_string = True
+        elif ch == "(":
+            depth += 1
+        elif ch == ")":
+            depth -= 1
+            if depth < 0:
+                return False, f"unexpected ')' at byte {idx}"
+    if in_string:
+        return False, "unterminated quoted string"
+    if depth != 0:
+        return False, f"parenthesis depth ends at {depth}"
+    return True, "ok"
+
+
+def contains_reference(text: str, ref: str) -> bool:
+    return f'(property "Reference" "{ref}"' in text
+
+
+def contains_net(text: str, net: str) -> bool:
+    return f'(global_label "{net}"' in text or f'(label "{net}"' in text
+
+
+def fail(errors: list[str], message: str) -> None:
+    errors.append(message)
+    print(f"ERROR: {message}")
+
+
+def main() -> int:
+    errors: list[str] = []
+    texts: dict[str, str] = {}
+
+    for key, path in FILES.items():
+        if not path.is_file():
+            fail(errors, f"missing schematic: {path.name}")
+            continue
+        text = path.read_text(encoding="utf-8")
+        texts[key] = text
+        ok, reason = balanced_sexpr(text)
+        if not ok:
+            fail(errors, f"{path.name}: malformed S-expression: {reason}")
+        if "(kicad_sch" not in text:
+            fail(errors, f"{path.name}: missing kicad_sch header")
+        if "(sheet_instances" not in text:
+            fail(errors, f"{path.name}: missing sheet_instances")
+
+    root = texts.get("root", "")
+    for child in EXPECTED_CHILDREN:
+        if f'(property "Sheetfile" "{child}"' not in root:
+            fail(errors, f"root: missing child sheet {child}")
+
+    for key, refs in REQUIRED_REFS.items():
+        text = texts.get(key, "")
+        for ref in refs:
+            if not contains_reference(text, ref):
+                fail(errors, f"{FILES[key].name}: missing critical reference {ref}")
+
+    for key, nets in REQUIRED_NETS.items():
+        text = texts.get(key, "")
+        for net in nets:
+            if not contains_net(text, net):
+                fail(errors, f"{FILES[key].name}: missing critical net {net}")
+
+    all_text = "\n".join(texts.values())
+    for old in BANNED_BLOCK_NAMES:
+        if old in all_text:
+            fail(errors, f"obsolete block placeholder returned: {old}")
+
+    fl = texts.get("frontlight", "")
+    map_refs = set(re.findall(r'property "Reference" "(R_FL_MAP[1-6]_[PWC])"', fl))
+    if len(map_refs) != 18:
+        fail(errors, f"frontlight remap matrix expected 18 DNP resistors, found {len(map_refs)}")
+
+    epd = texts.get("epd", "")
+    if epd.count('property "Value" "MBR0530"') < 3:
+        fail(errors, "EPD HV must contain three MBR0530 rectifiers")
+    if 'property "Value" "2.2R 1% 0805"' not in epd:
+        fail(errors, "EPD HV missing frozen 2.2R RESE current-sense value")
+
+    power = texts.get("power", "")
+    if 'property "Value" "18k 1%"' not in power:
+        fail(errors, "power sheet missing 18k BQ25185 ILIM/VSET baseline")
+    if 'property "Value" "1k 1%"' not in power:
+        fail(errors, "power sheet missing 1k BQ25185 ISET baseline")
+
+    mcu = texts.get("mcu", "")
+    if "DRV5032FBDBZR" not in mcu:
+        fail(errors, "MCU sheet missing frozen Hall sensor MPN DRV5032FBDBZR")
+
+    if errors:
+        print(f"\nENKU schematic structural gate: FAIL ({len(errors)} issue(s))")
+        return 1
+
+    print("ENKU schematic structural gate: PASS")
+    for key, path in FILES.items():
+        print(f"  {key:10s} {path.name:36s} {path.stat().st_size:7d} bytes")
+    print("  frontlight remap matrix: 18 / 18")
+    print("  obsolete block placeholders: 0")
+    print("\nNOTE: this structural gate does not replace KiCad ERC/DRC.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,102 @@
+#include "enku/runtime/book_availability_reconciler.hpp"
+#include "enku/storage/posix_book_file_store.hpp"
+#include "enku/storage/posix_state_file_store.hpp"
+
+#include <cassert>
+#include <filesystem>
+
+using namespace enku;
+
+int main() {
+    const auto root =
+        std::filesystem::temp_directory_path() /
+        "enku-book-availability-reconciler-test";
+
+    std::error_code ec;
+    std::filesystem::remove_all(root, ec);
+
+    PosixStateFileStore state_files(root);
+    PosixBookFileStore book_files(root);
+    CborLibraryService library(state_files);
+
+    BookRecord first;
+    first.book_id = "first";
+    first.format = BookFormat::Txt;
+    first.source_path = "/books/first.txt";
+    first.source_filename = "first.txt";
+    first.file_size = 5;
+
+    BookRecord second;
+    second.book_id = "second";
+    second.format = BookFormat::Txt;
+    second.source_path = "/books/second.txt";
+    second.source_filename = "second.txt";
+    second.file_size = 6;
+
+    assert(library.upsert(first) == LibraryStatus::Ok);
+    assert(library.upsert(second) == LibraryStatus::Ok);
+
+    AppState app;
+    BookAvailabilityReconciler reconciler(
+        app,
+        library,
+        book_files
+    );
+
+    app.storage.removable =
+        RemovableStorageStatus::Unavailable;
+    reconciler.reconcile();
+
+    assert(!app.library.bookAvailable("first"));
+    assert(!app.library.bookAvailable("second"));
+    assert(app.library.unavailable_books.size() == 2U);
+
+    app.storage.removable =
+        RemovableStorageStatus::Ready;
+
+    // A returning card is not enough by itself: a missing source and a
+    // same-path replacement with changed size both stay unavailable.
+    assert(
+        book_files.write(
+            "/books/first.txt",
+            "changed"
+        ) == BookFileStatus::Ok
+    );
+    reconciler.reconcile();
+
+    assert(!app.library.bookAvailable("first"));
+    assert(!app.library.bookAvailable("second"));
+
+    // Restore the original first source. Only that record becomes available.
+    assert(
+        book_files.write(
+            "/books/first.txt",
+            "12345"
+        ) == BookFileStatus::Ok
+    );
+    reconciler.reconcile();
+
+    assert(app.library.bookAvailable("first"));
+    assert(!app.library.bookAvailable("second"));
+    assert(app.library.unavailable_books.size() == 1U);
+
+    // Once both matching sources are back, stale unavailable state is cleared.
+    assert(
+        book_files.write(
+            "/books/second.txt",
+            "123456"
+        ) == BookFileStatus::Ok
+    );
+    reconciler.reconcile();
+
+    assert(app.library.bookAvailable("first"));
+    assert(app.library.bookAvailable("second"));
+    assert(app.library.unavailable_books.empty());
+
+    // Repeated reconciliation is idempotent and cannot accumulate duplicates.
+    reconciler.reconcile();
+    assert(app.library.unavailable_books.empty());
+
+    std::filesystem::remove_all(root, ec);
+    return 0;
+}

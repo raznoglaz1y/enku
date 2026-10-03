@@ -31,6 +31,7 @@ enum class InputDispatchResult : std::uint8_t {
     Applied,
     Unhandled,
     Failed,
+    RuntimeFailed,
 };
 
 class InputDispatcher {

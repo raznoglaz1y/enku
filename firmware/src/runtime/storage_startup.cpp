@@ -74,6 +74,21 @@ StorageStartupResult StorageStartupCoordinator::run() {
 
     app_state_.boot.stage = BootStage::RecoveryDecision;
 
+    if (app_state_.storage.removable !=
+        RemovableStorageStatus::Ready) {
+        app_state_.boot.stage = BootStage::FirstScreen;
+        app_state_.boot.mode = BootMode::Normal;
+        app_state_.screen = Screen::Library;
+        app_state_.boot.stage = BootStage::Stable;
+        app_state_.boot.boot_in_progress = false;
+
+        return StorageStartupResult{
+            StorageStartupStatus::Ready,
+            0,
+            0,
+        };
+    }
+
     std::vector<std::string> staged_paths;
     const auto list_status =
         files_.list("/system/tmp", staged_paths);

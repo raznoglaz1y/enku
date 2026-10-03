@@ -26,6 +26,62 @@ std::string lower(std::string_view value) {
     return out;
 }
 
+std::size_t asciiIFind(
+    std::string_view haystack,
+    std::string_view needle,
+    std::size_t start = 0
+) {
+    if (needle.empty()) {
+        return std::min(
+            start,
+            haystack.size()
+        );
+    }
+
+    if (start > haystack.size() ||
+        needle.size() >
+            haystack.size() - start) {
+        return std::string_view::npos;
+    }
+
+    const auto matches =
+        [](char lhs, char rhs) {
+            return std::tolower(
+                       static_cast<unsigned char>(
+                           lhs
+                       )
+                   ) ==
+                std::tolower(
+                       static_cast<unsigned char>(
+                           rhs
+                       )
+                   );
+        };
+
+    const auto last =
+        haystack.size() - needle.size();
+
+    for (std::size_t pos = start;
+         pos <= last;
+         ++pos) {
+        std::size_t i = 0;
+
+        while (i < needle.size() &&
+               matches(
+                   haystack[pos + i],
+                   needle[i]
+               )) {
+            ++i;
+        }
+
+        if (i == needle.size()) {
+            return pos;
+        }
+    }
+
+    return std::string_view::npos;
+}
+
 std::string trim(std::string_view value) {
     std::size_t first = 0;
     while (first < value.size() &&
@@ -393,39 +449,44 @@ std::optional<std::string> tagText(
     std::string_view name,
     std::size_t start = 0
 ) {
-    const auto lower_xml = lower(xml);
     const std::string open =
-        "<" + lower(name);
+        "<" + std::string(name);
     const std::string close =
-        "</" + lower(name) + ">";
+        "</" + std::string(name) + ">";
 
-    auto pos = lower_xml.find(open, start);
+    auto pos =
+        asciiIFind(
+            xml,
+            open,
+            start
+        );
 
-    while (pos != std::string::npos) {
+    while (pos != std::string_view::npos) {
         const auto boundary =
             pos + open.size();
 
-        if (boundary >= lower_xml.size() ||
-            lower_xml[boundary] == '>' ||
+        if (boundary >= xml.size() ||
+            xml[boundary] == '>' ||
             std::isspace(
                 static_cast<unsigned char>(
-                    lower_xml[boundary]
+                    xml[boundary]
                 )
             )) {
             const auto gt =
-                lower_xml.find('>', boundary);
+                xml.find('>', boundary);
 
-            if (gt == std::string::npos) {
+            if (gt == std::string_view::npos) {
                 return std::nullopt;
             }
 
             const auto end =
-                lower_xml.find(
+                asciiIFind(
+                    xml,
                     close,
                     gt + 1U
                 );
 
-            if (end == std::string::npos) {
+            if (end == std::string_view::npos) {
                 return std::nullopt;
             }
 
@@ -437,10 +498,12 @@ std::optional<std::string> tagText(
             );
         }
 
-        pos = lower_xml.find(
-            open,
-            boundary
-        );
+        pos =
+            asciiIFind(
+                xml,
+                open,
+                boundary
+            );
     }
 
     return std::nullopt;
@@ -451,37 +514,42 @@ std::optional<std::string_view> tagSlice(
     std::string_view name,
     std::size_t start = 0
 ) {
-    const auto lower_xml = lower(xml);
     const std::string open =
-        "<" + lower(name);
+        "<" + std::string(name);
     const std::string close =
-        "</" + lower(name) + ">";
+        "</" + std::string(name) + ">";
 
-    auto pos = lower_xml.find(open, start);
+    auto pos =
+        asciiIFind(
+            xml,
+            open,
+            start
+        );
 
-    while (pos != std::string::npos) {
+    while (pos != std::string_view::npos) {
         const auto boundary =
             pos + open.size();
 
-        if (boundary >= lower_xml.size() ||
-            lower_xml[boundary] == '>' ||
+        if (boundary >= xml.size() ||
+            xml[boundary] == '>' ||
             std::isspace(
                 static_cast<unsigned char>(
-                    lower_xml[boundary]
+                    xml[boundary]
                 )
             )) {
             const auto gt =
-                lower_xml.find('>', boundary);
+                xml.find('>', boundary);
             const auto end =
-                gt == std::string::npos
-                    ? std::string::npos
-                    : lower_xml.find(
+                gt == std::string_view::npos
+                    ? std::string_view::npos
+                    : asciiIFind(
+                          xml,
                           close,
                           gt + 1U
                       );
 
-            if (gt == std::string::npos ||
-                end == std::string::npos) {
+            if (gt == std::string_view::npos ||
+                end == std::string_view::npos) {
                 return std::nullopt;
             }
 
@@ -492,7 +560,11 @@ std::optional<std::string_view> tagSlice(
         }
 
         pos =
-            lower_xml.find(open, boundary);
+            asciiIFind(
+                xml,
+                open,
+                boundary
+            );
     }
 
     return std::nullopt;
@@ -503,30 +575,33 @@ std::vector<std::string> allTagTexts(
     std::string_view name
 ) {
     std::vector<std::string> out;
-    const auto lower_xml = lower(xml);
     const std::string open =
-        "<" + lower(name);
+        "<" + std::string(name);
     const std::string close =
-        "</" + lower(name) + ">";
+        "</" + std::string(name) + ">";
 
     std::size_t cursor = 0;
 
     while (true) {
         auto pos =
-            lower_xml.find(open, cursor);
+            asciiIFind(
+                xml,
+                open,
+                cursor
+            );
 
-        if (pos == std::string::npos) {
+        if (pos == std::string_view::npos) {
             break;
         }
 
         const auto boundary =
             pos + open.size();
 
-        if (boundary < lower_xml.size() &&
-            lower_xml[boundary] != '>' &&
+        if (boundary < xml.size() &&
+            xml[boundary] != '>' &&
             !std::isspace(
                 static_cast<unsigned char>(
-                    lower_xml[boundary]
+                    xml[boundary]
                 )
             )) {
             cursor = boundary;
@@ -534,21 +609,24 @@ std::vector<std::string> allTagTexts(
         }
 
         const auto gt =
-            lower_xml.find('>', boundary);
-        const auto end =
-            gt == std::string::npos
-                ? std::string::npos
-                : lower_xml.find(
-                      close,
-                      gt + 1U
-                  );
+            xml.find('>', boundary);
 
-        if (gt == std::string::npos ||
-            end == std::string::npos) {
+        if (gt == std::string_view::npos) {
             break;
         }
 
-        const auto text =
+        const auto end =
+            asciiIFind(
+                xml,
+                close,
+                gt + 1U
+            );
+
+        if (end == std::string_view::npos) {
+            break;
+        }
+
+        auto value =
             stripTags(
                 xml.substr(
                     gt + 1U,
@@ -556,11 +634,14 @@ std::vector<std::string> allTagTexts(
                 )
             );
 
-        if (!text.empty()) {
-            out.push_back(text);
+        if (!value.empty()) {
+            out.push_back(
+                std::move(value)
+            );
         }
 
-        cursor = end + close.size();
+        cursor =
+            end + close.size();
     }
 
     return out;
@@ -1033,9 +1114,10 @@ ParseResult Fb2Parser::parseMetadata(
         return result;
     }
 
-    const auto lowered = lower(bytes);
-    if (lowered.find("<fictionbook") ==
-        std::string::npos) {
+    if (asciiIFind(
+            bytes,
+            "<fictionbook"
+        ) == std::string_view::npos) {
         result.status = ParserStatus::InvalidSource;
         return result;
     }
@@ -1115,20 +1197,24 @@ ParseResult Fb2Parser::parseMetadata(
     }
 
     const auto body_position =
-        lowered.find("<body");
+        asciiIFind(
+            bytes,
+            "<body"
+        );
 
     if (body_position ==
-        std::string::npos) {
+        std::string_view::npos) {
         result.status =
             ParserStatus::InvalidSource;
         return result;
     }
 
     result.document.metadata.toc_available =
-        lowered.find(
+        asciiIFind(
+            bytes,
             "<title",
             body_position
-        ) != std::string::npos;
+        ) != std::string_view::npos;
 
     result.status = ParserStatus::Ok;
     return result;
@@ -1209,20 +1295,21 @@ ParseResult Fb2Parser::parseMetadata(
                 requested
             );
 
-        const auto lowered =
-            lower(buffer);
-
         const auto description_end =
-            lowered.find(
+            asciiIFind(
+                buffer,
                 "</description>"
             );
         const auto body_start =
-            lowered.find("<body");
+            asciiIFind(
+                buffer,
+                "<body"
+            );
 
         if (description_end !=
-                std::string::npos &&
+                std::string_view::npos &&
             body_start !=
-                std::string::npos &&
+                std::string_view::npos &&
             body_start >
                 description_end) {
             return parseMetadata(
@@ -1257,9 +1344,10 @@ ParseResult Fb2Parser::parse(
         return result;
     }
 
-    const auto lowered = lower(bytes);
-    if (lowered.find("<fictionbook") ==
-        std::string::npos) {
+    if (asciiIFind(
+            bytes,
+            "<fictionbook"
+        ) == std::string_view::npos) {
         result.status =
             ParserStatus::InvalidSource;
         return result;

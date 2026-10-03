@@ -402,7 +402,7 @@
 		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000050" (reference "J_QI") (unit 1))))
 	)
 
-	(global_label "QI_5V" (shape input) (at 212.46 135 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "73000000-0000-4000-8000-000000000125"))
+	(label "QI_5V" (at 212.46 135 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "73000000-0000-4000-8000-000000000125"))
 	(global_label "QI_STATUS" (shape output) (at 237.54 133.73 180) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "73000000-0000-4000-8000-000000000126"))
 	(global_label "GND" (shape output) (at 237.54 136.27 180) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "73000000-0000-4000-8000-000000000127"))
 	(text "USB-C is now captured as the full 16-pin USB2 receptacle: all VBUS/GND pins joined, 5.1k Rd on CC1/CC2, SBU left NC." (exclude_from_sim no) (at 25 20 0) (effects (font (size 1.0 1.0)) (justify left bottom)) (uuid "73000000-0000-4000-8000-000000000128"))

@@ -293,8 +293,11 @@ Reproducible build, documentation, case files and first tagged version.
 - [ ] Verify current GDEY0397T81P / GDEY0426T82-FL01C FPC pin tables and Pro 6-pin frontlight pinout directly from the drawings
 - [x] Define schematic block/net baseline for USB/Dock/charge/3V3/ESP32/SD/EPD/IMU/Hall/frontlight/Qi/debug
 - [x] Freeze SSD1677 reference electrical values and R0.1 EPD-HV sourcing candidates
-- [ ] Freeze exact EPD-HV inductor after PCB area + current-panel reference verification
-- [ ] Freeze schematic only after all EPD/power BLOCKER items are closed
+- [x] Freeze R0.1 EPD-HV inductor: TYS5040470M-10, 47 µH / 1 A / 1.1 A Isat
+- [x] Close R0.1 connector/frontlight-remap/EPD-HV placement blockers
+- [x] Start real KiCad R0.1 worktree with 54 × 94 mm portrait four-layer PCB shell
+- [ ] Capture the first complete KiCad schematic and run ERC
+- [ ] Freeze schematic only after ERC + exact footprint review
 
 ### Cost ceilings
 

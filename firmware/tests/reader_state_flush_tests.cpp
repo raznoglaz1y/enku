@@ -185,7 +185,27 @@ int main() {
     assert(context.last.screen == Screen::Library);
     assert(!context.last.current_book.has_value());
 
+    // A stale current_book must not turn Library into a reading restore
+    // context during sleep/power-off style flushes.
+    app.screen = Screen::Library;
+    app.progress_dirty = true;
+    const auto writes_before_library =
+        checkpoint.writes;
+
+    assert(
+        flush.flush(
+            ReaderStateFlushTarget::PreserveReading
+        ) == ReaderStateFlushStatus::Applied
+    );
+    assert(
+        checkpoint.writes ==
+        writes_before_library
+    );
+    assert(context.last.screen == Screen::Library);
+    assert(!context.last.current_book.has_value());
+
     checkpoint.status = PersistStatus::IoError;
+    app.screen = Screen::Reading;
     app.progress_dirty = true;
 
     assert(

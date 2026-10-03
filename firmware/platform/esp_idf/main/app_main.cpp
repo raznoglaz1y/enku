@@ -410,6 +410,10 @@ bool inputSmokeTest(
     return true;
 }
 
+[[noreturn]] void idleStaticRecoveryScreen(
+    const char* reason
+);
+
 bool showRuntimeRecovery(
     enku::platform::esp_idf::EspIdfPlatform& platform
 ) {

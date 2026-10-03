@@ -764,6 +764,10 @@ const darkThemeCss = `
   html[data-theme="dark"] body .verify-row .flag.verified{
     color:var(--enku-text)!important;
   }
+  /* Match left verification-label inset to the content columns. */
+  html[data-theme="dark"] body .verify-row{
+    padding-left:24px!important;
+  }
 
   /* Forms */
   html[data-theme="dark"] body input,

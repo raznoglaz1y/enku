@@ -990,7 +990,7 @@ extern "C" void app_main(void) {
         enku::platform::esp_idf::DeviceRuntimeInitStatus::FontMissing) {
         ESP_LOGW(
             kTag,
-            "Application runtime skipped: copy /system/fonts/NotoSans-Regular.ttf to the TF card"
+            "Embedded reader font unexpectedly unavailable"
         );
 
 #if CONFIG_ENKU_RAW_INPUT_DIAGNOSTIC

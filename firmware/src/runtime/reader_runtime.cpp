@@ -1,4 +1,5 @@
 #include "enku/runtime/reader_runtime.hpp"
+#include "enku/runtime/reader_state_flush.hpp"
 
 namespace enku {
 
@@ -392,43 +393,25 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
     }
 
     const BookId book_id = *app_state_.current_book;
-    const ReadingState reading_state =
-        app_state_.current_book_finished
-            ? ReadingState::Finished
-            : ReadingState::Reading;
 
-    if (app_state_.progress_dirty &&
-        app_state_.reading_position.has_value()) {
-        const auto persist_status = checkpoint_.checkpoint(
-            book_id,
-            *app_state_.reading_position,
-            app_state_.reading_progress,
-            reading_state
-        );
+    ReaderStateFlushCoordinator flush(
+        app_state_,
+        library_,
+        checkpoint_,
+        context_
+    );
 
-        if (persist_status != PersistStatus::Ok) {
+    switch (flush.flush(
+        ReaderStateFlushTarget::ReturnToLibrary
+    )) {
+        case ReaderStateFlushStatus::Applied:
+            break;
+        case ReaderStateFlushStatus::CheckpointFailed:
             return ReaderRuntimeResult::CheckpointFailed;
-        }
-
-        app_state_.progress_dirty = false;
-    }
-
-    if (updateLibrarySummary(
-            reading_state,
-            app_state_.reading_progress
-        ) != LibraryStatus::Ok) {
-        return ReaderRuntimeResult::LibraryUpdateFailed;
-    }
-
-    if (context_.save(
-            AppRestoreContext{
-                Screen::Library,
-                std::nullopt,
-                app_state_.library.persistedOffset(),
-                app_state_.library.persistedFocusedBook(),
-            }
-        ) != PersistStatus::Ok) {
-        return ReaderRuntimeResult::ContextSaveFailed;
+        case ReaderStateFlushStatus::LibraryUpdateFailed:
+            return ReaderRuntimeResult::LibraryUpdateFailed;
+        case ReaderStateFlushStatus::ContextSaveFailed:
+            return ReaderRuntimeResult::ContextSaveFailed;
     }
 
     loader_.close();

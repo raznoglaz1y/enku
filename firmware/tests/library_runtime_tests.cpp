@@ -162,8 +162,9 @@ public:
         return true;
     }
 
-    void requestPowerOff() override {
+    bool requestPowerOff() override {
         state_ = DevicePowerState::PoweredOff;
+        return true;
     }
 
     DevicePowerState state_{DevicePowerState::Active};

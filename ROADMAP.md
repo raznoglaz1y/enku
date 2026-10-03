@@ -284,7 +284,8 @@ Reproducible build, documentation, case files and first tagged version.
 - [ ] Validate Pro frontlight current / driver topology; 2× TPS61165 reserved as prototype baseline
 - [ ] Validate Qi coil / receiver / ferrite stack for Pro Wireless
 - [ ] Complete per-variant populated / DNP BOM
-- [ ] Obtain PCBWay / assembly quotes at 10 / 25 / 50 / 100 units
+- [x] Define PCBWay prototype path: fabrication + SMT assembly package, DFM gates and sponsored-vs-unsponsored cost separation
+- [ ] Obtain normal unsponsored PCBWay / assembly quotes at 10 / 25 / 50 / 100 units
 - [ ] Re-run competitive pricing after real quotes
 - [ ] Verify current GDEY0397T81P / GDEY0426T82-FL01C FPC pin tables and Pro 6-pin frontlight pinout
 - [ ] Freeze schematic only after all EPD/power BLOCKER items are closed

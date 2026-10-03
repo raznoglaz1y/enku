@@ -1227,6 +1227,15 @@ int main() {
     assert(runtime.page().items[0].book_id == "beta");
     assert(app.library.view == LibraryView::List);
 
+    app.library.unavailable_books = {"beta"};
+    assert(
+        runtime.handle(OpenFocusedBookRequested{}) ==
+        LibraryRuntimeResult::BookUnavailable
+    );
+    assert(app.screen == Screen::Library);
+    assert(!app.current_book.has_value());
+
+    app.library.unavailable_books.clear();
     assert(
         runtime.handle(OpenFocusedBookRequested{}) ==
         LibraryRuntimeResult::Applied

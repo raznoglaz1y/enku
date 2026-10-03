@@ -1,6 +1,6 @@
 # ENKU Mainboard R0.1 — placement baseline B
 
-Status: **mechanical placement baseline B / net sync B / discrete schematic captured / no routing / no KiCad ERC or DRC yet**
+Status: **mechanical placement baseline C / net sync C / discrete schematic captured / no routing / no KiCad ERC or DRC yet**
 
 Board envelope remains 54 × 94 mm, portrait, four layers.
 
@@ -214,3 +214,24 @@ Current lower power island:
 - PG: 100 kΩ pull-up and diagnostic net.
 
 The placement gate rejects reintroduction of TPS63031 or loss of the support network.
+
+
+## Verified core footprint pass
+
+The first-spin core no longer uses placement-only footprints for:
+- U_SRC — TPS2121 RUX0012A, 12 pads;
+- U_CHG — BQ25185 DLH0010A, 10 pins + exposed pad 11;
+- U_IMU — BMI270 Bosch LGA-14;
+- U_FL — TPS923610 DRL0006A;
+- J_EPD — FH34SRJ-24S-0.5SH(50), including S1/S2 retention tabs;
+- J_FL — FH34SRJ-6S-0.5SH(50), including S1/S2 retention tabs.
+
+Both Hirose retention tabs are grounded and represented in the schematic so a future schematic-to-PCB sync cannot silently remove their net assignment.
+
+A project-local `ENKU.pretty` library plus `fp-lib-table` makes the verified footprints reproducible without depending on the user's globally installed KiCad library version.
+
+Remaining mechanical footprint gates are intentionally separate:
+- final side-button MPN/actuator geometry;
+- final battery connector/polarity/NTC strategy;
+- final dock pogo mating geometry.
+These are enclosure-dependent and must be frozen together with the mechanical stack, not guessed in isolation.

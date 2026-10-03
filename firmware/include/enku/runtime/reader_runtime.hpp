@@ -69,6 +69,10 @@ private:
     Viewport viewport_;
     ReaderPageRenderer* page_renderer_{nullptr};
     std::uint32_t refresh_generation_{0};
+    std::uint32_t page_turns_since_checkpoint_{0};
+
+    static constexpr std::uint32_t
+        kPeriodicCheckpointPageTurns = 8U;
 
     ReaderSession* session();
     const ReaderSession* session() const;
@@ -80,6 +84,8 @@ private:
     ReaderRuntimeResult commitVisiblePage(
         bool mark_progress_dirty = true
     );
+
+    void recordPageTurnForCheckpoint();
 
     ReaderRuntimeResult submitRefresh(
         RefreshReason reason,

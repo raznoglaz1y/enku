@@ -811,7 +811,7 @@
     (effects (font (size 0.55 0.55) (thickness 0.11))))
 
   (footprint "Capacitor_SMD:C_0805_2012Metric" (layer "F.Cu")
-    (at 54.4 42.9)
+    (at 55.0 42.9)
     (property "Reference" "C3_EPD_FLY" (at 0 -1.9 90) (layer "F.SilkS"))
     (property "Value" "4.7uF 25V" (at 0 1.9 90) (layer "F.Fab") hide)
     (fp_rect (start -1 -0.625) (end 1 0.625) (stroke (width 0.12) (type default)) (fill none) (layer "F.SilkS"))

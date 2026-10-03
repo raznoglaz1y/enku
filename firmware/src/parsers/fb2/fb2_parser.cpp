@@ -264,46 +264,128 @@ std::string decodeEntities(
 std::string stripTags(
     std::string_view markup
 ) {
-    std::string plain;
+    std::string out;
+    out.reserve(markup.size());
+
     bool in_tag = false;
-
-    for (const char ch : markup) {
-        if (!in_tag) {
-            if (ch == '<') {
-                in_tag = true;
-            } else {
-                plain.push_back(ch);
-            }
-        } else if (ch == '>') {
-            in_tag = false;
-        }
-    }
-
-    const auto decoded =
-        decodeEntities(plain);
-
-    std::string normalized;
     bool previous_space = false;
+    std::size_t i = 0;
 
-    for (const char ch : decoded) {
-        const bool space =
-            std::isspace(
-                static_cast<unsigned char>(ch)
+    const auto appendSpace =
+        [&]() {
+            if (!out.empty() &&
+                !previous_space) {
+                out.push_back(' ');
+                previous_space = true;
+            }
+        };
+
+    const auto appendByte =
+        [&](char ch) {
+            if (std::isspace(
+                    static_cast<unsigned char>(
+                        ch
+                    )
+                )) {
+                appendSpace();
+            } else {
+                out.push_back(ch);
+                previous_space = false;
+            }
+        };
+
+    while (i < markup.size()) {
+        const char ch = markup[i];
+
+        if (in_tag) {
+            if (ch == '>') {
+                in_tag = false;
+            }
+            ++i;
+            continue;
+        }
+
+        if (ch == '<') {
+            in_tag = true;
+            ++i;
+            continue;
+        }
+
+        if (ch != '&') {
+            appendByte(ch);
+            ++i;
+            continue;
+        }
+
+        const auto semi =
+            markup.find(';', i + 1U);
+
+        if (semi == std::string_view::npos) {
+            appendByte(ch);
+            ++i;
+            continue;
+        }
+
+        const auto entity =
+            markup.substr(
+                i + 1U,
+                semi - i - 1U
             );
 
-        if (space) {
-            if (!previous_space &&
-                !normalized.empty()) {
-                normalized.push_back(' ');
+        bool decoded = true;
+
+        if (entity == "amp") {
+            appendByte('&');
+        } else if (entity == "lt") {
+            appendByte('<');
+        } else if (entity == "gt") {
+            appendByte('>');
+        } else if (entity == "quot") {
+            appendByte('"');
+        } else if (entity == "apos") {
+            appendByte('\'');
+        } else if (const auto numeric =
+                       numericEntity(entity);
+                   numeric.has_value()) {
+            std::string encoded;
+            encoded.reserve(4U);
+
+            if (appendUtf8(
+                    *numeric,
+                    encoded
+                )) {
+                for (const char byte :
+                     encoded) {
+                    appendByte(byte);
+                }
+            } else {
+                decoded = false;
             }
         } else {
-            normalized.push_back(ch);
+            decoded = false;
         }
 
-        previous_space = space;
+        if (!decoded) {
+            for (std::size_t raw = i;
+                 raw <= semi;
+                 ++raw) {
+                appendByte(markup[raw]);
+            }
+        }
+
+        i = semi + 1U;
     }
 
-    return trim(normalized);
+    while (!out.empty() &&
+           std::isspace(
+               static_cast<unsigned char>(
+                   out.back()
+               )
+           )) {
+        out.pop_back();
+    }
+
+    return out;
 }
 
 std::optional<std::string> tagText(

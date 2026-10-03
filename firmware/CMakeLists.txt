@@ -52,6 +52,7 @@ add_library(enku_core STATIC
     src/runtime/power_off_confirm_runtime.cpp
     src/runtime/wifi_settings_runtime.cpp
     src/storage/cbor_reader_checkpoint.cpp
+    src/storage/book_fingerprint.cpp
     src/storage/cbor_bookmark_service.cpp
     src/storage/cbor_library_service.cpp
     src/storage/cbor_app_context_service.cpp

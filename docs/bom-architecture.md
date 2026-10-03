@@ -289,3 +289,24 @@ Current direction:
 - GPIO35–37 are reserved for the N16R8 memory topology;
 - native USB remains on GPIO19/20;
 - four direct page/navigation buttons remain separate GPIOs.
+
+
+## Sponsored prototype vs production COGS
+
+PCBWay is the preferred R0.1 fabrication / assembly path.
+
+If prototype sponsorship is approved, maintain two independent cost columns:
+
+1. **prototype cash cost** — actual project spend after sponsorship credit;
+2. **normalized unsponsored COGS** — what the same hardware would cost without sponsorship.
+
+Only normalized unsponsored COGS may be used for:
+- Kickstarter margin;
+- website kit pricing;
+- BOM ceiling decisions;
+- Base / Pro feature allocation.
+
+Sponsored fabrication is an engineering accelerator, not a permanent unit-cost assumption.
+
+Manufacturing plan:
+[PCBWay prototype plan](pcbway-prototype-plan.md)

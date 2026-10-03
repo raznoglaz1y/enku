@@ -213,27 +213,27 @@ std::string oversizedDeclaredZip() {
     const std::string name = "huge.xhtml";
     std::string out;
 
-    appendU32(out, 0x04034B50U);
-    appendU16(out, 20U);
-    appendU16(out, 0U);
-    appendU16(out, 0U);
-    appendU16(out, 0U);
-    appendU16(out, 0U);
-    appendU32(out, 0U);
-    appendU32(out, 1U);
-    appendU32(
+    u32(out, 0x04034B50U);
+    u16(out, 20U);
+    u16(out, 0U);
+    u16(out, 0U);
+    u16(out, 0U);
+    u16(out, 0U);
+    u32(out, 0U);
+    u32(out, 1U);
+    u32(
         out,
         static_cast<std::uint32_t>(
             ZipArchive::kMaxEntryBytes + 1U
         )
     );
-    appendU16(
+    u16(
         out,
         static_cast<std::uint16_t>(
             name.size()
         )
     );
-    appendU16(out, 0U);
+    u16(out, 0U);
     out += name;
     out.push_back('x');
 
@@ -242,33 +242,33 @@ std::string oversizedDeclaredZip() {
             out.size()
         );
 
-    appendU32(out, 0x02014B50U);
-    appendU16(out, 20U);
-    appendU16(out, 20U);
-    appendU16(out, 0U);
-    appendU16(out, 0U);
-    appendU16(out, 0U);
-    appendU16(out, 0U);
-    appendU32(out, 0U);
-    appendU32(out, 1U);
-    appendU32(
+    u32(out, 0x02014B50U);
+    u16(out, 20U);
+    u16(out, 20U);
+    u16(out, 0U);
+    u16(out, 0U);
+    u16(out, 0U);
+    u16(out, 0U);
+    u32(out, 0U);
+    u32(out, 1U);
+    u32(
         out,
         static_cast<std::uint32_t>(
             ZipArchive::kMaxEntryBytes + 1U
         )
     );
-    appendU16(
+    u16(
         out,
         static_cast<std::uint16_t>(
             name.size()
         )
     );
-    appendU16(out, 0U);
-    appendU16(out, 0U);
-    appendU16(out, 0U);
-    appendU16(out, 0U);
-    appendU32(out, 0U);
-    appendU32(out, 0U);
+    u16(out, 0U);
+    u16(out, 0U);
+    u16(out, 0U);
+    u16(out, 0U);
+    u32(out, 0U);
+    u32(out, 0U);
     out += name;
 
     const auto central_size =
@@ -276,14 +276,14 @@ std::string oversizedDeclaredZip() {
             out.size()
         ) - central_offset;
 
-    appendU32(out, 0x06054B50U);
-    appendU16(out, 0U);
-    appendU16(out, 0U);
-    appendU16(out, 1U);
-    appendU16(out, 1U);
-    appendU32(out, central_size);
-    appendU32(out, central_offset);
-    appendU16(out, 0U);
+    u32(out, 0x06054B50U);
+    u16(out, 0U);
+    u16(out, 0U);
+    u16(out, 1U);
+    u16(out, 1U);
+    u32(out, central_size);
+    u32(out, central_offset);
+    u16(out, 0U);
 
     return out;
 }

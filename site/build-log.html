@@ -135,6 +135,14 @@
           <div class="entries">
 
             <article class="entry">
+              <div class="entry-top"><span class="entry-type">FIRMWARE · DEGRADED SERVICES</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/ca0c315e35c5f164419ed9128ebc4205b43091ab" target="_blank" rel="noreferrer">ca0c315 ↗</a></div>
+              <h2>Optional hardware stops being a single point of failure.</h2>
+              <p>ENKU now treats Wi-Fi and PMU functionality as degradable services instead of prerequisites for opening the Library. A network-driver failure keeps the reader offline, while a missing PMU removes battery/suspend/software-off capabilities without taking the reading stack down.</p>
+              <ul><li>Wi-Fi failure becomes a visible network Error state rather than a fatal boot result;</li><li>PMU initialization failure keeps the Reader and Library usable;</li><li>Sleep already reports CannotSuspend when the PMU is unavailable;</li><li>Power Off now reports PowerUnavailable unless the PMU actually accepts shutdown.</li></ul>
+              <div class="entry-note">Offline reading remains the primary product capability. Optional connectivity and power-management features may degrade, but they no longer impersonate a dead reader.</div>
+            </article>
+
+            <article class="entry">
               <div class="entry-top"><span class="entry-type">FIRMWARE · OFFLINE-FIRST</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/725f3707a4f61e955877b47ca0ebc5ce16a11f2f" target="_blank" rel="noreferrer">725f370 ↗</a></div>
               <h2>Wi-Fi failure no longer takes the reader down with it.</h2>
               <p>Networking has been demoted from a boot-critical dependency to an optional degraded subsystem. If the ESP-IDF Wi-Fi stack or network policy fails, ENKU keeps the Library and Reader alive and exposes connectivity as an Error state instead.</p>

@@ -71,71 +71,25 @@ Before production freeze, compare it against a discrete MOSFET / ideal-diode des
 
 A ~3 PLN IC is not worth removing if the alternative adds field-failure risk.
 
-### 3.3 V regulator: evaluate TPS63031 vs TPS62840
+### 3.3 V regulator: TPS63802 — SELECT for first spin
 
-#### TPS63031
+**TPS63802DLAR** replaces TPS63031 as the R0.1 baseline.
 
-LCSC historical/current reference:
-- 10+: ~USD 0.80
-- 30+: ~USD 0.71
-- 100+: ~USD 0.59
+Reason:
+- ENKU's realistic peak case can overlap ESP32-S3 Wi-Fi TX, microSD write and e-paper activity;
+- TPS63031's boost-mode output margin is too close to that load envelope for a first-spin board;
+- avoiding brownout redesign is worth more than the small BOM delta.
 
-Function:
-- fixed 3.3 V buck-boost;
-- 1.8–5.5 V input;
-- roughly 900 mA class.
+R0.1 support network:
+- Murata DFE201612E-R47M=P2, 0.47 µH;
+- 10 µF input + 100 nF local bypass;
+- 2 × 22 µF output;
+- 511 kΩ / 91 kΩ feedback;
+- 100 kΩ PG pull-up.
 
-Source:
-https://lcsc.com/product-detail/DC-DC-Converters_TI_TPS63031DSKR_TPS63031DSKR_C15516.html
+TPS63031 remains documented as an evaluated candidate, not an approved production substitution.
 
-Strength:
-- holds 3.3 V even when battery falls below 3.3 V;
-- directly suited to a 1S battery.
-
-Risk:
-- current margin must be bench-tested against ESP32-S3 Wi-Fi + microSD + e-paper bursts.
-
-#### TPS62840
-
-Current LCSC snapshot:
-- 10+: ~USD 1.04
-- 30+: ~USD 0.94
-- 100+: ~USD 0.75
-
-Features:
-- buck only;
-- 1.8–6.5 V input;
-- up to 750 mA;
-- extremely low ~60 nA quiescent current.
-
-Source:
-https://www.lcsc.com/pl/product-detail/DC-DC-Converters_Texas-Instruments-TPS62840YBGR_C2071139.html
-
-Decision:
-TPS62840 is attractive for low sleep current but, as a buck, loses regulation headroom as a 1S Li-Po approaches the 3.3 V rail.
-
-For ENKU, **TPS63031 is currently the more natural architecture candidate**, provided burst-current testing passes.
-
-If 900 mA is insufficient, move up to a higher-current buck-boost such as TPS63070 rather than falling back to an inefficient always-on LDO.
-
-### Higher-current fallback: TPS63070
-
-Current LCSC snapshot:
-- 10+: ~USD 1.15
-- 30+: ~USD 0.99
-- 100+: ~USD 0.87
-
-Capabilities:
-- buck-boost;
-- 2–16 V input;
-- substantially higher current capability;
-- ~50 µA quiescent current.
-
-Source:
-https://www.lcsc.com/product-detail/C109322.html
-
-Decision:
-Do not populate by default unless bench data shows TPS63031 margin is inadequate.
+TPS63070 remains only a secondary architectural alternative if TPS63802 sourcing changes; it is not the default R0.1 population.
 
 ### Hall sensor: DRV5032 — KEEP
 
@@ -236,7 +190,7 @@ These are engineering budget envelopes, not quotes.
 Power BOM is not frozen until:
 - actual battery is selected;
 - charge current is thermally validated;
-- 3.3 V rail survives ESP32-S3 Wi-Fi + SD write worst-case;
+- TPS63802 3.3 V rail survives simultaneous Wi-Fi TX + SD write + EPD refresh with measured transient margin;
 - USB + Dock simultaneous connection is tested;
 - hard-OFF charging is verified;
 - sleep leakage is measured;

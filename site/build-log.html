@@ -135,6 +135,14 @@
           <div class="entries">
 
             <article class="entry">
+              <div class="entry-top"><span class="entry-type">FIRMWARE · MEMORY DISCIPLINE</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/142fbe91874be692509347370b2e7e2717a95cbe" target="_blank" rel="noreferrer">142fbe9 ↗</a></div>
+              <h2>Parser memory ceilings become an explicit contract.</h2>
+              <p>EPUB ZIP handling and FB2 ranged parsing now consume one shared ParserMemoryBudget instead of carrying independent magic numbers through implementation files.</p>
+              <ul><li>32 KiB ranged/inflate working chunks;</li><li>512 KiB FB2 metadata prefix ceiling;</li><li>4 MiB maximum materialized text resource / FB2 leaf section;</li><li>2 MiB ZIP central-directory ceiling, 4096 entries and a 65,557-byte EOCD window.</li></ul>
+              <div class="entry-note">The regression suite now checks the budget itself as an architectural invariant, so future parser work cannot casually inflate the embedded memory envelope.</div>
+            </article>
+
+            <article class="entry">
               <div class="entry-top"><span class="entry-type">FIRMWARE · PLATFORM / DISPLAY</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/6b9ae57bb294a0c7c5a275aaf015128bf0779920" target="_blank" rel="noreferrer">6b9ae57 ↗</a></div>
               <h2>The firmware now knows what board it is running on.</h2>
               <p>A board capability/profile layer now separates product behavior from board-specific wiring. The Waveshare board is an explicit reference-hardware profile, while ENKU R0.1 Base / Pro / Pro Wireless are design-target profiles until they are physically validated.</p>

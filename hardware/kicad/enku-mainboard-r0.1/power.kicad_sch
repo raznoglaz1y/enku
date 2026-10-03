@@ -35,7 +35,7 @@
 					(pin output line (at 16.51 1.27 180) (length 2.54) (name "ST" (effects (font (size 0.95 0.95)))) (number "9" (effects (font (size 0.95 0.95)))))
 					(pin output line (at 16.51 -1.27 180) (length 2.54) (name "ILIM" (effects (font (size 0.95 0.95)))) (number "10" (effects (font (size 0.95 0.95)))))
 					(pin output line (at 16.51 -3.81 180) (length 2.54) (name "SS" (effects (font (size 0.95 0.95)))) (number "11" (effects (font (size 0.95 0.95)))))
-					(pin power_in line (at 16.51 -6.35 180) (length 2.54) (name "GND" (effects (font (size 0.95 0.95)))) (number "12" (effects (font (size 0.95 0.95)))))
+					(pin passive line (at 16.51 -6.35 180) (length 2.54) (name "GND" (effects (font (size 0.95 0.95)))) (number "12" (effects (font (size 0.95 0.95)))))
 				)
 			)
 

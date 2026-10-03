@@ -31,6 +31,32 @@ ReaderStateFlushCoordinator::ReaderStateFlushCoordinator(
       checkpoint_(checkpoint),
       context_(context) {}
 
+ReaderStateFlushStatus
+ReaderStateFlushCoordinator::checkpointProgress() {
+    if (!app_state_.current_book.has_value() ||
+        !app_state_.reading_position.has_value() ||
+        !app_state_.progress_dirty) {
+        return ReaderStateFlushStatus::Applied;
+    }
+
+    const ReadingState reading_state =
+        app_state_.current_book_finished
+            ? ReadingState::Finished
+            : ReadingState::Reading;
+
+    if (checkpoint_.checkpoint(
+            *app_state_.current_book,
+            *app_state_.reading_position,
+            app_state_.reading_progress,
+            reading_state
+        ) != PersistStatus::Ok) {
+        return ReaderStateFlushStatus::CheckpointFailed;
+    }
+
+    app_state_.progress_dirty = false;
+    return ReaderStateFlushStatus::Applied;
+}
+
 ReaderStateFlushStatus ReaderStateFlushCoordinator::flush(
     ReaderStateFlushTarget target
 ) {
@@ -47,18 +73,9 @@ ReaderStateFlushStatus ReaderStateFlushCoordinator::flush(
                 ? ReadingState::Finished
                 : ReadingState::Reading;
 
-        if (app_state_.progress_dirty &&
-            app_state_.reading_position.has_value()) {
-            if (checkpoint_.checkpoint(
-                    book_id,
-                    *app_state_.reading_position,
-                    app_state_.reading_progress,
-                    reading_state
-                ) != PersistStatus::Ok) {
-                return ReaderStateFlushStatus::CheckpointFailed;
-            }
-
-            app_state_.progress_dirty = false;
+        if (checkpointProgress() !=
+            ReaderStateFlushStatus::Applied) {
+            return ReaderStateFlushStatus::CheckpointFailed;
         }
 
         const auto record =

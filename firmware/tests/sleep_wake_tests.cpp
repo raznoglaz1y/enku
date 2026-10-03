@@ -178,8 +178,9 @@ public:
         return true;
     }
 
-    void requestPowerOff() override {
+    bool requestPowerOff() override {
         state = DevicePowerState::PoweredOff;
+        return true;
     }
 
     bool suspend_available{true};

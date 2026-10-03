@@ -169,14 +169,14 @@ def main() -> int:
     # Critical mechanical invariants.
     if "U1" in refs:
         x, y, rot = refs["U1"]
-        if abs(rot - 270.0) > 0.1:
-            errors.append("U1 must stay rotated 270 deg with antenna keepout toward left edge")
+        if abs(rot - 90.0) > 0.1:
+            errors.append("U1 must stay rotated 90 deg with antenna keepout toward left edge")
     for ref in ("SW_PREV","SW_NEXT","SW_SELECT","SW_BACK"):
         if ref in refs and refs[ref][0] < 68.5:
             errors.append(f"{ref} left the right-side thumb rail")
 
     # WROOM body exclusion. The exact module body occupies approximately
-    # x=20.25..45.75, y=36..54 at U1=(33,45), rotation 270 deg.
+    # x=20.25..45.75, y=36..54 at U1=(33,45), rotation 90 deg.
     # Catch footprints whose origins drift underneath the soldered module.
     for block in footprint_blocks(text):
         parsed = parse_ref_and_at(block)

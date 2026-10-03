@@ -342,8 +342,15 @@ int main() {
         Viewport{140, 80},
     };
 
+    source.whole_reads = 0;
+    source.size_reads = 0;
+    source.range_reads = 0;
+
     const auto opened = loader.open(request);
     assert(opened.ok());
+    assert(source.whole_reads == 0);
+    assert(source.size_reads == 1);
+    assert(source.range_reads > 0);
     assert(loader.session() != nullptr);
     assert(loader.session()->isOpen());
     assert(loader.document() != nullptr);

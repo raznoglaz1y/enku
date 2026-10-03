@@ -323,6 +323,20 @@ Cost-down belongs after first hardware measurements.
 
 ---
 
+## Current layout checkpoint — 03 Oct 2026
+
+R0.1 has crossed from placement/net-sync into active routing.
+
+Current repository checkpoint:
+- 128 routed copper segments;
+- 30 vias;
+- USB/Dock source-entry routing materially established;
+- lower power island partly routed;
+- EPD VSH2 already carried into the HV island;
+- EPD GDR/RESE and the remaining HV/frontlight closure are the immediate routing focus.
+
+This does **not** mean the board is fabrication-ready. The release gate remains zero unexplained DRC, zero unrouted connections, zone refill/recheck, footprint/orientation audit and reproducible fabrication outputs.
+
 ## 13. PCBWay fabrication/assembly package must be reproducible
 
 The fabrication tag must contain or generate:
@@ -332,10 +346,10 @@ The fabrication tag must contain or generate:
 - NC drill;
 - board stackup / fab notes;
 - BOM with exact MPN and population variant;
-- CPL / pick-and-place with rotations verified;
+- CPL / centroid / pick-and-place with X/Y, side and rotations verified;
 - assembly drawings for both sides;
 - DNP list / Base-Pro-Pro Wireless matrix;
-- critical-component orientation drawing;
+- critical-component orientation/polarity drawing, especially IC pin 1, diodes and connectors;
 - STEP model;
 - schematic PDF;
 - bring-up checklist;

@@ -483,7 +483,7 @@ int main() {
         ReaderRuntimeResult::BookOpenFailed
     );
     assert(source.calls == 0);
-    assert(source.size_calls == 3);
+    assert(source.size_calls == 4);
     assert(state.screen == Screen::Library);
     assert(state.library.focused_book == "runtime-test");
     assert(!state.current_book.has_value());

@@ -181,6 +181,19 @@ struct PowerState {
     bool charging{false};
 };
 
+enum class RemovableStorageStatus : std::uint8_t {
+    Ready,
+    Unavailable,
+    SetupError,
+};
+
+struct StorageState {
+    RemovableStorageStatus removable{
+        RemovableStorageStatus::Ready
+    };
+};
+
+
 enum class KeyboardMode : std::uint8_t {
     Latin,
     Cyrillic,
@@ -260,6 +273,7 @@ struct AppState {
     NetworkState network;
     WiFiPolicy wifi_policy{WiFiPolicy::AutoConnectTrusted};
     PowerState power;
+    StorageState storage;
 
     bool progress_dirty{false};
     bool import_active{false};

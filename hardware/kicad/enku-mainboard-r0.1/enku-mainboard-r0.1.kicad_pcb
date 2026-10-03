@@ -1,0 +1,108 @@
+(kicad_pcb (version 20240108) (generator "pcbnew")
+  (general (thickness 1.6))
+  (paper "A4")
+  (layers
+    (0 "F.Cu" signal)
+    (2 "In1.Cu" power)
+    (4 "In2.Cu" power)
+    (31 "B.Cu" signal)
+    (36 "B.SilkS" user "b.silkscreen")
+    (37 "F.SilkS" user "f.silkscreen")
+    (44 "Edge.Cuts" user)
+    (46 "B.CrtYd" user "b.courtyard")
+    (47 "F.CrtYd" user "f.courtyard")
+    (48 "B.Fab" user)
+    (49 "F.Fab" user)
+  )
+  (setup
+    (pad_to_mask_clearance 0)
+    (allow_soldermask_bridges_in_footprints no)
+  )
+
+  (gr_rect (start 20 20) (end 74 114)
+    (stroke (width 0.05) (type default)) (fill none) (layer "Edge.Cuts"))
+
+  (gr_text "ENKU MAINBOARD R0.1 — PORTRAIT PCB SHELL"
+    (at 47 22.5) (layer "F.SilkS")
+    (effects (font (size 1.2 1.2) (thickness 0.2))))
+
+  (gr_text "NOT FABRICATION READY"
+    (at 47 111.5) (layer "F.SilkS")
+    (effects (font (size 1 1) (thickness 0.18))))
+
+  (gr_rect (start 20.5 36) (end 27 62)
+    (stroke (width 0.2) (type dash)) (fill none) (layer "F.SilkS"))
+  (gr_text "ESP32 ANTENNA KEEP-OUT"
+    (at 23.7 49 90) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12))))
+
+  (gr_rect (start 45 24) (end 72 39)
+    (stroke (width 0.2) (type dash)) (fill none) (layer "F.SilkS"))
+  (gr_text "EPD HV / FPC ZONE"
+    (at 58.5 31.5) (layer "F.SilkS")
+    (effects (font (size 0.9 0.9) (thickness 0.14))))
+
+  (gr_rect (start 31 54) (end 63 86)
+    (stroke (width 0.2) (type dash)) (fill none) (layer "F.SilkS"))
+  (gr_text "QI COIL KEEPOUT — PRO WIRELESS"
+    (at 47 70 90) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12))))
+
+  (gr_rect (start 69 48) (end 73.5 82)
+    (stroke (width 0.2) (type default)) (fill none) (layer "F.SilkS"))
+  (gr_text "BUTTON RAIL"
+    (at 71.2 65 90) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12))))
+
+  (gr_rect (start 21 95) (end 38 112)
+    (stroke (width 0.2) (type dash)) (fill none) (layer "F.SilkS"))
+  (gr_text "microSD EDGE"
+    (at 29.5 103.5) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12))))
+
+  (gr_rect (start 41 106) (end 53 113.5)
+    (stroke (width 0.2) (type default)) (fill none) (layer "F.SilkS"))
+  (gr_text "USB-C"
+    (at 47 109.7) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12))))
+
+  (gr_rect (start 38 96) (end 56 102)
+    (stroke (width 0.2) (type default)) (fill none) (layer "B.SilkS"))
+  (gr_text "4-PIN DOCK POGO"
+    (at 47 99) (layer "B.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12)) (justify mirror)))
+
+  (gr_rect (start 23 25) (end 38 33)
+    (stroke (width 0.2) (type default)) (fill none) (layer "F.SilkS"))
+  (gr_text "HARD POWER"
+    (at 30.5 29) (layer "F.SilkS")
+    (effects (font (size 0.8 0.8) (thickness 0.12))))
+
+  (gr_text "54.0 mm"
+    (at 47 116) (layer "Dwgs.User")
+    (effects (font (size 1 1) (thickness 0.15))))
+  (gr_text "94.0 mm"
+    (at 17.5 67 90) (layer "Dwgs.User")
+    (effects (font (size 1 1) (thickness 0.15))))
+
+  (footprint "MountingHole:MountingHole_2.2mm_M2" (layer "F.Cu")
+    (at 23 23)
+    (property "Reference" "H1" (at 0 -3 0) (layer "F.SilkS") hide)
+    (fp_circle (center 0 0) (end 2 0) (stroke (width 0.3) (type default)) (fill none) (layer "F.CrtYd"))
+    (pad "" np_thru_hole circle (at 0 0) (size 2.2 2.2) (drill 2.2) (layers "*.Cu" "*.Mask")))
+  (footprint "MountingHole:MountingHole_2.2mm_M2" (layer "F.Cu")
+    (at 71 23)
+    (property "Reference" "H2" (at 0 -3 0) (layer "F.SilkS") hide)
+    (fp_circle (center 0 0) (end 2 0) (stroke (width 0.3) (type default)) (fill none) (layer "F.CrtYd"))
+    (pad "" np_thru_hole circle (at 0 0) (size 2.2 2.2) (drill 2.2) (layers "*.Cu" "*.Mask")))
+  (footprint "MountingHole:MountingHole_2.2mm_M2" (layer "F.Cu")
+    (at 23 111)
+    (property "Reference" "H3" (at 0 3 0) (layer "F.SilkS") hide)
+    (fp_circle (center 0 0) (end 2 0) (stroke (width 0.3) (type default)) (fill none) (layer "F.CrtYd"))
+    (pad "" np_thru_hole circle (at 0 0) (size 2.2 2.2) (drill 2.2) (layers "*.Cu" "*.Mask")))
+  (footprint "MountingHole:MountingHole_2.2mm_M2" (layer "F.Cu")
+    (at 71 111)
+    (property "Reference" "H4" (at 0 3 0) (layer "F.SilkS") hide)
+    (fp_circle (center 0 0) (end 2 0) (stroke (width 0.3) (type default)) (fill none) (layer "F.CrtYd"))
+    (pad "" np_thru_hole circle (at 0 0) (size 2.2 2.2) (drill 2.2) (layers "*.Cu" "*.Mask")))
+)

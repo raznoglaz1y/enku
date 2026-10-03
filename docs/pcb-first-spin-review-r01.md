@@ -353,7 +353,7 @@ R0.1 may be released to PCBWay only when all are true:
 
 - [ ] all schematic sheets open in KiCad;
 - [ ] KiCad ERC reviewed to zero unexplained errors;
-- [ ] all PCB footprints are exact or explicitly manufacturer-verified;
+- [ ] all PCB footprints are exact or explicitly manufacturer-verified; core IC/FPC set is verified, enclosure-dependent buttons/battery/dock remain open;
 - [ ] no placement placeholder remains;
 - [ ] schematic ↔ PCB pad numbers/nets are synchronized;
 - [ ] antenna keepout clear on every copper layer and in the 3D stack;
@@ -419,7 +419,7 @@ Already applied:
 - false CI orientation rule found and fixed.
 
 Still open before routing:
-- exact remaining IC/FPC/button/battery/dock footprints;
+- exact enclosure-dependent button/battery/dock footprints; core TPS2121/BQ25185/BMI270/TPS923610/Hirose footprints are now verified;
 - mandatory test-point placement;
 - native KiCad ERC;
 - final PCBWay stackup/rules;

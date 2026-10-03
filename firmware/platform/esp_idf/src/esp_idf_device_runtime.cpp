@@ -494,6 +494,28 @@ bool EspIdfDeviceRuntime::syncRemovableStorage(
         platform_.sdCard().unmount();
         app.storage.removable =
             RemovableStorageStatus::Unavailable;
+
+        if (app.current_book.has_value() &&
+            app.reading_position.has_value()) {
+            const auto reader_result =
+                reader_.reader().handle(
+                    RemovableStorageLost{}
+                );
+
+            if (reader_result ==
+                ReaderRuntimeResult::Applied) {
+                const auto library_result =
+                    reader_.library().handle(
+                        LibraryRefreshRequested{}
+                    );
+
+                return library_result ==
+                           LibraryRuntimeResult::Applied ||
+                       library_result ==
+                           LibraryRuntimeResult::Empty;
+            }
+        }
+
         library_refresh_pending_ = true;
         return true;
     }

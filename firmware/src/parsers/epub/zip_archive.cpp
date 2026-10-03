@@ -208,6 +208,12 @@ bool ZipArchive::parseCentralDirectory() {
         readU16(tail, eocd + 10U);
     const auto central_size =
         readU32(tail, eocd + 12U);
+
+    if (entry_count > kMaxEntries ||
+        central_size >
+            kMaxCentralDirectoryBytes) {
+        return false;
+    }
     const auto central_offset =
         readU32(tail, eocd + 16U);
 

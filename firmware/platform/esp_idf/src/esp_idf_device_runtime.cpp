@@ -178,6 +178,14 @@ EspIdfDeviceRuntime::EspIdfDeviceRuntime(
 
 DeviceRuntimeInitStatus
 EspIdfDeviceRuntime::begin() {
+    if (!isReaderBoardProfileValid(
+            platform_.boardProfile(),
+            EspIdfEpaper::kWidth,
+            EspIdfEpaper::kHeight
+        )) {
+        return DeviceRuntimeInitStatus::BoardProfileMismatch;
+    }
+
     const auto font_status =
         text_renderer_.begin(
             storage_.appState().
@@ -611,6 +619,20 @@ InputDispatchResult EspIdfDeviceRuntime::pollInput(
     refreshLibraryAfterUploadIfNeeded();
 
     return result;
+}
+
+const BoardProfile&
+EspIdfDeviceRuntime::boardProfile() const {
+    return platform_.boardProfile();
+}
+
+bool EspIdfDeviceRuntime::supports(
+    BoardFeature feature
+) const {
+    return supportsFeature(
+        platform_.boardProfile().capabilities,
+        feature
+    );
 }
 
 const BootRestoreResult&

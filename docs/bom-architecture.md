@@ -310,3 +310,13 @@ Sponsored fabrication is an engineering accelerator, not a permanent unit-cost a
 
 Manufacturing plan:
 [PCBWay prototype plan](pcbway-prototype-plan.md)
+
+
+## Schematic capture baseline
+
+The R0.1 schematic should now be captured from the named-net/block specification rather than directly from the early layout WIP:
+
+[Schematic net/block baseline R0.1](schematic-netlist-r01.md)
+
+Current display mechanical/electrical freeze state:
+[Display freeze matrix R0.1](display-freeze-r01.md)

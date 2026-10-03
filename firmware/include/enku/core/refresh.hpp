@@ -49,9 +49,50 @@ struct RefreshStats {
     std::uint32_t region{0};
     std::uint32_t full{0};
     std::uint32_t escalated_to_full{0};
+    std::uint32_t forced_clean_full{0};
     std::uint32_t coalesced{0};
     std::uint32_t dropped_obsolete{0};
     std::uint32_t failures{0};
+};
+
+class RefreshGhostingPolicy {
+public:
+    explicit constexpr RefreshGhostingPolicy(
+        std::uint32_t max_non_clean_updates = 5U
+    )
+        : max_non_clean_updates_(
+              max_non_clean_updates == 0U
+                  ? 1U
+                  : max_non_clean_updates
+          ) {}
+
+    constexpr bool shouldForceCleanFull() const {
+        return non_clean_updates_ >=
+            max_non_clean_updates_;
+    }
+
+    constexpr void recordCleanFull() {
+        non_clean_updates_ = 0U;
+    }
+
+    constexpr void recordNonCleanUpdate() {
+        if (non_clean_updates_ <
+            max_non_clean_updates_) {
+            ++non_clean_updates_;
+        }
+    }
+
+    constexpr std::uint32_t nonCleanUpdates() const {
+        return non_clean_updates_;
+    }
+
+    constexpr std::uint32_t limit() const {
+        return max_non_clean_updates_;
+    }
+
+private:
+    std::uint32_t max_non_clean_updates_{5U};
+    std::uint32_t non_clean_updates_{0U};
 };
 
 } // namespace enku

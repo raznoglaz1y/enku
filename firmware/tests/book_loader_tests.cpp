@@ -371,6 +371,53 @@ int main() {
     assert(reopened.ok());
     assert(loader.session() != nullptr);
 
+    request.saved_position =
+        SemanticPosition{
+            "loader-test",
+            "missing-section",
+            999999U,
+        };
+
+    const auto stale_section =
+        loader.open(request);
+
+    assert(stale_section.ok());
+    assert(loader.session() != nullptr);
+    assert(
+        loader.session()->currentPage().has_value()
+    );
+    assert(
+        loader.session()->currentPage()->
+            first_position.section_id ==
+        first_position.section_id
+    );
+    assert(
+        loader.session()->currentPage()->
+            first_position.text_offset ==
+        first_position.text_offset
+    );
+
+    request.saved_position =
+        SemanticPosition{
+            "loader-test",
+            first_position.section_id,
+            999999U,
+        };
+
+    const auto stale_offset =
+        loader.open(request);
+
+    assert(stale_offset.ok());
+    assert(loader.session() != nullptr);
+    assert(
+        loader.session()->currentPage().has_value()
+    );
+    assert(
+        loader.session()->currentPage()->
+            first_position.text_offset ==
+        first_position.text_offset
+    );
+
     source.status = BookSourceStatus::Unavailable;
     const auto unavailable = loader.open(request);
     assert(

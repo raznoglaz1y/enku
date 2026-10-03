@@ -1562,7 +1562,7 @@
     )
   
   (footprint "Resistor_SMD:R_0603_1608Metric" (layer "F.Cu")
-    (at 69.6 79)
+    (at 69.6 80.5)
       (property "Reference" "R_PR1_USB" (at 0 -1.45 0) (layer "F.SilkS") hide)
       (property "Value" "0R STRAP" (at 0 1.45 0) (layer "F.Fab") hide)
       (fp_rect (start -0.8 -0.4) (end 0.8 0.4) (stroke (width 0.1) (type default)) (fill none) (layer "F.SilkS"))
@@ -1625,7 +1625,7 @@
     )
   
   (footprint "Capacitor_SMD:C_0805_2012Metric" (layer "F.Cu")
-    (at 46.5 88.2)
+    (at 45.5 88.5)
       (property "Reference" "C_CHG_IN" (at 0 -1.8 0) (layer "F.SilkS"))
       (property "Value" "4.7uF 25V" (at 0 1.8 0) (layer "F.Fab") hide)
       (fp_rect (start -1 -0.625) (end 1 0.625) (stroke (width 0.1) (type default)) (fill none) (layer "F.SilkS"))

@@ -362,7 +362,7 @@
 					(rectangle (start -10 6) (end 10 -6) (stroke (width 0.254) (type default)) (fill (type background)))
 					(pin power_out line (at -12.7 0 0) (length 2.54) (name "QI_5V" (effects (font (size 0.9 0.9)))) (number "1" (effects (font (size 0.9 0.9)))))
 					(pin output line (at 12.7 1.27 180) (length 2.54) (name "QI_STATUS" (effects (font (size 0.9 0.9)))) (number "2" (effects (font (size 0.9 0.9)))))
-					(pin power_in line (at 12.7 -1.27 180) (length 2.54) (name "GND" (effects (font (size 0.9 0.9)))) (number "3" (effects (font (size 0.9 0.9)))))
+					(pin passive line (at 12.7 -1.27 180) (length 2.54) (name "GND" (effects (font (size 0.9 0.9)))) (number "3" (effects (font (size 0.9 0.9)))))
 				)
 			)
 	(symbol "R"

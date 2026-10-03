@@ -67,7 +67,7 @@
     <div class="shell state-strip">
       <div class="state-item"><div class="label">CORE</div><div class="value">Framework-neutral C++</div></div>
       <div class="state-item"><div class="label">DEVICE TARGET</div><div class="value">ESP-IDF · ESP32-S3</div></div>
-      <div class="state-item"><div class="label">CURRENT FORMAT</div><div class="value">TXT working · EPUB / FB2 next</div></div>
+      <div class="state-item"><div class="label">CURRENT FORMAT</div><div class="value">TXT · EPUB · FB2 working</div></div>
     </div>
 
     <section class="section">
@@ -110,8 +110,8 @@
           <p>The repository distinguishes implemented software from planned format support. Host-testable logic is already substantial, while physical behavior remains subject to on-device validation.</p>
         </div>
         <div class="status-list">
-          <div class="status-row"><span class="flag done">IMPLEMENTED</span><h3>Reader core</h3><p>TXT parsing, text pagination, DocumentReaderEngine, ReaderSession and open / page / back / finished lifecycle are implemented and exercised by host tests.</p></div>
-          <div class="status-row"><span class="flag done">IMPLEMENTED</span><h3>Library & persistence</h3><p>Filtering, sorting, search, focus, import/delete flows and versioned A/B CBOR state with CRC recovery cover Library, settings, checkpoints, app context and boot-loop protection.</p></div>
+          <div class="status-row"><span class="flag done">IMPLEMENTED</span><h3>Reader core</h3><p>TXT, EPUB and FB2 parsing, bounded/ranged source access, semantic pagination, DocumentReaderEngine, ReaderSession and open / page / back / finished lifecycle are implemented and exercised by host tests.</p></div>
+          <div class="status-row"><span class="flag done">IMPLEMENTED</span><h3>Library & persistence</h3><p>Filtering, sorting, search, focus, import/delete flows and versioned A/B CBOR state with CRC recovery cover Library, settings, checkpoints, app context and boot-loop protection. Reader-state flushing is centralized so Back, Sleep and Power Off follow the same persistence rules.</p></div>
           <div class="status-row"><span class="flag done">IMPLEMENTED</span><h3>Rendering boundary</h3><p>A 1-bit framebuffer separates UI rendering from panel transport. FreeType uses the same Noto Sans face for pagination metrics and monochrome glyph rasterization.</p></div>
           <div class="status-row"><span class="flag done">IMPLEMENTED</span><h3>ESP-IDF integration</h3><p>The board target includes SDMMC/FAT storage, SSD1677 refresh paths, button polling and logical dispatch, AXP2101 power service, Wi-Fi policy and a persistent DeviceRuntime loop.</p></div>
           <div class="status-row"><span class="flag progress">VALIDATION</span><h3>Physical behavior</h3><p>Panel quality, refresh timing, power draw, wake behavior and real-device interaction still require measurement on the shipped reference board.</p></div>
@@ -123,12 +123,12 @@
       <div class="shell">
         <div class="section-intro">
           <div><p class="eyebrow">BOOK FORMATS</p><h2>Scoped without pretending.</h2></div>
-          <p>Reader v1 is designed around EPUB, FB2 and TXT behind one normalized parser contract. Only TXT is currently wired through the concrete Book Loader; unsupported formats fail explicitly instead of being silently misrepresented as working.</p>
+          <p>Reader v1 now opens TXT, EPUB and FB2 through the same normalized Book Loader path. EPUB and FB2 use bounded/ranged reads and memory-aware parsing, while stale semantic checkpoints fall back safely instead of turning a changed book into an open failure.</p>
         </div>
         <div class="format-grid">
           <div class="format"><strong>TXT</strong><span>WORKING</span><p>Concrete parser, loader path, pagination and ReaderSession flow exist now.</p></div>
-          <div class="format"><strong>EPUB</strong><span>SCOPED</span><p>Part of Reader v1 and the normalized parser model; concrete parser implementation is still pending.</p></div>
-          <div class="format"><strong>FB2</strong><span>SCOPED</span><p>Shares the same planned parser boundary as EPUB; concrete adapter is not implemented yet.</p></div>
+          <div class="format"><strong>EPUB</strong><span>WORKING</span><p>ZIP-backed parser, manifest/spine/navigation handling, ranged source reads, bounded memory guards and mixed-case metadata regressions are implemented.</p></div>
+          <div class="format"><strong>FB2</strong><span>WORKING</span><p>Streaming/ranged parsing, section navigation, metadata extraction, mixed-case XML handling and stale-position recovery are implemented.</p></div>
           <div class="format"><strong>PDF</strong><span>DEFERRED</span><p>Explicitly outside the first reader revision so the initial architecture can stay focused.</p></div>
         </div>
       </div>

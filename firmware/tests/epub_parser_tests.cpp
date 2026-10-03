@@ -363,7 +363,45 @@ std::string sampleEpub2() {
 }
 
 
+std::string largePseudoRandomText(
+    std::size_t length
+) {
+    static constexpr char alphabet[] =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz"
+        "0123456789-_";
+
+    std::string out;
+    out.reserve(length);
+
+    std::uint32_t state =
+        0x12345678U;
+
+    for (std::size_t i = 0;
+         i < length;
+         ++i) {
+        state =
+            state * 1664525U +
+            1013904223U;
+
+        out.push_back(
+            alphabet[
+                (state >> 24U) & 0x3FU
+            ]
+        );
+    }
+
+    return out;
+}
+
 std::string sampleLargeRangedEpub() {
+    const std::string chapter =
+        "<html><body><p>" +
+        largePseudoRandomText(
+            192U * 1024U
+        ) +
+        "</p></body></html>";
+
     std::vector<StoredEntry> entries{
         {
             "META-INF/container.xml",
@@ -377,8 +415,8 @@ std::string sampleLargeRangedEpub() {
         },
         {
             "OEBPS/ch1.xhtml",
-            R"(<html><body><p>Only this small chapter is needed.</p></body></html>)",
-            false,
+            chapter,
+            true,
         },
         {
             "unused-large.bin",

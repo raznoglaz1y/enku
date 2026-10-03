@@ -80,6 +80,11 @@ int main() {
         session.previous() ==
         ReaderSessionStatus::BeginningOfBook
     );
+    assert(session.currentPage().has_value());
+    assert(
+        session.currentPage()->first_position.text_offset ==
+        first_start
+    );
 
     assert(session.next() == ReaderSessionStatus::Ready);
     assert(session.currentPage().has_value());
@@ -128,6 +133,59 @@ int main() {
     assert(
         session.currentPage()->first_position.text_offset >=
         after_typography.text_offset
+    );
+
+    std::uint32_t forward_steps = 0;
+    while (session.next() == ReaderSessionStatus::Ready) {
+        ++forward_steps;
+        assert(forward_steps < 128U);
+    }
+
+    assert(
+        session.status() ==
+        ReaderSessionStatus::EndOfBook
+    );
+    assert(session.currentPage().has_value());
+
+    const auto end_position =
+        session.currentPage()->first_position;
+
+    assert(
+        session.next() ==
+        ReaderSessionStatus::EndOfBook
+    );
+    assert(session.currentPage().has_value());
+    assert(
+        session.currentPage()->first_position.book_id ==
+        end_position.book_id
+    );
+    assert(
+        session.currentPage()->first_position.section_id ==
+        end_position.section_id
+    );
+    assert(
+        session.currentPage()->first_position.text_offset ==
+        end_position.text_offset
+    );
+
+    assert(
+        session.previous() ==
+        ReaderSessionStatus::Ready
+    );
+    assert(session.currentPage().has_value());
+    assert(
+        session.currentPage()->first_position.text_offset <
+        end_position.text_offset
+    );
+
+    assert(
+        session.next() ==
+        ReaderSessionStatus::Ready
+    );
+    assert(session.currentPage().has_value());
+    assert(
+        session.currentPage()->first_position.text_offset ==
+        end_position.text_offset
     );
 
     return 0;

@@ -1325,4 +1325,393 @@ ParseResult Fb2Parser::parse(
     return result;
 }
 
+
+ParseResult Fb2Parser::parse(
+    const Fb2RangeSource& source_bytes,
+    const ParserSourceInfo& source
+) const {
+    constexpr std::size_t kChunkBytes =
+        32U * 1024U;
+
+    auto result =
+        parseMetadata(
+            source_bytes,
+            source
+        );
+
+    if (!result.ok()) {
+        return result;
+    }
+
+    result.document.sections.clear();
+    result.document.total_text_length = 0;
+
+    struct SectionFrame {
+        bool root{false};
+        bool has_nested{false};
+        bool capture{true};
+        std::string content;
+    };
+
+    std::vector<SectionFrame> frames;
+    std::string tag;
+    bool in_tag = false;
+    bool in_body = false;
+    bool finished_body = false;
+    std::uint64_t global_offset = 0;
+    std::uint32_t section_number = 0;
+
+    const auto isOpeningTag =
+        [](std::string_view value,
+           std::string_view name) {
+            if (value.size() < name.size() ||
+                value.substr(
+                    0,
+                    name.size()
+                ) != name) {
+                return false;
+            }
+
+            return value.size() == name.size() ||
+                std::isspace(
+                    static_cast<unsigned char>(
+                        value[name.size()]
+                    )
+                ) ||
+                value[name.size()] == '/';
+        };
+
+    const auto appendLeaf =
+        [&](std::string section_xml,
+            bool root) {
+            std::optional<std::string>
+                section_title;
+
+            const auto lower_section =
+                lower(section_xml);
+
+            const auto title_begin =
+                lower_section.find("<title");
+
+            if (title_begin !=
+                std::string::npos) {
+                const auto title_open_end =
+                    lower_section.find(
+                        '>',
+                        title_begin
+                    );
+
+                const auto title_end =
+                    title_open_end ==
+                            std::string::npos
+                        ? std::string::npos
+                        : lower_section.find(
+                              "</title>",
+                              title_open_end + 1U
+                          );
+
+                if (title_open_end !=
+                        std::string::npos &&
+                    title_end !=
+                        std::string::npos) {
+                    const auto title_text =
+                        stripTags(
+                            std::string_view(
+                                section_xml
+                            ).substr(
+                                title_open_end + 1U,
+                                title_end -
+                                    title_open_end -
+                                    1U
+                            )
+                        );
+
+                    if (!title_text.empty()) {
+                        section_title =
+                            title_text;
+                    }
+
+                    section_xml.erase(
+                        title_begin,
+                        title_end +
+                            std::string(
+                                "</title>"
+                            ).size() -
+                            title_begin
+                    );
+                }
+            }
+
+            const auto parsed =
+                parseSectionBlocks(
+                    section_xml
+                );
+
+            if (parsed.empty()) {
+                return;
+            }
+
+            DocumentSection section;
+            section.id =
+                root
+                    ? "fb2:body"
+                    : "fb2:section:" +
+                        std::to_string(
+                            ++section_number
+                        );
+            section.title =
+                section_title;
+
+            std::uint64_t section_offset = 0;
+
+            for (const auto& parsed_block :
+                 parsed) {
+                TextBlock block;
+                block.type =
+                    parsed_block.type;
+                block.text =
+                    parsed_block.text;
+                block.text_offset =
+                    global_offset +
+                    section_offset;
+
+                section_offset +=
+                    static_cast<std::uint64_t>(
+                        block.text.size()
+                    ) + 1U;
+
+                section.blocks.push_back(
+                    std::move(block)
+                );
+            }
+
+            section.text_length =
+                section_offset;
+            global_offset +=
+                section_offset;
+
+            result.document.sections.push_back(
+                std::move(section)
+            );
+        };
+
+    const auto appendToCurrent =
+        [&](std::string_view bytes) {
+            if (!frames.empty() &&
+                frames.back().capture) {
+                frames.back().content.append(
+                    bytes
+                );
+            }
+        };
+
+    std::uint64_t offset = 0;
+
+    while (offset < source_bytes.size() &&
+           !finished_body) {
+        const auto remaining =
+            source_bytes.size() -
+            offset;
+
+        const auto requested =
+            static_cast<std::size_t>(
+                std::min<std::uint64_t>(
+                    remaining,
+                    kChunkBytes
+                )
+            );
+
+        std::string chunk;
+
+        if (!source_bytes.readRange(
+                offset,
+                requested,
+                chunk
+            ) ||
+            chunk.size() != requested) {
+            result.status =
+                ParserStatus::InvalidSource;
+            result.document.sections.clear();
+            return result;
+        }
+
+        offset +=
+            static_cast<std::uint64_t>(
+                requested
+            );
+
+        for (const char ch : chunk) {
+            if (!in_tag) {
+                if (ch == '<') {
+                    in_tag = true;
+                    tag.clear();
+                    continue;
+                }
+
+                if (in_body) {
+                    appendToCurrent(
+                        std::string_view(
+                            &ch,
+                            1U
+                        )
+                    );
+                }
+
+                continue;
+            }
+
+            if (ch != '>') {
+                tag.push_back(ch);
+                continue;
+            }
+
+            in_tag = false;
+
+            const auto normalized =
+                lower(trim(tag));
+
+            if (isOpeningTag(
+                    normalized,
+                    "body"
+                )) {
+                if (!in_body) {
+                    in_body = true;
+                    frames.push_back(
+                        SectionFrame{
+                            true,
+                            false,
+                            true,
+                            {},
+                        }
+                    );
+                }
+                continue;
+            }
+
+            if (normalized == "/body") {
+                if (in_body) {
+                    if (!frames.empty()) {
+                        auto root =
+                            std::move(
+                                frames.front()
+                            );
+
+                        if (root.root &&
+                            root.capture &&
+                            !root.has_nested) {
+                            appendLeaf(
+                                std::move(
+                                    root.content
+                                ),
+                                true
+                            );
+                        }
+                    }
+
+                    frames.clear();
+                    in_body = false;
+                    finished_body = true;
+                }
+                continue;
+            }
+
+            if (!in_body) {
+                continue;
+            }
+
+            if (isOpeningTag(
+                    normalized,
+                    "section"
+                ) &&
+                (normalized.empty() ||
+                 normalized.front() != '/')) {
+                if (!frames.empty()) {
+                    frames.back().has_nested =
+                        true;
+                    frames.back().capture =
+                        false;
+                    frames.back().content.clear();
+                }
+
+                frames.push_back(
+                    SectionFrame{
+                        false,
+                        false,
+                        true,
+                        {},
+                    }
+                );
+                continue;
+            }
+
+            if (normalized == "/section") {
+                if (frames.size() <= 1U) {
+                    result.status =
+                        ParserStatus::InvalidSource;
+                    result.document.sections.clear();
+                    return result;
+                }
+
+                auto frame =
+                    std::move(
+                        frames.back()
+                    );
+                frames.pop_back();
+
+                if (frame.capture &&
+                    !frame.has_nested) {
+                    appendLeaf(
+                        std::move(
+                            frame.content
+                        ),
+                        false
+                    );
+                }
+                continue;
+            }
+
+            if (!frames.empty() &&
+                frames.back().capture) {
+                frames.back().content.push_back(
+                    '<'
+                );
+                frames.back().content += tag;
+                frames.back().content.push_back(
+                    '>'
+                );
+            }
+        }
+    }
+
+    if (!finished_body ||
+        in_tag ||
+        !frames.empty()) {
+        result.status =
+            ParserStatus::InvalidSource;
+        result.document.sections.clear();
+        return result;
+    }
+
+    if (result.document.sections.empty()) {
+        result.status =
+            ParserStatus::EmptyDocument;
+        return result;
+    }
+
+    result.document.metadata.toc_available =
+        std::any_of(
+            result.document.sections.begin(),
+            result.document.sections.end(),
+            [](const DocumentSection& section) {
+                return section.title.has_value() &&
+                    !section.title->empty();
+            }
+        );
+
+    result.document.total_text_length =
+        global_offset;
+    result.status = ParserStatus::Ok;
+    return result;
+}
+
 } // namespace enku

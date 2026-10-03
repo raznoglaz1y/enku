@@ -145,6 +145,8 @@ int main() {
     assert(app.library.availability_check_active);
     assert(app.library.availability_checked == 0U);
     assert(app.library.availability_total == 2U);
+    assert(app.library.bookAvailabilityPending("first"));
+    assert(app.library.bookAvailabilityPending("second"));
     assert(!app.library.bookAvailable("first"));
     assert(!app.library.bookAvailable("second"));
 
@@ -152,6 +154,8 @@ int main() {
     assert(app.library.availability_check_active);
     assert(app.library.availability_checked == 1U);
     assert(app.library.availability_total == 2U);
+    assert(!app.library.bookAvailabilityPending("first"));
+    assert(app.library.bookAvailabilityPending("second"));
     assert(app.library.bookAvailable("first"));
     assert(!app.library.bookAvailable("second"));
 
@@ -164,6 +168,7 @@ int main() {
     assert(!app.library.availability_check_active);
     assert(app.library.availability_checked == 0U);
     assert(app.library.availability_total == 0U);
+    assert(app.library.availability_pending_books.empty());
     assert(!app.library.bookAvailable("first"));
     assert(!app.library.bookAvailable("second"));
 
@@ -177,6 +182,7 @@ int main() {
     assert(!app.library.availability_check_active);
     assert(app.library.availability_checked == 2U);
     assert(app.library.availability_total == 2U);
+    assert(app.library.availability_pending_books.empty());
     assert(app.library.bookAvailable("first"));
     assert(app.library.bookAvailable("second"));
     assert(app.library.unavailable_books.empty());

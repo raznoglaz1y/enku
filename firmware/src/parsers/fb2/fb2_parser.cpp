@@ -1332,6 +1332,8 @@ ParseResult Fb2Parser::parse(
 ) const {
     constexpr std::size_t kChunkBytes =
         32U * 1024U;
+    constexpr std::size_t kMaxLeafSectionBytes =
+        4U * 1024U * 1024U;
 
     auto result =
         parseMetadata(
@@ -1495,14 +1497,28 @@ ParseResult Fb2Parser::parse(
             );
         };
 
+    bool section_limit_exceeded = false;
+
     const auto appendToCurrent =
         [&](std::string_view bytes) {
-            if (!frames.empty() &&
-                frames.back().capture) {
-                frames.back().content.append(
-                    bytes
-                );
+            if (frames.empty() ||
+                !frames.back().capture) {
+                return;
             }
+
+            auto& content =
+                frames.back().content;
+
+            if (bytes.size() >
+                    kMaxLeafSectionBytes ||
+                content.size() >
+                    kMaxLeafSectionBytes -
+                        bytes.size()) {
+                section_limit_exceeded = true;
+                return;
+            }
+
+            content.append(bytes);
         };
 
     std::uint64_t offset = 0;
@@ -1672,13 +1688,16 @@ ParseResult Fb2Parser::parse(
 
             if (!frames.empty() &&
                 frames.back().capture) {
-                frames.back().content.push_back(
-                    '<'
-                );
-                frames.back().content += tag;
-                frames.back().content.push_back(
-                    '>'
-                );
+                appendToCurrent("<");
+                appendToCurrent(tag);
+                appendToCurrent(">");
+            }
+
+            if (section_limit_exceeded) {
+                result.status =
+                    ParserStatus::InvalidSource;
+                result.document.sections.clear();
+                return result;
             }
         }
     }

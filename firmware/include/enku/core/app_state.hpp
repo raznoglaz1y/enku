@@ -34,6 +34,7 @@ struct LibraryState {
     std::uint32_t total_matches{0};
     std::optional<BookId> focused_book;
     std::vector<BookId> unavailable_books;
+    std::vector<BookId> availability_pending_books;
     bool availability_check_active{false};
     std::uint32_t availability_checked{0};
     std::uint32_t availability_total{0};
@@ -46,6 +47,16 @@ struct LibraryState {
             }
         }
         return true;
+    }
+
+    bool bookAvailabilityPending(const BookId& book_id) const {
+        for (const auto& pending :
+             availability_pending_books) {
+            if (pending == book_id) {
+                return true;
+            }
+        }
+        return false;
     }
 
     bool search_origin_valid{false};

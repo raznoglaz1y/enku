@@ -178,6 +178,22 @@ EspIdfDeviceRuntime::EspIdfDeviceRuntime(
 
 DeviceRuntimeInitStatus
 EspIdfDeviceRuntime::begin() {
+    switch (platform_.removableStorageStatus()) {
+        case SdMountStatus::Ok:
+            storage_.appState().storage.removable =
+                RemovableStorageStatus::Ready;
+            break;
+        case SdMountStatus::DirectorySetupFailed:
+            storage_.appState().storage.removable =
+                RemovableStorageStatus::SetupError;
+            break;
+        case SdMountStatus::MountFailed:
+        default:
+            storage_.appState().storage.removable =
+                RemovableStorageStatus::Unavailable;
+            break;
+    }
+
     if (!isReaderBoardProfileValid(
             platform_.boardProfile(),
             EspIdfEpaper::kWidth,

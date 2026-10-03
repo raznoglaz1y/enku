@@ -142,10 +142,16 @@ int main() {
         RemovableStorageStatus::Ready;
     reconciler.beginIncremental();
     assert(reconciler.active());
+    assert(app.library.availability_check_active);
+    assert(app.library.availability_checked == 0U);
+    assert(app.library.availability_total == 2U);
     assert(!app.library.bookAvailable("first"));
     assert(!app.library.bookAvailable("second"));
 
     assert(!reconciler.step(1U));
+    assert(app.library.availability_check_active);
+    assert(app.library.availability_checked == 1U);
+    assert(app.library.availability_total == 2U);
     assert(app.library.bookAvailable("first"));
     assert(!app.library.bookAvailable("second"));
 
@@ -155,6 +161,9 @@ int main() {
         RemovableStorageStatus::Unavailable;
     assert(reconciler.step(1U));
     assert(!reconciler.active());
+    assert(!app.library.availability_check_active);
+    assert(app.library.availability_checked == 0U);
+    assert(app.library.availability_total == 0U);
     assert(!app.library.bookAvailable("first"));
     assert(!app.library.bookAvailable("second"));
 
@@ -165,6 +174,9 @@ int main() {
     assert(!reconciler.step(1U));
     assert(reconciler.step(1U));
     assert(!reconciler.active());
+    assert(!app.library.availability_check_active);
+    assert(app.library.availability_checked == 2U);
+    assert(app.library.availability_total == 2U);
     assert(app.library.bookAvailable("first"));
     assert(app.library.bookAvailable("second"));
     assert(app.library.unavailable_books.empty());

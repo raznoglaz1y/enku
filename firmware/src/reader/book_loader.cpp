@@ -314,8 +314,21 @@ BookLoadResult ReaderBookLoader::open(
         request.viewport,
     };
 
-    const auto session_status =
+    auto session_status =
         session_->open(layout_request);
+
+    if (session_status != ReaderSessionStatus::Ready &&
+        request.saved_position.has_value()) {
+        layout_request.anchor =
+            SemanticPosition{
+                request.book_id,
+                "",
+                0,
+            };
+
+        session_status =
+            session_->open(layout_request);
+    }
 
     if (session_status != ReaderSessionStatus::Ready) {
         clearOwnedReader();

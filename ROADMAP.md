@@ -297,6 +297,7 @@ Reproducible build, documentation, case files and first tagged version.
 - [x] Close R0.1 connector/frontlight-remap/EPD-HV placement blockers
 - [x] Start real KiCad R0.1 worktree with 54 × 94 mm portrait four-layer PCB shell
 - [x] Start PCB placement baseline with dual-contact EPD/FL connectors, EPD boost parts and Pro frontlight zone
+- [x] Start hierarchical KiCad R0.1 schematic capture (Power / MCU+IO / EPD-HV / Frontlight / Connectors)
 - [ ] Capture the first complete KiCad schematic and run ERC
 - [ ] Freeze schematic only after ERC + exact footprint review
 

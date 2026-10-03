@@ -262,8 +262,8 @@ int main() {
   <section>
    <title><p>Part</p></title>
    <section>
-    <title><p>Chunked Chapter</p></title>
-    <p>)";
+    <TITLE><P>Chunked Chapter</P></TITLE>
+    <P class="body">)";
 
         large_fb2 +=
             std::string(
@@ -272,7 +272,7 @@ int main() {
             );
 
         large_fb2 +=
-            R"(</p>
+            R"(</P>
    </section>
   </section>
   <section>

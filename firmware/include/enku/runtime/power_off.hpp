@@ -13,6 +13,7 @@ enum class PowerOffStatus : std::uint8_t {
     CheckpointFailed,
     LibraryUpdateFailed,
     ContextSaveFailed,
+    PowerUnavailable,
 };
 
 class PowerOffCoordinator {

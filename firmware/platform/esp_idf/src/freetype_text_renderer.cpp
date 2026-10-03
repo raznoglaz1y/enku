@@ -1057,6 +1057,11 @@ bool FreeTypeTextRenderer::renderLibrary(
         app_state.library.mode ==
         LibraryQueryMode::Search;
 
+    const bool storage_warning =
+        !search_mode &&
+        app_state.storage.removable !=
+            RemovableStorageStatus::Ready;
+
     if (!drawTextAt(
             search_mode
                 ? "SEARCH LIBRARY"
@@ -1111,9 +1116,7 @@ bool FreeTypeTextRenderer::renderLibrary(
 
     int start_y = 78;
 
-    if (!search_mode &&
-        app_state.storage.removable !=
-            RemovableStorageStatus::Ready) {
+    if (storage_warning) {
         drawRect(
             24,
             70,
@@ -1212,7 +1215,7 @@ bool FreeTypeTextRenderer::renderLibrary(
                 : 5U)
             : (orientation == Orientation::Portrait
                 ? 10U
-                : 6U);
+                : (storage_warning ? 5U : 6U));
 
     std::size_t focused_index = 0U;
     bool has_focus = false;

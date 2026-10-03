@@ -281,7 +281,8 @@ Reproducible build, documentation, case files and first tagged version.
 - [x] Select Dock power-mux quality baseline: TPS2121; discrete cost-down comparison still required
 - [ ] Select exact microSD connector after enclosure-edge test
 - [ ] Select final low-noise page tact switches
-- [ ] Validate Pro frontlight current / driver topology; 2× TPS61165 reserved as prototype baseline
+- [x] Select Pro frontlight driver architecture: single TPS923610 boost + warm/cool selection
+- [ ] Verify FL0426-S01C pin mapping and validate warm/cool current/blending on hardware
 - [ ] Validate Qi coil / receiver / ferrite stack for Pro Wireless
 - [ ] Complete per-variant populated / DNP BOM
 - [x] Define PCBWay prototype path: fabrication + SMT assembly package, DFM gates and sponsored-vs-unsponsored cost separation

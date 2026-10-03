@@ -320,3 +320,19 @@ The R0.1 schematic should now be captured from the named-net/block specification
 
 Current display mechanical/electrical freeze state:
 [Display freeze matrix R0.1](display-freeze-r01.md)
+
+
+## EPD-HV sourcing baseline
+
+The R0.1 SSD1677 reference circuit now has a concrete sourcing baseline:
+
+- Q1: Vishay SI1308EDL-T1-GE3 preferred for prototype;
+- D1-D3: MBR0530;
+- R_RESE: 2.2 Ω / 1% / 0805;
+- L1: 47 µH, exact production MPN still open;
+- HV capacitors: 4.7 µF / 25 V / 0805 X5R/X7R and 1 µF / 25 V X7R according to the SSD1677 reference design.
+
+Cost-down alternatives may only replace these after the first real EPD rail measurements.
+
+See:
+[EPD-HV components R0.1](epd-hv-components-r01.md)

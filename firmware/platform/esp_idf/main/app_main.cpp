@@ -947,6 +947,20 @@ extern "C" void app_main(void) {
         return;
     }
 
+    if (!platform.powerAvailable()) {
+        ESP_LOGW(
+            kTag,
+            "PMU unavailable; continuing in degraded mode without battery telemetry, suspend or software power-off"
+        );
+    }
+
+    if (!platform.networkAvailable()) {
+        ESP_LOGW(
+            kTag,
+            "Wi-Fi unavailable; continuing in offline mode"
+        );
+    }
+
 #if CONFIG_ENKU_BRINGUP_SMOKE_TESTS
     ESP_LOGI(kTag, "Hardware bring-up smoke tests enabled");
 

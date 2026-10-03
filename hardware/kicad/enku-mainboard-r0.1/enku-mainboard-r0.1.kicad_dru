@@ -1,0 +1,12 @@
+(version 1)
+
+# USB4105 manufacturer-defined geometry:
+# GCT's recommended PCB layout uses 0.65 mm locating NPTHs next to the
+# duplicated A1/B12 and A12/B1 0.6 x 1.15 mm GND lands. With this exact
+# geometry KiCad resolves 0.1944 mm hole-to-copper clearance.
+# PCBWay publishes 0.20 mm as the normal NPTH-to-copper target and
+# 0.15 mm as the minimum capability. Keep the GCT land pattern intact
+# and relax only the internal J_USB pair check.
+(rule "USB4105 internal locating-peg clearance"
+    (condition "A.memberOfFootprint('J_USB') && B.memberOfFootprint('J_USB')")
+    (constraint hole_clearance (min 0.19mm)))

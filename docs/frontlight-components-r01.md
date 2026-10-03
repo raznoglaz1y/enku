@@ -1,6 +1,6 @@
 # ENKU Pro R0.1 — frontlight component freeze pass
 
-Status: **prototype electrical values selected / exact 6-pin FPC mapping still blocks PCB fabrication**
+Status: **prototype electrical values selected / remap network removes 6-pin mapping as a PCB-respin blocker**
 
 ## Goal
 
@@ -158,17 +158,23 @@ Connector class:
 Candidate family:
 **Hirose FH34SRJ-6S-0.5SH(50)**
 
-Do not freeze pin numbering until the current Good Display FL0426-S01C drawing is directly checked.
+Use the dual-contact **Hirose FH34SRJ-6S-0.5SH(50)** so FPC contact side is no longer a PCB-layout blocker.
 
-Until then, schematic symbol pins must remain:
-- FL_PIN1
-- FL_PIN2
-- FL_PIN3
-- FL_PIN4
-- FL_PIN5
-- FL_PIN6
+R0.1 keeps the connector pins as raw nets:
+- FL_RAW1
+- FL_RAW2
+- FL_RAW3
+- FL_RAW4
+- FL_RAW5
+- FL_RAW6
 
-with explicit net-tie/jumper mapping only after verification.
+A small 0 Ω remap network connects the raw pins to:
+- FL_LED_PLUS
+- FL_WARM_RETURN
+- FL_COOL_RETURN
+- unused/DNP positions.
+
+This lets the first board adapt to the delivered panel pin order without a PCB respin. The production revision should collapse the remap network once the actual panel lot is verified.
 
 ## Protection
 
@@ -202,15 +208,18 @@ The **bonded Pro panel and enclosure mechanics**, not the driver circuit, should
 | BSS138 branch FETs | prototype candidate |
 | 4.7 µF / 50 V output cap | selected |
 | 6-pin connector class | selected |
-| exact FL pin map | BLOCKER |
+| exact FL pin map | first-article validation; remap network prevents PCB respin |
 | continuous warm/cool blending | test item |
 | exact production alternates | post-prototype cost-down |
 
 ## PCBWay gate
 
-Do not populate the Pro frontlight section until:
-- Good Display current 6-pin mapping is verified;
-- connector contact side is confirmed;
-- LED polarity is confirmed;
-- current direction is confirmed;
-- warm/cool channel identity is confirmed.
+The common PCB may proceed with the dual-contact connector and remap network.
+
+Before locking the **production** Pro population, verify:
+- delivered panel pin mapping;
+- LED polarity;
+- current direction;
+- warm/cool channel identity.
+
+For R0.1, populate the remap resistors only after continuity-checking the first panel sample.

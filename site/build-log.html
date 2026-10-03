@@ -131,6 +131,55 @@
       <div class="shell">
 
         <div class="log-date">
+          <div class="date-sticky"><div class="day">03 Oct</div><div class="year">2026</div></div>
+          <div class="entries">
+
+            <article class="entry">
+              <div class="entry-top"><span class="entry-type">FIRMWARE · EPUB / FB2</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/96dc56bf1a9e46796773750cfa0d8a1f3f0e8703" target="_blank" rel="noreferrer">96dc56b ↗</a></div>
+              <h2>Book parsing moves toward bounded random access.</h2>
+              <p>The book pipeline no longer assumes that an entire archive must be treated as one in-memory blob. ZIP-backed EPUB work gained ranged reads, POSIX file-store support and regression coverage, while metadata-only EPUB and FB2 paths are exercised independently.</p>
+              <ul><li>bounded random-access ZIP source;</li><li>ranged reads through the file-store boundary;</li><li>metadata-only EPUB and FB2 regression coverage;</li><li>better fit for ESP32-S3 memory limits and large books.</li></ul>
+              <div class="entry-note">This is a product-level change: the reader is being shaped around constrained hardware rather than depending on desktop-class memory assumptions.</div>
+            </article>
+
+            <article class="entry">
+              <div class="entry-top"><span class="entry-type">HARDWARE · CUSTOM MAINBOARD</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/72fa87429b4f2292edd7234053eca9d62f53701b" target="_blank" rel="noreferrer">72fa874 ↗</a></div>
+              <h2>The custom ENKU mainboard becomes a real engineering track.</h2>
+              <p>The project now has a portrait-first R0.1 architecture instead of only a reference-development-board plan. The SSD1677 raw-panel integration path, external high-voltage architecture and Base/Pro display family are documented as a schematic baseline with explicit fabrication blockers.</p>
+              <ul><li>Base target: GDEY0397T81P;</li><li>Pro target: GDEY0426T82-FL01C with warm/cool frontlight;</li><li>shared 24-pin SSD1677 interface direction;</li><li>EPD high-voltage booster kept reference-driven rather than guessed.</li></ul>
+            </article>
+
+            <article class="entry">
+              <div class="entry-top"><span class="entry-type">HARDWARE · PIN MAP</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/f0e6d65e3ab92fa16c9019174f68377bc7778a63" target="_blank" rel="noreferrer">f0e6d65 ↗</a></div>
+              <h2>R0.1 gets a pin budget that accounts for the actual N16R8 module.</h2>
+              <p>The custom-board GPIO map now protects ESP32-S3 strapping, native USB and N16R8 memory-related pins while fitting shared EPD/microSD SPI, four physical controls, BMI270, Hall wake, battery sensing, Dock detection and Pro-only lighting controls.</p>
+              <div class="entry-note">The old assumption that GPIO35–37 were free has been removed for the N16R8 target.</div>
+            </article>
+
+            <article class="entry">
+              <div class="entry-top"><span class="entry-type">POWER · PRODUCT VARIANTS</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/9d6e32d0843c5c064b07bb83fc18412f747e4d3a" target="_blank" rel="noreferrer">9d6e32d ↗</a></div>
+              <h2>One power architecture now spans Base, Dock, Pro and Wireless.</h2>
+              <p>R0.1 converged on BQ25185 PowerPath, TPS2121 as the quality-baseline USB/Dock source selector and TPS63031 as the first 3.3 V buck-boost candidate. Hard power-off is designed to kill the system rail while leaving charging available.</p>
+              <ul><li>USB-C remains the universal charge/data path;</li><li>4-pin pogo Dock gets explicit DOCK_DETECT;</li><li>Pro Wireless routes Qi into the common charging architecture;</li><li>Pro frontlight has an independent warm/cool prototype strategy.</li></ul>
+            </article>
+
+            <article class="entry">
+              <div class="entry-top"><span class="entry-type">PRODUCT · OPEN HARDWARE</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/19700f69" target="_blank" rel="noreferrer">19700f6 ↗</a></div>
+              <h2>Open source and future kit sales are treated as the same product strategy.</h2>
+              <p>ENKU now explicitly separates open design rights from the ENKU trademark and models commercial kits using full COGS rather than raw component cost. Electronics, Base, Cover, Pro, Pro Wireless and Dock have individual BOM ceilings so open-source availability does not force unsustainable pricing.</p>
+              <div class="entry-note">Prototype fabrication and assembly are being planned around PCBWay as the preferred sponsored/order path. Sponsorship is treated as prototype support only; future Kickstarter or website margins must still work against unsponsored production COGS.</div>
+            </article>
+
+            <article class="entry">
+              <div class="entry-top"><span class="entry-type">PROJECT · WEBSITE</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/f89f3175bba4c124b0579abe858d4006836d3547" target="_blank" rel="noreferrer">f89f317 ↗</a></div>
+              <h2>Dark mode receives a real cross-page consistency pass.</h2>
+              <p>The first dark-theme implementation exposed page-specific hard-coded backgrounds and two different secondary-button class conventions. Shared theme overrides now normalize tables, grid surfaces, notes, buttons, flow arrows, support cards and muted typography across the site.</p>
+            </article>
+
+          </div>
+        </div>
+
+        <div class="log-date">
           <div class="date-sticky"><div class="day">02 Oct</div><div class="year">2026</div></div>
           <div class="entries">
 
@@ -194,7 +243,7 @@
 
     <section class="log-footer-cta">
       <div class="shell log-footer-inner">
-        <div><p class="eyebrow">WHAT COMES NEXT</p><h2>The first hardware entry.</h2><p>When the board arrives, the next log entry will move from compile-verified platform work to photographs, measurements and real e-paper behavior.</p></div>
+        <div><p class="eyebrow">WHAT COMES NEXT</p><h2>From architecture to the first ENKU PCB.</h2><p>The next hardware pass closes the remaining current-panel FPC and EPD-HV references, freezes exact BOM parts and turns the R0.1 block architecture into a schematic ready for ERC, placement and a PCBWay prototype quote/order.</p></div>
         <div class="cta-links">
           <a class="button button-secondary" href="/status">Project status <span>→</span></a>
           <a class="button" href="https://github.com/raznoglaz1y/enku" target="_blank" rel="noreferrer">Follow on GitHub <span>↗</span></a>

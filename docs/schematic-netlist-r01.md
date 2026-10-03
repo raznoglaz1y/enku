@@ -1,6 +1,6 @@
 # ENKU Mainboard R0.1 — schematic net / block specification
 
-Status: **schematic-capture baseline / EPD-HV exact parts still blocked**
+Status: **schematic-capture baseline / exact-footprint and ERC review in progress**
 
 Purpose: define the actual electrical structure that the KiCad schematic must implement before placement/routing.
 
@@ -23,11 +23,11 @@ Dock +5V   -> Dock protection -> TPS2121 IN2
 TPS2121 OUT -> VBUS_EXT -> BQ25185 IN
 BQ25185 BAT -> VBAT
 BQ25185 SYS -> VSYS
-VSYS -> TPS63031 -> 3V3_SYS
+VSYS -> TPS63802 -> 3V3_SYS
 ```
 
 R0.1 hard power:
-- physical switch controls TPS63031 EN;
+- physical switch controls TPS63802 EN;
 - charger remains active when 3V3_SYS is off;
 - EPD-HV and frontlight must not remain powered when system-off.
 
@@ -91,22 +91,26 @@ Production battery temperature protection must use the selected battery/NTC solu
 ## 5. 3.3 V system regulator
 
 Reference:
-- U_3V3 — TPS63031 candidate
+- U_3V3 — **TPS63802DLAR**
 
 Nets:
-- IN: `VSYS`
+- VIN: `VSYS`
 - OUT: `3V3_SYS`
 - EN: `SYS_EN`
+- L1/L2: `REG_L1` / `REG_L2`
+- FB: `REG_FB`
+- PG: `REG_PG`
 
 Hard power switch drives `SYS_EN`.
 
-Add:
-- 1.5 µH candidate inductor per reference topology;
-- input/output capacitors per TI reference;
-- test point on VSYS and 3V3_SYS.
+First-spin support network:
+- 0.47 µH Murata DFE201612E-R47M=P2;
+- 10 µF + 100 nF on input;
+- 2 × 22 µF on output;
+- 511 kΩ / 91 kΩ feedback;
+- 100 kΩ PG pull-up.
 
-Fallback:
-- TPS63070 if burst-current validation fails.
+The old TPS63031 candidate is intentionally rejected for R0.1 because boost-mode headroom is too small for simultaneous Wi-Fi + microSD + EPD peaks.
 
 ## 6. ESP32-S3
 

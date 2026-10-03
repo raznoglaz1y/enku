@@ -301,6 +301,56 @@ int main() {
         "Nested body."
     );
 
+
+    {
+        const std::string mixed_nested_fb2 =
+            R"(<?xml version="1.0" encoding="utf-8"?>
+<FiCtIoNbOoK>
+ <DeScRiPtIoN>
+  <TiTlE-InFo>
+   <BoOk-TiTlE>Mixed Nested FB2</BoOk-TiTlE>
+  </TiTlE-InFo>
+ </DeScRiPtIoN>
+ <BoDy>
+  <SeCtIoN>
+   <TiTlE><P>Container</P></TiTlE>
+   <SeCtIoN>
+    <TiTlE><P>Mixed Leaf</P></TiTlE>
+    <P>Mixed body.</P>
+   </SeCtIoN>
+  </SeCtIoN>
+ </BoDy>
+</FiCtIoNbOoK>)";
+
+        const auto mixed_nested =
+            parser.parse(
+                mixed_nested_fb2,
+                source
+            );
+
+        assert(mixed_nested.ok());
+        assert(
+            mixed_nested.document.sections.size() ==
+            1U
+        );
+        assert(
+            mixed_nested.document.sections[0].title ==
+            std::optional<std::string>{
+                "Mixed Leaf"
+            }
+        );
+        assert(
+            mixed_nested.document.sections[0].
+                blocks.size() ==
+            1U
+        );
+        assert(
+            mixed_nested.document.sections[0].
+                blocks[0].text ==
+            "Mixed body."
+        );
+    }
+
     {
         std::string large_fb2 =
             R"(<?xml version="1.0" encoding="utf-8"?>

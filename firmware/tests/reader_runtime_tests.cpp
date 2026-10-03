@@ -482,6 +482,45 @@ int main() {
         ReaderRuntimeResult::Applied
     );
     assert(state.screen == Screen::Reading);
+
+    // Library summary persistence failure is also best-effort during physical
+    // media loss: the live reader must still be torn down.
+    library.update_status = LibraryStatus::PersistenceFailure;
+    state.progress_dirty = true;
+    assert(
+        runtime.handle(RemovableStorageLost{}) ==
+        ReaderRuntimeResult::LibraryUpdateFailed
+    );
+    assert(state.screen == Screen::Library);
+    assert(!state.current_book.has_value());
+    assert(!state.reading_position.has_value());
+    assert(loader.session() == nullptr);
+    library.update_status = LibraryStatus::Ok;
+
+    assert(
+        runtime.handle(OpenBookRequested{"runtime-test"}) ==
+        ReaderRuntimeResult::Applied
+    );
+    assert(state.screen == Screen::Reading);
+
+    // App-context persistence failure follows the same fail-safe rule.
+    context.status = PersistStatus::IoError;
+    state.progress_dirty = true;
+    assert(
+        runtime.handle(RemovableStorageLost{}) ==
+        ReaderRuntimeResult::ContextSaveFailed
+    );
+    assert(state.screen == Screen::Library);
+    assert(!state.current_book.has_value());
+    assert(!state.reading_position.has_value());
+    assert(loader.session() == nullptr);
+    context.status = PersistStatus::Ok;
+
+    assert(
+        runtime.handle(OpenBookRequested{"runtime-test"}) ==
+        ReaderRuntimeResult::Applied
+    );
+    assert(state.screen == Screen::Reading);
     assert(loader.session() != nullptr);
     assert(loader.session()->isOpen());
     assert(state.reading_position.has_value());

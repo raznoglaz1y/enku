@@ -37,7 +37,7 @@ REQUIRED_REFS = {
         "D1_EPD", "D2_EPD", "D3_EPD",
         "C0_EPD_VCI", "C1_EPD_VDD", "C2_EPD_VGH", "C3_EPD_FLY",
         "C4_EPD_VGL", "C5_EPD_VSH1", "C6_EPD_VSH2",
-        "C7_EPD_VSL", "C8_EPD_VCOM",
+        "C7_EPD_VSL", "C8_EPD_VCOM", "R_GDR_PD", "C_EPD_IN",
     ],
     "frontlight": [
         "U_FL", "L_FL", "R_FL_SET", "Q_FL_WARM", "Q_FL_COOL", "J_FL",
@@ -183,6 +183,12 @@ def main() -> int:
         fail(errors, "EPD HV must contain three MBR0530 rectifiers")
     if 'property "Value" "2.2R 1% 0805"' not in epd:
         fail(errors, "EPD HV missing frozen 2.2R RESE current-sense value")
+    if "10uH TYS5040100M-10" not in epd:
+        fail(errors, "EPD HV must use current 3.97-inch 10uH inductor baseline")
+    if 'property "Value" "1M 1%"' not in epd:
+        fail(errors, "EPD HV missing 1M GDR pulldown")
+    if 'property "Reference" "C_EPD_IN"' not in epd:
+        fail(errors, "EPD HV missing local booster input capacitor")
 
     power = texts.get("power", "")
     if 'property "Value" "18k 1%"' not in power:
@@ -193,6 +199,14 @@ def main() -> int:
     mcu = texts.get("mcu", "")
     if "DRV5032FBDBZR" not in mcu:
         fail(errors, "MCU sheet missing frozen Hall sensor MPN DRV5032FBDBZR")
+    if '(number "40"' not in mcu or '(number "41"' not in mcu:
+        fail(errors, "MCU sheet must include ESP32-S3-WROOM-1 pins 40 and 41")
+    if "Hirose DM3AT-SF-PEJM5" not in mcu:
+        fail(errors, "MCU sheet missing exact Hirose microSD MPN")
+
+    conn = texts.get("connectors", "")
+    if "GCT USB4105-GF-A-120" not in conn:
+        fail(errors, "connector sheet missing exact GCT USB-C MPN")
 
     if errors:
         print(f"\nENKU schematic structural gate: FAIL ({len(errors)} issue(s))")

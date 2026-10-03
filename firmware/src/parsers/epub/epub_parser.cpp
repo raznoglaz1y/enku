@@ -453,72 +453,151 @@ std::string normalizePath(
 std::string stripInlineTags(
     std::string_view markup
 ) {
-    std::string text;
-    text.reserve(markup.size());
+    std::string out;
+    out.reserve(markup.size());
 
     bool in_tag = false;
     std::string tag;
-
-    for (const char ch : markup) {
-        if (!in_tag) {
-            if (ch == '<') {
-                in_tag = true;
-                tag.clear();
-            } else {
-                text.push_back(ch);
-            }
-        } else if (ch == '>') {
-            in_tag = false;
-
-            const auto lowered =
-                lower(trim(tag));
-
-            if (lowered == "br" ||
-                lowered == "br/" ||
-                lowered.rfind(
-                    "br ",
-                    0
-                ) == 0) {
-                if (!text.empty() &&
-                    !std::isspace(
-                        static_cast<unsigned char>(
-                            text.back()
-                        )
-                    )) {
-                    text.push_back(' ');
-                }
-            }
-        } else {
-            tag.push_back(ch);
-        }
-    }
-
-    std::string decoded =
-        xmlDecode(text);
-
-    std::string normalized;
-    normalized.reserve(decoded.size());
     bool previous_space = false;
 
-    for (const char ch : decoded) {
-        const bool space =
-            std::isspace(
-                static_cast<unsigned char>(ch)
-            );
-
-        if (space) {
-            if (!previous_space &&
-                !normalized.empty()) {
-                normalized.push_back(' ');
+    const auto appendSpace =
+        [&]() {
+            if (!out.empty() &&
+                !previous_space) {
+                out.push_back(' ');
+                previous_space = true;
             }
-        } else {
-            normalized.push_back(ch);
+        };
+
+    const auto appendByte =
+        [&](char ch) {
+            const bool space =
+                std::isspace(
+                    static_cast<unsigned char>(
+                        ch
+                    )
+                );
+
+            if (space) {
+                appendSpace();
+            } else {
+                out.push_back(ch);
+                previous_space = false;
+            }
+        };
+
+    std::size_t i = 0;
+
+    while (i < markup.size()) {
+        const char ch = markup[i];
+
+        if (in_tag) {
+            if (ch == '>') {
+                in_tag = false;
+
+                const auto lowered =
+                    lower(trim(tag));
+
+                if (lowered == "br" ||
+                    lowered == "br/" ||
+                    lowered.rfind(
+                        "br ",
+                        0
+                    ) == 0) {
+                    appendSpace();
+                }
+
+                tag.clear();
+            } else {
+                tag.push_back(ch);
+            }
+
+            ++i;
+            continue;
         }
 
-        previous_space = space;
+        if (ch == '<') {
+            in_tag = true;
+            tag.clear();
+            ++i;
+            continue;
+        }
+
+        if (ch != '&') {
+            appendByte(ch);
+            ++i;
+            continue;
+        }
+
+        const auto semi =
+            markup.find(';', i + 1U);
+
+        if (semi == std::string_view::npos) {
+            appendByte(ch);
+            ++i;
+            continue;
+        }
+
+        const auto entity =
+            markup.substr(
+                i + 1U,
+                semi - i - 1U
+            );
+
+        bool decoded = true;
+
+        if (entity == "amp") {
+            appendByte('&');
+        } else if (entity == "lt") {
+            appendByte('<');
+        } else if (entity == "gt") {
+            appendByte('>');
+        } else if (entity == "quot") {
+            appendByte('"');
+        } else if (entity == "apos") {
+            appendByte('\'');
+        } else if (const auto numeric =
+                       numericEntity(entity);
+                   numeric.has_value()) {
+            std::string encoded;
+            encoded.reserve(4U);
+
+            if (appendUtf8(
+                    *numeric,
+                    encoded
+                )) {
+                for (const char byte :
+                     encoded) {
+                    appendByte(byte);
+                }
+            } else {
+                decoded = false;
+            }
+        } else {
+            decoded = false;
+        }
+
+        if (!decoded) {
+            for (std::size_t raw = i;
+                 raw <= semi;
+                 ++raw) {
+                appendByte(markup[raw]);
+            }
+        }
+
+        i = semi + 1U;
     }
 
-    return trim(normalized);
+    while (!out.empty() &&
+           std::isspace(
+               static_cast<unsigned char>(
+                   out.back()
+               )
+           )) {
+        out.pop_back();
+    }
+
+    return out;
 }
 
 struct ParsedBlock {

@@ -712,33 +712,33 @@ std::vector<std::string> authors(
     std::string_view title_info
 ) {
     std::vector<std::string> result;
-    const auto lower_info =
-        lower(title_info);
     std::size_t cursor = 0;
 
     while (true) {
         const auto begin =
-            lower_info.find(
+            asciiIFind(
+                title_info,
                 "<author",
                 cursor
             );
 
-        if (begin == std::string::npos) {
+        if (begin == std::string_view::npos) {
             break;
         }
 
         const auto gt =
-            lower_info.find('>', begin);
+            title_info.find('>', begin);
         const auto end =
-            gt == std::string::npos
-                ? std::string::npos
-                : lower_info.find(
+            gt == std::string_view::npos
+                ? std::string_view::npos
+                : asciiIFind(
+                      title_info,
                       "</author>",
                       gt + 1U
                   );
 
-        if (gt == std::string::npos ||
-            end == std::string::npos) {
+        if (gt == std::string_view::npos ||
+            end == std::string_view::npos) {
             break;
         }
 

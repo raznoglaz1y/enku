@@ -15,10 +15,10 @@ Dock 5V -------/
 Qi 5V ----------> optional Pro Wireless input path
 
 BQ25185 BAT  ---> 1S Li-Po
-BQ25185 SYS  ---> TPS63031 VIN/VINA
-TPS63031 3V3 ---> ESP32-S3 / microSD / logic / control
+BQ25185 SYS  ---> TPS63802 VIN
+TPS63802 3V3 ---> ESP32-S3 / microSD / logic / control
 
-Hard OFF ---> TPS63031 EN low
+Hard OFF ---> TPS63802 EN low
 ```
 
 Important consequence:
@@ -27,7 +27,7 @@ The physical hard-off switch no longer needs to interrupt the battery itself.
 
 BQ25185 remains connected to the battery and external power, so charging continues while the system is hard-off.
 
-TPS63031 provides load disconnect during shutdown, so it is a strong candidate for making the 3.3 V digital rail genuinely off.
+TPS63802 provides true shutdown / load disconnect, so it is a strong candidate for making the 3.3 V digital rail genuinely off.
 
 EPD-HV and frontlight rails must also be disabled in hard-off. They may not bypass the switched system architecture.
 
@@ -113,47 +113,57 @@ For prototypes, an explicit documented test resistor may be used only while the 
 
 ## 3. 3.3 V rail
 
-Primary candidate:
-**TPS63031DSKR**
+First-spin regulator:
+**TPS63802DLAR**
 
 Official reference:
-https://www.ti.com/product/TPS63031
+https://www.ti.com/product/TPS63802
 
-TI fixed-3.3 V reference application:
-- L = **1.5 µH**;
-- input C = **10 µF**;
-- VINA bypass = **0.1 µF**;
-- output = **2 × 10 µF**;
-- fixed 3.3 V output.
+Why R0.1 moved away from TPS63031:
+- TPS63031 has insufficient boost-mode margin for an intentionally simultaneous ESP32-S3 Wi-Fi + microSD + e-paper workload;
+- ENKU should not depend on firmware preventing peak loads from overlapping;
+- TPS63802 provides materially more transient/current headroom while preserving buck-boost operation from a 1S Li-Po.
 
-R0.1 should copy the vendor reference topology and verify exact recommended inductor / capacitor ESR and DC-bias requirements before purchasing parts.
+R0.1 baseline:
+- VIN: `VSYS`;
+- VOUT: `3V3_SYS`;
+- EN: `SYS_EN`;
+- MODE: LOW for power-save mode;
+- PG: `REG_PG`, pulled up with 100 kΩ for diagnostics;
+- inductor: **Murata DFE201612E-R47M=P2, 0.47 µH**;
+- input: 10 µF + local 100 nF;
+- output: **2 × 22 µF**, X5R/X7R, with DC-bias derating checked;
+- feedback: **511 kΩ / 91 kΩ** for the 3.3 V target.
+
+Layout rule:
+- input/output capacitors sit directly at the converter pins;
+- L1/L2-to-inductor loop is extremely short;
+- FB divider stays on the quiet side of the converter and away from L1/L2/SW copper;
+- power ground and control ground join locally at the IC, not through a long shared return.
 
 ### EN / hard power
 
 Preferred architecture:
-- hard switch drives TPS63031 EN;
-- EN OFF = 3V3_SYS physically disabled;
-- charger remains connected and active.
+- hard switch drives TPS63802 EN;
+- EN OFF = `3V3_SYS` physically disabled;
+- BQ25185 remains alive so battery charging still works.
 
 Add:
 - deterministic EN pull state;
-- service/test pad;
-- optional RC only if power-up sequencing actually requires it.
+- service/test pad on `SYS_EN`;
+- test point on `REG_PG`;
+- no firmware dependency for true hard-off.
 
 ### Current-margin gate
 
-TPS63031 is only frozen after a bench stress test with:
+Before production freeze, stress the rail with:
 - ESP32-S3 Wi-Fi transmit burst;
 - microSD write;
-- e-paper refresh activity;
-- maximum expected logic load.
+- e-paper refresh;
+- Pro frontlight control activity where applicable;
+- battery near the low end of the allowed operating range.
 
-TI states up to 800 mA at 3.3 V in step-down conditions, but boost-mode capability is lower.
-
-If this test shows insufficient margin, use a higher-current buck-boost rather than forcing a marginal design.
-
-Fallback candidate:
-**TPS63070**
+Pass criteria are based on measured 3.3 V droop, reset margin and regulator temperature, not merely on nominal current sums.
 
 ## 4. USB-C and Dock source selector
 
@@ -251,69 +261,34 @@ This decision is intentionally not frozen yet.
 Display:
 **GDEY0426T82-FL01C**
 
-Good Display currently specifies:
-- 7 LEDs;
-- warm + cool frontlight;
-- frontlight voltage <= 15 V;
-- frontlight current <= 15 mA;
-- separate 6-pin frontlight FPC.
+R0.1 frontlight baseline:
+- **TPS923610DRLR** boost LED driver;
+- **TDK VLS252012HBX-100M-1, 10 µH**;
+- **15 Ω / 1%** current-sense baseline;
+- **4.7 µF / 50 V** output capacitor;
+- BSS138-family warm/cool return selectors;
+- master `FL_ENABLE` plus independent `FL_WARM_PWM` / `FL_COOL_PWM`;
+- 6-pin dual-contact **FH34SRJ-6S-0.5SH(50)** connector;
+- 18-position DNP 0 Ω remap matrix so first-article FPC continuity can be corrected without a PCB respin.
 
-Reference:
-https://www.good-display.com/product/880.html
-
-### R0.1 quality-baseline driver concept
-
-For prototype validation, reserve enough PCB area for **two independently dimmable boost LED channels**:
-- warm channel;
-- cool channel.
-
-Reference single-channel driver candidate:
-**TPS61165**
-
-Relevant properties:
-- 3–18 V input;
-- up to 38 V output;
-- PWM / one-wire brightness control;
-- 200 mV current-sense reference;
-- open-LED protection.
-
-Reference:
-https://www.ti.com/product/TPS61165
-
-At 12 mA target current, the nominal sense resistor from the 200 mV reference is approximately:
-
-```text
-RSET = 0.2 V / 0.012 A ≈ 16.7 Ω
-```
-
-Use **16.9 Ω / 1%** as the first prototype value only after the new Good Display FPC pinout confirms that each color channel is an independently drivable series string.
-
-Do not freeze the final frontlight driver until:
-- the new GDEY frontlight FPC pinout is verified;
-- warm/cool electrical topology is confirmed;
-- optical minimum brightness is tested.
-
-### Cost target
-
-Two separate drivers are acceptable for the first Pro prototype because they minimize ambiguity and make warm/cool control independent.
-
-For production, investigate a dual-channel driver if it can:
-- reduce BOM/area;
-- preserve very low minimum brightness;
-- preserve separate warm/cool PWM;
-- remain cheaper after passives and assembly.
+The exact warm/cool FPC mapping stays a first-article population decision until the delivered panel is continuity-checked.
 
 ## 9. E-paper HV status
 
-Still a blocker.
+The SSD1677 external HV topology is now captured in the R0.1 schematic.
 
-The Base and Pro displays both use SSD1677-family interfaces, but the board must not invent the EPD high-voltage supply.
+Current 3.97-inch application-circuit baseline:
+- `L_EPD`: **TYS5040100M-10, 10 µH**;
+- `Q_EPD`: IRLML6346TRPBF;
+- D1/D2/D3: MBR0530;
+- `R_RESE`: 2.2 Ω / 1%;
+- `R_GDR_PD`: 1 MΩ;
+- local 4.7 µF booster input capacitor;
+- rail capacitors on VGH/VGL/VSH1/VSH2/VSL/VCOM.
 
-Freeze only after:
-- Good Display reference circuit / adapter schematic is received or verified;
-- all FPC pins are mapped;
-- booster / gate / source rail component ratings are confirmed;
-- layout constraints are known.
+The older 47 µH TYS5040470M-10 is no longer the default. It remains a laboratory alternate only because it shares the TYS5040 land pattern.
+
+Production still requires scope validation of VGH/VGL/VSH/VSL/VCOM on first hardware.
 
 ## 10. Power BOM freeze gates
 
@@ -323,11 +298,11 @@ Power sheet becomes production-frozen only after:
 - BQ25185 thermal charge test;
 - USB + Dock simultaneous-source test;
 - hard-OFF charging test;
-- TPS63031 peak-load test;
+- TPS63802 simultaneous peak-load / droop / thermal test;
 - sleep leakage measurement;
 - Hall wake/sleep validation;
 - Pro frontlight dimming / thermal / optical test;
 - Pro Wireless Qi thermal / alignment / interoperability test;
-- official EPD-HV circuit validation.
+- EPD-HV first-article rail validation.
 
 Until then, this document is the **preferred engineering baseline**, not a fabrication authorization.

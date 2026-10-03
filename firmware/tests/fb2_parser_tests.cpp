@@ -132,6 +132,59 @@ int main() {
         2
     );
 
+
+    {
+        const std::string mixed_case_metadata =
+            R"(<?xml version="1.0" encoding="utf-8"?>
+<FiCtIoNbOoK>
+ <DeScRiPtIoN>
+  <TiTlE-InFo>
+   <BoOk-TiTlE>Mixed Case Metadata</BoOk-TiTlE>
+   <AuThOr><NiCkNaMe>Case Author</NiCkNaMe></AuThOr>
+   <LaNg>en</LaNg>
+  </TiTlE-InFo>
+ </DeScRiPtIoN>
+ <BoDy>
+  <SeCtIoN>
+   <TiTlE><P>Chapter</P></TiTlE>
+   <P>Body.</P>
+  </SeCtIoN>
+ </BoDy>
+</FiCtIoNbOoK>)";
+
+        TrackingFb2RangeSource ranged_metadata(
+            mixed_case_metadata
+        );
+
+        const auto mixed =
+            parser.parseMetadata(
+                ranged_metadata,
+                source
+            );
+
+        assert(mixed.ok());
+        assert(
+            mixed.document.metadata.title ==
+            "Mixed Case Metadata"
+        );
+        assert(
+            mixed.document.metadata.author_display ==
+            "Case Author"
+        );
+        assert(
+            mixed.document.metadata.language ==
+            std::optional<std::string>{"en"}
+        );
+        assert(
+            mixed.document.metadata.toc_available
+        );
+        assert(ranged_metadata.reads > 0U);
+        assert(
+            ranged_metadata.max_read <=
+            32U * 1024U
+        );
+    }
+
     const auto result =
         parser.parse(fb2, source);
 

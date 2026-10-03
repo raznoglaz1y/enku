@@ -79,5 +79,112 @@ int main() {
     const auto invalid = engine.layoutPage(wrong_book);
     assert(!invalid.has_value());
 
+    BookDocument multi;
+    multi.book_id = "multi-section";
+    multi.total_text_length = 52U;
+
+    DocumentSection first_section;
+    first_section.id = "chapter-1";
+    first_section.text_length = 26U;
+    first_section.blocks.push_back(
+        TextBlock{
+            TextBlockType::Paragraph,
+            "Alpha beta gamma delta.",
+            0U,
+        }
+    );
+
+    DocumentSection second_section;
+    second_section.id = "chapter-2";
+    second_section.text_length = 26U;
+    second_section.blocks.push_back(
+        TextBlock{
+            TextBlockType::Paragraph,
+            "Epsilon zeta eta theta.",
+            26U,
+        }
+    );
+
+    multi.sections.push_back(
+        std::move(first_section)
+    );
+    multi.sections.push_back(
+        std::move(second_section)
+    );
+
+    DocumentReaderEngine multi_engine(
+        multi,
+        measurer
+    );
+
+    LayoutRequest multi_request{
+        "multi-section",
+        SemanticPosition{
+            "multi-section",
+            "chapter-1",
+            0U,
+        },
+        TypographySettings{16, 1.0F, 10},
+        Viewport{120, 60},
+    };
+
+    const auto multi_first =
+        multi_engine.layoutPage(
+            multi_request
+        );
+
+    assert(multi_first.has_value());
+    assert(
+        multi_first->first_position.section_id ==
+        "chapter-1"
+    );
+    assert(multi_first->next_anchor.has_value());
+
+    auto resume_request = multi_request;
+    resume_request.anchor =
+        *multi_first->next_anchor;
+
+    const auto resumed =
+        multi_engine.layoutPage(
+            resume_request
+        );
+
+    assert(resumed.has_value());
+    assert(
+        resumed->first_position.book_id ==
+        resume_request.anchor.book_id
+    );
+    assert(
+        resumed->first_position.section_id ==
+        resume_request.anchor.section_id
+    );
+    assert(
+        resumed->first_position.text_offset >=
+        resume_request.anchor.text_offset
+    );
+
+    auto section_resume = multi_request;
+    section_resume.anchor =
+        SemanticPosition{
+            "multi-section",
+            "chapter-2",
+            26U,
+        };
+
+    const auto at_second =
+        multi_engine.layoutPage(
+            section_resume
+        );
+
+    assert(at_second.has_value());
+    assert(
+        at_second->first_position.section_id ==
+        "chapter-2"
+    );
+    assert(
+        at_second->first_position.text_offset ==
+        26U
+    );
+
     return 0;
 }

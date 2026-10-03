@@ -1,6 +1,24 @@
 #include "enku/runtime/reader_state_flush.hpp"
 
 namespace enku {
+namespace {
+
+bool isReadingContext(Screen screen) {
+    switch (screen) {
+        case Screen::Reading:
+        case Screen::ReaderOverlay:
+        case Screen::Search:
+        case Screen::BookFinished:
+        case Screen::ContentsBookmarks:
+        case Screen::AboutBook:
+        case Screen::ReadingSettings:
+            return true;
+        default:
+            return false;
+    }
+}
+
+} // namespace
 
 ReaderStateFlushCoordinator::ReaderStateFlushCoordinator(
     AppState& app_state,
@@ -17,7 +35,8 @@ ReaderStateFlushStatus ReaderStateFlushCoordinator::flush(
     ReaderStateFlushTarget target
 ) {
     const bool has_active_book =
-        app_state_.current_book.has_value();
+        app_state_.current_book.has_value() &&
+        isReadingContext(app_state_.screen);
 
     if (has_active_book) {
         const BookId book_id =

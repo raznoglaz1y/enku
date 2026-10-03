@@ -354,3 +354,19 @@ The exact 6-pin frontlight mapping remains blocked on the current Good Display F
 
 See:
 [Pro frontlight R0.1](frontlight-r01.md)
+
+
+## Pro frontlight component baseline
+
+R0.1 prototype parts now have a concrete baseline:
+- TPS923610DRLR boost driver;
+- 10 µH boost inductor, TDK VLS252012HBX-100M-1 as prototype candidate;
+- 15 Ω / 1% current-set resistor (~13.3 mA nominal);
+- BSS138-family low-side warm/cool selectors;
+- 4.7 µF / 50 V output capacitor;
+- 6-pin / 0.5 mm FPC connector class.
+
+The exact frontlight connector pin map remains blocked on direct verification of the current Good Display FL0426-S01C drawing.
+
+See:
+[Frontlight components R0.1](frontlight-components-r01.md)

@@ -16,7 +16,7 @@ REQUIRED_REFS = {
     "U_SRC", "U_CHG", "U_3V3", "U_FL", "U_USB_ESD",
     "L_EPD", "Q_EPD", "D1_EPD", "D2_EPD", "D3_EPD", "R_RESE",
     "L_FL", "R_FL_SET", "Q_FL_WARM", "Q_FL_COOL",
-    "L_3V3", "SW_POWER",
+    "L_3V3", "R_3V3_FB_TOP", "R_3V3_FB_BOT", "R_3V3_PG_PU", "C_3V3_IN", "C_3V3_IN_HF", "C_3V3_OUT1", "C_3V3_OUT2", "SW_POWER",
     "SW_PREV", "SW_NEXT", "SW_SELECT", "SW_BACK",
 }
 
@@ -189,6 +189,15 @@ def main() -> int:
 
     if "PLACEMENT BASELINE B" not in text:
         errors.append("placement baseline B banner missing")
+    if "TPS63802DLAR" not in text:
+        errors.append("PCB missing TPS63802DLAR first-spin regulator")
+    if "TPS63031" in text:
+        errors.append("obsolete TPS63031 remains on PCB")
+    if "DFE201612E-R47M=P2" not in text:
+        errors.append("PCB missing 0.47uH DFE201612E power inductor")
+    for required_net in ("SYS_EN", "REG_L1", "REG_L2", "REG_FB", "REG_PG"):
+        if f'"{required_net}"' not in text:
+            errors.append(f"PCB missing TPS63802 net {required_net}")
 
     if errors:
         for e in errors:

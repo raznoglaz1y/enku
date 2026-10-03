@@ -16,6 +16,7 @@
   )
   (setup
     (pad_to_mask_clearance 0)
+    (copper_to_edge_clearance 0.4)
     (allow_soldermask_bridges_in_footprints no)
   )
   (net 0 "")
@@ -1717,7 +1718,7 @@
   (segment (start 46.7 34.2) (end 46.0 33.15) (width 0.3) (layer "F.Cu") (net 30))
   (segment (start 46.0 29.85) (end 48.8 29.85) (width 0.3) (layer "F.Cu") (net 26))
   (via (at 48.8 29.85) (size 0.7) (drill 0.35) (layers "F.Cu" "B.Cu") (net 26))
-  (segment (start 48.8 29.85) (end 53.75 28.0) (width 0.3) (layer "B.Cu") (net 26))
+  (segment (start 48.8 29.85) (end 53.75 28.0) (width 0.3) (layer "In1.Cu") (net 26))
   (via (at 53.75 28.0) (size 0.7) (drill 0.35) (layers "F.Cu" "B.Cu") (net 26))
   (segment (start 53.75 28.0) (end 53.75 26.75) (width 0.3) (layer "F.Cu") (net 26))
   (segment (start 46.0 29.85) (end 46.7 30.55) (width 0.3) (layer "F.Cu") (net 26))

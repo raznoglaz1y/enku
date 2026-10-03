@@ -7,6 +7,8 @@
 #include <string_view>
 #include <vector>
 
+#include "parser_memory_budget.hpp"
+
 namespace enku {
 
 enum class ZipArchiveStatus : std::uint8_t {
@@ -45,13 +47,13 @@ public:
     // arbitrary binary assets into RAM; textual EPUB resources are expected
     // to stay comfortably below these bounds.
     static constexpr std::size_t kMaxEntryBytes =
-        4U * 1024U * 1024U;
+        ParserMemoryBudget::kTextResourceBytes;
 
     static constexpr std::size_t kMaxCentralDirectoryBytes =
-        2U * 1024U * 1024U;
+        ParserMemoryBudget::kZipCentralDirectoryBytes;
 
     static constexpr std::uint16_t kMaxEntries =
-        4096U;
+        ParserMemoryBudget::kZipMaxEntries;
 
     explicit ZipArchive(
         std::string_view bytes

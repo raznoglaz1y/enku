@@ -700,7 +700,7 @@
   )
 
   (footprint "Diode_SMD:D_SOD-123" (layer "F.Cu")
-    (at 48.5 41.8)
+    (at 49.2 42.6)
     (property "Reference" "D2_EPD" (at 0 -2.2 0) (layer "F.SilkS"))
     (property "Value" "MBR0530" (at 0 2.2 0) (layer "F.Fab") hide)
     (fp_rect (start -1.85 -0.9) (end 1.85 0.9) (stroke (width 0.15) (type default)) (fill none) (layer "F.SilkS"))

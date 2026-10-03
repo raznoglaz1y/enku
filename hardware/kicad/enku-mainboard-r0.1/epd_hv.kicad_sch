@@ -47,8 +47,8 @@
 					(pin passive line (at 19.54 -8.889999999999999 180) (length 2.54) (name "VSL" (effects (font (size 0.9 0.9)))) (number "22" (effects (font (size 0.9 0.9)))))
 					(pin passive line (at 19.54 -11.429999999999998 180) (length 2.54) (name "VGL" (effects (font (size 0.9 0.9)))) (number "23" (effects (font (size 0.9 0.9)))))
 					(pin passive line (at 19.54 -13.97 180) (length 2.54) (name "VCOM" (effects (font (size 0.9 0.9)))) (number "24" (effects (font (size 0.9 0.9)))))
-					(pin power_in line (at -19.54 -16.51 0) (length 2.54) (name "SHIELD" (effects (font (size 0.9 0.9)))) (number "S1" (effects (font (size 0.9 0.9)))))
-					(pin power_in line (at 19.54 -16.51 180) (length 2.54) (name "SHIELD" (effects (font (size 0.9 0.9)))) (number "S2" (effects (font (size 0.9 0.9)))))
+					(pin passive line (at -19.54 -16.51 0) (length 2.54) (name "SHIELD" (effects (font (size 0.9 0.9)))) (number "S1" (effects (font (size 0.9 0.9)))))
+					(pin passive line (at 19.54 -16.51 180) (length 2.54) (name "SHIELD" (effects (font (size 0.9 0.9)))) (number "S2" (effects (font (size 0.9 0.9)))))
 				)
 			)
 

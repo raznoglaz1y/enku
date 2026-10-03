@@ -26,15 +26,36 @@ jobs:
       - name: KiCad version
         run: kicad-cli version
 
-      - name: Native schematic ERC parse
+      - name: Native schematic ERC report
         run: |
-          kicad-cli sch erc             --output /tmp/enku-r01-erc.rpt             hardware/kicad/enku-mainboard-r0.1/enku-mainboard-r0.1.kicad_sch
+          kicad-cli sch erc \
+            --severity-all \
+            --output /tmp/enku-r01-erc.rpt \
+            hardware/kicad/enku-mainboard-r0.1/enku-mainboard-r0.1.kicad_sch
           cat /tmp/enku-r01-erc.rpt
 
-      - name: Native PCB DRC parse
+      - name: Native PCB DRC report + schematic parity
         run: |
-          kicad-cli pcb drc             --output /tmp/enku-r01-drc.rpt             hardware/kicad/enku-mainboard-r0.1/enku-mainboard-r0.1.kicad_pcb
+          kicad-cli pcb drc \
+            --severity-all \
+            --schematic-parity \
+            --all-track-errors \
+            --output /tmp/enku-r01-drc.rpt \
+            hardware/kicad/enku-mainboard-r0.1/enku-mainboard-r0.1.kicad_pcb
           cat /tmp/enku-r01-drc.rpt
+
+      - name: Summarize routing closure
+        run: |
+          python3 - <<'PY'
+          import pathlib, re
+          pcb = pathlib.Path("hardware/kicad/enku-mainboard-r0.1/enku-mainboard-r0.1.kicad_pcb").read_text()
+          drc = pathlib.Path("/tmp/enku-r01-drc.rpt").read_text()
+          print("segments=", len(re.findall(r"\\(segment\\b", pcb)))
+          print("vias=", len(re.findall(r"\\(via\\b", pcb)))
+          print("unconnected_items=", len(re.findall(r"^\\[unconnected_items\\]:", drc, re.M)))
+          print("clearance_items=", len(re.findall(r"^\\[clearance\\]:", drc, re.M)))
+          print("shorting_items=", len(re.findall(r"^\\[shorting_items\\]:", drc, re.M)))
+          PY
 
       - name: Gate first-spin critical violations
         run: |
@@ -45,7 +66,7 @@ jobs:
             failed=1
           fi
 
-          if grep -E '^\[(shorting_items|clearance|hole_clearance)\]:' /tmp/enku-r01-drc.rpt; then
+          if grep -E '^\[(shorting_items|clearance|hole_clearance|board_edge|copper_edge_clearance)\]:' /tmp/enku-r01-drc.rpt; then
             echo "Critical PCB copper/clearance violation detected."
             failed=1
           fi

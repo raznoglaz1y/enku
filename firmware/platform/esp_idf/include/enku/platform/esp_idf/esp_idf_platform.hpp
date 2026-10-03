@@ -49,6 +49,7 @@ public:
     bool powerAvailable() const;
     bool networkAvailable() const;
     SdMountStatus removableStorageStatus() const;
+    SdMountStatus retryRemovableStorage();
     const BoardProfile& boardProfile() const;
 
 private:

@@ -197,7 +197,7 @@ def main() -> int:
         fail(errors, "power sheet missing 1k BQ25185 ISET baseline")
     if "TPS63802DLAR" not in power:
         fail(errors, "power sheet must use TPS63802DLAR first-spin 3V3 regulator")
-    if "TPS63031" in power:
+    if "TPS63031DSKR" in power or 'lib_id "ENKU:TPS63031' in power or 'symbol "ENKU:TPS63031' in power:
         fail(errors, "obsolete TPS63031 remains in active power schematic")
     if "DFE201612E-R47M=P2" not in power:
         fail(errors, "power sheet missing 0.47uH DFE201612E TPS63802 inductor")

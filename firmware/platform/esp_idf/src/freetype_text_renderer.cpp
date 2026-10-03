@@ -17,6 +17,11 @@ namespace {
 
 constexpr const char* kTag = "ENKU_FONT";
 
+extern const std::uint8_t kEmbeddedNotoSansStart[]
+    asm("_binary_assets_NotoSans_Regular_ttf_start");
+extern const std::uint8_t kEmbeddedNotoSansEnd[]
+    asm("_binary_assets_NotoSans_Regular_ttf_end");
+
 } // namespace
 
 FreeTypeTextRenderer::FreeTypeTextRenderer(
@@ -41,33 +46,59 @@ FreeTypeTextRenderer::~FreeTypeTextRenderer() {
 FontInitStatus FreeTypeTextRenderer::begin(
     std::uint16_t initial_size_px
 ) {
+    if (FT_Init_FreeType(&library_) != 0) {
+        return FontInitStatus::LibraryInitFailed;
+    }
+
+    bool loaded_from_sd = false;
+
     FILE* probe = std::fopen(
         font_path_.c_str(),
         "rb"
     );
 
-    if (probe == nullptr) {
-        ESP_LOGE(
-            kTag,
-            "Font not found: %s",
-            font_path_.c_str()
-        );
-        return FontInitStatus::FontNotFound;
+    if (probe != nullptr) {
+        std::fclose(probe);
+
+        if (FT_New_Face(
+                library_,
+                font_path_.c_str(),
+                0,
+                &face_
+            ) == 0) {
+            loaded_from_sd = true;
+        } else {
+            ESP_LOGW(
+                kTag,
+                "External font invalid, falling back to embedded Noto Sans: %s",
+                font_path_.c_str()
+            );
+        }
     }
 
-    std::fclose(probe);
+    if (face_ == nullptr) {
+        const auto embedded_size =
+            static_cast<FT_Long>(
+                kEmbeddedNotoSansEnd -
+                kEmbeddedNotoSansStart
+            );
 
-    if (FT_Init_FreeType(&library_) != 0) {
-        return FontInitStatus::LibraryInitFailed;
-    }
-
-    if (FT_New_Face(
-            library_,
-            font_path_.c_str(),
-            0,
-            &face_
-        ) != 0) {
-        return FontInitStatus::FaceLoadFailed;
+        if (embedded_size <= 0 ||
+            FT_New_Memory_Face(
+                library_,
+                reinterpret_cast<const FT_Byte*>(
+                    kEmbeddedNotoSansStart
+                ),
+                embedded_size,
+                0,
+                &face_
+            ) != 0) {
+            ESP_LOGE(
+                kTag,
+                "Embedded Noto Sans initialization failed"
+            );
+            return FontInitStatus::FaceLoadFailed;
+        }
     }
 
     if (!ensureSize(initial_size_px)) {
@@ -76,13 +107,16 @@ FontInitStatus FreeTypeTextRenderer::begin(
 
     ESP_LOGI(
         kTag,
-        "Loaded %s (%s)",
+        "Loaded %s (%s) from %s",
         face_->family_name != nullptr
             ? face_->family_name
             : "unknown family",
         face_->style_name != nullptr
             ? face_->style_name
-            : "unknown style"
+            : "unknown style",
+        loaded_from_sd
+            ? "SD override"
+            : "embedded firmware asset"
     );
 
     return FontInitStatus::Ok;

@@ -633,6 +633,52 @@ bool showFontRecovery(
     return platform.refresh().submit(request);
 }
 
+bool showStateStorageRecovery(
+    enku::platform::esp_idf::EspIdfPlatform& platform
+) {
+    auto& framebuffer = platform.framebuffer();
+    framebuffer.clearWhite();
+
+    drawRect(
+        framebuffer.mutableData(),
+        20,
+        20,
+        EspIdfEpaper::kWidth - 40,
+        EspIdfEpaper::kHeight - 40,
+        4
+    );
+    drawText(
+        framebuffer.mutableData(),
+        250,
+        120,
+        "ENKU",
+        16
+    );
+    drawText(
+        framebuffer.mutableData(),
+        205,
+        285,
+        "STATE FAIL",
+        6
+    );
+    drawText(
+        framebuffer.mutableData(),
+        275,
+        350,
+        "REBOOT",
+        5
+    );
+
+    enku::RefreshRequest request;
+    request.refresh_class = enku::RefreshClass::Full;
+    request.reason = enku::RefreshReason::ErrorRecovery;
+    request.generation = 1;
+    request.may_coalesce = false;
+    request.may_defer = false;
+
+    return platform.refresh().submit(request);
+}
+
 bool showBootstrapRecovery(
     enku::platform::esp_idf::EspIdfPlatform& platform,
     enku::platform::esp_idf::DeviceRuntimeInitStatus status
@@ -1108,37 +1154,22 @@ extern "C" void app_main(void) {
     const auto platform_status = platform.begin();
 
     if (platform_status ==
-            enku::platform::esp_idf::PlatformInitStatus::
-                SdMountFailed ||
-        platform_status ==
-            enku::platform::esp_idf::PlatformInitStatus::
-                SdDirectorySetupFailed) {
-        const char* recovery_reason =
-            platform_status ==
-                enku::platform::esp_idf::PlatformInitStatus::
-                    SdDirectorySetupFailed
-                ? "storage directory setup failed"
-                : "storage mount failed";
-
+        enku::platform::esp_idf::PlatformInitStatus::
+            StateStorageFailed) {
         ESP_LOGE(
             kTag,
-            "%s; entering visible recovery mode",
-            recovery_reason
+            "Internal state storage unavailable; entering visible recovery mode"
         );
 
-        if (!showStorageRecovery(
-                platform,
-                platform_status
-            )) {
+        if (!showStateStorageRecovery(platform)) {
             ESP_LOGE(
                 kTag,
-                "Unable to render storage recovery screen"
+                "Unable to render state-storage recovery screen"
             );
         }
 
-        idleStorageRecoveryScreen(
-            platform,
-            recovery_reason
+        idleStaticRecoveryScreen(
+            "internal state storage unavailable"
         );
     }
 
@@ -1170,6 +1201,25 @@ extern "C" void app_main(void) {
             static_cast<unsigned>(platform_status)
         );
         return;
+    }
+
+    switch (platform.removableStorageStatus()) {
+        case enku::platform::esp_idf::SdMountStatus::Ok:
+            break;
+        case enku::platform::esp_idf::SdMountStatus::
+            DirectorySetupFailed:
+            ESP_LOGW(
+                kTag,
+                "Removable storage setup failed; continuing without book storage"
+            );
+            break;
+        case enku::platform::esp_idf::SdMountStatus::MountFailed:
+        default:
+            ESP_LOGW(
+                kTag,
+                "Removable storage unavailable; continuing without book storage"
+            );
+            break;
     }
 
     if (!platform.powerAvailable()) {

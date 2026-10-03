@@ -1524,4 +1524,6 @@
   (segment (start 52.65 40.0) (end 53.4 40.75) (width 0.3) (layer "F.Cu") (net 31))
   (segment (start 53.4 40.75) (end 54.7 41.6) (width 0.3) (layer "F.Cu") (net 31))
   (segment (start 54.7 41.6) (end 55.2 42.3) (width 0.3) (layer "F.Cu") (net 31))
+  (segment (start 53.0 38.0) (end 53.0 40.8) (width 0.3) (layer "F.Cu") (net 30))
+  (segment (start 53.0 40.8) (end 53.2 42.3) (width 0.3) (layer "F.Cu") (net 30))
 )

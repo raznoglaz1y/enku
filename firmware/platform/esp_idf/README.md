@@ -2,7 +2,7 @@
 
 This directory is the first board-specific ENKU target for the Waveshare ESP32-S3-ePaper-3.97.
 
-It now covers the first two bring-up milestones: TF storage and a monochrome SSD1677 full-refresh smoke screen. Input, PMU and Wi-Fi adapters remain later steps.
+It now hosts the reference-board composition root used by the persistent ENKU device runtime: SD-backed storage, SSD1677 refresh, physical input, power, Wi-Fi, FreeType rendering and recovery behavior. Hardware-dependent behavior still requires physical validation on the delivered board.
 
 ## Verified board assumptions
 
@@ -11,12 +11,12 @@ Current board constants come from the official Waveshare ESP32-S3-ePaper-3.97 do
 ### TF / SDMMC
 
 ```text
-CLK  GPIO43
-CMD  GPIO44
-D0   GPIO39
-D1   GPIO40
-D2   GPIO41
-D3   GPIO42
+CLK  GPIO16
+CMD  GPIO17
+D0   GPIO15
+D1   GPIO7
+D2   GPIO8
+D3   GPIO18
 ```
 
 ENKU mounts the FAT filesystem at:
@@ -107,7 +107,19 @@ are resolved beneath `/sdcard`.
 
 The adapter rejects path traversal containing `..`.
 
-This means the existing CBOR Library/settings/checkpoint/import code can later be connected without changing its filesystem-facing APIs.
+The existing CBOR Library/settings/checkpoint/import code is connected through these filesystem-facing APIs.
+
+## Storage recovery
+
+Removable storage failure is user-visible rather than a silent platform abort.
+
+- display, power, network and controls initialize before the SD mount attempt;
+- a mount/init failure shows `SD FAIL / INSERT SD`;
+- a mounted volume that cannot create the required ENKU directories is rolled back completely and shows `SD SETUP FAIL / REPAIR SD`;
+- recovery retries the SD mount every two seconds;
+- once storage becomes usable, the device performs a clean restart and enters the normal boot path.
+
+The reference board does not expose a dedicated card-detect signal to this firmware path, so a failed SDMMC mount is deliberately reported as “not ready” rather than claiming that the card is definitely absent.
 
 ## Current limitations
 

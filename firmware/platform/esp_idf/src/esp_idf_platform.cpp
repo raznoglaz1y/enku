@@ -105,6 +105,12 @@ SdMountStatus EspIdfPlatform::removableStorageStatus() const {
     return removable_storage_status_;
 }
 
+SdMountStatus EspIdfPlatform::retryRemovableStorage() {
+    removable_storage_status_ =
+        sd_card_.mount();
+    return removable_storage_status_;
+}
+
 const BoardProfile& EspIdfPlatform::boardProfile() const {
     return board_profiles::kWaveshareEsp32S3Epaper397;
 }

@@ -28,9 +28,9 @@ PlatformInitStatus EspIdfPlatform::begin() {
         return PlatformInitStatus::PowerInitFailed;
     }
 
-    if (!network_.begin()) {
-        return PlatformInitStatus::NetworkInitFailed;
-    }
+    // Networking is optional for an offline-first reader. Preserve the
+    // failure state for UI/diagnostics, but do not block Library/Reading.
+    network_available_ = network_.begin();
 
     if (!buttons_.begin()) {
         return PlatformInitStatus::ButtonsInitFailed;
@@ -88,6 +88,10 @@ EspIdfNetworkService& EspIdfPlatform::network() {
 
 EspIdfButtons& EspIdfPlatform::buttons() {
     return buttons_;
+}
+
+bool EspIdfPlatform::networkAvailable() const {
+    return network_available_;
 }
 
 const BoardProfile& EspIdfPlatform::boardProfile() const {

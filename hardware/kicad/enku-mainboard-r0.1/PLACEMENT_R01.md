@@ -1,6 +1,6 @@
 # ENKU Mainboard R0.1 — placement baseline B
 
-Status: **mechanical placement baseline C / net sync C / discrete schematic captured / no routing / no KiCad ERC or DRC yet**
+Status: **active R0.1 routing / native KiCad ERC+DRC in CI / power + EPD routing in progress / not fabrication-ready**
 
 Board envelope remains 54 × 94 mm, portrait, four layers.
 
@@ -174,6 +174,25 @@ The first collision review found and corrected:
 - Hall sensor overlap with the frontlight cluster;
 - L_EPD clearances around D1/D2.
 
+### Routing state — 03 Oct 2026
+
+The PCB is no longer a placement-only shell. The current `main` board contains **128 copper segments and 30 vias** plus the board zone definition.
+
+Completed or materially routed areas now include:
+- USB-C VBUS entry and Dock input toward the TPS2121 source selector;
+- a substantial part of the lower power island;
+- EPD VSH2 path from the display connector into the local HV island;
+- controlled layer transitions already present in the active layout.
+
+Still open before routing freeze:
+- finish EPD GDR / RESE and remaining HV rails;
+- complete frontlight switching/current-return routing;
+- finish 3V3 distribution and remaining peripheral/control nets;
+- review ground-return continuity after final zone refill;
+- resolve every remaining native KiCad DRC item and every unrouted connection.
+
+The routing source of truth is the `.kicad_pcb` file plus native KiCad CI. Historical prose below describes how the board reached this state and must not be interpreted as saying that routing has not started.
+
 ### Automatic placement gate
 
 `check_pcb_placement.py` now verifies:
@@ -183,22 +202,22 @@ The first collision review found and corrected:
 - ESP32 orientation;
 - right-side button rail;
 - no component origins in the central Qi keepout;
-- no accidental copper routing before net synchronization;
 - balanced KiCad PCB S-expression.
 
 The GitHub hardware workflow runs this together with the schematic structural gate.
 
 ### Next gate
 
-Pads on the placement-only footprints are intentionally **not electrically authoritative yet**.
+The active engineering gate is now **routing closure and manufacturing review**:
 
-The next engineering step is:
-1. replace placement placeholders with final verified footprints where required;
-2. synchronize schematic nets / pad numbers into the PCB;
-3. run KiCad ERC;
-4. only then begin controlled routing and DRC.
+1. finish the EPD HV island and frontlight routing;
+2. close lower power distribution and remaining control/peripheral nets;
+3. refill copper zones and run native KiCad ERC/DRC;
+4. reach zero unexplained DRC errors and zero unrouted connections;
+5. audit footprint orientation, polarity and assembly access;
+6. generate and visually review Gerber, NC drill, BOM and CPL/PnP outputs.
 
-The board is therefore **placed enough to evaluate architecture and mechanics**, but it is not a fabrication release.
+The board is therefore an **actively routed engineering PCB**, but it is not yet a fabrication release.
 
 
 ## TPS63802 power-island revision

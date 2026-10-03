@@ -135,6 +135,14 @@
           <div class="entries">
 
             <article class="entry">
+              <div class="entry-top"><span class="entry-type">FIRMWARE · RUNTIME RECOVERY</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/02eb795499a7afffc417d089f253cba801e9b198" target="_blank" rel="noreferrer">02eb795 ↗</a></div>
+              <h2>Runtime failures stop disappearing into serial logs.</h2>
+              <p>ENKU now distinguishes isolated action failures from failures of the renderer/refresh runtime itself. A successful cycle clears the failure streak; three consecutive system failures escalate to a built-in APP FAIL recovery screen.</p>
+              <ul><li>status-bar render/refresh failures propagate out of the device runtime;</li><li>a testable RuntimeFailurePolicy owns the three-strike threshold;</li><li>button initialization failure renders INPUT FAIL / REBOOT;</li><li>initial Library render failure renders APP FAIL / REBOOT instead of returning to a dead screen.</li></ul>
+              <div class="entry-note">Visible recovery now covers nearly every software-detectable startup/runtime failure for which the e-paper panel itself is still operational.</div>
+            </article>
+
+            <article class="entry">
               <div class="entry-top"><span class="entry-type">FIRMWARE · BOOT RECOVERY</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/343f044123c4920c83e2273cf3d40d0077d98d36" target="_blank" rel="noreferrer">343f044 ↗</a></div>
               <h2>Rare bootstrap faults become visible on the panel.</h2>
               <p>Two remaining early-boot failure classes now render built-in recovery screens without depending on FreeType: a board-profile mismatch and an unrecoverable persisted boot state.</p>

@@ -396,6 +396,47 @@ int main() {
     assert(state.reading_position.has_value());
     assert(state.reading_position->text_offset == saved_offset);
 
+    // Losing removable storage while reading must preserve the visible
+    // semantic position in internal state, close the live session and return
+    // to Library. The Library runtime owns the subsequent warning redraw.
+    const auto storage_loss_offset =
+        state.reading_position->text_offset;
+    const auto checkpoints_before_storage_loss =
+        checkpoint.calls;
+
+    state.progress_dirty = true;
+
+    assert(
+        runtime.handle(RemovableStorageLost{}) ==
+        ReaderRuntimeResult::Applied
+    );
+    assert(
+        checkpoint.calls ==
+        checkpoints_before_storage_loss + 1U
+    );
+    assert(
+        checkpoint.last_position.text_offset ==
+        storage_loss_offset
+    );
+    assert(state.screen == Screen::Library);
+    assert(state.library.focused_book == "runtime-test");
+    assert(!state.current_book.has_value());
+    assert(loader.session() == nullptr);
+    assert(context.saved.has_value());
+    assert(context.saved->screen == Screen::Library);
+
+    // Resume still uses the checkpoint written during storage-loss recovery.
+    assert(
+        runtime.handle(OpenBookRequested{"runtime-test"}) ==
+        ReaderRuntimeResult::Applied
+    );
+    assert(state.screen == Screen::Reading);
+    assert(state.reading_position.has_value());
+    assert(
+        state.reading_position->text_offset ==
+        storage_loss_offset
+    );
+
     const auto checkpoints_before_long_read =
         checkpoint.calls;
 

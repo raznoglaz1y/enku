@@ -13,6 +13,7 @@ firmware/
   include/enku/
     core/
       types.hpp
+      board_profile.hpp
       input.hpp
       power.hpp
       persistence.hpp
@@ -115,6 +116,7 @@ firmware/
           app_main.cpp
         include/enku/platform/esp_idf/
           board.hpp
+          board_profiles.hpp
           esp_idf_sd_card.hpp
           esp_idf_file_store.hpp
           esp_idf_buttons.hpp
@@ -303,11 +305,15 @@ Owns hardware-specific implementations:
 - sleep/wake;
 - clock if required.
 
+Board-specific capability declarations use `BoardProfile` / `BoardCapabilities`: the platform exposes what a board supports without leaking GPIO wiring into reader/runtime code. Reference hardware and unvalidated design targets have distinct maturity states.
+
 Raw board details stay here.
 
 ### services
 
 Defines cross-cutting service contracts used by application/runtime code.
+
+The e-paper refresh path also owns anti-ghosting policy. Fast/partial updates are counted as non-clean updates and a clean full refresh is forced after the configured threshold; the current Good Display-driven default is five.
 
 Examples:
 

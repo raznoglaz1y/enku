@@ -30,6 +30,11 @@ public:
         const ParserSourceInfo& source
     ) const override;
 
+    ParseResult parse(
+        const Fb2RangeSource& source_bytes,
+        const ParserSourceInfo& source
+    ) const;
+
     ParseResult parseMetadata(
         std::string_view bytes,
         const ParserSourceInfo& source

@@ -263,7 +263,7 @@ Reproducible build, documentation, case files and first tagged version.
 - [x] Trademark separated from open hardware/software source
 - [x] Pricing policy fixed: full COGS + sustainable margin, not raw-BOM pricing
 - [x] Kickstarter rule fixed: no launch before a working physical prototype demonstrates marketed core features
-- [x] Power cost/quality shortlist added: BQ25185, TPS2121 baseline, TPS63031 test candidate, TPS63070 fallback, BQ51013C for Pro Wireless
+- [x] Power cost/quality shortlist added: BQ25185, TPS2121, TPS63802 first-spin baseline, BQ51013C for Pro Wireless
 
 
 - [x] Define portrait-first custom-mainboard direction
@@ -279,7 +279,8 @@ Reproducible build, documentation, case files and first tagged version.
 - [ ] Receive Good Display pricing / current reference circuitry for Base and Pro panels; SSD1677 family baseline documented
 - [x] Select charger / power-path baseline: BQ25185; thermal validation still required
 - [x] Select Dock power-mux quality baseline: TPS2121; discrete cost-down comparison still required
-- [ ] Select exact microSD connector after enclosure-edge test
+- [x] Select first-spin 3.3 V regulator: TPS63802DLAR after simultaneous-load margin review
+- [x] Select exact microSD connector: Hirose DM3AT-SF-PEJM5; edge orientation corrected in PCB
 - [ ] Select final low-noise page tact switches
 - [x] Select Pro frontlight driver architecture: single TPS923610 boost + warm/cool selection
 - [x] Freeze Pro frontlight prototype component baseline: TPS923610 + 10 µH + 15 Ω + low-side selectors
@@ -293,7 +294,7 @@ Reproducible build, documentation, case files and first tagged version.
 - [ ] Verify current GDEY0397T81P / GDEY0426T82-FL01C FPC pin tables and Pro 6-pin frontlight pinout directly from the drawings
 - [x] Define schematic block/net baseline for USB/Dock/charge/3V3/ESP32/SD/EPD/IMU/Hall/frontlight/Qi/debug
 - [x] Freeze SSD1677 reference electrical values and R0.1 EPD-HV sourcing candidates
-- [x] Freeze R0.1 EPD-HV inductor: TYS5040470M-10, 47 µH / 1 A / 1.1 A Isat
+- [x] Re-freeze R0.1 EPD-HV inductor from current 3.97-inch reference: TYS5040100M-10, 10 µH; 47 µH retained only as same-footprint lab alternate
 - [x] Close R0.1 connector/frontlight-remap/EPD-HV placement blockers
 - [x] Start real KiCad R0.1 worktree with 54 × 94 mm portrait four-layer PCB shell
 - [x] Start PCB placement baseline with dual-contact EPD/FL connectors, EPD boost parts and Pro frontlight zone

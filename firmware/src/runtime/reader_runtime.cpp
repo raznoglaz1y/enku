@@ -132,6 +132,7 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
     }
 
     app_state_.progress_dirty = false;
+    page_turns_since_checkpoint_ = 0U;
 
     if (context_.save(
             AppRestoreContext{
@@ -204,7 +205,14 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
         return ReaderRuntimeResult::Ignored;
     }
 
-    return applySessionResult(active_session->next());
+    const auto result =
+        applySessionResult(active_session->next());
+
+    if (result == ReaderRuntimeResult::Applied) {
+        recordPageTurnForCheckpoint();
+    }
+
+    return result;
 }
 
 ReaderRuntimeResult ReaderRuntimeController::handle(
@@ -221,7 +229,14 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
         return ReaderRuntimeResult::Ignored;
     }
 
-    return applySessionResult(active_session->previous());
+    const auto result =
+        applySessionResult(active_session->previous());
+
+    if (result == ReaderRuntimeResult::Applied) {
+        recordPageTurnForCheckpoint();
+    }
+
+    return result;
 }
 
 ReaderRuntimeResult ReaderRuntimeController::handle(
@@ -414,6 +429,7 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
             return ReaderRuntimeResult::ContextSaveFailed;
     }
 
+    page_turns_since_checkpoint_ = 0U;
     loader_.close();
     app_state_.library.focused_book = book_id;
     app_state_.screen = Screen::Library;
@@ -524,6 +540,31 @@ ReaderRuntimeResult ReaderRuntimeController::commitVisiblePage(
     }
 
     return submitRefresh(RefreshReason::PageTurn);
+}
+
+void ReaderRuntimeController::recordPageTurnForCheckpoint() {
+    if (page_turns_since_checkpoint_ <
+        kPeriodicCheckpointPageTurns) {
+        ++page_turns_since_checkpoint_;
+    }
+
+    if (page_turns_since_checkpoint_ <
+        kPeriodicCheckpointPageTurns) {
+        return;
+    }
+
+    ReaderStateFlushCoordinator flush(
+        app_state_,
+        library_,
+        checkpoint_,
+        context_
+    );
+
+    if (flush.checkpointProgress() ==
+            ReaderStateFlushStatus::Applied &&
+        !app_state_.progress_dirty) {
+        page_turns_since_checkpoint_ = 0U;
+    }
 }
 
 ReaderRuntimeResult ReaderRuntimeController::submitRefresh(

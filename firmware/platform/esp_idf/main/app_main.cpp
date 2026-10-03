@@ -410,13 +410,63 @@ bool inputSmokeTest(
     return true;
 }
 
+bool showRuntimeRecovery(
+    enku::platform::esp_idf::EspIdfPlatform& platform
+) {
+    auto& framebuffer = platform.framebuffer();
+    framebuffer.clearWhite();
+
+    drawRect(
+        framebuffer.mutableData(),
+        20,
+        20,
+        EspIdfEpaper::kWidth - 40,
+        EspIdfEpaper::kHeight - 40,
+        4
+    );
+    drawText(
+        framebuffer.mutableData(),
+        250,
+        120,
+        "ENKU",
+        16
+    );
+    drawText(
+        framebuffer.mutableData(),
+        215,
+        285,
+        "APP FAIL",
+        7
+    );
+    drawText(
+        framebuffer.mutableData(),
+        275,
+        350,
+        "REBOOT",
+        5
+    );
+
+    enku::RefreshRequest request;
+    request.refresh_class = enku::RefreshClass::Full;
+    request.reason = enku::RefreshReason::ErrorRecovery;
+    request.generation = 1;
+    request.may_coalesce = false;
+    request.may_defer = false;
+
+    return platform.refresh().submit(request);
+}
+
 [[noreturn]] void runApplicationLoop(
-    enku::platform::esp_idf::EspIdfDeviceRuntime& device
+    enku::platform::esp_idf::EspIdfDeviceRuntime& device,
+    enku::platform::esp_idf::EspIdfPlatform& platform
 ) {
     ESP_LOGI(
         kTag,
         "Entering ENKU application loop"
     );
+
+    std::uint8_t consecutive_runtime_failures = 0;
+    constexpr std::uint8_t kRuntimeFailureThreshold = 3;
 
     while (true) {
         const auto now_ms =
@@ -428,14 +478,49 @@ bool inputSmokeTest(
             device.pollInput(now_ms);
 
         if (result ==
-            enku::InputDispatchResult::Failed) {
+            enku::InputDispatchResult::RuntimeFailed) {
+            ++consecutive_runtime_failures;
+
             ESP_LOGE(
                 kTag,
-                "Input dispatch failed; screen=%u",
+                "Runtime refresh/render failure %u/%u; screen=%u",
+                static_cast<unsigned>(
+                    consecutive_runtime_failures
+                ),
+                static_cast<unsigned>(
+                    kRuntimeFailureThreshold
+                ),
                 static_cast<unsigned>(
                     device.storage().appState().screen
                 )
             );
+
+            if (consecutive_runtime_failures >=
+                kRuntimeFailureThreshold) {
+                if (!showRuntimeRecovery(platform)) {
+                    ESP_LOGE(
+                        kTag,
+                        "Unable to render runtime recovery screen"
+                    );
+                }
+
+                idleStaticRecoveryScreen(
+                    "persistent runtime failure"
+                );
+            }
+        } else {
+            consecutive_runtime_failures = 0;
+
+            if (result ==
+                enku::InputDispatchResult::Failed) {
+                ESP_LOGE(
+                    kTag,
+                    "Input action failed; screen=%u",
+                    static_cast<unsigned>(
+                        device.storage().appState().screen
+                    )
+                );
+            }
         }
 
         vTaskDelay(
@@ -574,13 +659,13 @@ bool showBootstrapRecovery(
     }
 }
 
-[[noreturn]] void idleRecoveryScreen(
+[[noreturn]] void idleStorageRecoveryScreen(
     enku::platform::esp_idf::EspIdfPlatform& platform,
     const char* reason
 ) {
     ESP_LOGW(
         kTag,
-        "Recovery screen active: %s; waiting for storage recovery",
+        "Storage recovery screen active: %s",
         reason
     );
 
@@ -610,6 +695,20 @@ bool showBootstrapRecovery(
 
         vTaskDelay(pdMS_TO_TICKS(250));
         esp_restart();
+    }
+}
+
+[[noreturn]] void idleStaticRecoveryScreen(
+    const char* reason
+) {
+    ESP_LOGW(
+        kTag,
+        "Static recovery screen active: %s; reboot required",
+        reason
+    );
+
+    while (true) {
+        vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
 
@@ -987,7 +1086,7 @@ extern "C" void app_main(void) {
             );
         }
 
-        idleRecoveryScreen(
+        idleStorageRecoveryScreen(
             platform,
             recovery_reason
         );
@@ -1088,8 +1187,7 @@ extern "C" void app_main(void) {
             );
         }
 
-        idleRecoveryScreen(
-            platform,
+        idleStaticRecoveryScreen(
             "font initialization failed"
         );
     } else if (
@@ -1115,8 +1213,7 @@ extern "C" void app_main(void) {
             );
         }
 
-        idleRecoveryScreen(
-            platform,
+        idleStaticRecoveryScreen(
             device_status ==
                 enku::platform::esp_idf::DeviceRuntimeInitStatus::
                     BoardProfileMismatch
@@ -1165,6 +1262,9 @@ extern "C" void app_main(void) {
             "ENKU application runtime ready"
         );
 
-        runApplicationLoop(device);
+        runApplicationLoop(
+            device,
+            platform
+        );
     }
 }

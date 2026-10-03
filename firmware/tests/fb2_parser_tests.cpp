@@ -1,10 +1,74 @@
 #include "enku/reader/fb2_parser.hpp"
 
+#include <algorithm>
 #include <cassert>
+#include <cstdint>
 #include <optional>
 #include <string>
 
 using namespace enku;
+
+namespace {
+
+class TrackingFb2RangeSource final
+    : public Fb2RangeSource {
+public:
+    explicit TrackingFb2RangeSource(
+        std::string bytes
+    )
+        : bytes_(std::move(bytes)) {}
+
+    std::uint64_t size() const override {
+        return static_cast<std::uint64_t>(
+            bytes_.size()
+        );
+    }
+
+    bool readRange(
+        std::uint64_t offset,
+        std::size_t length,
+        std::string& out
+    ) const override {
+        ++reads;
+        max_read =
+            std::max(
+                max_read,
+                length
+            );
+
+        if (offset >
+                static_cast<std::uint64_t>(
+                    bytes_.size()
+                ) ||
+            static_cast<std::uint64_t>(
+                length
+            ) >
+                static_cast<std::uint64_t>(
+                    bytes_.size()
+                ) -
+                    offset) {
+            out.clear();
+            return false;
+        }
+
+        out.assign(
+            bytes_,
+            static_cast<std::size_t>(
+                offset
+            ),
+            length
+        );
+        return true;
+    }
+
+    mutable std::uint32_t reads{0};
+    mutable std::size_t max_read{0};
+
+private:
+    std::string bytes_;
+};
+
+} // namespace
 
 int main() {
     Fb2Parser parser;
@@ -183,6 +247,83 @@ int main() {
             blocks[0].text ==
         "Nested body."
     );
+
+    {
+        std::string large_fb2 =
+            R"(<?xml version="1.0" encoding="utf-8"?>
+<FictionBook>
+ <description>
+  <title-info>
+   <book-title>Ranged FB2</book-title>
+   <author><nickname>Chunk Author</nickname></author>
+  </title-info>
+ </description>
+ <body>
+  <section>
+   <title><p>Part</p></title>
+   <section>
+    <title><p>Chunked Chapter</p></title>
+    <p>)";
+
+        large_fb2 +=
+            std::string(
+                96U * 1024U,
+                'Z'
+            );
+
+        large_fb2 +=
+            R"(</p>
+   </section>
+  </section>
+  <section>
+   <title><p>Second Leaf</p></title>
+   <p>Second body.</p>
+  </section>
+ </body>
+</FictionBook>)";
+
+        TrackingFb2RangeSource ranged(
+            std::move(large_fb2)
+        );
+
+        const auto ranged_result =
+            parser.parse(
+                ranged,
+                source
+            );
+
+        assert(ranged_result.ok());
+        assert(ranged.reads > 1U);
+        assert(
+            ranged.max_read <=
+            32U * 1024U
+        );
+        assert(
+            ranged_result.document.metadata.title ==
+            "Ranged FB2"
+        );
+        assert(
+            ranged_result.document.sections.size() ==
+            2U
+        );
+        assert(
+            ranged_result.document.sections[0].title ==
+            std::optional<std::string>{
+                "Chunked Chapter"
+            }
+        );
+        assert(
+            ranged_result.document.sections[0].
+                blocks[0].text.size() ==
+            96U * 1024U
+        );
+        assert(
+            ranged_result.document.sections[1].title ==
+            std::optional<std::string>{
+                "Second Leaf"
+            }
+        );
+    }
 
     const auto unsupported_encoding =
         parser.parse(

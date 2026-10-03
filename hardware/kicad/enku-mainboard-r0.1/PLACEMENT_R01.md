@@ -147,7 +147,7 @@ The PCB now carries the main R0.1 mechanical placement, not just the display isl
 
 | Ref / group | PCB target |
 | --- | --- |
-| U1 ESP32-S3-WROOM-1-N16R8 | x=32.75, y=45.0, rotated 270°, antenna keepout toward left edge |
+| U1 ESP32-S3-WROOM-1-N16R8 | x=32.75, y=45.0, rotated 90°, antenna keepout toward left edge |
 | U_IMU BMI270 | x=28.0, y=80.0, outside the central Qi keepout |
 | U_HALL DRV5032FBDBZR | x=71.0, y=44.5, above the button rail |
 | J_EPD | x=58.0, y=28.0 |

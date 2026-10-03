@@ -21,6 +21,7 @@ public:
     void unmount();
 
     bool mounted() const;
+    bool healthy() const;
     sdmmc_card_t* card() const;
 
 private:

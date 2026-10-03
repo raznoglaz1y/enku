@@ -504,6 +504,12 @@ LibraryRuntimeResult LibraryRuntimeController::handle(
         return LibraryRuntimeResult::Ignored;
     }
 
+    if (!app_state_.library.bookAvailable(
+            *app_state_.library.focused_book
+        )) {
+        return LibraryRuntimeResult::BookUnavailable;
+    }
+
     const auto result =
         reader_.handle(
             OpenBookRequested{

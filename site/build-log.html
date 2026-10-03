@@ -135,6 +135,14 @@
           <div class="entries">
 
             <article class="entry">
+              <div class="entry-top"><span class="entry-type">FIRMWARE · REMOVABLE STORAGE</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/f2402413a06ce46caef8041628c478fd187fb1bf" target="_blank" rel="noreferrer">f240241 ↗</a></div>
+              <h2>microSD stops being a boot dependency and becomes recoverable media.</h2>
+              <p>System state now lives in internal flash while books remain on removable storage. ENKU can reach Library without a card, retry mounting it in the background and detect a card disappearing after boot through the SDMMC status path.</p>
+              <ul><li>missing or broken removable storage no longer blocks normal boot;</li><li>the local web uploader is gated off unless removable storage is Ready;</li><li>runtime card loss preserves the current semantic reading checkpoint in internal flash;</li><li>the live reader session closes safely and returns to Library with a storage warning;</li><li>after remount, the book resumes from the same semantic offset.</li></ul>
+              <div class="entry-note">This separates durable device state from removable book media and makes card removal a recoverable runtime condition instead of a pseudo-device failure.</div>
+            </article>
+
+            <article class="entry">
               <div class="entry-top"><span class="entry-type">FIRMWARE · RUNTIME RECOVERY</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/02eb795499a7afffc417d089f253cba801e9b198" target="_blank" rel="noreferrer">02eb795 ↗</a></div>
               <h2>Runtime failures stop disappearing into serial logs.</h2>
               <p>ENKU now distinguishes isolated action failures from failures of the renderer/refresh runtime itself. A successful cycle clears the failure streak; three consecutive system failures escalate to a built-in APP FAIL recovery screen.</p>

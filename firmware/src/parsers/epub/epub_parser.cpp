@@ -633,6 +633,28 @@ bool asciiIEquals(
     return true;
 }
 
+std::size_t asciiIFind(
+    std::string_view haystack,
+    std::string_view needle,
+    std::size_t start = 0
+) {
+    if (needle.empty()) return std::min(start, haystack.size());
+    if (start > haystack.size() ||
+        needle.size() > haystack.size() - start) {
+        return std::string_view::npos;
+    }
+    const auto last = haystack.size() - needle.size();
+    for (std::size_t pos = start; pos <= last; ++pos) {
+        if (asciiIEquals(
+                haystack.substr(pos, needle.size()),
+                needle
+            )) {
+            return pos;
+        }
+    }
+    return std::string_view::npos;
+}
+
 std::optional<std::pair<
     std::size_t,
     std::size_t
@@ -892,70 +914,34 @@ std::vector<std::string> allTagText(
     std::string_view local_name
 ) {
     std::vector<std::string> values;
-    const std::string lower_xml = lower(xml);
-    const std::string needle =
-        "<" + lower(local_name);
-    const std::string close =
-        "</" + lower(local_name) + ">";
-
+    const std::string needle = "<" + std::string(local_name);
+    const std::string close = "</" + std::string(local_name) + ">";
     std::size_t search = 0;
 
     while (true) {
-        const auto open =
-            lower_xml.find(needle, search);
+        const auto open = asciiIFind(xml, needle, search);
+        if (open == std::string_view::npos) break;
 
-        if (open == std::string::npos) {
-            break;
-        }
-
-        const auto name_end =
-            open + needle.size();
-
-        if (name_end < lower_xml.size() &&
-            lower_xml[name_end] != '>' &&
-            !std::isspace(
-                static_cast<unsigned char>(
-                    lower_xml[name_end]
-                )
-            )) {
+        const auto name_end = open + needle.size();
+        if (name_end < xml.size() &&
+            xml[name_end] != '>' &&
+            !std::isspace(static_cast<unsigned char>(xml[name_end]))) {
             search = name_end;
             continue;
         }
 
-        const auto gt =
-            lower_xml.find('>', name_end);
+        const auto gt = xml.find('>', name_end);
+        if (gt == std::string_view::npos) break;
 
-        if (gt == std::string::npos) {
-            break;
-        }
+        const auto end = asciiIFind(xml, close, gt + 1U);
+        if (end == std::string_view::npos) break;
 
-        const auto end =
-            lower_xml.find(
-                close,
-                gt + 1U
-            );
-
-        if (end == std::string::npos) {
-            break;
-        }
-
-        const auto value =
-            trim(
-                xmlDecode(
-                    xml.substr(
-                        gt + 1U,
-                        end - gt - 1U
-                    )
-                )
-            );
-
-        if (!value.empty()) {
-            values.push_back(value);
-        }
-
+        const auto value = trim(xmlDecode(
+            xml.substr(gt + 1U, end - gt - 1U)
+        ));
+        if (!value.empty()) values.push_back(value);
         search = end + close.size();
     }
-
     return values;
 }
 
@@ -983,28 +969,11 @@ std::vector<std::string> dcTexts(
 std::optional<std::string> spineTocId(
     std::string_view opf
 ) {
-    const std::string lower_opf = lower(opf);
-    const auto pos =
-        lower_opf.find("<spine");
-
-    if (pos == std::string::npos) {
-        return std::nullopt;
-    }
-
-    const auto end =
-        lower_opf.find('>', pos);
-
-    if (end == std::string::npos) {
-        return std::nullopt;
-    }
-
-    return attribute(
-        opf.substr(
-            pos,
-            end - pos + 1U
-        ),
-        "toc"
-    );
+    const auto pos = asciiIFind(opf, "<spine");
+    if (pos == std::string_view::npos) return std::nullopt;
+    const auto end = opf.find('>', pos);
+    if (end == std::string_view::npos) return std::nullopt;
+    return attribute(opf.substr(pos, end - pos + 1U), "toc");
 }
 
 std::map<std::string, std::string>
@@ -1013,98 +982,39 @@ parseNcxLabels(
     std::string_view ncx_directory
 ) {
     std::map<std::string, std::string> labels;
-    const std::string lower_ncx = lower(ncx);
     std::size_t cursor = 0;
 
     while (true) {
-        const auto point =
-            lower_ncx.find(
-                "<navpoint",
-                cursor
-            );
+        const auto point = asciiIFind(ncx, "<navpoint", cursor);
+        if (point == std::string_view::npos) break;
+        const auto point_end = asciiIFind(ncx, "</navpoint>", point);
+        if (point_end == std::string_view::npos) break;
 
-        if (point == std::string::npos) {
-            break;
-        }
+        const auto segment = ncx.substr(point, point_end - point);
+        const auto label = firstTagText(segment, "text");
+        const auto content_pos = asciiIFind(segment, "<content");
 
-        const auto point_end =
-            lower_ncx.find(
-                "</navpoint>",
-                point
-            );
-
-        if (point_end == std::string::npos) {
-            break;
-        }
-
-        const auto segment =
-            std::string_view(ncx).substr(
-                point,
-                point_end - point
-            );
-
-        const auto label =
-            firstTagText(
-                segment,
-                "text"
-            );
-
-        const std::string lower_segment =
-            lower(segment);
-
-        const auto content_pos =
-            lower_segment.find(
-                "<content"
-            );
-
-        if (content_pos !=
-            std::string::npos) {
-            const auto content_end =
-                lower_segment.find(
-                    '>',
-                    content_pos
+        if (content_pos != std::string_view::npos) {
+            const auto content_end = segment.find('>', content_pos);
+            if (content_end != std::string_view::npos) {
+                const auto tag = segment.substr(
+                    content_pos,
+                    content_end - content_pos + 1U
                 );
+                const auto src = attribute(tag, "src");
 
-            if (content_end !=
-                std::string::npos) {
-                const auto tag =
-                    segment.substr(
-                        content_pos,
-                        content_end -
-                            content_pos + 1U
-                    );
-
-                const auto src =
-                    attribute(tag, "src");
-
-                if (src.has_value() &&
-                    label.has_value() &&
-                    !label->empty()) {
+                if (src.has_value() && label.has_value() && !label->empty()) {
                     auto path = *src;
-                    const auto hash =
-                        path.find('#');
-
-                    if (hash !=
-                        std::string::npos) {
-                        path.resize(hash);
-                    }
-
+                    const auto hash = path.find('#');
+                    if (hash != std::string::npos) path.resize(hash);
                     if (!path.empty()) {
-                        labels[
-                            normalizePath(
-                                ncx_directory,
-                                path
-                            )
-                        ] = *label;
+                        labels[normalizePath(ncx_directory, path)] = *label;
                     }
                 }
             }
         }
-
-        cursor =
-            point_end + 11U;
+        cursor = point_end + 11U;
     }
-
     return labels;
 }
 
@@ -1114,77 +1024,33 @@ parseNavLabels(
     std::string_view nav_directory
 ) {
     std::map<std::string, std::string> labels;
-    const std::string lower_nav =
-        lower(nav_xhtml);
     std::size_t cursor = 0;
 
     while (true) {
-        const auto anchor =
-            lower_nav.find(
-                "<a",
-                cursor
-            );
+        const auto anchor = asciiIFind(nav_xhtml, "<a", cursor);
+        if (anchor == std::string_view::npos) break;
+        const auto open_end = nav_xhtml.find('>', anchor);
+        if (open_end == std::string_view::npos) break;
+        const auto close = asciiIFind(nav_xhtml, "</a>", open_end + 1U);
+        if (close == std::string_view::npos) break;
 
-        if (anchor == std::string::npos) {
-            break;
-        }
-
-        const auto open_end =
-            lower_nav.find('>', anchor);
-
-        if (open_end == std::string::npos) {
-            break;
-        }
-
-        const auto close =
-            lower_nav.find(
-                "</a>",
-                open_end + 1U
-            );
-
-        if (close == std::string::npos) {
-            break;
-        }
-
-        const auto tag =
-            nav_xhtml.substr(
-                anchor,
-                open_end - anchor + 1U
-            );
-
-        const auto href =
-            attribute(tag, "href");
+        const auto tag = nav_xhtml.substr(anchor, open_end - anchor + 1U);
+        const auto href = attribute(tag, "href");
 
         if (href.has_value()) {
             auto path = *href;
             const auto hash = path.find('#');
+            if (hash != std::string::npos) path.resize(hash);
 
-            if (hash != std::string::npos) {
-                path.resize(hash);
-            }
-
-            const auto label =
-                stripInlineTags(
-                    nav_xhtml.substr(
-                        open_end + 1U,
-                        close - open_end - 1U
-                    )
-                );
-
-            if (!path.empty() &&
-                !label.empty()) {
-                labels[
-                    normalizePath(
-                        nav_directory,
-                        path
-                    )
-                ] = label;
+            const auto label = stripInlineTags(
+                nav_xhtml.substr(open_end + 1U, close - open_end - 1U)
+            );
+            if (!path.empty() && !label.empty()) {
+                labels[normalizePath(nav_directory, path)] = label;
             }
         }
-
         cursor = close + 4U;
     }
-
     return labels;
 }
 
@@ -1217,82 +1083,48 @@ bool parseManifest(
     std::map<std::string, ManifestItem>& manifest,
     bool& has_nav
 ) {
-    const std::string lower_opf = lower(opf);
     std::size_t cursor = 0;
 
     while (true) {
-        const auto pos =
-            lower_opf.find("<item", cursor);
+        const auto pos = asciiIFind(opf, "<item", cursor);
+        if (pos == std::string_view::npos) break;
 
-        if (pos == std::string::npos) {
-            break;
-        }
-
-        const auto after =
-            pos + 5U;
-
-        if (after < lower_opf.size() &&
-            lower_opf[after] != ' ' &&
-            lower_opf[after] != '\t' &&
-            lower_opf[after] != '\r' &&
-            lower_opf[after] != '\n' &&
-            lower_opf[after] != '>') {
+        const auto after = pos + 5U;
+        if (after < opf.size() &&
+            opf[after] != ' ' &&
+            opf[after] != '\t' &&
+            opf[after] != '\r' &&
+            opf[after] != '\n' &&
+            opf[after] != '>') {
             cursor = after;
             continue;
         }
 
-        const auto end =
-            lower_opf.find('>', after);
+        const auto end = opf.find('>', after);
+        if (end == std::string_view::npos) return false;
 
-        if (end == std::string::npos) {
-            return false;
-        }
-
-        const auto tag =
-            opf.substr(
-                pos,
-                end - pos + 1U
-            );
-
+        const auto tag = opf.substr(pos, end - pos + 1U);
         const auto id = attribute(tag, "id");
         const auto href = attribute(tag, "href");
 
-        if (id.has_value() &&
-            href.has_value()) {
+        if (id.has_value() && href.has_value()) {
             ManifestItem item;
             item.href = *href;
 
-            if (auto value =
-                    attribute(
-                        tag,
-                        "media-type"
-                    );
-                value.has_value()) {
+            if (auto value = attribute(tag, "media-type"); value.has_value()) {
                 item.media_type = *value;
             }
-
-            if (auto value =
-                    attribute(
-                        tag,
-                        "properties"
-                    );
-                value.has_value()) {
+            if (auto value = attribute(tag, "properties"); value.has_value()) {
                 item.properties = *value;
-
-                if (lower(item.properties).
-                        find("nav") !=
-                    std::string::npos) {
+                if (asciiIFind(item.properties, "nav") !=
+                    std::string_view::npos) {
                     has_nav = true;
                 }
             }
-
-            manifest[*id] =
-                std::move(item);
+            manifest[*id] = std::move(item);
         }
-
         cursor = end + 1U;
     }
-
     return !manifest.empty();
 }
 
@@ -1300,51 +1132,28 @@ std::vector<std::string> parseSpine(
     std::string_view opf
 ) {
     std::vector<std::string> ids;
-    const std::string lower_opf = lower(opf);
     std::size_t cursor = 0;
 
     while (true) {
-        const auto pos =
-            lower_opf.find(
-                "<itemref",
-                cursor
-            );
+        const auto pos = asciiIFind(opf, "<itemref", cursor);
+        if (pos == std::string_view::npos) break;
 
-        if (pos == std::string::npos) {
-            break;
-        }
+        const auto end = opf.find('>', pos);
+        if (end == std::string_view::npos) break;
 
-        const auto end =
-            lower_opf.find('>', pos);
-
-        if (end == std::string::npos) {
-            break;
-        }
-
-        const auto tag =
-            opf.substr(
-                pos,
-                end - pos + 1U
-            );
-
-        const auto linear =
-            attribute(tag, "linear");
-
+        const auto tag = opf.substr(pos, end - pos + 1U);
+        const auto linear = attribute(tag, "linear");
         const bool include =
             !linear.has_value() ||
-            lower(*linear) != "no";
+            !asciiIEquals(*linear, "no");
 
         if (include) {
-            if (auto idref =
-                    attribute(tag, "idref");
-                idref.has_value()) {
+            if (auto idref = attribute(tag, "idref"); idref.has_value()) {
                 ids.push_back(*idref);
             }
         }
-
         cursor = end + 1U;
     }
-
     return ids;
 }
 
@@ -1378,22 +1187,20 @@ ParseResult parseEpubArchive(
         return result;
     }
 
-    const auto lower_container =
-        lower(container_xml);
-
     std::optional<std::size_t>
         rootfile_position;
     std::size_t rootfile_search = 0;
 
     while (true) {
         const auto candidate =
-            lower_container.find(
+            asciiIFind(
+                container_xml,
                 "<rootfile",
                 rootfile_search
             );
 
         if (candidate ==
-            std::string::npos) {
+            std::string_view::npos) {
             break;
         }
 
@@ -1401,12 +1208,12 @@ ParseResult parseEpubArchive(
             candidate + 9U;
 
         if (boundary >=
-                lower_container.size() ||
-            lower_container[boundary] == '>' ||
-            lower_container[boundary] == '/' ||
+                container_xml.size() ||
+            container_xml[boundary] == '>' ||
+            container_xml[boundary] == '/' ||
             std::isspace(
                 static_cast<unsigned char>(
-                    lower_container[boundary]
+                    container_xml[boundary]
                 )
             )) {
             rootfile_position = candidate;

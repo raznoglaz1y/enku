@@ -448,7 +448,8 @@ bool inputSmokeTest(
 }
 
 bool showFontRecovery(
-    enku::platform::esp_idf::EspIdfPlatform& platform
+    enku::platform::esp_idf::EspIdfPlatform& platform,
+    bool missing_font
 ) {
     auto& framebuffer = platform.framebuffer();
     framebuffer.clearWhite();
@@ -470,16 +471,20 @@ bool showFontRecovery(
     );
     drawText(
         framebuffer.mutableData(),
-        215,
+        205,
         285,
-        "FONT FAIL",
-        7
+        missing_font
+            ? "FONT FAIL"
+            : "FONT ERROR",
+        missing_font ? 7 : 6
     );
     drawText(
         framebuffer.mutableData(),
-        235,
+        missing_font ? 235 : 275,
         350,
-        "ADD FONT",
+        missing_font
+            ? "ADD FONT"
+            : "REBOOT",
         5
     );
 
@@ -501,7 +506,7 @@ bool showFontRecovery(
         "Reader font unavailable; showing recovery screen"
     );
 
-    if (!showFontRecovery(platform)) {
+    if (!showFontRecovery(platform, true)) {
         ESP_LOGE(
             kTag,
             "Unable to render font recovery screen"
@@ -999,6 +1004,24 @@ extern "C" void app_main(void) {
 #endif
 
         idleWithoutFont(platform);
+    } else if (device_status ==
+        enku::platform::esp_idf::DeviceRuntimeInitStatus::FontInitFailed) {
+        ESP_LOGE(
+            kTag,
+            "Reader font exists but FreeType initialization failed"
+        );
+
+        if (!showFontRecovery(platform, false)) {
+            ESP_LOGE(
+                kTag,
+                "Unable to render font initialization recovery screen"
+            );
+        }
+
+        idleRecoveryScreen(
+            platform,
+            "font initialization failed"
+        );
     } else if (device_status !=
         enku::platform::esp_idf::DeviceRuntimeInitStatus::Ok) {
         ESP_LOGE(

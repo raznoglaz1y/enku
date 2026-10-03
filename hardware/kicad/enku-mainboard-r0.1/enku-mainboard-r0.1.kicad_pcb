@@ -265,7 +265,7 @@
   )
 
   (footprint "Package_TO_SOT_SMD:SOT-23" (layer "F.Cu")
-    (at 56 36)
+    (at 54.5 36)
     (property "Reference" "Q_EPD" (at 0 -2.4 0) (layer "F.SilkS"))
     (property "Value" "IRLML6346TRPBF" (at 0 2.4 0) (layer "F.Fab"))
     (fp_rect (start -1.7 -1.5) (end 1.7 1.5) (stroke (width 0.12) (type default)) (fill none) (layer "F.SilkS"))
@@ -691,7 +691,7 @@
   )
 
   (footprint "Diode_SMD:D_SOD-123" (layer "F.Cu")
-    (at 44 31.8 90)
+    (at 47 31.8 90)
     (property "Reference" "D1_EPD" (at 0 -2.2 90) (layer "F.SilkS"))
     (property "Value" "MBR0530" (at 0 2.2 90) (layer "F.Fab") hide)
     (fp_rect (start -1.85 -0.9) (end 1.85 0.9) (stroke (width 0.15) (type default)) (fill none) (layer "F.SilkS"))
@@ -709,7 +709,7 @@
   )
 
   (footprint "Diode_SMD:D_SOD-123" (layer "F.Cu")
-    (at 51.5 39)
+    (at 52 40.8)
     (property "Reference" "D3_EPD" (at 0 -2.2 0) (layer "F.SilkS"))
     (property "Value" "MBR0530" (at 0 2.2 0) (layer "F.Fab") hide)
     (fp_rect (start -1.85 -0.9) (end 1.85 0.9) (stroke (width 0.15) (type default)) (fill none) (layer "F.SilkS"))
@@ -728,7 +728,7 @@
   )
 
   (footprint "Capacitor_SMD:C_0805_2012Metric" (layer "F.Cu")
-    (at 41.5 32 90)
+    (at 44 32 90)
     (property "Reference" "C2_EPD_VGH" (at 0 -1.925 90) (layer "F.SilkS"))
     (property "Value" "4.7uF 25V" (at 0 1.925 90) (layer "F.Fab") hide)
     (fp_rect (start -1 -0.625) (end 1 0.625)
@@ -738,7 +738,7 @@
   )
 
   (footprint "Capacitor_SMD:C_0805_2012Metric" (layer "F.Cu")
-    (at 53.8 32.8 90)
+    (at 54 32.8 90)
     (property "Reference" "C4_EPD_VGL" (at 0 -1.925 90) (layer "F.SilkS"))
     (property "Value" "4.7uF 25V" (at 0 1.925 90) (layer "F.Fab") hide)
     (fp_rect (start -1 -0.625) (end 1 0.625)
@@ -811,7 +811,7 @@
     (effects (font (size 0.55 0.55) (thickness 0.11))))
 
   (footprint "Capacitor_SMD:C_0805_2012Metric" (layer "F.Cu")
-    (at 53 42 90)
+    (at 53 39 90)
     (property "Reference" "C3_EPD_FLY" (at 0 -1.9 90) (layer "F.SilkS"))
     (property "Value" "4.7uF 25V" (at 0 1.9 90) (layer "F.Fab") hide)
     (fp_rect (start -1 -0.625) (end 1 0.625) (stroke (width 0.12) (type default)) (fill none) (layer "F.SilkS"))

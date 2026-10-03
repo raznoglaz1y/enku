@@ -48,6 +48,7 @@ public:
 
     bool powerAvailable() const;
     bool networkAvailable() const;
+    SdMountStatus removableStorageStatus() const;
     const BoardProfile& boardProfile() const;
 
 private:
@@ -67,6 +68,9 @@ private:
     EspIdfButtons buttons_;
     bool power_available_{false};
     bool network_available_{false};
+    SdMountStatus removable_storage_status_{
+        SdMountStatus::MountFailed
+    };
 };
 
 } // namespace enku::platform::esp_idf

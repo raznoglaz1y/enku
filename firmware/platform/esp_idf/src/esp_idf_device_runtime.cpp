@@ -538,8 +538,12 @@ bool EspIdfDeviceRuntime::syncRemovableStorage(
                     RemovableStorageLost{}
                 );
 
-            if (reader_result ==
-                ReaderRuntimeResult::Applied) {
+            // RemovableStorageLost is fail-safe: persistence errors are
+            // reported by the reader result, but the reader still tears down
+            // its live session and returns to Library. Refresh based on the
+            // resulting screen state so a dead SD never leaves stale reader
+            // pixels visible after recovery.
+            if (app.screen == Screen::Library) {
                 const auto library_result =
                     reader_.library().handle(
                         LibraryRefreshRequested{}
@@ -550,6 +554,8 @@ bool EspIdfDeviceRuntime::syncRemovableStorage(
                        library_result ==
                            LibraryRuntimeResult::Empty;
             }
+
+            (void)reader_result;
         }
 
         library_refresh_pending_ = true;

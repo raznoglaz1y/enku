@@ -85,7 +85,7 @@ PCBWay assembly should populate the dense / precision components:
 - ESP32-S3-WROOM-1-N16R8;
 - BQ25185;
 - TPS2121;
-- TPS63031 or selected fallback;
+- TPS63802DLAR;
 - BMI270;
 - Hall sensor;
 - USB ESD;
@@ -296,7 +296,7 @@ R0.1 can be sent to PCBWay only when:
 - current Good Display pinouts are directly verified;
 - EPD-HV exact parts are selected;
 - BQ25185 external components are frozen;
-- TPS63031 peak-current margin has a defensible calculation / prototype plan;
+- TPS63802 peak-current margin has a defensible calculation / prototype plan;
 - all variant DNP choices are explicit;
 - schematic review checklist is complete;
 - fabrication outputs are generated from the actual KiCad board, not hand-made preview Gerbers.

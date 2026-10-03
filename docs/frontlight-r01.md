@@ -230,3 +230,18 @@ Before production freeze:
 Exact prototype component candidates and cost-down notes are tracked here:
 
 [Frontlight components R0.1](frontlight-components-r01.md)
+
+
+## Frontlight remap safety
+
+R0.1 will not hard-wire an unverified 6-pin sample mapping.
+
+The six raw FPC pins are routed through a small 0 Ω / solder-jumper remap matrix before becoming:
+- FL_LED_PLUS;
+- FL_WARM_RETURN;
+- FL_COOL_RETURN.
+
+Together with the dual-contact Hirose 6-pin connector, this removes the FPC mapping uncertainty as a PCB-spin blocker while keeping the production revision easy to simplify after sample validation.
+
+See:
+[R0.1 blocker closure](r01-blocker-closure.md)

@@ -609,7 +609,11 @@ InputDispatchResult EspIdfDeviceRuntime::pollInput(
 
     // Status changes are independent of user input. Keep the e-ink update
     // constrained to the compact top bar instead of refreshing the screen.
-    refreshStatusBarIfNeeded();
+    // A persistent renderer/refresh failure must propagate to the outer
+    // application loop instead of being silently ignored.
+    if (!refreshStatusBarIfNeeded()) {
+        return InputDispatchResult::Failed;
+    }
 
     const auto event =
         platform_.buttons().poll(now_ms);

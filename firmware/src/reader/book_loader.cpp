@@ -7,6 +7,52 @@
 namespace enku {
 namespace {
 
+class BookTextRangeSource final
+    : public TextRangeSource {
+public:
+    BookTextRangeSource(
+        BookSourceService& source,
+        const BookRecord& record,
+        std::uint64_t size_bytes
+    )
+        : source_(source),
+          record_(record),
+          size_bytes_(size_bytes) {}
+
+    std::uint64_t size() const override {
+        return size_bytes_;
+    }
+
+    bool readRange(
+        std::uint64_t offset,
+        std::size_t length,
+        std::string& out
+    ) const override {
+        last_status_ =
+            source_.readSourceRange(
+                record_,
+                offset,
+                length,
+                out
+            );
+
+        return last_status_ ==
+            BookSourceStatus::Ok;
+    }
+
+    BookSourceStatus lastStatus() const {
+        return last_status_;
+    }
+
+private:
+    BookSourceService& source_;
+    const BookRecord& record_;
+    std::uint64_t size_bytes_{0};
+    mutable BookSourceStatus last_status_{
+        BookSourceStatus::Ok
+    };
+};
+
 class BookZipRangeSource final
     : public ZipRangeSource {
 public:
@@ -103,7 +149,8 @@ BookLoadResult ReaderBookLoader::open(
         record->source_filename,
     };
 
-    if (record->format == BookFormat::Epub) {
+    if (record->format == BookFormat::Epub ||
+        record->format == BookFormat::Txt) {
         std::uint64_t size_bytes = 0;
 
         const auto size_status =
@@ -116,24 +163,46 @@ BookLoadResult ReaderBookLoader::open(
             return sourceFailure(size_status);
         }
 
-        BookZipRangeSource ranged_source(
-            source_,
-            *record,
-            size_bytes
-        );
-
-        parsed =
-            epub_parser_.parse(
-                ranged_source,
-                source_info
+        if (record->format == BookFormat::Epub) {
+            BookZipRangeSource ranged_source(
+                source_,
+                *record,
+                size_bytes
             );
 
-        if (!parsed.ok() &&
-            ranged_source.lastStatus() !=
-                BookSourceStatus::Ok) {
-            return sourceFailure(
-                ranged_source.lastStatus()
+            parsed =
+                epub_parser_.parse(
+                    ranged_source,
+                    source_info
+                );
+
+            if (!parsed.ok() &&
+                ranged_source.lastStatus() !=
+                    BookSourceStatus::Ok) {
+                return sourceFailure(
+                    ranged_source.lastStatus()
+                );
+            }
+        } else {
+            BookTextRangeSource ranged_source(
+                source_,
+                *record,
+                size_bytes
             );
+
+            parsed =
+                txt_parser_.parse(
+                    ranged_source,
+                    source_info
+                );
+
+            if (!parsed.ok() &&
+                ranged_source.lastStatus() !=
+                    BookSourceStatus::Ok) {
+                return sourceFailure(
+                    ranged_source.lastStatus()
+                );
+            }
         }
     } else {
         std::string bytes;

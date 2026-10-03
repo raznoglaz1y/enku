@@ -175,6 +175,19 @@ def main() -> int:
         if ref in refs and refs[ref][0] < 68.5:
             errors.append(f"{ref} left the right-side thumb rail")
 
+    # WROOM body exclusion. The exact module body occupies approximately
+    # x=20.25..45.75, y=36..54 at U1=(33,45), rotation 270 deg.
+    # Catch footprints whose origins drift underneath the soldered module.
+    for block in footprint_blocks(text):
+        parsed = parse_ref_and_at(block)
+        if not parsed:
+            continue
+        ref, x, y, _ = parsed
+        if ref == "U1" or ref.startswith("H"):
+            continue
+        if '(layer "F.Cu")' in block and 20.0 < x < 46.0 and 35.5 < y < 54.5:
+            errors.append(f"{ref} origin is under ESP32-S3-WROOM-1 module body")
+
     # Qi keepout remains route-free in Baseline B. A simple placement-origin gate
     # catches large ICs accidentally dropped into the reserved center.
     for ref, (x,y,_) in refs.items():

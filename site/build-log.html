@@ -135,6 +135,14 @@
           <div class="entries">
 
             <article class="entry">
+              <div class="entry-top"><span class="entry-type">FIRMWARE · OFFLINE-FIRST</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/725f3707a4f61e955877b47ca0ebc5ce16a11f2f" target="_blank" rel="noreferrer">725f370 ↗</a></div>
+              <h2>Wi-Fi failure no longer takes the reader down with it.</h2>
+              <p>Networking has been demoted from a boot-critical dependency to an optional degraded subsystem. If the ESP-IDF Wi-Fi stack or network policy fails, ENKU keeps the Library and Reader alive and exposes connectivity as an Error state instead.</p>
+              <ul><li>platform boot continues when Wi-Fi initialization fails;</li><li>runtime no longer returns a fatal NetworkPolicyFailed during startup;</li><li>network state remains visible for Wi-Fi settings and diagnostics;</li><li>offline reading stays available independently of connectivity.</li></ul>
+              <div class="entry-note">This aligns the firmware with the product promise: ENKU is an offline-first reader with networking as an enhancement, not a prerequisite.</div>
+            </article>
+
+            <article class="entry">
               <div class="entry-top"><span class="entry-type">FIRMWARE · SYSTEM ASSETS</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/f7cd3c8208106905497f6413d7332abb11f1761d" target="_blank" rel="noreferrer">f7cd3c8 ↗</a></div>
               <h2>The reader font becomes part of the firmware.</h2>
               <p>Noto Sans Regular is now embedded directly in the ESP-IDF application image and loaded by FreeType from flash when no valid SD override exists. The normal reader boot path no longer depends on provisioning a font file on removable storage.</p>

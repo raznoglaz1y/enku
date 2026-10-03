@@ -458,16 +458,41 @@ bool inputSmokeTest(
 }
 
 [[noreturn]] void idleRecoveryScreen(
+    enku::platform::esp_idf::EspIdfPlatform& platform,
     const char* reason
 ) {
     ESP_LOGW(
         kTag,
-        "Recovery screen active: %s; idling until reboot",
+        "Recovery screen active: %s; waiting for storage recovery",
         reason
     );
 
+    constexpr TickType_t kRetryDelay =
+        pdMS_TO_TICKS(2000);
+
     while (true) {
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        vTaskDelay(kRetryDelay);
+
+        const auto status =
+            platform.sdCard().mount();
+
+        if (status !=
+            enku::platform::esp_idf::SdMountStatus::Ok) {
+            ESP_LOGW(
+                kTag,
+                "Storage recovery retry failed with status %u",
+                static_cast<unsigned>(status)
+            );
+            continue;
+        }
+
+        ESP_LOGI(
+            kTag,
+            "Storage recovered; restarting into normal boot"
+        );
+
+        vTaskDelay(pdMS_TO_TICKS(250));
+        esp_restart();
     }
 }
 
@@ -810,7 +835,10 @@ extern "C" void app_main(void) {
             );
         }
 
-        idleRecoveryScreen("storage unavailable");
+        idleRecoveryScreen(
+            platform,
+            "storage unavailable"
+        );
     }
 
     if (platform_status !=

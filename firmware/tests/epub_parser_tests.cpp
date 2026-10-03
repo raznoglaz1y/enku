@@ -396,11 +396,11 @@ std::string largePseudoRandomText(
 
 std::string sampleLargeRangedEpub() {
     const std::string chapter =
-        "<html><body><p>" +
+        "<HTML><Body><P class=\"main\">" +
         largePseudoRandomText(
             192U * 1024U
         ) +
-        "</p></body></html>";
+        "</P></Body></HTML>";
 
     std::vector<StoredEntry> entries{
         {
@@ -682,6 +682,23 @@ int main() {
     assert(
         ranged.document.metadata.title ==
         "Ranged EPUB"
+    );
+    assert(
+        ranged.document.sections.size() == 1U
+    );
+    assert(
+        ranged.document.sections[0].
+            blocks.size() == 1U
+    );
+    assert(
+        ranged.document.sections[0].
+            blocks[0].type ==
+        TextBlockType::Paragraph
+    );
+    assert(
+        ranged.document.sections[0].
+            blocks[0].text.size() ==
+        192U * 1024U
     );
     assert(ranged_source.read_calls > 0);
     assert(

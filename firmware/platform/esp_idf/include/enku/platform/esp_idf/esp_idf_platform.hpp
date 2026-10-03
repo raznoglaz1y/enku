@@ -44,6 +44,7 @@ public:
     EspIdfNetworkService& network();
     EspIdfButtons& buttons();
 
+    bool networkAvailable() const;
     const BoardProfile& boardProfile() const;
 
 private:
@@ -59,6 +60,7 @@ private:
     EspIdfPowerService power_;
     EspIdfNetworkService network_;
     EspIdfButtons buttons_;
+    bool network_available_{false};
 };
 
 } // namespace enku::platform::esp_idf

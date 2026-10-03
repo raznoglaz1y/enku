@@ -287,7 +287,9 @@ Reproducible build, documentation, case files and first tagged version.
 - [x] Define PCBWay prototype path: fabrication + SMT assembly package, DFM gates and sponsored-vs-unsponsored cost separation
 - [ ] Obtain normal unsponsored PCBWay / assembly quotes at 10 / 25 / 50 / 100 units
 - [ ] Re-run competitive pricing after real quotes
-- [ ] Verify current GDEY0397T81P / GDEY0426T82-FL01C FPC pin tables and Pro 6-pin frontlight pinout
+- [x] Verify current Good Display product/spec/drawing availability for GDEY0397T81P and GDEY0426T82-FL01C
+- [ ] Verify current GDEY0397T81P / GDEY0426T82-FL01C FPC pin tables and Pro 6-pin frontlight pinout directly from the drawings
+- [x] Define schematic block/net baseline for USB/Dock/charge/3V3/ESP32/SD/EPD/IMU/Hall/frontlight/Qi/debug
 - [ ] Freeze schematic only after all EPD/power BLOCKER items are closed
 
 ### Cost ceilings

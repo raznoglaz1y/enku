@@ -135,6 +135,14 @@
           <div class="entries">
 
             <article class="entry">
+              <div class="entry-top"><span class="entry-type">FIRMWARE · SYSTEM ASSETS</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/f7cd3c8208106905497f6413d7332abb11f1761d" target="_blank" rel="noreferrer">f7cd3c8 ↗</a></div>
+              <h2>The reader font becomes part of the firmware.</h2>
+              <p>Noto Sans Regular is now embedded directly in the ESP-IDF application image and loaded by FreeType from flash when no valid SD override exists. The normal reader boot path no longer depends on provisioning a font file on removable storage.</p>
+              <ul><li>official Noto Sans Regular source blob is preserved byte-for-byte in the repository;</li><li>SIL OFL 1.1 license and source provenance are stored next to the asset;</li><li>FreeType uses <code>FT_New_Memory_Face</code> for the embedded baseline;</li><li>a valid SD font remains an optional override, while a broken override falls back automatically;</li><li>final application image is about 2.33 MiB in a 4 MiB app partition, leaving 44% free.</li></ul>
+              <div class="entry-note">System UI typography is now independent from removable storage. SD can return to its intended role: books, caches and user-managed content rather than critical boot assets.</div>
+            </article>
+
+            <article class="entry">
               <div class="entry-top"><span class="entry-type">FIRMWARE · BOOT RECOVERY</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/a059e5e25abeff24566a1758bc9999064642eb36" target="_blank" rel="noreferrer">a059e5e ↗</a></div>
               <h2>Font provisioning failures stop looking like dead hardware.</h2>
               <p>The device now renders a built-in recovery screen when the required Noto Sans asset is missing, and a separate error screen when the font exists but FreeType/face/size initialization fails.</p>

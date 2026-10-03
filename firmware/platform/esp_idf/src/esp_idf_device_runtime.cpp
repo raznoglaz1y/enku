@@ -540,7 +540,7 @@ bool EspIdfDeviceRuntime::syncRemovableStorage(
         case SdMountStatus::Ok:
             app.storage.removable =
                 RemovableStorageStatus::Ready;
-            availability_reconciler_.reconcile();
+            availability_reconciler_.beginIncremental();
             break;
         case SdMountStatus::DirectorySetupFailed:
             app.storage.removable =
@@ -712,6 +712,15 @@ InputDispatchResult EspIdfDeviceRuntime::pollInput(
     std::uint32_t now_ms
 ) {
     syncRemovableStorage(now_ms);
+
+    // Verify at most one library record per poll after a hot remount. Books
+    // stay fail-closed (unavailable) until their content fingerprint passes.
+    // Boot keeps the synchronous path so initial UI state is deterministic.
+    if (availability_reconciler_.active()) {
+        availability_reconciler_.step(1U);
+        library_refresh_pending_ = true;
+    }
+
     syncPlatformState();
 
     // Network services follow the same authoritative lifecycle state as

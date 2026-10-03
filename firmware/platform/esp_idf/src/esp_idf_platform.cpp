@@ -44,17 +44,12 @@ PlatformInitStatus EspIdfPlatform::begin() {
         return PlatformInitStatus::ButtonsInitFailed;
     }
 
-    const auto sd_status = sd_card_.mount();
+    removable_storage_status_ =
+        sd_card_.mount();
 
-    if (sd_status == SdMountStatus::MountFailed) {
-        return PlatformInitStatus::SdMountFailed;
-    }
-
-    if (sd_status ==
-        SdMountStatus::DirectorySetupFailed) {
-        return PlatformInitStatus::SdDirectorySetupFailed;
-    }
-
+    // System state now lives in internal flash. Removable storage contains
+    // books and large user data, so an unavailable/unusable card must not
+    // prevent the core application from reaching Library.
     return PlatformInitStatus::Ok;
 }
 
@@ -104,6 +99,10 @@ EspIdfButtons& EspIdfPlatform::buttons() {
 
 bool EspIdfPlatform::networkAvailable() const {
     return network_available_;
+}
+
+SdMountStatus EspIdfPlatform::removableStorageStatus() const {
+    return removable_storage_status_;
 }
 
 const BoardProfile& EspIdfPlatform::boardProfile() const {

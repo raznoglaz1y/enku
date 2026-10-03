@@ -17,5 +17,5 @@
 # 0.25 mm line-to-board-edge; keep this exception local rather than weakening
 # the board-wide 0.50 mm engineering preference.
 (rule "Right-edge power pull-down clearance"
-    (condition "A.Reference == 'R_OV1_GND' || A.Reference == 'R_CHG_CE_PD' || A.Reference == 'R_SYS_EN_PD'")
+    (condition "A.Reference == 'R_OV1_GND' || B.Reference == 'R_OV1_GND' || A.Reference == 'R_CHG_CE_PD' || B.Reference == 'R_CHG_CE_PD' || A.Reference == 'R_SYS_EN_PD' || B.Reference == 'R_SYS_EN_PD'")
     (constraint edge_clearance (min 0.40mm)))

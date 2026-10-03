@@ -40,6 +40,26 @@ public:
     }
 };
 
+class InvalidCheckpointService final
+    : public ReaderCheckpointService {
+public:
+    PersistStatus load(
+        const BookId&,
+        ReaderCheckpoint&
+    ) override {
+        return PersistStatus::InvalidRecord;
+    }
+
+    PersistStatus checkpoint(
+        const BookId&,
+        const SemanticPosition&,
+        float,
+        ReadingState
+    ) override {
+        return PersistStatus::InvalidRecord;
+    }
+};
+
 class FakeRefreshService final : public RefreshService {
 public:
     bool busy() const override {
@@ -979,6 +999,223 @@ int main() {
         assert(
             app.library.focused_book ==
             std::optional<BookId>{"missing-book"}
+        );
+        assert(!app.current_book.has_value());
+        assert(loader.session() == nullptr);
+
+        AppRestoreContext safe;
+        assert(context.load(safe) == PersistStatus::Ok);
+        assert(safe.screen == Screen::Library);
+        assert(!safe.current_book.has_value());
+
+        removeRoot(root);
+    }
+
+
+    // Corrupt app-context slots must be rewritten to a safe Library context
+    // instead of trapping boot in recovery.
+    {
+        const auto root =
+            makeRoot("enku-boot-restore-corrupt-context");
+
+        PosixStateFileStore state_files(root);
+        PosixBookFileStore book_files(root);
+
+        const std::vector<std::uint8_t> garbage{
+            0xDEU,
+            0xADU,
+            0xBEU,
+            0xEFU,
+        };
+
+        assert(
+            state_files.write(
+                "/system/context.a.cbor",
+                garbage
+            ) == StateFileStatus::Ok
+        );
+        assert(
+            state_files.write(
+                "/system/context.b.cbor",
+                garbage
+            ) == StateFileStatus::Ok
+        );
+
+        CborLibraryService library(state_files);
+        assert(library.load() == LibraryStatus::Ok);
+
+        BookImportService importer(library);
+        AppState app;
+        CborSettingsService settings_service(state_files);
+        SettingsRuntimeController settings(
+            app,
+            settings_service
+        );
+        StorageStartupCoordinator startup(
+            app,
+            settings,
+            library,
+            book_files,
+            importer
+        );
+
+        StoredBookSourceService source(book_files);
+        FixedWidthMeasurer measurer;
+        ReaderBookLoader loader(
+            library,
+            source,
+            measurer
+        );
+        CborReaderCheckpointService checkpoint(
+            state_files
+        );
+        CborAppContextService context(state_files);
+        CborBootLoopService boot_loop(state_files);
+        FakeRefreshService refresh;
+
+        ReaderRuntimeController runtime(
+            app,
+            loader,
+            refresh,
+            library,
+            checkpoint,
+            context,
+            typography,
+            viewport
+        );
+
+        BootRestoreCoordinator boot(
+            app,
+            startup,
+            context,
+            boot_loop,
+            runtime,
+            library
+        );
+
+        const auto result = boot.run();
+
+        assert(
+            result.status ==
+            BootRestoreStatus::FallbackToLibrary
+        );
+        assert(app.screen == Screen::Library);
+        assert(app.boot.stage == BootStage::Stable);
+
+        AppRestoreContext safe;
+        assert(context.load(safe) == PersistStatus::Ok);
+        assert(safe.screen == Screen::Library);
+        assert(!safe.current_book.has_value());
+
+        removeRoot(root);
+    }
+
+    // A corrupt reader checkpoint must not prevent the book's Library from
+    // becoming usable. Boot falls back and rewrites app context to Library.
+    {
+        const auto root =
+            makeRoot("enku-boot-restore-corrupt-checkpoint");
+
+        PosixStateFileStore state_files(root);
+        PosixBookFileStore book_files(root);
+
+        const std::string book_path =
+            "/books/corrupt-checkpoint.txt";
+        const std::string text =
+            "Alpha beta gamma delta epsilon zeta eta theta.";
+
+        assert(
+            book_files.write(
+                book_path,
+                text
+            ) == BookFileStatus::Ok
+        );
+
+        CborLibraryService library(state_files);
+        assert(library.load() == LibraryStatus::Ok);
+
+        auto record = makeBook(
+            "corrupt-checkpoint",
+            book_path,
+            "fp-corrupt-checkpoint"
+        );
+        record.file_size = text.size();
+
+        assert(
+            library.upsert(record) ==
+            LibraryStatus::Ok
+        );
+
+        CborAppContextService context(state_files);
+        assert(
+            context.save(
+                AppRestoreContext{
+                    Screen::Reading,
+                    BookId{"corrupt-checkpoint"},
+                    0,
+                    BookId{"corrupt-checkpoint"},
+                }
+            ) == PersistStatus::Ok
+        );
+
+        BookImportService importer(library);
+        AppState app;
+        CborSettingsService settings_service(state_files);
+        SettingsRuntimeController settings(
+            app,
+            settings_service
+        );
+        StorageStartupCoordinator startup(
+            app,
+            settings,
+            library,
+            book_files,
+            importer
+        );
+
+        StoredBookSourceService source(book_files);
+        FixedWidthMeasurer measurer;
+        ReaderBookLoader loader(
+            library,
+            source,
+            measurer
+        );
+        InvalidCheckpointService checkpoint;
+        CborBootLoopService boot_loop(state_files);
+        FakeRefreshService refresh;
+
+        ReaderRuntimeController runtime(
+            app,
+            loader,
+            refresh,
+            library,
+            checkpoint,
+            context,
+            typography,
+            viewport
+        );
+
+        BootRestoreCoordinator boot(
+            app,
+            startup,
+            context,
+            boot_loop,
+            runtime,
+            library
+        );
+
+        const auto result = boot.run();
+
+        assert(
+            result.status ==
+            BootRestoreStatus::FallbackToLibrary
+        );
+        assert(app.screen == Screen::Library);
+        assert(
+            app.library.focused_book ==
+            std::optional<BookId>{
+                "corrupt-checkpoint"
+            }
         );
         assert(!app.current_book.has_value());
         assert(loader.session() == nullptr);

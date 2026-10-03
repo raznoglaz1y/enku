@@ -40,6 +40,7 @@ add_library(enku_core STATIC
     src/runtime/reader_overlay_runtime.cpp
     src/runtime/search_runtime.cpp
     src/runtime/application_storage_runtime.cpp
+    src/runtime/book_availability_reconciler.cpp
     src/runtime/application_reader_runtime.cpp
     src/render/owned_mono_framebuffer.cpp
     src/runtime/storage_startup.cpp

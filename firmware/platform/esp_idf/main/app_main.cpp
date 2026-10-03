@@ -17,6 +17,7 @@
 #include "enku/platform/esp_idf/board.hpp"
 #include "enku/platform/esp_idf/esp_idf_buttons.hpp"
 #include "enku/runtime/input_runtime.hpp"
+#include "enku/runtime/runtime_failure_policy.hpp"
 #include "enku/platform/esp_idf/esp_idf_epaper.hpp"
 #include "enku/platform/esp_idf/esp_idf_file_store.hpp"
 #include "enku/platform/esp_idf/esp_idf_power_service.hpp"
@@ -469,8 +470,7 @@ bool showRuntimeRecovery(
         "Entering ENKU application loop"
     );
 
-    std::uint8_t consecutive_runtime_failures = 0;
-    constexpr std::uint8_t kRuntimeFailureThreshold = 3;
+    enku::RuntimeFailurePolicy runtime_failure_policy{3U};
 
     while (true) {
         const auto now_ms =
@@ -483,24 +483,24 @@ bool showRuntimeRecovery(
 
         if (result ==
             enku::InputDispatchResult::RuntimeFailed) {
-            ++consecutive_runtime_failures;
+            const bool recover =
+                runtime_failure_policy.recordFailure();
 
             ESP_LOGE(
                 kTag,
                 "Runtime refresh/render failure %u/%u; screen=%u",
                 static_cast<unsigned>(
-                    consecutive_runtime_failures
+                    runtime_failure_policy.consecutiveFailures()
                 ),
                 static_cast<unsigned>(
-                    kRuntimeFailureThreshold
+                    runtime_failure_policy.threshold()
                 ),
                 static_cast<unsigned>(
                     device.storage().appState().screen
                 )
             );
 
-            if (consecutive_runtime_failures >=
-                kRuntimeFailureThreshold) {
+            if (recover) {
                 if (!showRuntimeRecovery(platform)) {
                     ESP_LOGE(
                         kTag,
@@ -513,7 +513,7 @@ bool showRuntimeRecovery(
                 );
             }
         } else {
-            consecutive_runtime_failures = 0;
+            runtime_failure_policy.recordSuccess();
 
             if (result ==
                 enku::InputDispatchResult::Failed) {

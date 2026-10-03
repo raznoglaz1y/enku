@@ -2,6 +2,7 @@
 
 #include <cstdint>
 
+#include "enku/core/board_profile.hpp"
 #include "enku/render/owned_mono_framebuffer.hpp"
 
 #include "epaper_refresh_service.hpp"
@@ -41,6 +42,8 @@ public:
     EspIdfPowerService& power();
     EspIdfNetworkService& network();
     EspIdfButtons& buttons();
+
+    const BoardProfile& boardProfile() const;
 
 private:
     EspIdfSdCard sd_card_;

@@ -279,5 +279,67 @@ int main() {
         removeRoot(root);
     }
 
+
+    // Removable book storage may be unavailable while internal system state
+    // is healthy. Startup must still reach Library and must not inspect or
+    // mutate staged SD files until the card is available again.
+    {
+        const auto root =
+            makeRoot("enku-storage-startup-no-sd");
+
+        PosixStateFileStore state_files(root);
+        PosixBookFileStore book_files(root);
+        CborLibraryService library(state_files);
+        BookImportService importer(library);
+
+        const std::string staged_path =
+            "/system/tmp/offline-pending.txt";
+        const std::string staged_bytes =
+            "Pending data on currently unavailable removable storage.";
+
+        assert(
+            book_files.write(
+                staged_path,
+                staged_bytes
+            ) == BookFileStatus::Ok
+        );
+
+        AppState app;
+        app.storage.removable =
+            RemovableStorageStatus::Unavailable;
+
+        CborSettingsService settings_service(state_files);
+        SettingsRuntimeController settings(
+            app,
+            settings_service
+        );
+
+        StorageStartupCoordinator startup(
+            app,
+            settings,
+            library,
+            book_files,
+            importer
+        );
+
+        const auto result = startup.run();
+
+        assert(result.ready());
+        assert(app.screen == Screen::Library);
+        assert(app.boot.mode == BootMode::Normal);
+        assert(app.boot.stage == BootStage::Stable);
+
+        std::string read_back;
+        assert(
+            book_files.read(
+                staged_path,
+                read_back
+            ) == BookFileStatus::Ok
+        );
+        assert(read_back == staged_bytes);
+
+        removeRoot(root);
+    }
+
     return 0;
 }

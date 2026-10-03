@@ -10,3 +10,12 @@
 (rule "USB4105 internal locating-peg clearance"
     (condition "A.memberOfFootprint('J_USB') && B.memberOfFootprint('J_USB')")
     (constraint hole_clearance (min 0.19mm)))
+
+
+# Three compact right-edge pull-down footprints intentionally use 0.40 mm
+# copper-to-CNC-edge clearance. PCBWay's published standard capability is
+# 0.25 mm line-to-board-edge; keep this exception local rather than weakening
+# the board-wide 0.50 mm engineering preference.
+(rule "Right-edge power pull-down clearance"
+    (condition "A.Reference == 'R_OV1_GND' || A.Reference == 'R_CHG_CE_PD' || A.Reference == 'R_SYS_EN_PD'")
+    (constraint edge_clearance (min 0.40mm)))

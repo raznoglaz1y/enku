@@ -1685,13 +1685,15 @@ ParseResult parseEpubArchive(
 
         std::uint64_t section_offset = 0;
 
-        for (const auto& parsed_block :
+        for (auto& parsed_block :
              blocks) {
             TextBlock block;
             block.type =
                 parsed_block.type;
             block.text =
-                parsed_block.text;
+                std::move(
+                    parsed_block.text
+                );
             block.text_offset =
                 global_offset +
                 section_offset;

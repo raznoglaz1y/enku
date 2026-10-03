@@ -76,4 +76,6 @@ idf_component_register(
         nvs_flash
         fatfs
         sdmmc
+    EMBED_FILES
+        "assets/NotoSans-Regular.ttf"
 )

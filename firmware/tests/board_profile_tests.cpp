@@ -60,5 +60,74 @@ int main() {
     );
     assert(profile.name == "ENKU R0.1 Base");
 
+    assert(
+        supportsFeature(
+            profile.capabilities,
+            BoardFeature::Psram
+        )
+    );
+    assert(
+        supportsFeature(
+            profile.capabilities,
+            BoardFeature::RemovableStorage
+        )
+    );
+    assert(
+        !supportsFeature(
+            profile.capabilities,
+            BoardFeature::Frontlight
+        )
+    );
+
+    assert(
+        isReaderBoardProfileValid(
+            profile,
+            800,
+            480
+        )
+    );
+
+    auto invalid = profile;
+    invalid.capabilities.has_removable_storage = false;
+    assert(
+        !isReaderBoardProfileValid(
+            invalid,
+            800,
+            480
+        )
+    );
+
+    invalid = profile;
+    invalid.capabilities.display_controller =
+        DisplayControllerFamily::Unknown;
+    assert(
+        !isReaderBoardProfileValid(
+            invalid,
+            800,
+            480
+        )
+    );
+
+    invalid = profile;
+    invalid.capabilities.display_width = 480;
+    invalid.capabilities.display_height = 800;
+    assert(
+        !isReaderBoardProfileValid(
+            invalid,
+            800,
+            480
+        )
+    );
+
+    invalid = profile;
+    invalid.capabilities.reading_controls = 2;
+    assert(
+        !isReaderBoardProfileValid(
+            invalid,
+            800,
+            480
+        )
+    );
+
     return 0;
 }

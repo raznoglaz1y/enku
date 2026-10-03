@@ -6,9 +6,12 @@
 namespace enku::platform::esp_idf {
 
 EspIdfPlatform::EspIdfPlatform()
-    : filesystem_(board::kSdMountPoint),
-      state_files_(filesystem_),
-      book_files_(filesystem_),
+    : state_filesystem_(
+          EspIdfInternalStateStorage::kMountPoint
+      ),
+      book_filesystem_(board::kSdMountPoint),
+      state_files_(state_filesystem_),
+      book_files_(book_filesystem_),
       framebuffer_(
           EspIdfEpaper::kWidth,
           EspIdfEpaper::kHeight
@@ -22,6 +25,11 @@ PlatformInitStatus EspIdfPlatform::begin() {
     // and controls exist.
     if (!refresh_.begin()) {
         return PlatformInitStatus::DisplayInitFailed;
+    }
+
+    if (internal_state_storage_.begin() !=
+        InternalStateMountStatus::Ok) {
+        return PlatformInitStatus::StateStorageFailed;
     }
 
     // PMU telemetry/suspend is valuable but not required for basic
@@ -55,7 +63,7 @@ EspIdfSdCard& EspIdfPlatform::sdCard() {
 }
 
 EspIdfFilesystem& EspIdfPlatform::filesystem() {
-    return filesystem_;
+    return book_filesystem_;
 }
 
 EspIdfStateFileStore& EspIdfPlatform::stateFiles() {

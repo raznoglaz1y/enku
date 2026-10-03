@@ -189,8 +189,8 @@ def main() -> int:
     if re.search(r'\n\s*\(via\s', text):
         errors.append("via found before schematic-to-PCB net synchronization gate")
 
-    if "PLACEMENT BASELINE B" not in text:
-        errors.append("placement baseline B banner missing")
+    if "PLACEMENT BASELINE C" not in text:
+        errors.append("placement baseline C banner missing")
 
     tp_refs = [r for r in REQUIRED_REFS if r.startswith("TP_")]
     if len(tp_refs) < 16:
@@ -208,6 +208,32 @@ def main() -> int:
         pad_line = next((ln for ln in block.splitlines() if '(pad "1"' in ln), "")
         if '"B.Paste"' in pad_line:
             errors.append(f"{ref} probe pad must not have solder paste")
+
+    forbidden_resolved_placeholders = (
+        "R0.1_FH34SRJ_24_DUAL_CONTACT_PLACEHOLDER",
+        "R0.1_FH34SRJ_6_DUAL_CONTACT_PLACEHOLDER",
+        "R0.1_TPS923610_SOT563_PLACEHOLDER",
+        "TPS2121_PLACEMENT_PLACEHOLDER",
+        "BQ25185DLHR_PLACEMENT_PLACEHOLDER",
+        "R0.1_TYS5040_47uH_PLACEHOLDER",
+    )
+    for token in forbidden_resolved_placeholders:
+        if token in text:
+            errors.append(f"resolved footprint placeholder returned: {token}")
+
+    exact_footprint_tokens = (
+        "TI_RUX0012A_TPS2121",
+        "TI_DLH0010A_BQ25185",
+        "Bosch_LGA-14_3x2.5mm_P0.5mm",
+        "TPS923610_DRL0006A_IPC-M",
+        "Hirose_FH34SRJ-24S-0.5SH_50",
+        "Hirose_FH34SRJ-6S-0.5SH_50",
+        "Laird_TYS5040",
+    )
+    for token in exact_footprint_tokens:
+        if token not in text:
+            errors.append(f"exact first-spin footprint missing: {token}")
+
     if "TPS63802DLAR" not in text:
         errors.append("PCB missing TPS63802DLAR first-spin regulator")
     if "TPS63031" in text:

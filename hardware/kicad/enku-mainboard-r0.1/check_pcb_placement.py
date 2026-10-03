@@ -228,7 +228,7 @@ def main() -> int:
         "ENKU:TPS923610_DRL0006A",
         "ENKU:FH34SRJ-24S-0.5SH",
         "ENKU:FH34SRJ-6S-0.5SH",
-        "ENKU:Laird_TYS5040",
+        "ENKU:TYS5040_5x5",
     )
     for token in exact_footprint_tokens:
         if token not in text:

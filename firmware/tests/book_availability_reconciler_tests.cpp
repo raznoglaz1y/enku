@@ -97,6 +97,40 @@ int main() {
     reconciler.reconcile();
     assert(app.library.unavailable_books.empty());
 
+    // A second removal invalidates recovered books again.
+    app.storage.removable =
+        RemovableStorageStatus::Unavailable;
+    reconciler.reconcile();
+    assert(!app.library.bookAvailable("first"));
+    assert(!app.library.bookAvailable("second"));
+    assert(app.library.unavailable_books.size() == 2U);
+
+    // Directory setup failure is non-readable media too.
+    app.storage.removable =
+        RemovableStorageStatus::SetupError;
+    reconciler.reconcile();
+    assert(!app.library.bookAvailable("first"));
+    assert(!app.library.bookAvailable("second"));
+    assert(app.library.unavailable_books.size() == 2U);
+
+    // A later successful retry derives availability from real files,
+    // not stale state from the previous card lifecycle.
+    app.storage.removable =
+        RemovableStorageStatus::Ready;
+    reconciler.reconcile();
+    assert(app.library.bookAvailable("first"));
+    assert(app.library.bookAvailable("second"));
+    assert(app.library.unavailable_books.empty());
+
+    // The complete remove/reinsert cycle remains repeatable.
+    app.storage.removable =
+        RemovableStorageStatus::Unavailable;
+    reconciler.reconcile();
+    app.storage.removable =
+        RemovableStorageStatus::Ready;
+    reconciler.reconcile();
+    assert(app.library.unavailable_books.empty());
+
     std::filesystem::remove_all(root, ec);
     return 0;
 }

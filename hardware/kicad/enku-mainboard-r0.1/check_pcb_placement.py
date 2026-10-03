@@ -222,17 +222,65 @@ def main() -> int:
             errors.append(f"resolved footprint placeholder returned: {token}")
 
     exact_footprint_tokens = (
-        "TI_RUX0012A_TPS2121",
-        "TI_DLH0010A_BQ25185",
-        "Bosch_LGA-14_3x2.5mm_P0.5mm",
-        "TPS923610_DRL0006A_IPC-M",
-        "Hirose_FH34SRJ-24S-0.5SH_50",
-        "Hirose_FH34SRJ-6S-0.5SH_50",
-        "Laird_TYS5040",
+        "ENKU:TPS2121_RUX0012A",
+        "ENKU:BQ25185_DLH0010A",
+        "ENKU:BMI270_Bosch_LGA14",
+        "ENKU:TPS923610_DRL0006A",
+        "ENKU:FH34SRJ-24S-0.5SH",
+        "ENKU:FH34SRJ-6S-0.5SH",
+        "ENKU:Laird_TYS5040",
     )
     for token in exact_footprint_tokens:
         if token not in text:
             errors.append(f"exact first-spin footprint missing: {token}")
+
+    # Exact pad-number gates: catch visually plausible but electrically impossible placeholders.
+    blocks_by_ref: dict[str, str] = {}
+    for block in footprint_blocks(text):
+        parsed = parse_ref_and_at(block)
+        if parsed:
+            blocks_by_ref[parsed[0]] = block
+
+    expected_pads = {
+        "U_SRC": {str(i) for i in range(1, 13)},
+        "U_CHG": {str(i) for i in range(1, 12)},
+        "U_IMU": {str(i) for i in range(1, 15)},
+        "U_FL": {str(i) for i in range(1, 7)},
+        "J_EPD": {*(str(i) for i in range(1, 25)), "S1", "S2"},
+        "J_FL": {*(str(i) for i in range(1, 7)), "S1", "S2"},
+    }
+    for ref, expected in expected_pads.items():
+        block = blocks_by_ref.get(ref, "")
+        actual = set(re.findall(r'\(pad "([^"]+)"', block))
+        missing = expected - actual
+        if missing:
+            errors.append(f"{ref} missing exact pads: {sorted(missing)}")
+
+    # Electrical package invariants.
+    chg_block = blocks_by_ref.get("U_CHG", "")
+    if not re.search(r'\(pad "11"[^\n]*\(net \d+ "GND"\)', chg_block):
+        errors.append("BQ25185 exposed pad 11 must be tied to GND")
+    for ref in ("J_EPD", "J_FL"):
+        block = blocks_by_ref.get(ref, "")
+        for shield in ("S1", "S2"):
+            if not re.search(rf'\(pad "{shield}"[^\n]*\(net \d+ "GND"\)', block):
+                errors.append(f"{ref} {shield} retention tab must be tied to GND")
+
+    # Reproducible local footprint library is part of the release source.
+    fp_table = HERE / "fp-lib-table"
+    if not fp_table.is_file() or "ENKU.pretty" not in fp_table.read_text(encoding="utf-8"):
+        errors.append("local ENKU.pretty library is not registered in fp-lib-table")
+    local_footprints = (
+        "TPS2121_RUX0012A.kicad_mod",
+        "BQ25185_DLH0010A.kicad_mod",
+        "BMI270_Bosch_LGA14.kicad_mod",
+        "TPS923610_DRL0006A.kicad_mod",
+        "FH34SRJ-24S-0.5SH.kicad_mod",
+        "FH34SRJ-6S-0.5SH.kicad_mod",
+    )
+    for name in local_footprints:
+        if not (HERE / "ENKU.pretty" / name).is_file():
+            errors.append(f"missing local verified footprint source: {name}")
 
     if "TPS63802DLAR" not in text:
         errors.append("PCB missing TPS63802DLAR first-spin regulator")

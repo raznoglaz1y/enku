@@ -126,7 +126,7 @@ ESP32 module antennas lose margin when copper, screws, batteries, flex cables or
 ### ENKU action
 
 - U1 antenna points toward the left board edge;
-- U1 is rotated 270 degrees in the current exact footprint;
+- U1 is rotated 90 degrees so the module antenna keepout projects beyond the left board edge;
 - H1 was moved because the original mounting-hole position intruded into the real keepout corridor;
 - all copper layers must respect the module keepout;
 - battery, EPD flex and Qi ferrite must be checked in the 3D assembly, not only PCB view.

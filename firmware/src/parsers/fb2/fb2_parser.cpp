@@ -1630,62 +1630,50 @@ ParseResult Fb2Parser::parse(
             std::optional<std::string>
                 section_title;
 
-            const auto lower_section =
-                lower(section_xml);
+            const auto title_open =
+                nextOpenTag(
+                    section_xml,
+                    0U,
+                    "title"
+                );
 
-            const auto title_begin =
-                lower_section.find("<title");
-
-            if (title_begin !=
-                std::string::npos) {
-                const auto title_open_end =
-                    lower_section.find(
-                        '>',
-                        title_begin
+            if (title_open.has_value()) {
+                const auto title_close =
+                    closingTag(
+                        section_xml,
+                        title_open->second + 1U,
+                        "title"
                     );
 
-                const auto title_end =
-                    title_open_end ==
-                            std::string::npos
-                        ? std::string::npos
-                        : lower_section.find(
-                              "</title>",
-                              title_open_end + 1U
-                          );
-
-                if (title_open_end !=
-                        std::string::npos &&
-                    title_end !=
-                        std::string::npos) {
-                    const auto title_text =
+                if (title_close.has_value()) {
+                    auto title_text =
                         stripTags(
                             std::string_view(
                                 section_xml
                             ).substr(
-                                title_open_end + 1U,
-                                title_end -
-                                    title_open_end -
+                                title_open->second + 1U,
+                                title_close->first -
+                                    title_open->second -
                                     1U
                             )
                         );
 
                     if (!title_text.empty()) {
                         section_title =
-                            title_text;
+                            std::move(
+                                title_text
+                            );
                     }
 
                     section_xml.erase(
-                        title_begin,
-                        title_end +
-                            std::string(
-                                "</title>"
-                            ).size() -
-                            title_begin
+                        title_open->first,
+                        title_close->second + 1U -
+                            title_open->first
                     );
                 }
             }
 
-            const auto parsed =
+            auto parsed =
                 parseSectionBlocks(
                     section_xml
                 );
@@ -1707,13 +1695,15 @@ ParseResult Fb2Parser::parse(
 
             std::uint64_t section_offset = 0;
 
-            for (const auto& parsed_block :
+            for (auto& parsed_block :
                  parsed) {
                 TextBlock block;
                 block.type =
                     parsed_block.type;
                 block.text =
-                    parsed_block.text;
+                    std::move(
+                        parsed_block.text
+                    );
                 block.text_offset =
                     global_offset +
                     section_offset;

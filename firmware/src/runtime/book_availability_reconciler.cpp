@@ -18,6 +18,7 @@ void BookAvailabilityReconciler::markAllUnavailable() {
     auto& unavailable =
         app_state_.library.unavailable_books;
     unavailable.clear();
+    app_state_.library.availability_pending_books.clear();
 
     for (const auto& record : library_.records()) {
         unavailable.push_back(record.book_id);
@@ -69,6 +70,12 @@ void BookAvailabilityReconciler::beginIncremental() {
     markAllUnavailable();
     pending_records_ = library_.records();
     next_record_ = 0;
+    app_state_.library.availability_pending_books.clear();
+    for (const auto& record : pending_records_) {
+        app_state_.library.availability_pending_books.push_back(
+            record.book_id
+        );
+    }
     app_state_.library.availability_checked = 0;
     app_state_.library.availability_total =
         static_cast<std::uint32_t>(pending_records_.size());
@@ -108,6 +115,17 @@ bool BookAvailabilityReconciler::step(
         const auto& record =
             pending_records_[next_record_++];
 
+        auto& pending =
+            app_state_.library.availability_pending_books;
+        pending.erase(
+            std::remove(
+                pending.begin(),
+                pending.end(),
+                record.book_id
+            ),
+            pending.end()
+        );
+
         const auto actual =
             fingerprintStoredBook(
                 files_,
@@ -137,6 +155,7 @@ bool BookAvailabilityReconciler::step(
         pending_records_.clear();
         next_record_ = 0;
         app_state_.library.availability_check_active = false;
+        app_state_.library.availability_pending_books.clear();
         return true;
     }
 

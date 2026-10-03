@@ -105,6 +105,7 @@ private:
     bool refreshStatusBarIfNeeded();
     bool syncWebUploadServer();
     bool syncRemovableStorage(std::uint32_t now_ms);
+    void reconcileBookAvailability();
     void processWebDeleteRequests();
     void refreshLibraryAfterUploadIfNeeded();
 

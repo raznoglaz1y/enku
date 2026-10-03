@@ -498,6 +498,62 @@ bool showFontRecovery(
     return platform.refresh().submit(request);
 }
 
+bool showBootstrapRecovery(
+    enku::platform::esp_idf::EspIdfPlatform& platform,
+    enku::platform::esp_idf::DeviceRuntimeInitStatus status
+) {
+    auto& framebuffer = platform.framebuffer();
+    framebuffer.clearWhite();
+
+    drawRect(
+        framebuffer.mutableData(),
+        20,
+        20,
+        EspIdfEpaper::kWidth - 40,
+        EspIdfEpaper::kHeight - 40,
+        4
+    );
+    drawText(
+        framebuffer.mutableData(),
+        250,
+        120,
+        "ENKU",
+        16
+    );
+
+    const bool board_mismatch =
+        status ==
+        enku::platform::esp_idf::DeviceRuntimeInitStatus::
+            BoardProfileMismatch;
+
+    drawText(
+        framebuffer.mutableData(),
+        board_mismatch ? 190 : 230,
+        285,
+        board_mismatch
+            ? "BOARD FAIL"
+            : "BOOT FAIL",
+        board_mismatch ? 6 : 7
+    );
+    drawText(
+        framebuffer.mutableData(),
+        275,
+        350,
+        "REBOOT",
+        5
+    );
+
+    enku::RefreshRequest request;
+    request.refresh_class = enku::RefreshClass::Full;
+    request.reason = enku::RefreshReason::ErrorRecovery;
+    request.generation = 1;
+    request.may_coalesce = false;
+    request.may_defer = false;
+
+    return platform.refresh().submit(request);
+}
+
+
 [[noreturn]] void idleWithoutFont(
     enku::platform::esp_idf::EspIdfPlatform& platform
 ) {
@@ -1035,6 +1091,37 @@ extern "C" void app_main(void) {
         idleRecoveryScreen(
             platform,
             "font initialization failed"
+        );
+    } else if (
+        device_status ==
+            enku::platform::esp_idf::DeviceRuntimeInitStatus::
+                BoardProfileMismatch ||
+        device_status ==
+            enku::platform::esp_idf::DeviceRuntimeInitStatus::
+                RecoveryRequired) {
+        ESP_LOGE(
+            kTag,
+            "Application runtime requires bootstrap recovery; status=%u",
+            static_cast<unsigned>(device_status)
+        );
+
+        if (!showBootstrapRecovery(
+                platform,
+                device_status
+            )) {
+            ESP_LOGE(
+                kTag,
+                "Unable to render bootstrap recovery screen"
+            );
+        }
+
+        idleRecoveryScreen(
+            platform,
+            device_status ==
+                enku::platform::esp_idf::DeviceRuntimeInitStatus::
+                    BoardProfileMismatch
+                ? "board profile mismatch"
+                : "boot recovery required"
         );
     } else if (device_status !=
         enku::platform::esp_idf::DeviceRuntimeInitStatus::Ok) {

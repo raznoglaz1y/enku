@@ -35,7 +35,7 @@ struct Glyph {
     std::array<std::uint8_t, 7> rows;
 };
 
-constexpr std::array<Glyph, 21> kGlyphs = {{
+constexpr std::array<Glyph, 22> kGlyphs = {{
     {'A', {0x0E,0x11,0x11,0x1F,0x11,0x11,0x11}},
     {'B', {0x1E,0x11,0x11,0x1E,0x11,0x11,0x1E}},
     {'D', {0x1E,0x11,0x11,0x11,0x11,0x11,0x1E}},
@@ -46,6 +46,7 @@ constexpr std::array<Glyph, 21> kGlyphs = {{
     {'K', {0x11,0x12,0x14,0x18,0x14,0x12,0x11}},
     {'L', {0x10,0x10,0x10,0x10,0x10,0x10,0x1F}},
     {'N', {0x11,0x19,0x19,0x15,0x13,0x13,0x11}},
+    {'O', {0x0E,0x11,0x11,0x11,0x11,0x11,0x0E}},
     {'P', {0x1E,0x11,0x11,0x1E,0x10,0x10,0x10}},
     {'R', {0x1E,0x11,0x11,0x1E,0x14,0x12,0x11}},
     {'S', {0x0F,0x10,0x10,0x0E,0x01,0x01,0x1E}},
@@ -446,11 +447,66 @@ bool inputSmokeTest(
     }
 }
 
-[[noreturn]] void idleWithoutFont() {
+bool showFontRecovery(
+    enku::platform::esp_idf::EspIdfPlatform& platform
+) {
+    auto& framebuffer = platform.framebuffer();
+    framebuffer.clearWhite();
+
+    drawRect(
+        framebuffer.mutableData(),
+        20,
+        20,
+        EspIdfEpaper::kWidth - 40,
+        EspIdfEpaper::kHeight - 40,
+        4
+    );
+    drawText(
+        framebuffer.mutableData(),
+        250,
+        120,
+        "ENKU",
+        16
+    );
+    drawText(
+        framebuffer.mutableData(),
+        215,
+        285,
+        "FONT FAIL",
+        7
+    );
+    drawText(
+        framebuffer.mutableData(),
+        235,
+        350,
+        "ADD FONT",
+        5
+    );
+
+    enku::RefreshRequest request;
+    request.refresh_class = enku::RefreshClass::Full;
+    request.reason = enku::RefreshReason::ErrorRecovery;
+    request.generation = 1;
+    request.may_coalesce = false;
+    request.may_defer = false;
+
+    return platform.refresh().submit(request);
+}
+
+[[noreturn]] void idleWithoutFont(
+    enku::platform::esp_idf::EspIdfPlatform& platform
+) {
     ESP_LOGW(
         kTag,
-        "Reader font unavailable; idling until reboot"
+        "Reader font unavailable; showing recovery screen"
     );
+
+    if (!showFontRecovery(platform)) {
+        ESP_LOGE(
+            kTag,
+            "Unable to render font recovery screen"
+        );
+    }
 
     while (true) {
         vTaskDelay(pdMS_TO_TICKS(1000));
@@ -942,7 +998,7 @@ extern "C" void app_main(void) {
         }
 #endif
 
-        idleWithoutFont();
+        idleWithoutFont(platform);
     } else if (device_status !=
         enku::platform::esp_idf::DeviceRuntimeInitStatus::Ok) {
         ESP_LOGE(

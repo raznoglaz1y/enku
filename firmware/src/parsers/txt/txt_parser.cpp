@@ -188,6 +188,57 @@ void flushParagraph(
     section.blocks.push_back(std::move(block));
 }
 
+std::size_t completeUtf8PrefixLength(
+    std::string_view bytes
+) {
+    if (bytes.empty()) {
+        return 0;
+    }
+
+    std::size_t continuation = 0;
+    std::size_t cursor = bytes.size();
+
+    while (cursor > 0 &&
+           continuation < 3U &&
+           isContinuation(
+               static_cast<unsigned char>(
+                   bytes[cursor - 1U]
+               )
+           )) {
+        --cursor;
+        ++continuation;
+    }
+
+    if (cursor == 0) {
+        return bytes.size();
+    }
+
+    const auto lead_index = cursor - 1U;
+    const auto lead =
+        static_cast<unsigned char>(
+            bytes[lead_index]
+        );
+
+    std::size_t expected = 1U;
+
+    if ((lead & 0xE0U) == 0xC0U) {
+        expected = 2U;
+    } else if ((lead & 0xF0U) == 0xE0U) {
+        expected = 3U;
+    } else if ((lead & 0xF8U) == 0xF0U) {
+        expected = 4U;
+    } else if (lead > 0x7FU) {
+        return bytes.size();
+    }
+
+    const auto available =
+        bytes.size() - lead_index;
+
+    return available < expected
+        ? lead_index
+        : bytes.size();
+}
+
 } // namespace
 
 BookFormat TxtParser::format() const {
@@ -253,6 +304,200 @@ ParseResult TxtParser::parse(
 
     result.document.total_text_length = section.text_length;
     result.document.sections.push_back(std::move(section));
+    result.status = ParserStatus::Ok;
+    return result;
+}
+
+ParseResult TxtParser::parse(
+    const TextRangeSource& source_bytes,
+    const ParserSourceInfo& source
+) const {
+    constexpr std::size_t kChunkBytes =
+        32U * 1024U;
+
+    ParseResult result;
+    result.document.book_id = source.book_id;
+
+    const auto total_size =
+        source_bytes.size();
+
+    if (total_size == 0U) {
+        result.status =
+            ParserStatus::EmptyDocument;
+        return result;
+    }
+
+    result.document.metadata.title =
+        filenameStem(source.source_filename);
+    result.document.metadata.author_display =
+        "Unknown author";
+    result.document.metadata.toc_available =
+        false;
+
+    DocumentSection section;
+    section.id = "txt:body";
+
+    std::string carry;
+    std::string line;
+    std::string paragraph;
+    std::uint64_t normalized_offset = 0;
+    bool first_chunk = true;
+    bool pending_cr = false;
+
+    const auto flushLine =
+        [&]() {
+            const auto clean =
+                trimAsciiWhitespace(line);
+            line.clear();
+
+            if (clean.empty()) {
+                flushParagraph(
+                    paragraph,
+                    section,
+                    normalized_offset
+                );
+                return;
+            }
+
+            if (!paragraph.empty()) {
+                paragraph.push_back(' ');
+            }
+
+            paragraph += clean;
+        };
+
+    std::uint64_t offset = 0;
+
+    while (offset < total_size) {
+        const auto remaining =
+            total_size - offset;
+        const auto requested =
+            static_cast<std::size_t>(
+                std::min<std::uint64_t>(
+                    remaining,
+                    kChunkBytes
+                )
+            );
+
+        std::string chunk;
+
+        if (!source_bytes.readRange(
+                offset,
+                requested,
+                chunk
+            ) ||
+            chunk.size() != requested) {
+            result.status =
+                ParserStatus::InvalidSource;
+            return result;
+        }
+
+        offset +=
+            static_cast<std::uint64_t>(
+                requested
+            );
+
+        std::string work;
+        work.reserve(
+            carry.size() + chunk.size()
+        );
+        work += carry;
+        work += chunk;
+        carry.clear();
+
+        if (first_chunk) {
+            first_chunk = false;
+
+            if (hasUtf16Bom(work)) {
+                result.status =
+                    ParserStatus::UnsupportedEncoding;
+                return result;
+            }
+
+            if (work.size() >= 3U &&
+                static_cast<unsigned char>(
+                    work[0]
+                ) == 0xEFU &&
+                static_cast<unsigned char>(
+                    work[1]
+                ) == 0xBBU &&
+                static_cast<unsigned char>(
+                    work[2]
+                ) == 0xBFU) {
+                work.erase(0, 3U);
+            }
+        }
+
+        const auto complete =
+            completeUtf8PrefixLength(work);
+
+        if (complete < work.size()) {
+            carry.assign(
+                work.data() + complete,
+                work.size() - complete
+            );
+            work.resize(complete);
+        }
+
+        if (!validUtf8(work)) {
+            result.status =
+                ParserStatus::InvalidUtf8;
+            return result;
+        }
+
+        for (const char ch : work) {
+            if (pending_cr) {
+                pending_cr = false;
+                flushLine();
+
+                if (ch == '\n') {
+                    continue;
+                }
+            }
+
+            if (ch == '\r') {
+                pending_cr = true;
+                continue;
+            }
+
+            if (ch == '\n') {
+                flushLine();
+                continue;
+            }
+
+            line.push_back(ch);
+        }
+    }
+
+    if (!carry.empty()) {
+        result.status =
+            ParserStatus::InvalidUtf8;
+        return result;
+    }
+
+    if (pending_cr) {
+        flushLine();
+    } else if (!line.empty()) {
+        flushLine();
+    }
+
+    flushParagraph(
+        paragraph,
+        section,
+        normalized_offset
+    );
+
+    if (section.blocks.empty()) {
+        result.status =
+            ParserStatus::EmptyDocument;
+        return result;
+    }
+
+    result.document.total_text_length =
+        section.text_length;
+    result.document.sections.push_back(
+        std::move(section)
+    );
     result.status = ParserStatus::Ok;
     return result;
 }

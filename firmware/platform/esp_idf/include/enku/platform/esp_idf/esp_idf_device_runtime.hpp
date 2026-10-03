@@ -5,6 +5,7 @@
 
 #include "enku/runtime/application_reader_runtime.hpp"
 #include "enku/runtime/application_storage_runtime.hpp"
+#include "enku/runtime/book_availability_reconciler.hpp"
 #include "enku/runtime/input_dispatcher.hpp"
 #include "enku/runtime/library_search_runtime.hpp"
 #include "enku/runtime/book_details_runtime.hpp"
@@ -105,7 +106,6 @@ private:
     bool refreshStatusBarIfNeeded();
     bool syncWebUploadServer();
     bool syncRemovableStorage(std::uint32_t now_ms);
-    void reconcileBookAvailability();
     void processWebDeleteRequests();
     void refreshLibraryAfterUploadIfNeeded();
 
@@ -113,6 +113,7 @@ private:
     EspIdfPlatform& platform_;
 
     ApplicationStorageRuntime storage_;
+    BookAvailabilityReconciler availability_reconciler_;
     FreeTypeTextRenderer text_renderer_;
     ApplicationReaderRuntime reader_;
     ReaderOverlayRuntime reader_overlay_;

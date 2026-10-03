@@ -325,6 +325,47 @@ int main() {
         );
     }
 
+    {
+        std::string oversized =
+            R"(<?xml version="1.0" encoding="utf-8"?>
+<FictionBook>
+ <description>
+  <title-info><book-title>Oversized Leaf</book-title></title-info>
+ </description>
+ <body>
+  <section><p>)";
+
+        oversized +=
+            std::string(
+                4U * 1024U * 1024U + 1024U,
+                'Q'
+            );
+
+        oversized +=
+            R"(</p></section>
+ </body>
+</FictionBook>)";
+
+        TrackingFb2RangeSource ranged(
+            std::move(oversized)
+        );
+
+        const auto limited =
+            parser.parse(
+                ranged,
+                source
+            );
+
+        assert(
+            limited.status ==
+            ParserStatus::InvalidSource
+        );
+        assert(
+            ranged.max_read <=
+            32U * 1024U
+        );
+    }
+
     const auto unsupported_encoding =
         parser.parse(
             "<?xml version=\"1.0\" encoding=\"windows-1251\"?><FictionBook/>",

@@ -135,6 +135,14 @@
           <div class="entries">
 
             <article class="entry">
+              <div class="entry-top"><span class="entry-type">FIRMWARE · PLATFORM / DISPLAY</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/6b9ae57bb294a0c7c5a275aaf015128bf0779920" target="_blank" rel="noreferrer">6b9ae57 ↗</a></div>
+              <h2>The firmware now knows what board it is running on.</h2>
+              <p>A board capability/profile layer now separates product behavior from board-specific wiring. The Waveshare board is an explicit reference-hardware profile, while ENKU R0.1 Base / Pro / Pro Wireless are design-target profiles until they are physically validated.</p>
+              <ul><li>shared BoardCapabilities contract in the framework-neutral core;</li><li>storage bus, display family, orientation, controls, PSRAM, USB, IMU, Hall, Dock, frontlight and Qi capabilities described explicitly;</li><li>active profile logged at boot for bring-up diagnostics;</li><li>R0.1 capabilities remain marked as design targets rather than verified hardware claims.</li></ul>
+              <div class="entry-note">In the same hardening pass, the e-paper refresh service gained anti-ghosting accounting: after five fast/partial updates it forces a clean full refresh before incremental updates continue.</div>
+            </article>
+
+            <article class="entry">
               <div class="entry-top"><span class="entry-type">FIRMWARE · READER ROBUSTNESS</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/647eb0e27908b03cf94de8b258f068202278fe25" target="_blank" rel="noreferrer">647eb0e ↗</a></div>
               <h2>Reader state becomes lifecycle-safe.</h2>
               <p>The reader stack moved from isolated parser and checkpoint pieces toward a more fault-tolerant device lifecycle. Semantic resume is now regression-tested across section boundaries and relayouts, stale checkpoints recover to a safe book start, and Back, Sleep and Power Off share one controlled persistence path.</p>

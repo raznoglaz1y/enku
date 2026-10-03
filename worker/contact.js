@@ -650,6 +650,11 @@ const darkThemeCss = `
     background:transparent!important;
   }
   html[data-theme="dark"] body .support{background:var(--enku-bg)!important}
+  html[data-theme="dark"] body .enku-home-card:hover,
+  html[data-theme="dark"] body .enku-work-main:hover,
+  html[data-theme="dark"] body .enku-work-side a:hover{
+    background:rgba(255,255,255,.035)!important;
+  }
   html[data-theme="dark"] body .milestone,
   html[data-theme="dark"] body .download-card,
   html[data-theme="dark"] body .log-card,
@@ -737,11 +742,27 @@ const darkThemeCss = `
     color:var(--enku-muted)!important;
     background:transparent!important;
   }
-  html[data-theme="dark"] body .flag.done,
-  html[data-theme="dark"] body .flag.verified{
+  html[data-theme="dark"] body .flag.done{
     background:rgba(255,255,255,.08)!important;
     color:var(--enku-text)!important;
     border-color:rgba(255,255,255,.20)!important;
+  }
+  html[data-theme="dark"] body .flag.verified{
+    color:var(--enku-text)!important;
+  }
+  /* Hardware verification rows use labels, not badges. Do not turn them into grey boxes. */
+  html[data-theme="dark"] body .verify-row .flag,
+  html[data-theme="dark"] body .verify-row .flag.verified,
+  html[data-theme="dark"] body .verify-row .flag.pending{
+    width:max-content!important;
+    padding:0!important;
+    border:0!important;
+    border-radius:0!important;
+    background:transparent!important;
+    color:var(--enku-dim)!important;
+  }
+  html[data-theme="dark"] body .verify-row .flag.verified{
+    color:var(--enku-text)!important;
   }
 
   /* Forms */

@@ -66,7 +66,7 @@ jobs:
             failed=1
           fi
 
-          if grep -E '^\[(shorting_items|clearance|hole_clearance|board_edge|copper_edge_clearance)\]:' /tmp/enku-r01-drc.rpt; then
+          if grep -E '^\[(shorting_items|clearance|hole_clearance|board_edge|copper_edge_clearance|tracks_crossing)\]:' /tmp/enku-r01-drc.rpt; then
             echo "Critical PCB copper/clearance violation detected."
             failed=1
           fi

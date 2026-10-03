@@ -688,5 +688,10 @@
 	(text "Hall baseline frozen to DRV5032FBDBZR: 5Hz omnipolar push-pull SOT-23, chosen for cover-polarity tolerance and sub-uA class operation." (exclude_from_sim no) (at 25 25 0) (effects (font (size 1.0 1.0)) (justify left bottom)) (uuid "74000000-0000-4000-8000-000000000259"))
 	(text "microSD stays on shared SPI with independent CS and 0R/22R tuning links. DAT1/DAT2 unused in SPI mode." (exclude_from_sim no) (at 25 30 0) (effects (font (size 1.0 1.0)) (justify left bottom)) (uuid "74000000-0000-4000-8000-000000000260"))
 	(text "Battery ADC divider 2M/680k draws ~1.6uA at 4.2V; 100nF at ADC node provides acquisition charge reservoir. Validate ADC settling/calibration in firmware." (exclude_from_sim no) (at 25 35 0) (effects (font (size 1.0 1.0)) (justify left bottom)) (uuid "74000000-0000-4000-8000-000000000261"))
+	(wire (pts (xy 103.54 84.54) (xy 106.08 84.54))
+		(stroke (width 0) (type default))
+		(uuid "75000000-0000-4000-8000-000000000002")
+	)
+
 	(sheet_instances (path "/" (page "3")))
 )

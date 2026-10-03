@@ -288,7 +288,7 @@ public:
     virtual WakeReason wakeReason() const = 0;
 
     virtual bool requestSuspend() = 0;
-    virtual void requestPowerOff() = 0;
+    virtual bool requestPowerOff() = 0;
 };
 
 class ClockService {

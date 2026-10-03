@@ -36,6 +36,7 @@ firmware/
       book_loader.hpp
     runtime/
       reader_runtime.hpp
+      reader_state_flush.hpp
       library_runtime.hpp
       settings_runtime.hpp
       input_runtime.hpp
@@ -69,6 +70,7 @@ firmware/
     core/
     runtime/
       reader_runtime.cpp
+      reader_state_flush.cpp
       library_runtime.cpp
       settings_runtime.cpp
       input_runtime.cpp
@@ -221,16 +223,18 @@ Owns:
 - progress-dirty hand-off to persistence;
 - generation of refresh requests after successful visible changes;
 - Book Opening → Reading / failure transitions;
-- Back-to-Library progress checkpoint coordination;
+- centralized dirty-state flush coordination shared by Back, Sleep and Power Off;
 - Finished-state Library summary updates;
 - startup coordination across Library persistence and staged import recovery;
 - safe restoration of the last persisted Library/Reading context after reboot;
 - Sleep/Wake orchestration across reader persistence, network shutdown and PowerService;
-- graceful Power Off persistence before platform shutdown;
+- graceful Power Off persistence before platform shutdown through the same reader-state flush policy used by Sleep and Back;
 - persistent boot-loop marker management for cold-boot recovery gating;
 - Library query/focus/open coordination, transactional import event handling and focused-book deletion;
 - global settings loading, safe-default recovery and runtime persistence;
 - screen-aware physical-input to logical-action mapping plus ESP-IDF button polling.
+
+ReaderStateFlushCoordinator owns the common checkpoint → Library summary → restore-context sequence. It writes reader checkpoints only when progress is dirty, while lifecycle callers decide whether the persisted restore target remains Reading or returns to Library.
 
 The runtime layer does not manipulate semantic offsets directly.
 

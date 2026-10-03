@@ -1853,4 +1853,17 @@
   (via (at 41.20 91.35) (size 0.80) (drill 0.40) (layers "F.Cu" "B.Cu") (net 79))
   (segment (start 41.20 91.35) (end 42.825 91.35) (width 0.20) (layer "F.Cu") (net 79))
 
+  (segment (start 44.60 106.645) (end 44.60 105.30) (width 0.45) (layer "F.Cu") (net 3))
+  (via (at 44.60 105.30) (size 0.80) (drill 0.40) (layers "F.Cu" "B.Cu") (net 3))
+  (segment (start 49.40 106.645) (end 49.40 105.30) (width 0.45) (layer "F.Cu") (net 3))
+  (via (at 49.40 105.30) (size 0.80) (drill 0.40) (layers "F.Cu" "B.Cu") (net 3))
+  (segment (start 44.60 105.30) (end 49.40 105.30) (width 0.50) (layer "B.Cu") (net 3))
+  (segment (start 49.40 105.30) (end 54.80 105.30) (width 0.50) (layer "B.Cu") (net 3))
+  (segment (start 54.80 105.30) (end 54.80 95.30) (width 0.50) (layer "B.Cu") (net 3))
+  (segment (start 54.80 95.30) (end 45.30 95.30) (width 0.50) (layer "B.Cu") (net 3))
+  (segment (start 45.30 95.30) (end 45.30 91.50) (width 0.50) (layer "B.Cu") (net 3))
+  (via (at 45.30 91.50) (size 0.80) (drill 0.40) (layers "F.Cu" "B.Cu") (net 3))
+  (segment (start 45.30 91.50) (end 44.80 91.35) (width 0.20) (layer "F.Cu") (net 3))
+  (segment (start 44.80 91.35) (end 44.175 91.35) (width 0.18) (layer "F.Cu") (net 3))
+
 )

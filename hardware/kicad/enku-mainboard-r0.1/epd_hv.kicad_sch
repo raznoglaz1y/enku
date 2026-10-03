@@ -47,6 +47,8 @@
 				(pin passive line (at 19.54 -8.889999999999999 180) (length 2.54) (name "VSL" (effects (font (size 0.9 0.9)))) (number "22" (effects (font (size 0.9 0.9)))))
 				(pin passive line (at 19.54 -11.429999999999998 180) (length 2.54) (name "VGL" (effects (font (size 0.9 0.9)))) (number "23" (effects (font (size 0.9 0.9)))))
 				(pin passive line (at 19.54 -13.97 180) (length 2.54) (name "VCOM" (effects (font (size 0.9 0.9)))) (number "24" (effects (font (size 0.9 0.9)))))
+				(pin power_in line (at -19.54 -16.51 0) (length 2.54) (name "SHIELD" (effects (font (size 0.9 0.9)))) (number "S1" (effects (font (size 0.9 0.9)))))
+				(pin power_in line (at 19.54 -16.51 180) (length 2.54) (name "SHIELD" (effects (font (size 0.9 0.9)))) (number "S2" (effects (font (size 0.9 0.9)))))
 			)
 		)
 
@@ -187,6 +189,8 @@
 		(pin "22" (uuid "72000000-0000-4000-8000-000000000023"))
 		(pin "23" (uuid "72000000-0000-4000-8000-000000000024"))
 		(pin "24" (uuid "72000000-0000-4000-8000-000000000025"))
+		(pin "S1" (uuid "72000000-0000-4000-8000-000000009901"))
+		(pin "S2" (uuid "72000000-0000-4000-8000-000000009902"))
 		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000030" (reference "J_EPD") (unit 1))))
 	)
 
@@ -553,6 +557,9 @@
 	)
 	(global_label "EPD_VCI" (shape input) (at 47.46 118 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "72000000-0000-4000-8000-000000009209"))
 	(global_label "GND" (shape output) (at 62.54 118 180) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "72000000-0000-4000-8000-000000009210"))
+
+	(global_label "GND" (shape input) (at 208.46 69.49 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "72000000-0000-4000-8000-000000009903"))
+	(global_label "GND" (shape input) (at 247.54 69.49 180) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "72000000-0000-4000-8000-000000009904"))
 
 	(text "SSD1677 application circuit captured as discretes. R0.1 now follows the current 3.97-inch panel reference: 10uH + NMOS + 3x MBR0530 + 2.2R RESE + 1M GDR pulldown + local 4.7uF input capacitor." (exclude_from_sim no) (at 25 20 0) (effects (font (size 1.0 1.0)) (justify left bottom)) (uuid "72000000-0000-4000-8000-000000000172"))
 	(text "D1: SW -> VGH. C3 flying capacitor + D2/D3 form the negative VGL pump. Q_EPD source is sensed at RESE through 2.2R to GND." (exclude_from_sim no) (at 25 25 0) (effects (font (size 1.0 1.0)) (justify left bottom)) (uuid "72000000-0000-4000-8000-000000000173"))

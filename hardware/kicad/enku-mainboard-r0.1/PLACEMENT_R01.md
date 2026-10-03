@@ -1,6 +1,6 @@
 # ENKU Mainboard R0.1 — placement baseline B
 
-Status: **mechanical placement baseline B / discrete schematic captured / no routing / no KiCad ERC or DRC yet**
+Status: **mechanical placement baseline B / net sync B / discrete schematic captured / no routing / no KiCad ERC or DRC yet**
 
 Board envelope remains 54 × 94 mm, portrait, four layers.
 
@@ -34,8 +34,8 @@ Placement:
 - horizontal insertion toward the display-flex path.
 
 ### L_EPD
-**Laird TYS5040470M-10**
-- 47 µH;
+**Laird TYS5040100M-10**
+- 10 µH;
 - 5 × 5 mm class.
 
 Placement:
@@ -115,7 +115,7 @@ The current PCB coordinates are only electrical-placement targets. Exact switch 
 
 ## Power
 
-BQ25185 / TPS2121 / TPS63031 should form a compact lower power island between:
+BQ25185 / TPS2121 / TPS63802 should form a compact lower power island between:
 - USB/Dock inputs;
 - battery connector;
 - system rail.
@@ -147,7 +147,7 @@ The PCB now carries the main R0.1 mechanical placement, not just the display isl
 
 | Ref / group | PCB target |
 | --- | --- |
-| U1 ESP32-S3-WROOM-1-N16R8 | x=32.75, y=45.0, rotated 90°, antenna toward left edge |
+| U1 ESP32-S3-WROOM-1-N16R8 | x=32.75, y=45.0, rotated 270°, antenna keepout toward left edge |
 | U_IMU BMI270 | x=28.0, y=80.0, outside the central Qi keepout |
 | U_HALL DRV5032FBDBZR | x=71.0, y=44.5, above the button rail |
 | J_EPD | x=58.0, y=28.0 |
@@ -199,3 +199,18 @@ The next engineering step is:
 4. only then begin controlled routing and DRC.
 
 The board is therefore **placed enough to evaluate architecture and mechanics**, but it is not a fabrication release.
+
+
+## TPS63802 power-island revision
+
+R0.1 no longer uses TPS63031 as the intended population.
+
+Current lower power island:
+- U_3V3: TPS63802DLAR exact DLA0010A land pattern;
+- L_3V3: Murata DFE201612E-R47M=P2, 0.47 µH, rotated to keep L1/L2 loop short;
+- input: 10 µF + 100 nF local bypass;
+- output: 2 × 22 µF;
+- feedback: 511 kΩ / 91 kΩ on the quiet side of U_3V3;
+- PG: 100 kΩ pull-up and diagnostic net.
+
+The placement gate rejects reintroduction of TPS63031 or loss of the support network.

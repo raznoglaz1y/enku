@@ -135,6 +135,14 @@
           <div class="entries">
 
             <article class="entry">
+              <div class="entry-top"><span class="entry-type">FIRMWARE · BOOT RECOVERY</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/343f044123c4920c83e2273cf3d40d0077d98d36" target="_blank" rel="noreferrer">343f044 ↗</a></div>
+              <h2>Rare bootstrap faults become visible on the panel.</h2>
+              <p>Two remaining early-boot failure classes now render built-in recovery screens without depending on FreeType: a board-profile mismatch and an unrecoverable persisted boot state.</p>
+              <ul><li>board mismatch renders BOARD FAIL / REBOOT;</li><li>unrecoverable boot-state renders BOOT FAIL / REBOOT;</li><li>recovery UI uses the built-in bitmap glyph path, so it still works when the normal font stack is unavailable;</li><li>serial logs retain the detailed status code for bring-up diagnostics.</li></ul>
+              <div class="entry-note">At this point almost every software-detectable early-boot failure has a visible on-device state instead of looking like dead hardware.</div>
+            </article>
+
+            <article class="entry">
               <div class="entry-top"><span class="entry-type">FIRMWARE · DEGRADED SERVICES</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/ca0c315e35c5f164419ed9128ebc4205b43091ab" target="_blank" rel="noreferrer">ca0c315 ↗</a></div>
               <h2>Optional hardware stops being a single point of failure.</h2>
               <p>ENKU now treats Wi-Fi and PMU functionality as degradable services instead of prerequisites for opening the Library. A network-driver failure keeps the reader offline, while a missing PMU removes battery/suspend/software-off capabilities without taking the reading stack down.</p>

@@ -61,6 +61,11 @@ SleepWakeStatus SleepWakeCoordinator::sleep() {
 
     if (!power_.requestSuspend()) {
         app_state_.screen = previous_screen;
+
+        // Suspend failed after the network was intentionally disconnected.
+        // Restore normal connectivity best-effort so a failed sleep request
+        // cannot strand an otherwise active device offline.
+        network_lifecycle_.resume();
         return SleepWakeStatus::SuspendFailed;
     }
 

@@ -222,7 +222,15 @@ Required classes of components:
 
 Current provisional values may be shown in notes but must carry a `VERIFY-GOOD-DISPLAY` marker.
 
-No PCBWay order while any EPD-HV critical designator is still generic/TBD.
+Preferred R0.1 EPD-HV starting parts:
+- Q_HV: SI1308EDL-T1-GE3;
+- D_HV1-D_HV3: MBR0530;
+- R_RESE: 2.2 Ω / 1% / 0805;
+- L_HV: 47 µH, exact production MPN pending;
+- C_HV main: 4.7 µF / 25 V / 0805 X5R/X7R;
+- C_HV aux: 1 µF / 25 V / 0805 X7R.
+
+No PCBWay order while the current-panel reference has not been checked or while the final inductor/connector orientation remains generic/TBD.
 
 ## 10. BMI270
 

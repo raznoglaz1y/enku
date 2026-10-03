@@ -8,6 +8,9 @@
 namespace enku {
 namespace {
 
+constexpr std::size_t kInflateInputChunkBytes =
+    32U * 1024U;
+
 std::uint16_t readU16(
     std::string_view bytes,
     std::size_t offset
@@ -403,18 +406,16 @@ ZipArchiveStatus ZipArchive::read(
             extra_length
         );
 
-    std::string compressed;
-
-    if (!readRange(
-            data_offset,
-            entry.compressed_size,
-            compressed
-        )) {
-        return ZipArchiveStatus::InvalidArchive;
-    }
-
     if (entry.compression_method == 0U) {
-        out = std::move(compressed);
+        if (!readRange(
+                data_offset,
+                entry.compressed_size,
+                out
+            )) {
+            out.clear();
+            return ZipArchiveStatus::InvalidArchive;
+        }
+
         return ZipArchiveStatus::Ok;
     }
 
@@ -428,14 +429,6 @@ ZipArchiveStatus ZipArchive::read(
     );
 
     z_stream stream = {};
-    stream.next_in =
-        reinterpret_cast<Bytef*>(
-            compressed.data()
-        );
-    stream.avail_in =
-        static_cast<uInt>(
-            compressed.size()
-        );
     stream.next_out =
         reinterpret_cast<Bytef*>(
             out.data()
@@ -453,16 +446,84 @@ ZipArchiveStatus ZipArchive::read(
         return ZipArchiveStatus::DecompressionFailed;
     }
 
-    const auto result =
-        inflate(
-            &stream,
-            Z_FINISH
-        );
+    std::uint64_t input_offset =
+        data_offset;
+    std::uint64_t remaining =
+        entry.compressed_size;
+    int inflate_result = Z_OK;
+
+    while (remaining > 0U &&
+           inflate_result != Z_STREAM_END) {
+        const auto chunk_size =
+            static_cast<std::size_t>(
+                std::min<std::uint64_t>(
+                    remaining,
+                    kInflateInputChunkBytes
+                )
+            );
+
+        std::string chunk;
+
+        if (!readRange(
+                input_offset,
+                chunk_size,
+                chunk
+            ) ||
+            chunk.size() != chunk_size) {
+            inflateEnd(&stream);
+            out.clear();
+            return ZipArchiveStatus::InvalidArchive;
+        }
+
+        stream.next_in =
+            reinterpret_cast<Bytef*>(
+                chunk.data()
+            );
+        stream.avail_in =
+            static_cast<uInt>(
+                chunk.size()
+            );
+
+        inflate_result =
+            inflate(
+                &stream,
+                remaining == chunk_size
+                    ? Z_FINISH
+                    : Z_NO_FLUSH
+            );
+
+        if (inflate_result != Z_OK &&
+            inflate_result != Z_STREAM_END &&
+            inflate_result != Z_BUF_ERROR) {
+            inflateEnd(&stream);
+            out.clear();
+            return ZipArchiveStatus::DecompressionFailed;
+        }
+
+        if (stream.avail_in != 0U &&
+            inflate_result != Z_STREAM_END) {
+            inflateEnd(&stream);
+            out.clear();
+            return ZipArchiveStatus::DecompressionFailed;
+        }
+
+        input_offset +=
+            static_cast<std::uint64_t>(
+                chunk_size
+            );
+        remaining -=
+            static_cast<std::uint64_t>(
+                chunk_size
+            );
+    }
+
+    const auto total_out =
+        stream.total_out;
 
     inflateEnd(&stream);
 
-    if (result != Z_STREAM_END ||
-        stream.total_out !=
+    if (inflate_result != Z_STREAM_END ||
+        total_out !=
             entry.uncompressed_size) {
         out.clear();
         return ZipArchiveStatus::DecompressionFailed;

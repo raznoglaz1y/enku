@@ -1324,6 +1324,11 @@ bool FreeTypeTextRenderer::renderLibrary(
             app_state.library.bookAvailable(
                 book.book_id
             );
+        const bool checking =
+            !available &&
+            app_state.library.bookAvailabilityPending(
+                book.book_id
+            );
 
         if (available) {
             std::snprintf(
@@ -1344,7 +1349,8 @@ bool FreeTypeTextRenderer::renderLibrary(
             std::snprintf(
                 progress,
                 sizeof(progress),
-                "OFFLINE"
+                "%s",
+                checking ? "CHECKING" : "OFFLINE"
             );
         }
 

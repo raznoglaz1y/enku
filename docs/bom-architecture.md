@@ -238,8 +238,8 @@ Current R0.1 shortlist:
 | --- | --- | --- |
 | Charger + power path | TI BQ25185 | Primary |
 | USB / Dock input mux | TI TPS2121 | Quality baseline; compare against qualified discrete OR-ing |
-| 3.3 V regulator | TI TPS63031 | Primary bench-test candidate |
-| 3.3 V high-current fallback | TI TPS63070 | Use only if TPS63031 burst margin is inadequate |
+| 3.3 V regulator | TI TPS63802DLAR | R0.1 first-spin baseline; 2 A-class headroom, true shutdown |
+| 3.3 V evaluated alternative | TI TPS63031 / TPS63070 | Not default population; TPS63031 rejected for first-spin peak margin |
 | Hall cover sensor | TI DRV5032 family | Keep where feature is populated |
 | Qi receiver | TI BQ51013C | Pro Wireless only |
 

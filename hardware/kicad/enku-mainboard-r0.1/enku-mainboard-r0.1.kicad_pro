@@ -1,0 +1,17 @@
+{
+  "board": {},
+  "boards": [],
+  "cvpcb": {},
+  "erc": {},
+  "libraries": {},
+  "meta": {"filename":"enku-mainboard-r0.1.kicad_pro","version":1},
+  "net_settings": {"classes":[],"meta":{}},
+  "pcbnew": {},
+  "schematic": {},
+  "sheets": [],
+  "text_variables": {
+    "PROJECT":"ENKU",
+    "REV":"R0.1",
+    "STATUS":"SCHEMATIC / PLACEMENT WIP"
+  }
+}

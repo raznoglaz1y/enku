@@ -21,7 +21,7 @@ public:
     WakeReason wakeReason() const override;
 
     bool requestSuspend() override;
-    void requestPowerOff() override;
+    bool requestPowerOff() override;
 
     std::uint16_t batteryVoltageMv() const;
     bool vbusPresent() const;

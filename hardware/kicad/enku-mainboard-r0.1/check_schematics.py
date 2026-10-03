@@ -25,7 +25,7 @@ FILES = {
 REQUIRED_REFS = {
     "power": [
         "U_SRC", "U_CHG", "U_3V3", "J_BAT", "SW_POWER",
-        "R_CHG_ILIM_VSET", "R_CHG_ISET", "L_3V3",
+        "R_CHG_ILIM_VSET", "R_CHG_ISET", "L_3V3", "R_3V3_FB_TOP", "R_3V3_FB_BOT", "R_3V3_PG_PU",
     ],
     "mcu": [
         "U1", "J_SD", "U_IMU", "U_HALL", "SW_BOOT",
@@ -195,6 +195,16 @@ def main() -> int:
         fail(errors, "power sheet missing 18k BQ25185 ILIM/VSET baseline")
     if 'property "Value" "1k 1%"' not in power:
         fail(errors, "power sheet missing 1k BQ25185 ISET baseline")
+    if "TPS63802DLAR" not in power:
+        fail(errors, "power sheet must use TPS63802DLAR first-spin 3V3 regulator")
+    if "TPS63031" in power:
+        fail(errors, "obsolete TPS63031 remains in active power schematic")
+    if "DFE201612E-R47M=P2" not in power:
+        fail(errors, "power sheet missing 0.47uH DFE201612E TPS63802 inductor")
+    if 'property "Value" "511k 1%"' not in power or 'property "Value" "91k 1%"' not in power:
+        fail(errors, "TPS63802 3.3V feedback divider must be 511k/91k")
+    if power.count('property "Value" "22uF 10V"') < 2:
+        fail(errors, "TPS63802 output needs both 22uF baseline capacitors")
 
     mcu = texts.get("mcu", "")
     if "DRV5032FBDBZR" not in mcu:

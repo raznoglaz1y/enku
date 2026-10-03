@@ -437,6 +437,33 @@ int main() {
         storage_loss_offset
     );
 
+    // Persistence failure during physical media loss must still tear down
+    // the reader. A dead SD card must never leave Reading backed by an open
+    // session merely because the best-effort checkpoint could not be saved.
+    checkpoint.status = PersistStatus::IoError;
+    state.progress_dirty = true;
+
+    assert(
+        runtime.handle(RemovableStorageLost{}) ==
+        ReaderRuntimeResult::CheckpointFailed
+    );
+    assert(state.screen == Screen::Library);
+    assert(state.library.focused_book == "runtime-test");
+    assert(!state.current_book.has_value());
+    assert(!state.reading_position.has_value());
+    assert(!state.progress_dirty);
+    assert(loader.session() == nullptr);
+
+    checkpoint.status = PersistStatus::Ok;
+
+    assert(
+        runtime.handle(OpenBookRequested{"runtime-test"}) ==
+        ReaderRuntimeResult::Applied
+    );
+    assert(state.screen == Screen::Reading);
+    assert(loader.session() != nullptr);
+    assert(loader.session()->isOpen());
+
     const auto checkpoints_before_long_read =
         checkpoint.calls;
 
@@ -483,7 +510,7 @@ int main() {
         ReaderRuntimeResult::BookOpenFailed
     );
     assert(source.calls == 0);
-    assert(source.size_calls == 4);
+    assert(source.size_calls == 5);
     assert(state.screen == Screen::Library);
     assert(state.library.focused_book == "runtime-test");
     assert(!state.current_book.has_value());

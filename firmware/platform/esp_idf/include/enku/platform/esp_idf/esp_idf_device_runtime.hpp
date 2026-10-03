@@ -32,6 +32,7 @@ namespace enku::platform::esp_idf {
 
 enum class DeviceRuntimeInitStatus : std::uint8_t {
     Ok,
+    BoardProfileMismatch,
     FontMissing,
     FontInitFailed,
     NetworkPolicyFailed,
@@ -94,6 +95,9 @@ public:
     DeviceNetworkUpdateStatus forgetTrustedNetwork();
 
     void syncPlatformState();
+
+    const BoardProfile& boardProfile() const;
+    bool supports(BoardFeature feature) const;
 
     const BootRestoreResult& bootResult() const;
 

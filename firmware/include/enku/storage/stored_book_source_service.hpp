@@ -26,6 +26,11 @@ public:
         std::string& bytes
     ) override;
 
+    BookSourceStatus validateSource(
+        const BookRecord& record,
+        bool& matches
+    ) override;
+
 private:
     BookFileStore& files_;
 };

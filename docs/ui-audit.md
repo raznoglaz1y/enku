@@ -1,5 +1,7 @@
 # ENKU UI audit
 
+> **Implementation handoff:** the current firmware/runtime boundary for the final EN-first Figma pass is documented in [UI implementation handoff](ui-implementation-handoff.md). Use that file as the current checklist of runtime-backed screens and states; this audit remains the detailed board-by-board design history.
+
 This document tracks the design audit of the current screen baseline before firmware implementation.
 
 Status values:

@@ -73,9 +73,13 @@ jobs:
           print("unconnected_items=", unconnected)
           by_net = collections.Counter()
           for block in blocks:
-              m = re.search(r"Pad \\d+ \\[([^]]+)\\]|Track \\[([^]]+)\\]|Via \\[([^]]+)\\]|PTH pad \\S+ \\[([^]]+)\\]", block)
-              if m:
-                  by_net[next(x for x in m.groups() if x)] += 1
+              for line in block.splitlines():
+                  if " of " in line or "Track [" in line or "Via [" in line:
+                      left = line.find("[")
+                      right = line.find("]", left + 1)
+                      if left >= 0 and right > left:
+                          by_net[line[left + 1:right]] += 1
+                          break
           print("unconnected_by_net:")
           for name, count in by_net.most_common():
               print(f"  {name}: {count}")

@@ -6,9 +6,9 @@
 # geometry KiCad resolves 0.1944 mm hole-to-copper clearance.
 # PCBWay publishes 0.20 mm as the normal NPTH-to-copper target and
 # 0.15 mm as the minimum capability. Keep the GCT land pattern intact
-# and relax only the internal J_USB pair check.
+# and relax only the internal J5 pair check.
 (rule "USB4105 internal locating-peg clearance"
-    (condition "A.memberOfFootprint('J_USB') && B.memberOfFootprint('J_USB')")
+    (condition "A.memberOfFootprint('J5') && B.memberOfFootprint('J5')")
     (constraint hole_clearance (min 0.19mm)))
 
 
@@ -17,5 +17,5 @@
 # 0.25 mm line-to-board-edge; keep this exception local rather than weakening
 # the board-wide 0.50 mm engineering preference.
 (rule "Right-edge power pull-down clearance"
-    (condition "A.Reference == 'R_OV1_GND' || B.Reference == 'R_OV1_GND' || A.Reference == 'R_CHG_CE_PD' || B.Reference == 'R_CHG_CE_PD' || A.Reference == 'R_SYS_EN_PD' || B.Reference == 'R_SYS_EN_PD'")
+    (condition "A.Reference == 'R6' || B.Reference == 'R6' || A.Reference == 'R10' || B.Reference == 'R10' || A.Reference == 'R13' || B.Reference == 'R13'")
     (constraint edge_clearance (min 0.40mm)))

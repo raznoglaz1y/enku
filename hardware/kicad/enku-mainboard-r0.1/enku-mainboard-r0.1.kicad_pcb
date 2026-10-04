@@ -1369,7 +1369,7 @@
     (pad "2" smd roundrect (at 0.825 0) (size 0.8 0.95) (layers "F.Cu" "F.Mask" "F.Paste") (roundrect_rratio 0.25) (net 19 "EPD_DC_PANEL"))
   )
   (footprint "Resistor_SMD:R_0603_1608Metric" (layer "F.Cu")
-    (at 34 27 90)
+    (at 34 25.5 90)
     (property "Reference" "R34" (at 0 -1.5 0) (layer "F.SilkS") hide)
     (property "Value" "22R" (at 0 1.5 0) (layer "F.Fab") hide)
     (fp_rect (start -0.8 -0.4125) (end 0.8 0.4125) (stroke (width 0.1) (type default)) (fill none) (layer "F.Fab"))

@@ -1,6 +1,8 @@
 #include "enku/storage/stored_book_source_service.hpp"
 #include "enku/storage/book_fingerprint.hpp"
 
+#include <string_view>
+
 namespace enku {
 
 StoredBookSourceService::StoredBookSourceService(
@@ -88,6 +90,21 @@ StoredBookSourceService::validateSource(
     const BookRecord& record,
     bool& matches
 ) {
+    // Imported ENKU records use the canonical streaming fingerprint format.
+    // Legacy/manual records may carry older opaque fingerprints; keep them
+    // readable instead of rejecting them as changed solely because their
+    // identity format predates the current fingerprint contract.
+    constexpr std::string_view kFingerprintPrefix =
+        "fnv1a64:";
+
+    if (record.fingerprint.rfind(
+            kFingerprintPrefix,
+            0
+        ) != 0) {
+        matches = true;
+        return BookSourceStatus::Ok;
+    }
+
     const auto actual =
         fingerprintStoredBook(
             files_,

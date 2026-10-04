@@ -169,7 +169,8 @@ The BQ25185 placement/routing must be reviewed as one functional island before i
 
 R0.1 rules:
 - IN, SYS and BAT capacitors stay at their respective IC pins with short ground return;
-- ISET and ILIM/VSET programming resistors stay close to the charger, following TI's layout example rather than being routed across the power island;
+- ISET and ILIM/VSET programming resistors stay close to the charger, following TI's layout example rather than being routed across the power island; use 1% parts for programmed-current/voltage accuracy;
+- STAT1/STAT2 are open-drain status outputs: keep their pull-ups outside the high-current core and route them as low-current status signals;
 - high-current IN/SYS/BAT paths remain wide and direct;
 - charger status/control lines leave the island only after the local power/current-setting geometry is solved;
 - the exposed/thermal ground region gets a low-impedance ground connection and nearby stitching;

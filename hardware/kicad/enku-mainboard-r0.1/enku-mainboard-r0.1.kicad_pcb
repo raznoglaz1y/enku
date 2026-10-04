@@ -2075,12 +2075,6 @@
 
 
 
-  (segment (start 47.40 90.60) (end 46.95 90.60) (width 0.18) (layer "F.Cu") (net 89))
-  (segment (start 46.95 90.60) (end 46.95 89.85) (width 0.18) (layer "F.Cu") (net 89))
-  (segment (start 47.40 91.00) (end 46.95 91.00) (width 0.18) (layer "F.Cu") (net 90))
-  (segment (start 46.95 91.00) (end 46.95 91.75) (width 0.18) (layer "F.Cu") (net 90))
-  (segment (start 49.60 90.60) (end 50.05 90.60) (width 0.18) (layer "F.Cu") (net 92))
-  (segment (start 50.05 90.60) (end 50.05 89.85) (width 0.18) (layer "F.Cu") (net 92))
 
 )
     (attr dnp)

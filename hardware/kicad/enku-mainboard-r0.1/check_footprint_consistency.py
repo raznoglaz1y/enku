@@ -8,26 +8,26 @@ PCB_PATH = BASE / "enku-mainboard-r0.1.kicad_pcb"
 LIB_DIR = BASE / "ENKU.pretty"
 
 SPECS = {
-    "U_SRC": ("power.kicad_sch", "TPS2121_RUX0012A", {str(i) for i in range(1, 13)}),
-    "U_CHG": ("power.kicad_sch", "BQ25185_DLH0010A", {str(i) for i in range(1, 12)}),
-    "U_3V3": ("power.kicad_sch", "TPS63802_DLA0010A", {str(i) for i in range(1, 11)}),
-    "L_3V3": ("power.kicad_sch", "Murata_DFE201612E", {"1", "2"}),
-    "U_IMU": ("mcu_io.kicad_sch", "BMI270_Bosch_LGA14", {str(i) for i in range(1, 15)}),
-    "U_FL": ("frontlight.kicad_sch", "TPS923610_DRL0006A", {str(i) for i in range(1, 7)}),
-    "J_EPD": ("epd_hv.kicad_sch", "FH34SRJ-24S-0.5SH", {*(str(i) for i in range(1, 25)), "S1", "S2"}),
-    "J_FL": ("frontlight.kicad_sch", "FH34SRJ-6S-0.5SH", {*(str(i) for i in range(1, 7)), "S1", "S2"}),
-    "L_EPD": ("epd_hv.kicad_sch", "TYS5040_5x5", {"1", "2"}),
-    "L_FL": ("frontlight.kicad_sch", "TDK_VLS252012", {"1", "2"}),
-    "J_DOCK": ("connectors.kicad_sch", "DOCK_POGO_4", {"1", "2", "3", "4"}),
+    "U2": ("power.kicad_sch", "TPS2121_RUX0012A", {str(i) for i in range(1, 13)}),
+    "U3": ("power.kicad_sch", "BQ25185_DLH0010A", {str(i) for i in range(1, 12)}),
+    "U4": ("power.kicad_sch", "TPS63802_DLA0010A", {str(i) for i in range(1, 11)}),
+    "L1": ("power.kicad_sch", "Murata_DFE201612E", {"1", "2"}),
+    "U5": ("mcu_io.kicad_sch", "BMI270_Bosch_LGA14", {str(i) for i in range(1, 15)}),
+    "U7": ("frontlight.kicad_sch", "TPS923610_DRL0006A", {str(i) for i in range(1, 7)}),
+    "J3": ("epd_hv.kicad_sch", "FH34SRJ-24S-0.5SH", {*(str(i) for i in range(1, 25)), "S1", "S2"}),
+    "J4": ("frontlight.kicad_sch", "FH34SRJ-6S-0.5SH", {*(str(i) for i in range(1, 7)), "S1", "S2"}),
+    "L2": ("epd_hv.kicad_sch", "TYS5040_5x5", {"1", "2"}),
+    "L3": ("frontlight.kicad_sch", "TDK_VLS252012", {"1", "2"}),
+    "J6": ("connectors.kicad_sch", "DOCK_POGO_4", {"1", "2", "3", "4"}),
 }
 
 ALLOWED_PROVISIONAL_PLACEHOLDERS = {
-    "J_BAT",
-    "SW_POWER",
-    "SW_PREV",
-    "SW_NEXT",
-    "SW_SELECT",
-    "SW_BACK",
+    "J1",
+    "SW1",
+    "SW3",
+    "SW4",
+    "SW5",
+    "SW6",
 }
 
 

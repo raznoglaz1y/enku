@@ -124,7 +124,8 @@ public:
             record.file_size == 0U ||
             size_bytes == record.file_size;
         return BookSourceStatus::Ok;
-    }};
+    }
+};
 
 class LibraryService {
 public:

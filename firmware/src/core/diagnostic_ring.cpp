@@ -19,6 +19,14 @@ void DiagnosticRingLogService::write(
     std::uint32_t event_code,
     const std::string& message
 ) {
+    const std::string bounded_message(
+        message.data(),
+        std::min(
+            message.size(),
+            kMaxMessageBytes
+        )
+    );
+
     const auto index =
         (start_ + size_) % entries_.size();
 
@@ -28,7 +36,7 @@ void DiagnosticRingLogService::write(
             level,
             category,
             event_code,
-            message,
+            bounded_message,
         };
 
         start_ =
@@ -42,7 +50,7 @@ void DiagnosticRingLogService::write(
         level,
         category,
         event_code,
-        message,
+        bounded_message,
     };
 
     ++size_;

@@ -332,3 +332,13 @@ Explicitly out of R0.x scope unless strategy changes:
 - DRM/store integration;
 - audio/TTS;
 - waterproofing.
+
+## 14. Possible future product directions
+
+Community feedback to evaluate after the 3.97-inch R0.1 baseline is validated:
+
+- [ ] Explore a mid-size ENKU variant around 4.7–5.0 inches as a possible sweet spot between pocketable ~3.9-inch readers and standard 6-inch devices.
+- [ ] Reassess market differentiation of the 3.97-inch format as XTEink/XTE-class devices and clones become more common.
+- [ ] Compare ergonomics, battery envelope, enclosure thickness, display availability, BOM impact and PCB reuse between 3.97-inch and 4.7–5.0-inch variants.
+- [ ] Treat repeated community requests for a mid-size reader as a product signal, but do not change R0.1 scope before the current 3.97-inch hardware is completed and validated.
+

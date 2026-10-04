@@ -235,6 +235,12 @@ Current lower power island:
 
 The placement gate rejects reintroduction of TPS63031 or loss of the support network.
 
+### TPS63802 routing note — 04 Oct 2026
+
+The regulator enable escape now leaves the dense U4 power island on an internal copper layer before reaching the outer service rail. This deliberately avoids the B.Cu 3V3 power corridor and keeps the quiet feedback side free of a long diagnostic branch. The local input/output capacitor rails are being closed before the remaining system-level 3V3/VSYS distribution.
+
+TP7 remains a bring-up requirement, but its final connection is taken from the service-side SYS_EN trunk rather than forcing a probe branch through the feedback/switching cluster.
+
 
 ## Verified core footprint pass
 

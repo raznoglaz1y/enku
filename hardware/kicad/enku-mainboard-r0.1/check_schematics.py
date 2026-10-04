@@ -168,6 +168,20 @@ def main() -> int:
             if not contains_net(text, net):
                 fail(errors, f"{FILES[key].name}: missing critical net {net}")
 
+    # KiCad hierarchical instance paths must end in the placed symbol UUID.
+    # A sheet UUID here makes ERC deceptively clean while native netlist export
+    # reports annotation errors and yields an unusable schematic source-of-truth.
+    for key in ("power", "mcu", "epd", "frontlight", "connectors"):
+        text = texts.get(key, "")
+        pattern = re.compile(
+            r'\(symbol \(lib_id[\s\S]*?\(uuid "([^"]+)"\)[\s\S]*?'
+            r'\(instances\s+\(project "enku-mainboard-r0\.1"\s+'
+            r'\(path "([^"]+)" \(reference "([^"]+)"\)'
+        )
+        for symbol_uuid, instance_path, ref in pattern.findall(text):
+            if instance_path.rsplit("/", 1)[-1] != symbol_uuid:
+                fail(errors, f"{FILES[key].name}: {ref} instance path does not end in symbol UUID")
+
     all_text = "\n".join(texts.values())
     for old in BANNED_BLOCK_NAMES:
         if old in all_text:

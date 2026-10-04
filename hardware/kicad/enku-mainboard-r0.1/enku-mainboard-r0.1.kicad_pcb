@@ -720,7 +720,7 @@
   )
 
   (footprint "Resistor_SMD:R_0603_1608Metric" (layer "F.Cu")
-    (at 44 103.5)
+    (at 60 103)
     (property "Reference" "R62" (at 0 -1.4 0) (layer "F.SilkS"))
     (property "Value" "5.1k 1%" (at 0 1.4 0) (layer "F.Fab") hide)
     (pad "1" smd roundrect (at -0.8 0) (size 0.9 0.95) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25) (net 4 "USB_CC1"))
@@ -728,7 +728,7 @@
   )
 
   (footprint "Resistor_SMD:R_0603_1608Metric" (layer "F.Cu")
-    (at 46.5 103.5)
+    (at 63 103)
     (property "Reference" "R63" (at 0 -1.4 0) (layer "F.SilkS"))
     (property "Value" "5.1k 1%" (at 0 1.4 0) (layer "F.Fab") hide)
     (pad "1" smd roundrect (at -0.8 0) (size 0.9 0.95) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25) (net 5 "USB_CC2"))
@@ -736,7 +736,7 @@
   )
 
   (footprint "Resistor_SMD:R_0603_1608Metric" (layer "F.Cu")
-    (at 38 102)
+    (at 60 100.5)
     (property "Reference" "R64" (at 0 -1.4 0) (layer "F.SilkS"))
     (property "Value" "0R (22R tune)" (at 0 1.4 0) (layer "F.Fab") hide)
     (pad "1" smd roundrect (at -0.8 0) (size 0.9 0.95) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25) (net 6 "USB_DP_CONN"))
@@ -744,7 +744,7 @@
   )
 
   (footprint "Resistor_SMD:R_0603_1608Metric" (layer "F.Cu")
-    (at 38 104)
+    (at 63 100.5)
     (property "Reference" "R65" (at 0 -1.4 0) (layer "F.SilkS"))
     (property "Value" "0R (22R tune)" (at 0 1.4 0) (layer "F.Fab") hide)
     (pad "1" smd roundrect (at -0.8 0) (size 0.9 0.95) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25) (net 7 "USB_DM_CONN"))
@@ -752,7 +752,7 @@
   )
 
   (footprint "Resistor_SMD:R_0603_1608Metric" (layer "F.Cu")
-    (at 53.5 106)
+    (at 60 108.5)
     (property "Reference" "R66" (at 0 -1.4 0) (layer "F.SilkS"))
     (property "Value" "1M" (at 0 1.4 0) (layer "F.Fab") hide)
     (pad "1" smd roundrect (at -0.8 0) (size 0.9 0.95) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25) (net 8 "USB_SHIELD"))
@@ -760,7 +760,7 @@
   )
 
   (footprint "Resistor_SMD:R_0603_1608Metric" (layer "F.Cu")
-    (at 56 106)
+    (at 63 108.5)
     (attr dnp)
     (property "Reference" "R67" (at 0 -1.4 0) (layer "F.SilkS"))
     (property "Value" "0R DNP" (at 0 1.4 0) (layer "F.Fab") hide)
@@ -769,7 +769,7 @@
   )
 
   (footprint "Capacitor_SMD:C_0603_1608Metric" (layer "F.Cu")
-    (at 58.5 106)
+    (at 66 108.5)
     (property "Reference" "C35" (at 0 -1.4 0) (layer "F.SilkS"))
     (property "Value" "4.7nF" (at 0 1.4 0) (layer "F.Fab") hide)
     (pad "1" smd roundrect (at -0.8 0) (size 0.9 0.95) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25) (net 8 "USB_SHIELD"))

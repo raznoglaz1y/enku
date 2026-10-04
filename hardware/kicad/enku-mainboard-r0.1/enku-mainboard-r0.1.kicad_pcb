@@ -556,7 +556,7 @@
   (footprint "Connector_Generic:JST_PH_3_PLACEMENT" (layer "F.Cu")
     (at 66 93.5 90)
     (property "Reference" "J1" (at 0 -4.3 90) (layer "F.SilkS"))
-    (property "Value" JST PH 3-pin battery"1S LiPo + NTC" (at 0 4.3 90) (layer "F.Fab") hide)
+    (property "Value" "1S LiPo + NTC" (at 0 4.3 90) (layer "F.Fab") hide)
     (fp_rect (start -5 -3) (end 5 3)
       (stroke (width 0.15) (type default)) (fill none) (layer "F.SilkS"))
     (pad "1" smd rect (at -2 0 90) (size 1.2 2) (layers "F.Cu" "F.Paste" "F.Mask") (net 80 "VBAT"))

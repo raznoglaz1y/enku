@@ -72,7 +72,7 @@ jobs:
           print("unconnected_items=", unconnected)
           by_net = collections.Counter()
           for block in blocks:
-              names = re.findall(r"\\[([^\\]]+)\\]", block)
+              names = re.findall(r"\\[([^]]+)\\]", block)
               if names:
                   by_net[names[0]] += 1
           print("unconnected_by_net:")

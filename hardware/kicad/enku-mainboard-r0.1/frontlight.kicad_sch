@@ -157,7 +157,7 @@
 		(pin "6" (uuid "71000000-0000-4000-8000-000000000005"))
 		(pin "5" (uuid "71000000-0000-4000-8000-000000000006"))
 		(pin "4" (uuid "71000000-0000-4000-8000-000000000007"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "U_FL") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000001" (reference "U_FL") (unit 1))))
 	)
 
 	(global_label "VSYS" (shape input) (at 57.15 62.23 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000008"))
@@ -174,7 +174,7 @@
 		(property "Description" "10uH VLS252012HBX-100M-1" (at 35.56 64.77 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000015"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000016"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "L_FL") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000014" (reference "L_FL") (unit 1))))
 	)
 
 	(global_label "VSYS" (shape input) (at 27.94 64.77 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000017"))
@@ -187,7 +187,7 @@
 		(property "Description" "4.7uF 10V" (at 35.56 91.44 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000020"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000021"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "C_FL_IN") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000019" (reference "C_FL_IN") (unit 1))))
 	)
 
 	(global_label "VSYS" (shape input) (at 27.94 91.44 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000022"))
@@ -200,7 +200,7 @@
 		(property "Description" "100nF" (at 54.61 91.44 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000025"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000026"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "C_FL_IN_HF") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000024" (reference "C_FL_IN_HF") (unit 1))))
 	)
 
 	(global_label "VSYS" (shape input) (at 46.99 91.44 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000027"))
@@ -213,7 +213,7 @@
 		(property "Description" "4.7uF 50V" (at 95.25 91.44 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000030"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000031"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "C_FL_OUT") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000029" (reference "C_FL_OUT") (unit 1))))
 	)
 
 	(global_label "FL_LED_PLUS" (shape input) (at 87.63 91.44 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000032"))
@@ -226,7 +226,7 @@
 		(property "Description" "15R 1%" (at 115.57 91.44 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000035"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000036"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "R_FL_SET") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000034" (reference "R_FL_SET") (unit 1))))
 	)
 
 	(global_label "FL_FB" (shape input) (at 107.95 91.44 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000037"))
@@ -239,7 +239,7 @@
 		(property "Description" "100k" (at 74.93 107.95 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000040"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000041"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "R_FL_ADIM_PD") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000039" (reference "R_FL_ADIM_PD") (unit 1))))
 	)
 
 	(global_label "FL_ADIM" (shape input) (at 67.31 107.95 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000042"))
@@ -252,7 +252,7 @@
 		(property "Description" "0R" (at 74.93 128.27 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000045"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000046"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "R_FL_ADIM_LINK") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000044" (reference "R_FL_ADIM_LINK") (unit 1))))
 	)
 
 	(global_label "FL_ENABLE" (shape input) (at 67.31 128.27 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000047"))
@@ -266,7 +266,7 @@
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000050"))
 		(pin "3" (uuid "71000000-0000-4000-8000-000000000051"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000052"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "Q_FL_WARM") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000049" (reference "Q_FL_WARM") (unit 1))))
 	)
 
 	(global_label "FL_WARM_PWM" (shape input) (at 115.57 60.96 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000053"))
@@ -281,7 +281,7 @@
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000057"))
 		(pin "3" (uuid "71000000-0000-4000-8000-000000000058"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000059"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "Q_FL_COOL") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000056" (reference "Q_FL_COOL") (unit 1))))
 	)
 
 	(global_label "FL_COOL_PWM" (shape input) (at 115.57 90.17 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000060"))
@@ -295,7 +295,7 @@
 		(property "Description" "100k" (at 149.86 62.23 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000064"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000065"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "R_FL_WARM_PD") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000063" (reference "R_FL_WARM_PD") (unit 1))))
 	)
 
 	(global_label "FL_WARM_PWM" (shape input) (at 142.24 62.23 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000066"))
@@ -308,7 +308,7 @@
 		(property "Description" "100k" (at 149.86 91.44 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000069"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000070"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "R_FL_COOL_PD") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000068" (reference "R_FL_COOL_PD") (unit 1))))
 	)
 
 	(global_label "FL_COOL_PWM" (shape input) (at 142.24 91.44 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000071"))
@@ -327,7 +327,7 @@
 		(pin "6" (uuid "71000000-0000-4000-8000-000000000079"))
 		(pin "S1" (uuid "71000000-0000-4000-8000-000000009901"))
 		(pin "S2" (uuid "71000000-0000-4000-8000-000000009902"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "J_FL") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000073" (reference "J_FL") (unit 1))))
 	)
 
 	(global_label "FL_RAW1" (shape input) (at 213.36 80.01 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000080"))
@@ -344,7 +344,7 @@
 		(property "Description" "0R DNP" (at 175.26 41.91 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000087"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000088"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "R_FL_MAP1_P") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000086" (reference "R_FL_MAP1_P") (unit 1))))
 	)
 
 	(global_label "FL_RAW1" (shape input) (at 167.64 41.91 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000089"))
@@ -357,7 +357,7 @@
 		(property "Description" "0R DNP" (at 193.04 41.91 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000092"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000093"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "R_FL_MAP1_W") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000091" (reference "R_FL_MAP1_W") (unit 1))))
 	)
 
 	(global_label "FL_RAW1" (shape input) (at 185.42 41.91 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000094"))
@@ -370,7 +370,7 @@
 		(property "Description" "0R DNP" (at 210.82 41.91 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000097"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000098"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "R_FL_MAP1_C") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000096" (reference "R_FL_MAP1_C") (unit 1))))
 	)
 
 	(global_label "FL_RAW1" (shape input) (at 203.2 41.91 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000099"))
@@ -383,7 +383,7 @@
 		(property "Description" "0R DNP" (at 175.26 58.42 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000102"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000103"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "R_FL_MAP2_P") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000101" (reference "R_FL_MAP2_P") (unit 1))))
 	)
 
 	(global_label "FL_RAW2" (shape input) (at 167.64 58.42 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000104"))
@@ -396,7 +396,7 @@
 		(property "Description" "0R DNP" (at 193.04 58.42 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000107"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000108"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "R_FL_MAP2_W") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000106" (reference "R_FL_MAP2_W") (unit 1))))
 	)
 
 	(global_label "FL_RAW2" (shape input) (at 185.42 58.42 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000109"))
@@ -409,7 +409,7 @@
 		(property "Description" "0R DNP" (at 210.82 58.42 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000112"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000113"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "R_FL_MAP2_C") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000111" (reference "R_FL_MAP2_C") (unit 1))))
 	)
 
 	(global_label "FL_RAW2" (shape input) (at 203.2 58.42 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000114"))
@@ -422,7 +422,7 @@
 		(property "Description" "0R DNP" (at 175.26 73.66 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000117"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000118"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "R_FL_MAP3_P") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000116" (reference "R_FL_MAP3_P") (unit 1))))
 	)
 
 	(global_label "FL_RAW3" (shape input) (at 167.64 73.66 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000119"))
@@ -435,7 +435,7 @@
 		(property "Description" "0R DNP" (at 193.04 73.66 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000122"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000123"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "R_FL_MAP3_W") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000121" (reference "R_FL_MAP3_W") (unit 1))))
 	)
 
 	(global_label "FL_RAW3" (shape input) (at 185.42 73.66 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000124"))
@@ -448,7 +448,7 @@
 		(property "Description" "0R DNP" (at 210.82 73.66 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000127"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000128"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "R_FL_MAP3_C") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000126" (reference "R_FL_MAP3_C") (unit 1))))
 	)
 
 	(global_label "FL_RAW3" (shape input) (at 203.2 73.66 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000129"))
@@ -461,7 +461,7 @@
 		(property "Description" "0R DNP" (at 175.26 90.17 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000132"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000133"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "R_FL_MAP4_P") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000131" (reference "R_FL_MAP4_P") (unit 1))))
 	)
 
 	(global_label "FL_RAW4" (shape input) (at 167.64 90.17 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000134"))
@@ -474,7 +474,7 @@
 		(property "Description" "0R DNP" (at 193.04 90.17 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000137"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000138"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "R_FL_MAP4_W") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000136" (reference "R_FL_MAP4_W") (unit 1))))
 	)
 
 	(global_label "FL_RAW4" (shape input) (at 185.42 90.17 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000139"))
@@ -487,7 +487,7 @@
 		(property "Description" "0R DNP" (at 210.82 90.17 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000142"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000143"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "R_FL_MAP4_C") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000141" (reference "R_FL_MAP4_C") (unit 1))))
 	)
 
 	(global_label "FL_RAW4" (shape input) (at 203.2 90.17 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000144"))
@@ -500,7 +500,7 @@
 		(property "Description" "0R DNP" (at 175.26 105.41 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000147"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000148"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "R_FL_MAP5_P") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000146" (reference "R_FL_MAP5_P") (unit 1))))
 	)
 
 	(global_label "FL_RAW5" (shape input) (at 167.64 105.41 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000149"))
@@ -513,7 +513,7 @@
 		(property "Description" "0R DNP" (at 193.04 105.41 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000152"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000153"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "R_FL_MAP5_W") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000151" (reference "R_FL_MAP5_W") (unit 1))))
 	)
 
 	(global_label "FL_RAW5" (shape input) (at 185.42 105.41 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000154"))
@@ -526,7 +526,7 @@
 		(property "Description" "0R DNP" (at 210.82 105.41 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000157"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000158"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "R_FL_MAP5_C") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000156" (reference "R_FL_MAP5_C") (unit 1))))
 	)
 
 	(global_label "FL_RAW5" (shape input) (at 203.2 105.41 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000159"))
@@ -539,7 +539,7 @@
 		(property "Description" "0R DNP" (at 175.26 121.92 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000162"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000163"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "R_FL_MAP6_P") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000161" (reference "R_FL_MAP6_P") (unit 1))))
 	)
 
 	(global_label "FL_RAW6" (shape input) (at 167.64 121.92 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000164"))
@@ -552,7 +552,7 @@
 		(property "Description" "0R DNP" (at 193.04 121.92 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000167"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000168"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "R_FL_MAP6_W") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000166" (reference "R_FL_MAP6_W") (unit 1))))
 	)
 
 	(global_label "FL_RAW6" (shape input) (at 185.42 121.92 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000169"))
@@ -565,7 +565,7 @@
 		(property "Description" "0R DNP" (at 210.82 121.92 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "71000000-0000-4000-8000-000000000172"))
 		(pin "2" (uuid "71000000-0000-4000-8000-000000000173"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "R_FL_MAP6_C") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/71000000-0000-4000-8000-000000000171" (reference "R_FL_MAP6_C") (unit 1))))
 	)
 
 	(global_label "FL_RAW6" (shape input) (at 203.2 121.92 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "71000000-0000-4000-8000-000000000174"))
@@ -583,7 +583,7 @@
 		(property "Datasheet" "~" (at 54.61 165.1 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(property "Description" "ENKU R0.1 bring-up test point" (at 54.61 165.1 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "75200000-0000-4000-8000-000000000002"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "TP_FL_LED_PLUS") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/75200000-0000-4000-8000-000000000001" (reference "TP_FL_LED_PLUS") (unit 1))))
 	)
 	(global_label "FL_LED_PLUS" (shape bidirectional) (at 50.8 165.1 0)
 		(effects (font (size 0.9 0.9)) (justify right bottom))
@@ -595,7 +595,7 @@
 		(property "Datasheet" "~" (at 95.25 165.1 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(property "Description" "ENKU R0.1 bring-up test point" (at 95.25 165.1 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "75200000-0000-4000-8000-000000000005"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000040" (reference "TP_FL_FB") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/75200000-0000-4000-8000-000000000004" (reference "TP_FL_FB") (unit 1))))
 	)
 	(global_label "FL_FB" (shape bidirectional) (at 91.44 165.1 0)
 		(effects (font (size 0.9 0.9)) (justify right bottom))

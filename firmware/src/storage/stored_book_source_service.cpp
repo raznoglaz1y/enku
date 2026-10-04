@@ -1,4 +1,5 @@
 #include "enku/storage/stored_book_source_service.hpp"
+#include "enku/storage/book_fingerprint.hpp"
 
 namespace enku {
 
@@ -82,5 +83,35 @@ StoredBookSourceService::readSourceRange(
     }
 }
 
+BookSourceStatus
+StoredBookSourceService::validateSource(
+    const BookRecord& record,
+    bool& matches
+) {
+    const auto actual =
+        fingerprintStoredBook(
+            files_,
+            record.source_path
+        );
+
+    if (!actual.ok()) {
+        matches = false;
+
+        switch (actual.status) {
+            case BookFileStatus::NotFound:
+                return BookSourceStatus::Unavailable;
+            case BookFileStatus::IoError:
+            case BookFileStatus::NoSpace:
+            default:
+                return BookSourceStatus::ReadFailed;
+        }
+    }
+
+    matches =
+        actual.file_size == record.file_size &&
+        actual.fingerprint == record.fingerprint;
+
+    return BookSourceStatus::Ok;
+}
 
 } // namespace enku

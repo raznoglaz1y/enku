@@ -627,7 +627,7 @@
   )
 
   (footprint "Package_TO_SOT_SMD:SOT-23-6" (layer "F.Cu")
-    (at 52.8 107.8 180)
+    (at 54.2 108.8 180)
     (property "Reference" "U8" (at 0 -2.3 0) (layer "F.SilkS"))
     (property "Value" "USBLC6-2SC6" (at 0 2.3 0) (layer "F.Fab") hide)
     (fp_rect (start -1.5 -1) (end 1.5 1)

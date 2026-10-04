@@ -74,7 +74,7 @@
 				(on_board yes)
 				(property "Reference" "J" (at -11 14 0) (effects (font (size 0.88 0.88))))
 				(property "Value" "Hirose DM3AT-SF-PEJM5" (at 11 14 0) (effects (font (size 0.88 0.88))))
-				(property "Footprint" "ENKU:MICROSD_DM3AT_ENKU" (at 0 0 0) (effects (font (size 0.88 0.88)) (hide yes)))
+				(property "Footprint" "Connector_Card:microSD_HC_Hirose_DM3AT-SF-PEJM5" (at 0 0 0) (effects (font (size 0.88 0.88)) (hide yes)))
 				(property "Datasheet" "~" (at 0 0 0) (effects (font (size 0.88 0.88)) (hide yes)))
 				(property "Description" "Hirose DM3AT-SF-PEJM5" (at 0 0 0) (effects (font (size 0.88 0.88)) (hide yes)))
 				(symbol "MICROSD8_0_1"

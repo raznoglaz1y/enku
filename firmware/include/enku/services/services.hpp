@@ -105,7 +105,26 @@ public:
 
         return BookSourceStatus::Ok;
     }
-};
+
+
+    virtual BookSourceStatus validateSource(
+        const BookRecord& record,
+        bool& matches
+    ) {
+        std::uint64_t size_bytes = 0;
+        const auto status =
+            sourceSize(record, size_bytes);
+
+        if (status != BookSourceStatus::Ok) {
+            matches = false;
+            return status;
+        }
+
+        matches =
+            record.file_size == 0U ||
+            size_bytes == record.file_size;
+        return BookSourceStatus::Ok;
+    }};
 
 class LibraryService {
 public:

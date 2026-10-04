@@ -308,8 +308,25 @@ public:
         return BookSourceStatus::Ok;
     }
 
+    BookSourceStatus validateSource(
+        const BookRecord&,
+        bool& matches
+    ) override {
+        ++validation_reads;
+
+        if (status != BookSourceStatus::Ok) {
+            matches = false;
+            return status;
+        }
+
+        matches = source_matches;
+        return BookSourceStatus::Ok;
+    }
+
     BookSourceStatus status{BookSourceStatus::Ok};
+    bool source_matches{true};
     std::string content;
+    std::uint32_t validation_reads{0};
     std::uint32_t whole_reads{0};
     std::uint32_t size_reads{0};
     std::uint32_t range_reads{0};
@@ -342,12 +359,14 @@ int main() {
         Viewport{140, 80},
     };
 
+    source.validation_reads = 0;
     source.whole_reads = 0;
     source.size_reads = 0;
     source.range_reads = 0;
 
     const auto opened = loader.open(request);
     assert(opened.ok());
+    assert(source.validation_reads == 1);
     assert(source.whole_reads == 0);
     assert(source.size_reads == 1);
     assert(source.range_reads > 0);
@@ -427,6 +446,16 @@ int main() {
     assert(loader.session() == nullptr);
 
     source.status = BookSourceStatus::Ok;
+    source.source_matches = false;
+    const auto changed = loader.open(request);
+    assert(
+        changed.status ==
+        BookLoadStatus::SourceChanged
+    );
+    assert(loader.session() == nullptr);
+    assert(loader.document() == nullptr);
+
+    source.source_matches = true;
     request.saved_position.reset();
     library.record->format = BookFormat::Epub;
     source.content = sampleStoredEpub();

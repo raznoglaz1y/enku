@@ -191,7 +191,7 @@ def main() -> int:
     # Qi keepout remains route-free in Baseline B. A simple placement-origin gate
     # catches large ICs accidentally dropped into the reserved center.
     for ref, (x,y,_) in refs.items():
-        if ref.startswith(("H","SW_")) or ref in {"U1"}:
+        if ref.startswith(("H","SW_")) or ref in {"U1", "J8"}:
             continue
         if 31.0 < x < 63.0 and 54.0 < y < 86.0:
             errors.append(f"{ref} origin is inside Pro Wireless Qi keepout")

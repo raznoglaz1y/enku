@@ -2069,6 +2069,12 @@
   (segment (start 50.9 88) (end 51.9 87) (width 0.2) (layer "F.Cu") (net 77))
 
 
+  (via (at 50.3 93) (size 0.6) (drill 0.3) (layers "F.Cu" "B.Cu") (net 2))
+  (segment (start 50.3 93) (end 50.3 92.2) (width 0.2) (layer "B.Cu") (net 2))
+  (segment (start 50.3 92.2) (end 52.1 92.2) (width 0.2) (layer "B.Cu") (net 2))
+  (via (at 52.1 92.2) (size 0.6) (drill 0.3) (layers "F.Cu" "B.Cu") (net 2))
+  (segment (start 52.1 92.2) (end 54.35 92.55) (width 0.2) (layer "F.Cu") (net 2))
+
 )
     (attr dnp)
     (attr dnp)

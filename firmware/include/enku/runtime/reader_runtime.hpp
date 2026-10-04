@@ -16,6 +16,7 @@ enum class ReaderRuntimeResult : std::uint8_t {
     Applied,
     BookOpening,
     BookOpenFailed,
+    BookSourceChanged,
     BeginningOfBook,
     EndOfBook,
     LayoutFailed,

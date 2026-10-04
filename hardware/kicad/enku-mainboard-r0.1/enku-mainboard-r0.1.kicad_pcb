@@ -2004,11 +2004,15 @@
   (via (at 34.30 92.50) (size 0.80) (drill 0.40) (layers "F.Cu" "B.Cu") (net 3))
   (segment (start 34.30 92.50) (end 35.50 92.50) (width 0.45) (layer "F.Cu") (net 3))
 
-  (segment (start 45.75 106.645) (end 45.75 102.20) (width 0.18) (layer "F.Cu") (net 4))
-  (segment (start 45.75 102.20) (end 53.50 102.20) (width 0.18) (layer "F.Cu") (net 4))
   (segment (start 48.75 106.645) (end 48.10 106.00) (width 0.18) (layer "F.Cu") (net 5))
   (segment (start 48.10 106.00) (end 48.10 104.20) (width 0.18) (layer "F.Cu") (net 5))
   (segment (start 48.10 104.20) (end 56.00 104.20) (width 0.18) (layer "F.Cu") (net 5))
+  (segment (start 45.75 106.645) (end 45.75 103.80) (width 0.18) (layer "F.Cu") (net 4))
+  (segment (start 45.75 103.80) (end 53.50 103.80) (width 0.18) (layer "F.Cu") (net 4))
+  (segment (start 48.75 106.645) (end 48.75 107.70) (width 0.18) (layer "F.Cu") (net 5))
+  (via (at 48.75 107.70) (size 0.60) (drill 0.30) (layers "F.Cu" "In2.Cu") (net 5))
+  (segment (start 48.75 107.70) (end 56.00 104.20) (width 0.18) (layer "In2.Cu") (net 5))
+  (via (at 56.00 104.20) (size 0.60) (drill 0.30) (layers "F.Cu" "In2.Cu") (net 5))
 
   (zone (net 1) (net_name "GND") (layer "F.Cu") (hatch edge 0.5)
     (connect_pads (clearance 0.2))

@@ -36,6 +36,14 @@ jobs:
 
       - name: Native PCB DRC report + schematic parity
         run: |
+          python3 - <<'PY'
+          import pcbnew
+          path="hardware/kicad/enku-mainboard-r0.1/enku-mainboard-r0.1.kicad_pcb"
+          board=pcbnew.LoadBoard(path)
+          pcbnew.ZONE_FILLER(board).Fill(board.Zones())
+          pcbnew.SaveBoard(path, board)
+          print("refilled_zones=", board.GetAreaCount())
+          PY
           kicad-cli pcb drc \
             --severity-all \
             --schematic-parity \

@@ -10,7 +10,9 @@ on:
 jobs:
   fill-zones:
     runs-on: ubuntu-latest
-    container: kicad/kicad:8.0
+    container:
+      image: kicad/kicad:8.0
+      options: --user 0
     steps:
       - uses: actions/checkout@v4
       - name: Fill copper zones with KiCad

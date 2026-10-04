@@ -11,6 +11,7 @@ find_package(ZLIB REQUIRED)
 
 add_library(enku_core STATIC
     src/core/reader_overlay.cpp
+    src/core/diagnostic_ring.cpp
     src/parsers/txt/txt_parser.cpp
     src/parsers/epub/zip_archive.cpp
     src/parsers/epub/epub_parser.cpp

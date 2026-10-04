@@ -2134,7 +2134,7 @@
   (segment (start 59.75 24.35) (end 82 24.35) (width 0.12) (layer "In1.Cu") (net 17))
   (segment (start 82 24.35) (end 82 55.000) (width 0.12) (layer "In1.Cu") (net 17))
   (segment (start 59.25 23.9) (end 87 23.9) (width 0.12) (layer "In1.Cu") (net 18))
-  (segment (start 87 23.9) (end 87 55.000) (width 0.12) (layer "In1.Cu") (net 18))
+  (segment (start 87 23.9) (end 87 40.000) (width 0.12) (layer "In1.Cu") (net 18))
   (segment (start 58.75 23.45) (end 84 23.45) (width 0.12) (layer "In1.Cu") (net 19))
   (segment (start 84 23.45) (end 84 55.000) (width 0.12) (layer "In1.Cu") (net 19))
   (segment (start 58.25 23) (end 85 23) (width 0.12) (layer "In1.Cu") (net 20))

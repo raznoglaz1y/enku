@@ -1121,7 +1121,7 @@
     (pad "2" smd rect (at 0.8 0) (size 0.8 0.9) (layers "F.Cu" "F.Paste" "F.Mask") (net 1 "GND"))
   )
   (footprint "Capacitor_SMD:C_0805_2012Metric" (layer "F.Cu")
-    (at 62.8 94.4 0)
+    (at 63.3 94.4 0)
     (property "Reference" "C12" (at 0 -1.8 0) (layer "F.SilkS"))
     (property "Value" "22uF 10V" (at 0 1.8 0) (layer "F.Fab") hide)
     (fp_rect (start -1 -0.625) (end 1 0.625) (stroke (width 0.1) (type default)) (fill none) (layer "F.SilkS"))

@@ -396,7 +396,59 @@ R0.1 may be released to PCBWay only when all are true:
 
 ---
 
-## 15. First-board bring-up order
+## 15. Serviceability and repairability gate
+
+R0.1 must be diagnosable and repairable with normal bench tools. Passing DRC alone is not sufficient.
+
+### Layout rules
+
+- keep 0603/0805 passives as the default where electrical density does not force smaller packages;
+- do not bury first-line protection, tuning links or configuration straps under connectors, the ESP32 module, display flexes or the battery;
+- preserve visible reference designators for service-critical parts where silkscreen space allows;
+- leave soldering-iron / hot-air access around USB protection, charger, source mux, 3V3 regulator, EPD power and frontlight power components;
+- keep test points outside connector latch travel, enclosure bosses, Qi exclusion and battery adhesive zones;
+- avoid placing two unrelated critical parts so close that replacing one requires removing the other;
+- every power domain must have an accessible GND reference and at least one accessible measurement point;
+- tuning / recovery parts (0R links, pull-ups, pull-downs, DNP options) must remain individually replaceable;
+- prefer ordinary stocked package families and exact MPNs that have realistic second-source or replacement availability where the function permits it.
+
+### Diagnostic partition
+
+A dead board should be separable on the bench into:
+1. USB / dock input;
+2. source mux;
+3. charger / battery;
+4. VSYS;
+5. 3V3 buck-boost;
+6. ESP32 / programming;
+7. storage and sensors;
+8. EPD logic / HV;
+9. frontlight;
+10. optional Qi.
+
+No downstream fault should require destructive probing to determine which of these domains failed.
+
+### Fabrication/assembly rule
+
+Do not accept a routing shortcut that:
+- creates an inaccessible repair joint;
+- routes a sensitive sense node through a switching-current corridor;
+- removes useful probing access;
+- depends on PCBWay minimum geometry without a concrete density need;
+- requires a broad DRC exception instead of a local, documented manufacturer-geometry exception.
+
+### Release evidence
+
+Before the fabrication tag, publish:
+- annotated top/bottom service map;
+- test-point table with expected idle/active voltages;
+- replaceable critical-component list and package;
+- DNP / tuning matrix;
+- bring-up fault tree for the five power checkpoints: VBUS, VBAT, VSYS, 3V3_SYS and EPD HV.
+
+---
+
+## 16. First-board bring-up order
 
 Do not plug the display and "see what happens".
 

@@ -21,6 +21,8 @@ struct DiagnosticLogEntry {
 
 class DiagnosticRingLogService final : public LogService {
 public:
+    static constexpr std::size_t kMaxMessageBytes = 192U;
+
     explicit DiagnosticRingLogService(
         std::size_t capacity = 64U
     );

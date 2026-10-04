@@ -135,6 +135,14 @@
           <div class="entries">
 
             <article class="entry">
+              <div class="entry-top"><span class="entry-type">FIRMWARE · BOOT RECOVERY</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/343f044123c4920c83e2273cf3d40d0077d98d36" target="_blank" rel="noreferrer">343f044 ↗</a></div>
+              <h2>Early bootstrap faults now stay visible.</h2>
+              <p>Board-profile mismatches and unrecoverable boot-state failures no longer end in a generic serial log followed by a dead-looking screen. ENKU now renders built-in recovery guidance before idling.</p>
+              <ul><li>board-profile mismatch gets a dedicated recovery screen;</li><li>unrecoverable boot-state failure gets its own recovery state;</li><li>the fallback renderer remains independent from FreeType and reader assets;</li><li>serial diagnostics still carry the exact failure status.</li></ul>
+              <div class="entry-note">At this point nearly all early-boot failures that occur after the display initializes remain user-visible.</div>
+            </article>
+
+            <article class="entry">
               <div class="entry-top"><span class="entry-type">HARDWARE · CUSTOM PCB R0.1</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/6218142845af803c60449d922f7acc2682164ce6" target="_blank" rel="noreferrer">6218142 ↗</a></div>
               <h2>R0.1 moves from placement into active board routing.</h2>
               <p>The custom ENKU mainboard is now a routed engineering PCB rather than a placement-only shell. The current layout checkpoint contains 128 copper segments and 30 vias, with USB/Dock source entry, lower power routing and part of the EPD high-voltage island already established.</p>

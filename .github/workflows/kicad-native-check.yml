@@ -42,6 +42,13 @@ jobs:
             --all-track-errors \
             --output /tmp/enku-r01-drc.rpt \
             hardware/kicad/enku-mainboard-r0.1/enku-mainboard-r0.1.kicad_pcb
+          kicad-cli pcb drc \
+            --format json \
+            --severity-all \
+            --schematic-parity \
+            --all-track-errors \
+            --output /tmp/enku-r01-drc.json \
+            hardware/kicad/enku-mainboard-r0.1/enku-mainboard-r0.1.kicad_pcb
           cat /tmp/enku-r01-drc.rpt
 
       - name: Summarize routing closure
@@ -55,6 +62,21 @@ jobs:
           print("unconnected_items=", len(re.findall(r"^\[unconnected_items\]:", drc, re.M)))
           print("clearance_items=", len(re.findall(r"^\[clearance\]:", drc, re.M)))
           print("shorting_items=", len(re.findall(r"^\[shorting_items\]:", drc, re.M)))
+          PY
+
+      - name: Summarize schematic parity
+        run: |
+          python3 - <<'PY'
+          import collections, json, pathlib
+          report = json.loads(pathlib.Path("/tmp/enku-r01-drc.json").read_text())
+          parity = report.get("schematic_parity", [])
+          counts = collections.Counter(item.get("type", "unknown") for item in parity)
+          print("schematic_parity_total=", len(parity))
+          for kind, count in sorted(counts.items()):
+              print(f"parity_{kind}={count}")
+          print("\nParity details:")
+          for item in parity:
+              print(f"- {item.get('type', 'unknown')}: {item.get('description', '')}")
           PY
 
       - name: Gate first-spin critical violations
@@ -89,5 +111,6 @@ jobs:
           path: |
             /tmp/enku-r01-erc.rpt
             /tmp/enku-r01-drc.rpt
+            /tmp/enku-r01-drc.json
             /tmp/enku-r01.net
           if-no-files-found: warn

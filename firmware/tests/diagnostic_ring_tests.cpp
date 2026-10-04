@@ -89,7 +89,7 @@ int main() {
     );
     clamped.write(
         LogLevel::Warning,
-        LogCategory::System,
+        LogCategory::Core,
         60U,
         oversized
     );

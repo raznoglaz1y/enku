@@ -149,6 +149,23 @@ const homeHtml = `
     </div>
   </section>
 
+  <section class="enku-home-community">
+    <div class="shell enku-home-community-grid">
+      <div>
+        <p class="enku-kicker">BUILD IN PUBLIC</p>
+        <h2>Help shape ENKU before the hardware is frozen.</h2>
+      </div>
+      <div class="enku-home-community-copy">
+        <p>ENKU is entering its first public feedback stage. The custom R0.1 mainboard, reader firmware and mechanical direction are being developed openly, and feedback from e-reader and open-hardware communities is welcome before manufacturing decisions are locked.</p>
+        <p>A small production run or crowdfunding campaign may follow successful hardware validation. There is no launch date or price promise yet — the current priority is getting the reader right.</p>
+        <div class="enku-home-actions">
+          <a class="enku-button" href="https://github.com/raznoglaz1y/enku" target="_blank" rel="noreferrer">Follow development <span>↗</span></a>
+          <a class="enku-text-link" href="/build-log">Read the build log →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="enku-home-final">
     <a class="shell enku-home-final-inner" href="/about">
       <span><small>ABOUT ENKU</small><strong>Why this reader exists.</strong></span><b>→</b>
@@ -289,6 +306,10 @@ const sharedChromeCss = `
   .enku-work-side{display:grid;grid-template-rows:1fr 1fr;gap:18px}
   .enku-work-side strong{font-size:28px;margin:20px 0 8px}
   .enku-work-side span{font-weight:400;line-height:1.5;color:#625e57}
+  .enku-home-community{padding:108px 0;border-bottom:1px solid rgba(20,20,20,.09)}
+  .enku-home-community-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:96px;align-items:start}
+  .enku-home-community h2{font-family:"Newsreader",serif;font-size:clamp(46px,4.8vw,68px);font-weight:500;letter-spacing:-.04em;line-height:.94;margin:0}
+  .enku-home-community-copy>p{font-size:15px;line-height:1.7;color:#625e57;margin:0 0 18px;max-width:670px}
   .enku-home-final{border-bottom:1px solid rgba(20,20,20,.09)}
   .enku-home-final-inner{min-height:164px;display:flex;align-items:center;justify-content:space-between;gap:30px}
   .enku-home-final strong{display:block;font-size:42px;margin-top:7px}
@@ -319,7 +340,7 @@ const sharedChromeCss = `
     .site-header .mobile-nav a:last-child{border-bottom:0}
   }
   @media(max-width:900px){
-    .enku-home-hero-grid,.enku-home-split{grid-template-columns:1fr;gap:42px}
+    .enku-home-hero-grid,.enku-home-split,.enku-home-community-grid{grid-template-columns:1fr;gap:42px}
     .enku-home-render{justify-self:center;width:min(72vw,380px)}
     .enku-home-head{grid-template-columns:1fr;gap:14px}
     .enku-home-cards{grid-template-columns:1fr 1fr}

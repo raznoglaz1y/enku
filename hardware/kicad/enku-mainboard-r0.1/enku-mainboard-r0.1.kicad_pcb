@@ -243,7 +243,7 @@
   )
 
   (footprint "ENKU:FH34SRJ-6S-0.5SH" (layer "F.Cu")
-    (at 67 34)
+    (at 57 60 90)
     (property "Reference" "J4" (at 0 -3 0) (layer "F.SilkS"))
     (property "Value" "FH34SRJ-6S-0.5SH(50)" (at 0 2.5 0) (layer "F.Fab") hide)
     (fp_rect (start -2.5 -2) (end 2.5 1.8) (stroke (width 0.1) (type default)) (fill none) (layer "F.Fab"))

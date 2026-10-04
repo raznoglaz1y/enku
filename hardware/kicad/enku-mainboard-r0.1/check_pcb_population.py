@@ -17,18 +17,18 @@ SHEETS = (
 # This is a ceiling, not an acceptance list: refs may disappear from this set only by
 # being placed on PCB. Any NEW missing ref is an immediate CI failure.
 KNOWN_UNPLACED = {
-    "C0_EPD_VCI","C1_EPD_VDD","C5_EPD_VSH1","C6_EPD_VSH2","C7_EPD_VSL","C8_EPD_VCOM",
-    "C_BAT_ADC","C_CHG_BAT","C_CHG_IN","C_CHG_IN_HF","C_DOCK_DET","C_DOCK_IN","C_EN",
-    "C_ESP_HF","C_FL_IN","C_FL_IN_HF","C_HALL","C_IMU_VDD","C_IMU_VDDIO","C_MUX_OUT",
-    "C_MUX_SS","C_SD_BULK","C_SD_HF","C_USB_IN","C_USB_SHIELD","J_DBG","J_QI",
-    "R_BAT_BOT","R_BAT_TOP","R_CC1","R_CC2","R_CHG_CE_PD","R_CHG_ILIM_VSET","R_CHG_ISET",
-    "R_CP2_DOCK","R_CP2_GND","R_DOCK_DET_PD","R_DOCK_DET_SER","R_EPD_BS1","R_EPD_CS",
-    "R_EPD_CS_PU","R_EPD_DC","R_EPD_MOSI","R_EPD_RST","R_EPD_RST_PU","R_EPD_SCLK",
-    "R_EPD_VCI_LINK","R_FL_ADIM_LINK","R_FL_ADIM_PD","R_FL_COOL_PD","R_FL_WARM_PD",
-    "R_I2C_SCL_PU","R_I2C_SDA_PU","R_MUX_ILIM","R_OV1_GND","R_OV2_GND","R_PR1_GND",
-    "R_PR1_USB","R_SD_CS","R_SD_CS_PU","R_SD_MISO","R_SD_MOSI","R_SD_SCLK","R_STAT1_PU",
-    "R_STAT2_PU","R_SYS_EN_PD","R_USB_DM","R_USB_DP","R_USB_SHIELD","R_USB_SHIELD_0R",
-    "SW_BOOT",
+    "C22","C23","C27","C28","C29","C30",
+    "C21","C8","C5","C6","C36","C3","C15",
+    "C14","C32","C33","C20","C18","C19","C4",
+    "C1","C16","C17","C2","C35","J7","J8",
+    "R27","R26","R62","R63","R10","R8","R9",
+    "R4","R5","R69","R68","R29","R32",
+    "R35","R31","R34","R30","R36","R33",
+    "R28","R41","R40","R43","R42",
+    "R25","R24","R1","R6","R7","R3",
+    "R2","R19","R23","R22","R20","R21","R11",
+    "R12","R13","R65","R64","R66","R67",
+    "SW2",
 }
 
 

@@ -575,7 +575,7 @@
   )
 
   (footprint "Capacitor_SMD:C_0805_2012Metric" (layer "F.Cu")
-    (at 59.7 87.7)
+    (at 58.0 87.8 90)
     (property "Reference" "C9" (at 0 -1.8 0) (layer "F.SilkS"))
     (property "Value" "10uF 10V" (at 0 1.8 0) (layer "F.Fab") hide)
     (fp_rect (start -1 -0.625) (end 1 0.625) (stroke (width 0.1) (type default)) (fill none) (layer "F.SilkS"))

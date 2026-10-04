@@ -83,6 +83,25 @@ int main() {
     DiagnosticRingLogService clamped{0U};
     assert(clamped.capacity() == 1U);
 
+    const std::string oversized(
+        DiagnosticRingLogService::kMaxMessageBytes + 64U,
+        'x'
+    );
+    clamped.write(
+        LogLevel::Warning,
+        LogCategory::System,
+        60U,
+        oversized
+    );
+    {
+        const auto snapshot = clamped.snapshot();
+        assert(snapshot.size() == 1U);
+        assert(
+            snapshot[0].message.size() ==
+            DiagnosticRingLogService::kMaxMessageBytes
+        );
+    }
+
     InMemoryDiagnosticsService diagnostics;
 
     AppError warning;

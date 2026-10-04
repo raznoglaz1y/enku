@@ -1,6 +1,7 @@
 #include "enku/reader/book_loader.hpp"
 #include "enku/runtime/reader_runtime.hpp"
 
+#include <algorithm>
 #include <cassert>
 #include <optional>
 #include <string>
@@ -199,11 +200,28 @@ public:
         return BookSourceStatus::Ok;
     }
 
+    BookSourceStatus validateSource(
+        const BookRecord&,
+        bool& matches
+    ) override {
+        ++validation_calls;
+
+        if (status != BookSourceStatus::Ok) {
+            matches = false;
+            return status;
+        }
+
+        matches = source_matches;
+        return BookSourceStatus::Ok;
+    }
+
     BookSourceStatus status{BookSourceStatus::Ok};
+    bool source_matches{true};
     std::string content;
     std::uint32_t calls{0};
     std::uint32_t size_calls{0};
     std::uint32_t range_calls{0};
+    std::uint32_t validation_calls{0};
 };
 
 class FakeAppContextService final : public AppContextService {
@@ -590,9 +608,31 @@ int main() {
     assert(loader.session() == nullptr);
     assert(refresh.last.reason == RefreshReason::ErrorRecovery);
 
+    // A file that still exists at the same path but no longer matches the
+    // imported identity must be treated as a changed source, not reopened
+    // with the old semantic checkpoint.
+    source.status = BookSourceStatus::Ok;
+    source.source_matches = false;
+
+    assert(
+        runtime.handle(OpenBookRequested{"runtime-test"}) ==
+        ReaderRuntimeResult::BookSourceChanged
+    );
+    assert(state.screen == Screen::Library);
+    assert(!state.current_book.has_value());
+    assert(loader.session() == nullptr);
+    assert(
+        std::find(
+            state.library.unavailable_books.begin(),
+            state.library.unavailable_books.end(),
+            BookId{"runtime-test"}
+        ) != state.library.unavailable_books.end()
+    );
+
+    source.source_matches = true;
+
     // A renderer failure is surfaced before a display refresh can claim that
     // the newly laid-out page became visible.
-    source.status = BookSourceStatus::Ok;
     renderer.accept = false;
 
     assert(

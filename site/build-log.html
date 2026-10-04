@@ -143,6 +143,14 @@
             </article>
 
             <article class="entry">
+              <div class="entry-top"><span class="entry-type">HARDWARE · R0.1 PRE-PRODUCTION</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/fc77573392f8da8a9e2dda730b7dddb66ea74033" target="_blank" rel="noreferrer">fc77573 ↗</a></div>
+              <h2>The mainboard reaches the routing-closure gate.</h2>
+              <p>R0.1 has moved substantially beyond the earlier routing checkpoint. The power cluster is stable, USB-C CC routing and connector-side ESD placement have clean native KiCad checkpoints, and experimental USB data routes are being rejected rather than merged whenever they compromise clearance, reference geometry or neighboring fanout.</p>
+              <ul><li>the accepted main branch is restored to a green KiCad baseline after each routing study;</li><li>USB D+/D− completion and dock closure are the remaining routing priorities;</li><li>fabrication now requires an explicit zero-unrouted-connections result in addition to green DRC/ERC;</li><li>the final gate includes return paths, EPD high voltage, antenna keepout, connector mechanics, footprints, repairability and manufacturing outputs.</li></ul>
+              <div class="entry-note">The next hardware milestone is not “DRC passes”. It is USB + dock closed, zero unrouted, all hardware CI green, followed by the production-package audit.</div>
+            </article>
+
+            <article class="entry">
               <div class="entry-top"><span class="entry-type">HARDWARE · CUSTOM PCB R0.1</span><a class="commit" href="https://github.com/raznoglaz1y/enku/commit/6218142845af803c60449d922f7acc2682164ce6" target="_blank" rel="noreferrer">6218142 ↗</a></div>
               <h2>R0.1 moves from placement into active board routing.</h2>
               <p>The custom ENKU mainboard is now a routed engineering PCB rather than a placement-only shell. The current layout checkpoint contains 128 copper segments and 30 vias, with USB/Dock source entry, lower power routing and part of the EPD high-voltage island already established.</p>

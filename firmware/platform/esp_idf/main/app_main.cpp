@@ -547,6 +547,25 @@ bool showInputRecovery(
             );
 
             if (recover) {
+                constexpr std::uint32_t kRuntimeFatalEvent =
+                    0x4002U;
+
+                device.diagnosticLog().write(
+                    enku::LogLevel::Critical,
+                    enku::LogCategory::Ui,
+                    kRuntimeFatalEvent,
+                    "Persistent runtime render/refresh failure threshold reached"
+                );
+
+                enku::AppError error;
+                error.domain = enku::ErrorDomain::Display;
+                error.severity =
+                    enku::ErrorSeverity::FatalError;
+                error.code = kRuntimeFatalEvent;
+                error.primary_action =
+                    enku::RecoveryAction::Reboot;
+                device.diagnostics().report(error);
+
                 if (!showRuntimeRecovery(platform)) {
                     ESP_LOGE(
                         kTag,

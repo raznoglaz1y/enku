@@ -1,6 +1,32 @@
 #include "enku/platform/esp_idf/esp_idf_device_runtime.hpp"
 
 namespace enku::platform::esp_idf {
+namespace {
+
+constexpr std::uint32_t kDiagBoardProfileMismatch = 0x1001U;
+constexpr std::uint32_t kDiagFontMissing = 0x1002U;
+constexpr std::uint32_t kDiagFontInitFailed = 0x1003U;
+constexpr std::uint32_t kDiagBootRecoveryRequired = 0x1004U;
+constexpr std::uint32_t kDiagNetworkUnavailable = 0x2001U;
+constexpr std::uint32_t kDiagNetworkPolicyFailed = 0x2002U;
+constexpr std::uint32_t kDiagStorageLost = 0x3001U;
+constexpr std::uint32_t kDiagStorageRecovered = 0x3002U;
+constexpr std::uint32_t kDiagRuntimeFailed = 0x4001U;
+constexpr std::uint32_t kDiagInputActionFailed = 0x5001U;
+
+AppError fatalError(
+    ErrorDomain domain,
+    ErrorCode code
+) {
+    AppError error;
+    error.domain = domain;
+    error.severity = ErrorSeverity::FatalError;
+    error.code = code;
+    error.primary_action = RecoveryAction::Reboot;
+    return error;
+}
+
+} // namespace
 
 EspIdfDeviceRuntime::EspIdfDeviceRuntime(
     EspIdfPlatform& platform,
@@ -204,6 +230,18 @@ EspIdfDeviceRuntime::begin() {
             EspIdfEpaper::kWidth,
             EspIdfEpaper::kHeight
         )) {
+        diagnostic_log_.write(
+            LogLevel::Critical,
+            LogCategory::Core,
+            kDiagBoardProfileMismatch,
+            "Board profile does not match the active display target"
+        );
+        diagnostics_.report(
+            fatalError(
+                ErrorDomain::System,
+                kDiagBoardProfileMismatch
+            )
+        );
         return DeviceRuntimeInitStatus::BoardProfileMismatch;
     }
 
@@ -215,10 +253,34 @@ EspIdfDeviceRuntime::begin() {
 
     if (font_status ==
         FontInitStatus::FontNotFound) {
+        diagnostic_log_.write(
+            LogLevel::Critical,
+            LogCategory::Ui,
+            kDiagFontMissing,
+            "Reader font is unavailable"
+        );
+        diagnostics_.report(
+            fatalError(
+                ErrorDomain::Localization,
+                kDiagFontMissing
+            )
+        );
         return DeviceRuntimeInitStatus::FontMissing;
     }
 
     if (font_status != FontInitStatus::Ok) {
+        diagnostic_log_.write(
+            LogLevel::Critical,
+            LogCategory::Ui,
+            kDiagFontInitFailed,
+            "Reader font initialization failed"
+        );
+        diagnostics_.report(
+            fatalError(
+                ErrorDomain::Localization,
+                kDiagFontInitFailed
+            )
+        );
         return DeviceRuntimeInitStatus::FontInitFailed;
     }
 
@@ -227,6 +289,18 @@ EspIdfDeviceRuntime::begin() {
 
     if (boot_result_.status ==
         BootRestoreStatus::RecoveryRequired) {
+        diagnostic_log_.write(
+            LogLevel::Critical,
+            LogCategory::Persistence,
+            kDiagBootRecoveryRequired,
+            "Boot restore requires recovery mode"
+        );
+        diagnostics_.report(
+            fatalError(
+                ErrorDomain::Persistence,
+                kDiagBootRecoveryRequired
+            )
+        );
         return DeviceRuntimeInitStatus::RecoveryRequired;
     }
 
@@ -238,6 +312,12 @@ EspIdfDeviceRuntime::begin() {
             NetworkPolicyStatus::DriverError) {
             storage_.appState().network.status =
                 NetworkRuntimeStatus::Error;
+            diagnostic_log_.write(
+                LogLevel::Warning,
+                LogCategory::Network,
+                kDiagNetworkPolicyFailed,
+                "Network policy failed; continuing offline"
+            );
         }
     } else {
         network_policy_status_ =
@@ -247,6 +327,12 @@ EspIdfDeviceRuntime::begin() {
             NetworkRuntimeStatus::Error;
         storage_.appState().network.ssid.clear();
         storage_.appState().network.address.clear();
+        diagnostic_log_.write(
+            LogLevel::Warning,
+            LogCategory::Network,
+            kDiagNetworkUnavailable,
+            "Wi-Fi driver unavailable; continuing offline"
+        );
     }
 
     syncPlatformState();
@@ -343,6 +429,16 @@ EspIdfDeviceRuntime::powerOff() {
 InputDispatcher&
 EspIdfDeviceRuntime::input() {
     return input_dispatcher_;
+}
+
+DiagnosticRingLogService&
+EspIdfDeviceRuntime::diagnosticLog() {
+    return diagnostic_log_;
+}
+
+InMemoryDiagnosticsService&
+EspIdfDeviceRuntime::diagnostics() {
+    return diagnostics_;
 }
 
 NetworkPolicyStatus
@@ -500,6 +596,12 @@ bool EspIdfDeviceRuntime::syncRemovableStorage(
         platform_.sdCard().unmount();
         app.storage.removable =
             RemovableStorageStatus::Unavailable;
+        diagnostic_log_.write(
+            LogLevel::Warning,
+            LogCategory::Storage,
+            kDiagStorageLost,
+            "Removable storage became unavailable"
+        );
         availability_reconciler_.reconcile();
 
         if (app.current_book.has_value() &&
@@ -540,6 +642,12 @@ bool EspIdfDeviceRuntime::syncRemovableStorage(
         case SdMountStatus::Ok:
             app.storage.removable =
                 RemovableStorageStatus::Ready;
+            diagnostic_log_.write(
+                LogLevel::Info,
+                LogCategory::Storage,
+                kDiagStorageRecovered,
+                "Removable storage recovered; verification started"
+            );
             availability_reconciler_.beginIncremental();
             break;
         case SdMountStatus::DirectorySetupFailed:
@@ -734,6 +842,12 @@ InputDispatchResult EspIdfDeviceRuntime::pollInput(
     // A persistent renderer/refresh failure must propagate to the outer
     // application loop instead of being silently ignored.
     if (!refreshStatusBarIfNeeded()) {
+        diagnostic_log_.write(
+            LogLevel::Error,
+            LogCategory::Display,
+            kDiagRuntimeFailed,
+            "Status-bar render or refresh failed"
+        );
         return InputDispatchResult::RuntimeFailed;
     }
 
@@ -754,6 +868,22 @@ InputDispatchResult EspIdfDeviceRuntime::pollInput(
     syncWebUploadServer();
     processWebDeleteRequests();
     refreshLibraryAfterUploadIfNeeded();
+
+    if (result == InputDispatchResult::RuntimeFailed) {
+        diagnostic_log_.write(
+            LogLevel::Error,
+            LogCategory::Ui,
+            kDiagRuntimeFailed,
+            "Input dispatch reported a runtime failure"
+        );
+    } else if (result == InputDispatchResult::Failed) {
+        diagnostic_log_.write(
+            LogLevel::Warning,
+            LogCategory::Input,
+            kDiagInputActionFailed,
+            "Input action failed"
+        );
+    }
 
     return result;
 }

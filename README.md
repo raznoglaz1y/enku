@@ -41,7 +41,7 @@ The project is being developed as a complete product system rather than only a f
 - reproducible documentation for the hardware, firmware and enclosure;
 - a custom ENKU mainboard and costed path toward small-batch community / kit builds.
 
-> **Current status:** design system, UX specification and project architecture are actively being developed. Firmware bring-up begins after the target hardware is in hand. Features listed below are planned unless explicitly marked as completed.
+> **Current status:** firmware architecture and reader runtime are actively implemented, while the custom ENKU R0.1 mainboard is in late routing / pre-production verification. Power routing and the USB-C connector/ESD/CC area have clean native KiCad checkpoints; USB data completion, dock/unrouted closure, final mechanical/electrical audit and the manufacturing package remain before fabrication. Features are only treated as complete when their repository checks or physical validation support that claim.
 
 ### Looking for hardware partners and component suppliers
 
@@ -78,6 +78,20 @@ The custom mainboard roadmap targets:
 After validation, the project may offer small-batch **electronics kits, Base kits, magnetic-cover kits and Pro/frontlight kits**. These are planned possibilities rather than products currently for sale; final contents and pricing depend on tested hardware, sourcing, compliance and fulfillment.
 
 The intent is to keep DIY builds fully documented even if assembled kits become available.
+
+### R0.1 engineering checkpoint — October 2026
+
+The dedicated ENKU mainboard has progressed beyond placement into detailed routing and verification. The current working baseline is intentionally kept **green in native KiCad CI** while remaining USB and dock routing is iterated.
+
+Fabrication is gated on:
+
+- complete USB D+/D− routing through connector-side ESD and series tuning resistors to ESP32-S3;
+- dock detect/power closure and an explicit **zero-unrouted-connections** check;
+- final power, EPD high-voltage, return-path, antenna keepout, connector-edge and repairability review;
+- final footprint/orientation and mechanical-access audit;
+- reproducible Gerber, NC drill, BOM and pick-and-place outputs plus a final PCBWay viewer review.
+
+A green DRC alone is not considered a fabrication release: R0.1 must also pass the explicit connectivity and manufacturing gates above.
 
 ## Support ENKU
 

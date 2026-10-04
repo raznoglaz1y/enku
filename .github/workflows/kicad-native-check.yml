@@ -59,7 +59,10 @@ jobs:
           drc = pathlib.Path("/tmp/enku-r01-drc.rpt").read_text()
           print("segments=", pcb.count("(segment "))
           print("vias=", pcb.count("(via "))
-          print("unconnected_items=", len(re.findall(r"^\[unconnected_items\]:", drc, re.M)))
+          unconnected = len(re.findall(r"^\[unconnected_items\]:", drc, re.M))
+          print("unconnected_items=", unconnected)
+          if unconnected:
+              raise SystemExit(f"Routing closure failed: {unconnected} unconnected item(s) remain")
           print("clearance_items=", len(re.findall(r"^\[clearance\]:", drc, re.M)))
           print("shorting_items=", len(re.findall(r"^\[shorting_items\]:", drc, re.M)))
           PY

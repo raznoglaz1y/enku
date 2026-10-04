@@ -2070,10 +2070,10 @@
   (segment (start 58.15 96.80) (end 58.15 94.40) (width 0.30) (layer "F.Cu") (net 2))
 
 
-  (segment (start 57.10 90.00) (end 56.10 89.00) (width 0.18) (layer "F.Cu") (net 74))
-  (segment (start 56.10 89.00) (end 53.00 89.00) (width 0.18) (layer "F.Cu") (net 74))
-  (segment (start 53.00 89.00) (end 51.00 87.00) (width 0.18) (layer "F.Cu") (net 74))
-  (segment (start 51.00 87.00) (end 51.00 86.20) (width 0.18) (layer "F.Cu") (net 74))
+  (segment (start 57.10 90.00) (end 57.10 89.20) (width 0.18) (layer "F.Cu") (net 74))
+  (segment (start 57.10 89.20) (end 54.80 86.90) (width 0.18) (layer "F.Cu") (net 74))
+  (segment (start 54.80 86.90) (end 51.00 86.90) (width 0.18) (layer "F.Cu") (net 74))
+  (segment (start 51.00 86.90) (end 51.00 86.20) (width 0.18) (layer "F.Cu") (net 74))
 
   (segment (start 57.10 91.50) (end 56.45 91.50) (width 0.18) (layer "F.Cu") (net 77))
   (segment (start 56.45 91.50) (end 56.45 87.50) (width 0.18) (layer "F.Cu") (net 77))

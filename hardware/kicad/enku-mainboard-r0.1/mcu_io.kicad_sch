@@ -412,7 +412,7 @@
 	(symbol (lib_id "ENKU:MICROSD8") (at 174.625 58.42 0) (unit 1) (exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no) (uuid "74000000-0000-4000-8000-000000000130")
 		(property "Reference" "J2" (at 163.625 41.42 0) (effects (font (size 0.88 0.88))))
 		(property "Value" "Hirose DM3AT-SF-PEJM5" (at 185.625 41.42 0) (effects (font (size 0.88 0.88))))
-		(property "Footprint" "Connector_Card:microSD_HC_Hirose_DM3AT-SF-PEJM5" (at 174.625 58.42 0) (effects (font (size 0.88 0.88)) (hide yes)))
+		(property "Footprint" "ENKU:MICROSD_DM3AT_ENKU" (at 174.625 58.42 0) (effects (font (size 0.88 0.88)) (hide yes)))
 		(property "Datasheet" "~" (at 174.625 58.42 0) (effects (font (size 0.88 0.88)) (hide yes)))
 		(property "Description" "Hirose DM3AT-SF-PEJM5" (at 174.625 58.42 0) (effects (font (size 0.88 0.88)) (hide yes)))
 		(pin "1" (uuid "74000000-0000-4000-8000-000000000131"))

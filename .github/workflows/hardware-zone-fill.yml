@@ -38,15 +38,15 @@ jobs:
         run: |
           target="hardware/kicad/enku-mainboard-r0.1/enku-mainboard-r0.1.kicad_pcb"
           cp /tmp/enku-mainboard-r0.1-filled.kicad_pcb "$target"
-          if git diff --quiet -- "$target"; then
+          if git -C "$GITHUB_WORKSPACE" diff --quiet -- "$target"; then
             echo "Filled copper already persisted."
             exit 0
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$target"
-          git commit -m "pcb: persist filled ground pours"
-          git push
+          git -C "$GITHUB_WORKSPACE" config user.name "github-actions[bot]"
+          git -C "$GITHUB_WORKSPACE" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C "$GITHUB_WORKSPACE" add "$target"
+          git -C "$GITHUB_WORKSPACE" commit -m "pcb: persist filled ground pours"
+          git -C "$GITHUB_WORKSPACE" push
       - uses: actions/upload-artifact@v4
         if: always()
         with:

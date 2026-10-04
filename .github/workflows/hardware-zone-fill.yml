@@ -1,0 +1,38 @@
+name: Hardware Zone Fill Artifact
+
+on:
+  push:
+    paths:
+      - "hardware/kicad/enku-mainboard-r0.1/**"
+      - ".github/workflows/hardware-zone-fill.yml"
+  workflow_dispatch:
+
+jobs:
+  fill-zones:
+    runs-on: ubuntu-latest
+    container: kicad/kicad:8.0
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fill copper zones with KiCad
+        run: |
+          python3 - <<'PY'
+          import pcbnew
+          src="hardware/kicad/enku-mainboard-r0.1/enku-mainboard-r0.1.kicad_pcb"
+          out="/tmp/enku-mainboard-r0.1-filled.kicad_pcb"
+          board=pcbnew.LoadBoard(src)
+          filler=pcbnew.ZONE_FILLER(board)
+          filler.Fill(board.Zones())
+          pcbnew.SaveBoard(out, board)
+          print("filled_zones=", board.GetAreaCount())
+          PY
+      - name: Verify filled board
+        run: |
+          kicad-cli pcb drc --severity-all --schematic-parity --all-track-errors --output /tmp/filled-drc.rpt /tmp/enku-mainboard-r0.1-filled.kicad_pcb
+          cat /tmp/filled-drc.rpt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: enku-r01-filled-board
+          path: |
+            /tmp/enku-mainboard-r0.1-filled.kicad_pcb
+            /tmp/filled-drc.rpt

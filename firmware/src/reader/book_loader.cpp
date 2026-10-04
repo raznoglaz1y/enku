@@ -187,6 +187,24 @@ BookLoadResult ReaderBookLoader::open(
         };
     }
 
+    bool source_matches = false;
+    const auto validation_status =
+        source_.validateSource(
+            *record,
+            source_matches
+        );
+
+    if (validation_status != BookSourceStatus::Ok) {
+        return sourceFailure(validation_status);
+    }
+
+    if (!source_matches) {
+        return {
+            BookLoadStatus::SourceChanged,
+            ReaderSessionStatus::Closed,
+        };
+    }
+
     ParseResult parsed;
 
     const ParserSourceInfo source_info{

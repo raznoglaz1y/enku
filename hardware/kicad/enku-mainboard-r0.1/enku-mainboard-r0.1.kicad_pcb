@@ -1827,7 +1827,7 @@
     )
   
   (footprint "Resistor_SMD:R_0603_1608Metric" (layer "F.Cu")
-    (at 54.2 85.2 0)
+    (at 51.8 86.2 0)
       (property "Reference" "R13" (at 0 -1.45 0) (layer "F.SilkS") hide)
       (property "Value" "100k" (at 0 1.45 0) (layer "F.Fab") hide)
       (fp_rect (start -0.8 -0.4) (end 0.8 0.4) (stroke (width 0.1) (type default)) (fill none) (layer "F.SilkS"))
@@ -2070,9 +2070,10 @@
   (segment (start 58.15 96.80) (end 58.15 94.40) (width 0.30) (layer "F.Cu") (net 2))
 
 
-  (segment (start 57.10 90.00) (end 56.00 88.90) (width 0.18) (layer "F.Cu") (net 74))
-  (segment (start 56.00 88.90) (end 56.00 85.20) (width 0.18) (layer "F.Cu") (net 74))
-  (segment (start 56.00 85.20) (end 53.40 85.20) (width 0.18) (layer "F.Cu") (net 74))
+  (segment (start 57.10 90.00) (end 56.10 89.00) (width 0.18) (layer "F.Cu") (net 74))
+  (segment (start 56.10 89.00) (end 53.00 89.00) (width 0.18) (layer "F.Cu") (net 74))
+  (segment (start 53.00 89.00) (end 51.00 87.00) (width 0.18) (layer "F.Cu") (net 74))
+  (segment (start 51.00 87.00) (end 51.00 86.20) (width 0.18) (layer "F.Cu") (net 74))
 
   (segment (start 57.10 91.50) (end 56.45 91.50) (width 0.18) (layer "F.Cu") (net 77))
   (segment (start 56.45 91.50) (end 56.45 87.50) (width 0.18) (layer "F.Cu") (net 77))

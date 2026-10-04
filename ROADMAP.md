@@ -341,4 +341,6 @@ Community feedback to evaluate after the 3.97-inch R0.1 baseline is validated:
 - [ ] Reassess market differentiation of the 3.97-inch format as XTEink/XTE-class devices and clones become more common.
 - [ ] Compare ergonomics, battery envelope, enclosure thickness, display availability, BOM impact and PCB reuse between 3.97-inch and 4.7–5.0-inch variants.
 - [ ] Treat repeated community requests for a mid-size reader as a product signal, but do not change R0.1 scope before the current 3.97-inch hardware is completed and validated.
+- [ ] Explore a narrow phone-sized 5.5–5.9-inch ENKU concept as a separate future branch, using PocketBook Q as market validation for demand in the compact-but-larger-than-4-inch category.
+- [ ] Compare a 5.5–5.9-inch phone-like layout against the 4.7–5.0-inch compact-reader concept on ergonomics, BOM, battery envelope, display sourcing, enclosure width, controls and differentiation.
 

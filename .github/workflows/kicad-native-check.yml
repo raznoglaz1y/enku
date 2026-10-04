@@ -1,6 +1,7 @@
 name: Native KiCad Check
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - "hardware/kicad/enku-mainboard-r0.1/**"

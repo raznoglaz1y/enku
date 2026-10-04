@@ -567,7 +567,12 @@ int main() {
     assert(state.screen == Screen::Library);
 
     // Loader failure automatically completes through BookOpenFailed and
-    // returns safely to Library.
+    // returns safely to Library. Verify the failed open performs exactly one
+    // size probe instead of depending on an absolute call count accumulated
+    // by all previous reopen/recovery scenarios in this regression.
+    const auto size_calls_before_failed_open =
+        source.size_calls;
+
     source.status = BookSourceStatus::Unavailable;
 
     assert(
@@ -575,7 +580,10 @@ int main() {
         ReaderRuntimeResult::BookOpenFailed
     );
     assert(source.calls == 0);
-    assert(source.size_calls == 5);
+    assert(
+        source.size_calls ==
+        size_calls_before_failed_open + 1U
+    );
     assert(state.screen == Screen::Library);
     assert(state.library.focused_book == "runtime-test");
     assert(!state.current_book.has_value());

@@ -108,6 +108,17 @@ GitHub Sponsors is the project's primary funding channel. Sponsorships help cove
 
 Project contact and support page: **https://enkureader.com/contact**
 
+## Follow the project
+
+ENKU is entering its first public community-feedback stage. The immediate goal is to validate the reader, the custom R0.1 hardware and the mechanical design with open-hardware and e-reader communities before any manufacturing commitment is made.
+
+A **small production run / crowdfunding campaign is being considered after hardware validation**, but no campaign, launch date, price or production quantity is being promised yet. Development remains public and technical feedback is welcome now.
+
+- Project site: https://enkureader.com
+- GitHub: https://github.com/raznoglaz1y/enku
+- Reddit launch draft: [docs/outreach/reddit-r-ereader.md](docs/outreach/reddit-r-ereader.md)
+- Hackaday project draft: [docs/outreach/hackaday-project-draft.md](docs/outreach/hackaday-project-draft.md)
+
 ## Project goals
 
 ENKU is being designed around a deliberately narrow set of product goals:

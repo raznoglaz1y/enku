@@ -474,7 +474,7 @@
   )
 
   (footprint "ENKU:TPS2121_RUX0012A" (layer "F.Cu")
-    (at 43.5 91)
+    (at 41.8 92.0)
     (property "Reference" "U2" (at 0 -2.05 0) (layer "F.SilkS"))
     (property "Value" "TPS2121" (at 0 2.05 0) (layer "F.Fab") hide)
     (fp_rect (start -1 -1.25) (end 1 1.25) (stroke (width 0.1) (type default)) (fill none) (layer "F.Fab"))
@@ -1669,7 +1669,7 @@
     )
   
   (footprint "Capacitor_SMD:C_0805_2012Metric" (layer "F.Cu")
-    (at 43.8 86.8)
+    (at 41.8 86.8)
       (property "Reference" "C4" (at 0 -1.8 0) (layer "F.SilkS"))
       (property "Value" "10uF 10V" (at 0 1.8 0) (layer "F.Fab") hide)
       (fp_rect (start -1 -0.625) (end 1 0.625) (stroke (width 0.1) (type default)) (fill none) (layer "F.SilkS"))
@@ -1763,7 +1763,7 @@
     )
   
   (footprint "Capacitor_SMD:C_0805_2012Metric" (layer "F.Cu")
-    (at 45.5 88.5)
+    (at 43.8 88.3)
       (property "Reference" "C5" (at 0 -1.8 0) (layer "F.SilkS"))
       (property "Value" "4.7uF 25V" (at 0 1.8 0) (layer "F.Fab") hide)
       (fp_rect (start -1 -0.625) (end 1 0.625) (stroke (width 0.1) (type default)) (fill none) (layer "F.SilkS"))
@@ -1968,24 +1968,24 @@
 
 
 
-  (segment (start 42.825 90.65) (end 41.90 90.65) (width 0.20) (layer "F.Cu") (net 81))
-  (segment (start 41.90 90.65) (end 41.90 88.80) (width 0.35) (layer "F.Cu") (net 81))
-  (segment (start 44.175 90.65) (end 45.00 90.65) (width 0.20) (layer "F.Cu") (net 81))
-  (segment (start 45.00 90.65) (end 45.00 88.80) (width 0.35) (layer "F.Cu") (net 81))
-  (segment (start 41.90 88.80) (end 45.00 88.80) (width 0.45) (layer "F.Cu") (net 81))
-  (segment (start 42.80 86.80) (end 42.80 88.80) (width 0.45) (layer "F.Cu") (net 81))
-  (segment (start 44.50 88.50) (end 44.50 88.80) (width 0.35) (layer "F.Cu") (net 81))
-  (segment (start 45.00 88.80) (end 45.00 89.70) (width 0.30) (layer "F.Cu") (net 81))
-  (segment (start 45.00 89.70) (end 47.40 89.70) (width 0.25) (layer "F.Cu") (net 81))
+  (segment (start 41.125 91.65) (end 39.90 91.65) (width 0.20) (layer "F.Cu") (net 81))
+  (segment (start 39.90 91.65) (end 39.90 88.80) (width 0.35) (layer "F.Cu") (net 81))
+  (segment (start 42.475 91.65) (end 43.30 91.65) (width 0.20) (layer "F.Cu") (net 81))
+  (segment (start 43.30 91.65) (end 43.30 88.80) (width 0.35) (layer "F.Cu") (net 81))
+  (segment (start 39.90 88.80) (end 43.30 88.80) (width 0.45) (layer "F.Cu") (net 81))
+  (segment (start 40.80 86.80) (end 42.80 88.80) (width 0.45) (layer "F.Cu") (net 81))
+  (segment (start 42.80 88.30) (end 44.50 88.80) (width 0.35) (layer "F.Cu") (net 81))
+  (segment (start 43.30 88.80) (end 43.30 89.70) (width 0.30) (layer "F.Cu") (net 81))
+  (segment (start 43.30 89.70) (end 47.40 89.70) (width 0.25) (layer "F.Cu") (net 81))
   (segment (start 47.40 89.70) (end 47.40 87.30) (width 0.20) (layer "F.Cu") (net 81))
   (segment (start 47.40 87.30) (end 47.20 86.70) (width 0.20) (layer "F.Cu") (net 81))
 
 
   (segment (start 45.50 99.00) (end 45.50 96.50) (width 0.50) (layer "B.Cu") (net 79))
   (segment (start 45.50 96.50) (end 41.20 96.50) (width 0.50) (layer "B.Cu") (net 79))
-  (segment (start 41.20 96.50) (end 41.20 91.35) (width 0.50) (layer "B.Cu") (net 79))
-  (via (at 41.20 91.35) (size 0.80) (drill 0.40) (layers "F.Cu" "B.Cu") (net 79))
-  (segment (start 41.20 91.35) (end 42.825 91.35) (width 0.20) (layer "F.Cu") (net 79))
+  (segment (start 41.20 96.50) (end 39.50 92.35) (width 0.50) (layer "B.Cu") (net 79))
+  (via (at 39.50 92.35) (size 0.80) (drill 0.40) (layers "F.Cu" "B.Cu") (net 79))
+  (segment (start 39.50 92.35) (end 41.125 92.35) (width 0.20) (layer "F.Cu") (net 79))
 
   (segment (start 44.60 106.645) (end 44.60 105.30) (width 0.45) (layer "F.Cu") (net 3))
   (via (at 44.60 105.30) (size 0.80) (drill 0.40) (layers "F.Cu" "B.Cu") (net 3))
@@ -1995,10 +1995,10 @@
   (segment (start 49.40 105.30) (end 54.80 105.30) (width 0.50) (layer "B.Cu") (net 3))
   (segment (start 54.80 105.30) (end 54.80 95.30) (width 0.50) (layer "B.Cu") (net 3))
   (segment (start 54.80 95.30) (end 45.30 95.30) (width 0.50) (layer "B.Cu") (net 3))
-  (segment (start 45.30 95.30) (end 45.30 91.50) (width 0.50) (layer "B.Cu") (net 3))
-  (via (at 45.30 91.50) (size 0.80) (drill 0.40) (layers "F.Cu" "B.Cu") (net 3))
-  (segment (start 45.30 91.50) (end 44.80 91.35) (width 0.20) (layer "F.Cu") (net 3))
-  (segment (start 44.80 91.35) (end 44.175 91.35) (width 0.18) (layer "F.Cu") (net 3))
+  (segment (start 45.30 95.30) (end 43.60 92.50) (width 0.50) (layer "B.Cu") (net 3))
+  (via (at 43.60 92.50) (size 0.80) (drill 0.40) (layers "F.Cu" "B.Cu") (net 3))
+  (segment (start 43.60 92.50) (end 43.10 92.35) (width 0.20) (layer "F.Cu") (net 3))
+  (segment (start 43.10 92.35) (end 42.475 92.35) (width 0.18) (layer "F.Cu") (net 3))
 
   (segment (start 44.60 105.30) (end 39.00 105.30) (width 0.50) (layer "B.Cu") (net 3))
   (segment (start 39.00 105.30) (end 39.00 102.50) (width 0.50) (layer "B.Cu") (net 3))
@@ -2111,12 +2111,12 @@
 
 
 
-  (segment (start 45.00 90.65) (end 45.00 89.70) (width 0.30) (layer "F.Cu") (net 81))
-  (segment (start 45.00 89.70) (end 47.40 89.70) (width 0.25) (layer "F.Cu") (net 81))
+  (segment (start 43.30 91.65) (end 43.30 89.70) (width 0.30) (layer "F.Cu") (net 81))
+  (segment (start 43.30 89.70) (end 47.40 89.70) (width 0.25) (layer "F.Cu") (net 81))
   (segment (start 47.40 89.70) (end 47.40 87.30) (width 0.20) (layer "F.Cu") (net 81))
   (segment (start 47.40 87.30) (end 47.20 86.70) (width 0.20) (layer "F.Cu") (net 81))
-  (segment (start 45.00 90.65) (end 46.00 90.65) (width 0.30) (layer "F.Cu") (net 81))
-  (segment (start 46.00 90.65) (end 46.60 91.80) (width 0.25) (layer "F.Cu") (net 81))
+  (segment (start 43.30 91.65) (end 44.30 91.65) (width 0.30) (layer "F.Cu") (net 81))
+  (segment (start 44.30 91.65) (end 46.60 91.80) (width 0.25) (layer "F.Cu") (net 81))
   (segment (start 46.60 91.80) (end 47.40 91.80) (width 0.18) (layer "F.Cu") (net 81))
 
 )

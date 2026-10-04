@@ -1817,7 +1817,7 @@
     )
   
   (footprint "Resistor_SMD:R_0603_1608Metric" (layer "F.Cu")
-    (at 53.2 93.4 90)
+    (at 53.2 94.2 90)
     (attr dnp)
       (property "Reference" "R12" (at 0 -1.45 0) (layer "F.SilkS") hide)
       (property "Value" "10k DNP" (at 0 1.45 0) (layer "F.Fab") hide)

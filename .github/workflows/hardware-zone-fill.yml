@@ -7,6 +7,9 @@ on:
       - ".github/workflows/hardware-zone-fill.yml"
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   fill-zones:
     runs-on: ubuntu-latest
@@ -31,6 +34,19 @@ jobs:
         run: |
           kicad-cli pcb drc --severity-all --schematic-parity --all-track-errors --output /tmp/filled-drc.rpt /tmp/enku-mainboard-r0.1-filled.kicad_pcb
           cat /tmp/filled-drc.rpt
+      - name: Persist filled copper
+        run: |
+          target="hardware/kicad/enku-mainboard-r0.1/enku-mainboard-r0.1.kicad_pcb"
+          cp /tmp/enku-mainboard-r0.1-filled.kicad_pcb "$target"
+          if git diff --quiet -- "$target"; then
+            echo "Filled copper already persisted."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$target"
+          git commit -m "pcb: persist filled ground pours"
+          git push
       - uses: actions/upload-artifact@v4
         if: always()
         with:

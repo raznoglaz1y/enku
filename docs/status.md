@@ -4,9 +4,9 @@ Last updated: October 2026.
 
 ## Current stage
 
-**Product definition / UI system / hardware preparation**
+**Firmware integration / custom R0.1 routing / pre-production verification**
 
-ENKU is not yet a working reader firmware release. The project currently has a defined product direction, UI specification, interaction model, reference hardware and a detailed implementation roadmap.
+ENKU is not yet a hardware release, but the project is well beyond product definition. The reader runtime and ESP-IDF platform are implemented in parallel with a dedicated R0.1 mainboard. The PCB is now in late routing and verification: the power cluster and USB-C connector-side CC/ESD work have clean KiCad checkpoints, while USB data closure, dock/unrouted closure and the final manufacturing audit remain.
 
 ## Completed
 
@@ -38,16 +38,23 @@ ENKU is not yet a working reader firmware release. The project currently has a d
 - hardware sourcing and delivery;
 - supplier and hardware-partner outreach.
 
+## Current hardware gate
+
+- keep every accepted PCB checkpoint green in native KiCad CI;
+- complete USB D+/D− from Type-C through ESD/series tuning to ESP32-S3;
+- close dock and every remaining unrouted connection;
+- require an explicit zero-unrouted result in addition to DRC/ERC;
+- audit power/EPD-HV return paths, antenna keepout, connector access, footprints and repairability;
+- generate and inspect Gerber, drill, BOM and pick-and-place outputs before PCBWay prototype submission.
+
 ## Next
 
-1. receive and inspect the target hardware;
-2. verify controls, display, storage and power behavior;
-3. start minimal firmware bring-up;
-4. profile refresh/memory/power;
-5. lock the first reader format and parser approach;
-6. implement the shared UI/focus layer;
-7. build the offline Library + Reader MVP;
-8. start the first measured enclosure prototype.
+1. close USB and dock routing;
+2. reach zero unrouted connections with all hardware CI green;
+3. run the full electrical/mechanical/manufacturability audit;
+4. generate the R0.1 manufacturing package and PCBWay preview;
+5. assemble the first prototypes and perform measured hardware bring-up;
+6. feed real display, storage, power and mechanical measurements back into firmware and enclosure work.
 
 ## Looking for hardware partners and suppliers
 

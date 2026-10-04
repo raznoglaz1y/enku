@@ -554,7 +554,7 @@
   )
 
   (footprint "Connector_Generic:JST_PH_3_PLACEMENT" (layer "F.Cu")
-    (at 64.5 93.5 90)
+    (at 66 93.5 90)
     (property "Reference" "J1" (at 0 -4.3 90) (layer "F.SilkS"))
     (property "Value" "1S LiPo + NTC" (at 0 4.3 90) (layer "F.Fab") hide)
     (fp_rect (start -5 -3) (end 5 3)

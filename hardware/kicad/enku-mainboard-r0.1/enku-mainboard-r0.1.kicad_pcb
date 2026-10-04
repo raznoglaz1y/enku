@@ -447,7 +447,7 @@
     (pad "2" smd rect (at 0.8 0) (size 0.8 0.9) (layers "F.Cu" "F.Paste" "F.Mask") (net 67 "BOOT"))
   )
 
-  (footprint "Connector_Card:microSD_HC_Hirose_DM3AT-SF-PEJM5" (layer "F.Cu")
+  (footprint "ENKU:MICROSD_DM3AT_ENKU" (layer "F.Cu")
     (at 28.9 100.7 90)
     (property "Reference" "J2" (at -0.075 -9.525 90) (layer "F.SilkS"))
     (property "Value" "Hirose DM3AT-SF-PEJM5" (at -0.075 9.575 90) (layer "F.Fab") hide)

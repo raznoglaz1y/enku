@@ -18,6 +18,7 @@ enum class BookLoadStatus : std::uint8_t {
     NotFound,
     SourceUnavailable,
     SourceReadFailed,
+    SourceChanged,
     UnsupportedFormat,
     ParseFailed,
     SessionOpenFailed,

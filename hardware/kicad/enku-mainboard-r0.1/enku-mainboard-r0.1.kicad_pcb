@@ -726,7 +726,7 @@
   )
 
   (footprint "Resistor_SMD:R_0603_1608Metric" (layer "F.Cu")
-    (at 53.5 103.0 90)
+    (at 53.5 102.2 270)
     (property "Reference" "R62" (at 0 -1.4 0) (layer "F.SilkS"))
     (property "Value" "5.1k 1%" (at 0 1.4 0) (layer "F.Fab") hide)
     (pad "1" smd roundrect (at -0.8 0) (size 0.9 0.95) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25) (net 4 "USB_CC1"))
@@ -734,7 +734,7 @@
   )
 
   (footprint "Resistor_SMD:R_0603_1608Metric" (layer "F.Cu")
-    (at 56.0 103.0 90)
+    (at 56.0 104.2 270)
     (property "Reference" "R63" (at 0 -1.4 0) (layer "F.SilkS"))
     (property "Value" "5.1k 1%" (at 0 1.4 0) (layer "F.Fab") hide)
     (pad "1" smd roundrect (at -0.8 0) (size 0.9 0.95) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25) (net 5 "USB_CC2"))
@@ -2006,8 +2006,9 @@
 
   (segment (start 45.75 106.645) (end 45.75 102.20) (width 0.18) (layer "F.Cu") (net 4))
   (segment (start 45.75 102.20) (end 53.50 102.20) (width 0.18) (layer "F.Cu") (net 4))
-  (segment (start 48.75 106.645) (end 48.75 104.20) (width 0.18) (layer "F.Cu") (net 5))
-  (segment (start 48.75 104.20) (end 56.00 104.20) (width 0.18) (layer "F.Cu") (net 5))
+  (segment (start 48.75 106.645) (end 48.10 106.00) (width 0.18) (layer "F.Cu") (net 5))
+  (segment (start 48.10 106.00) (end 48.10 104.20) (width 0.18) (layer "F.Cu") (net 5))
+  (segment (start 48.10 104.20) (end 56.00 104.20) (width 0.18) (layer "F.Cu") (net 5))
 
   (zone (net 1) (net_name "GND") (layer "F.Cu") (hatch edge 0.5)
     (connect_pads (clearance 0.2))

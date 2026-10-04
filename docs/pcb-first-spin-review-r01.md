@@ -323,17 +323,20 @@ Cost-down belongs after first hardware measurements.
 
 ---
 
-## Current layout checkpoint — 03 Oct 2026
+## Current layout checkpoint — 04 Oct 2026
 
 R0.1 has crossed from placement/net-sync into active routing.
 
 Current repository checkpoint:
-- 128 routed copper segments;
-- 30 vias;
-- USB/Dock source-entry routing materially established;
-- lower power island partly routed;
-- EPD VSH2 already carried into the HV island;
-- EPD GDR/RESE and the remaining HV/frontlight closure are the immediate routing focus.
+- native KiCad ERC: **0 violations**;
+- native schematic netlist: **152 / 152 components**;
+- schematic ↔ PCB parity: **0 issues**;
+- first-spin critical copper gate: **0 clearance / 0 shorting blockers**;
+- 128 routed copper segments and 30 vias at the parity-closure checkpoint;
+- all previously missing PCB footprints are now instantiated, including debug and optional Qi interfaces;
+- locked custom footprints now exist for microSD and provisional physical controls;
+- top and bottom GND pours are defined and pass the current critical DRC gate;
+- the remaining closure is now a real routing backlog rather than schematic/PCB synchronization debt.
 
 This does **not** mean the board is fabrication-ready. The release gate remains zero unexplained DRC, zero unrouted connections, zone refill/recheck, footprint/orientation audit and reproducible fabrication outputs.
 

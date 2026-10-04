@@ -2006,8 +2006,12 @@
 
   (segment (start 45.75 106.645) (end 45.75 101.40) (width 0.18) (layer "F.Cu") (net 4))
   (segment (start 45.75 101.40) (end 53.50 101.40) (width 0.18) (layer "F.Cu") (net 4))
-  (segment (start 48.75 106.645) (end 48.75 103.40) (width 0.18) (layer "F.Cu") (net 5))
-  (segment (start 48.75 103.40) (end 56.00 103.40) (width 0.18) (layer "F.Cu") (net 5))
+  (segment (start 48.75 106.645) (end 48.75 105.55) (width 0.18) (layer "F.Cu") (net 5))
+  (segment (start 48.75 105.55) (end 48.20 105.00) (width 0.18) (layer "F.Cu") (net 5))
+  (segment (start 48.20 105.00) (end 48.20 102.00) (width 0.18) (layer "F.Cu") (net 5))
+  (segment (start 48.20 102.00) (end 55.00 102.00) (width 0.18) (layer "F.Cu") (net 5))
+  (segment (start 55.00 102.00) (end 56.00 103.00) (width 0.18) (layer "F.Cu") (net 5))
+  (segment (start 56.00 103.00) (end 56.00 103.40) (width 0.18) (layer "F.Cu") (net 5))
 
   (zone (net 1) (net_name "GND") (layer "F.Cu") (hatch edge 0.5)
     (connect_pads (clearance 0.2))

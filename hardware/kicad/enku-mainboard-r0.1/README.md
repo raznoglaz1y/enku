@@ -46,3 +46,4 @@ R0.1 now has a real KiCad hierarchical capture baseline:
 - `connectors.kicad_sch` — USB-C, dock, debug and DNP Qi interface
 
 These files are schematic-capture baselines, not a fabrication release. The next gate is to expand the remaining block-level circuits into exact discrete symbols, review every footprint, and run KiCad ERC before routing is treated as electrically authoritative.
+

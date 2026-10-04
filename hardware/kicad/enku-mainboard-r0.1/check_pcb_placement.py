@@ -11,15 +11,15 @@ HERE = Path(__file__).resolve().parent
 PCB = HERE / "enku-mainboard-r0.1.kicad_pcb"
 
 REQUIRED_REFS = {
-    "U1", "U_IMU", "U_HALL",
-    "J_EPD", "J_FL", "J_SD", "J_USB", "J_DOCK", "J_BAT",
-    "U_SRC", "U_CHG", "U_3V3", "U_FL", "U_USB_ESD",
-    "L_EPD", "Q_EPD", "D1_EPD", "D2_EPD", "D3_EPD", "R_RESE",
-    "L_FL", "R_FL_SET", "Q_FL_WARM", "Q_FL_COOL",
-    "L_3V3", "R_3V3_FB_TOP", "R_3V3_FB_BOT", "R_3V3_PG_PU", "C_3V3_IN", "C_3V3_IN_HF", "C_3V3_OUT1", "C_3V3_OUT2", "SW_POWER",
-    "SW_PREV", "SW_NEXT", "SW_SELECT", "SW_BACK",
-    "TP_GND_PWR", "TP_VBUS_USB", "TP_VBUS_DOCK", "TP_VBAT", "TP_VSYS", "TP_3V3", "TP_SYS_EN", "TP_REG_PG",
-    "TP_EPD_GDR", "TP_EPD_RESE", "TP_EPD_VGH", "TP_EPD_VGL", "TP_EPD_VCOM", "TP_GND_EPD", "TP_FL_LED_PLUS", "TP_FL_FB",
+    "U1", "U5", "U6",
+    "J3", "J4", "J2", "J5", "J6", "J1",
+    "U2", "U3", "U4", "U7", "U8",
+    "L2", "Q1", "D1", "D2", "D3", "R37",
+    "L3", "R39", "Q2", "Q3",
+    "L1", "R14", "R15", "R16", "C9", "C10", "C11", "C12", "SW1",
+    "SW3", "SW4", "SW5", "SW6",
+    "TP1", "TP2", "TP3", "TP4", "TP5", "TP6", "TP7", "TP8",
+    "TP9", "TP10", "TP11", "TP12", "TP13", "TP14", "TP15", "TP16",
 }
 
 BOARD = (20.0, 20.0, 74.0, 114.0)
@@ -28,19 +28,19 @@ EXPECTED_SIZE = (54.0, 94.0)
 # Placement-only coordinate gates. These are broad regions, not final courtyard DRC.
 REGIONS = {
     "U1": (20.0, 31.0, 46.0, 59.0),
-    "J_EPD": (48.0, 24.0, 72.0, 32.0),
-    "J_FL": (62.0, 31.0, 72.0, 37.0),
-    "J_SD": (20.0, 94.0, 38.0, 113.0),
-    "J_USB": (40.0, 105.0, 54.0, 114.0),
-    "J_DOCK": (38.0, 95.0, 56.0, 104.0),
-    "SW_POWER": (23.0, 25.0, 38.0, 33.0),
-    "SW_PREV": (68.5, 48.0, 74.0, 58.0),
-    "SW_NEXT": (68.5, 56.0, 74.0, 66.0),
-    "SW_SELECT": (68.5, 64.0, 74.0, 74.0),
-    "SW_BACK": (68.5, 72.0, 74.0, 82.0),
-    "U_SRC": (39.0, 87.0, 47.0, 96.0),
-    "U_CHG": (45.0, 87.0, 52.0, 96.0),
-    "U_3V3": (50.0, 87.0, 58.0, 96.0),
+    "J3": (48.0, 24.0, 72.0, 32.0),
+    "J4": (62.0, 31.0, 72.0, 37.0),
+    "J2": (20.0, 94.0, 38.0, 113.0),
+    "J5": (40.0, 105.0, 54.0, 114.0),
+    "J6": (38.0, 95.0, 56.0, 104.0),
+    "SW1": (23.0, 25.0, 38.0, 33.0),
+    "SW3": (68.5, 48.0, 74.0, 58.0),
+    "SW4": (68.5, 56.0, 74.0, 66.0),
+    "SW5": (68.5, 64.0, 74.0, 74.0),
+    "SW6": (68.5, 72.0, 74.0, 82.0),
+    "U2": (39.0, 87.0, 47.0, 96.0),
+    "U3": (45.0, 87.0, 52.0, 96.0),
+    "U4": (50.0, 87.0, 58.0, 96.0),
 }
 
 def balanced(text: str) -> tuple[bool, str]:
@@ -171,7 +171,7 @@ def main() -> int:
         x, y, rot = refs["U1"]
         if abs(rot - 90.0) > 0.1:
             errors.append("U1 must stay rotated 90 deg with antenna keepout toward left edge")
-    for ref in ("SW_PREV","SW_NEXT","SW_SELECT","SW_BACK"):
+    for ref in ("SW3","SW4","SW5","SW6"):
         if ref in refs and refs[ref][0] < 68.5:
             errors.append(f"{ref} left the right-side thumb rail")
 
@@ -251,12 +251,12 @@ def main() -> int:
             blocks_by_ref[parsed[0]] = block
 
     expected_pads = {
-        "U_SRC": {str(i) for i in range(1, 13)},
-        "U_CHG": {str(i) for i in range(1, 12)},
-        "U_IMU": {str(i) for i in range(1, 15)},
-        "U_FL": {str(i) for i in range(1, 7)},
-        "J_EPD": {*(str(i) for i in range(1, 25)), "S1", "S2"},
-        "J_FL": {*(str(i) for i in range(1, 7)), "S1", "S2"},
+        "U2": {str(i) for i in range(1, 13)},
+        "U3": {str(i) for i in range(1, 12)},
+        "U5": {str(i) for i in range(1, 15)},
+        "U7": {str(i) for i in range(1, 7)},
+        "J3": {*(str(i) for i in range(1, 25)), "S1", "S2"},
+        "J4": {*(str(i) for i in range(1, 7)), "S1", "S2"},
     }
     for ref, expected in expected_pads.items():
         block = blocks_by_ref.get(ref, "")
@@ -266,10 +266,10 @@ def main() -> int:
             errors.append(f"{ref} missing exact pads: {sorted(missing)}")
 
     # Electrical package invariants.
-    chg_block = blocks_by_ref.get("U_CHG", "")
+    chg_block = blocks_by_ref.get("U3", "")
     if not re.search(r'\(pad "11"[^\n]*\(net \d+ "GND"\)', chg_block):
         errors.append("BQ25185 exposed pad 11 must be tied to GND")
-    for ref in ("J_EPD", "J_FL"):
+    for ref in ("J3", "J4"):
         block = blocks_by_ref.get(ref, "")
         for shield in ("S1", "S2"):
             if not re.search(rf'\(pad "{shield}"[^\n]*\(net \d+ "GND"\)', block):

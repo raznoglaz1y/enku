@@ -181,7 +181,7 @@
 		(pin "B9" (uuid "73000000-0000-4000-8000-000000000016"))
 		(pin "B12" (uuid "73000000-0000-4000-8000-000000000017"))
 		(pin "S" (uuid "73000000-0000-4000-8000-000000000018"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000050" (reference "J_USB") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/73000000-0000-4000-8000-000000000001" (reference "J_USB") (unit 1))))
 	)
 
 	(global_label "GND" (shape input) (at 46.99 73.66 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "73000000-0000-4000-8000-000000000019"))
@@ -209,7 +209,7 @@
 		(property "Description" "5.1k 1%" (at 27.94 119.38 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "73000000-0000-4000-8000-000000000037"))
 		(pin "2" (uuid "73000000-0000-4000-8000-000000000038"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000050" (reference "R_CC1") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/73000000-0000-4000-8000-000000000036" (reference "R_CC1") (unit 1))))
 	)
 
 	(global_label "USB_CC1" (shape input) (at 20.32 119.38 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "73000000-0000-4000-8000-000000000039"))
@@ -222,7 +222,7 @@
 		(property "Description" "5.1k 1%" (at 48.26 119.38 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "73000000-0000-4000-8000-000000000042"))
 		(pin "2" (uuid "73000000-0000-4000-8000-000000000043"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000050" (reference "R_CC2") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/73000000-0000-4000-8000-000000000041" (reference "R_CC2") (unit 1))))
 	)
 
 	(global_label "USB_CC2" (shape input) (at 40.64 119.38 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "73000000-0000-4000-8000-000000000044"))
@@ -235,7 +235,7 @@
 		(property "Description" "0R (22R tune)" (at 85.09 119.38 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "73000000-0000-4000-8000-000000000047"))
 		(pin "2" (uuid "73000000-0000-4000-8000-000000000048"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000050" (reference "R_USB_DP") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/73000000-0000-4000-8000-000000000046" (reference "R_USB_DP") (unit 1))))
 	)
 
 	(global_label "USB_DP_CONN" (shape input) (at 77.47 119.38 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "73000000-0000-4000-8000-000000000049"))
@@ -248,7 +248,7 @@
 		(property "Description" "0R (22R tune)" (at 105.41 119.38 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "73000000-0000-4000-8000-000000000052"))
 		(pin "2" (uuid "73000000-0000-4000-8000-000000000053"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000050" (reference "R_USB_DM") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/73000000-0000-4000-8000-000000000051" (reference "R_USB_DM") (unit 1))))
 	)
 
 	(global_label "USB_DM_CONN" (shape input) (at 97.79 119.38 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "73000000-0000-4000-8000-000000000054"))
@@ -265,7 +265,7 @@
 		(pin "4" (uuid "73000000-0000-4000-8000-000000000060"))
 		(pin "5" (uuid "73000000-0000-4000-8000-000000000061"))
 		(pin "6" (uuid "73000000-0000-4000-8000-000000000062"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000050" (reference "U_USB_ESD") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/73000000-0000-4000-8000-000000000056" (reference "U_USB_ESD") (unit 1))))
 	)
 
 	(global_label "USB_DP_CONN" (shape input) (at 93.98 72.39 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "73000000-0000-4000-8000-000000000063"))
@@ -282,7 +282,7 @@
 		(property "Description" "1M" (at 27.94 144.78 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "73000000-0000-4000-8000-000000000070"))
 		(pin "2" (uuid "73000000-0000-4000-8000-000000000071"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000050" (reference "R_USB_SHIELD") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/73000000-0000-4000-8000-000000000069" (reference "R_USB_SHIELD") (unit 1))))
 	)
 
 	(global_label "USB_SHIELD" (shape input) (at 20.32 144.78 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "73000000-0000-4000-8000-000000000072"))
@@ -295,7 +295,7 @@
 		(property "Description" "4.7nF" (at 48.26 144.78 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "73000000-0000-4000-8000-000000000075"))
 		(pin "2" (uuid "73000000-0000-4000-8000-000000000076"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000050" (reference "C_USB_SHIELD") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/73000000-0000-4000-8000-000000000074" (reference "C_USB_SHIELD") (unit 1))))
 	)
 
 	(global_label "USB_SHIELD" (shape input) (at 40.64 144.78 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "73000000-0000-4000-8000-000000000077"))
@@ -308,7 +308,7 @@
 		(property "Description" "0R DNP" (at 68.58 144.78 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "73000000-0000-4000-8000-000000000080"))
 		(pin "2" (uuid "73000000-0000-4000-8000-000000000081"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000050" (reference "R_USB_SHIELD_0R") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/73000000-0000-4000-8000-000000000079" (reference "R_USB_SHIELD_0R") (unit 1))))
 	)
 
 	(global_label "USB_SHIELD" (shape input) (at 60.96 144.78 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "73000000-0000-4000-8000-000000000082"))
@@ -323,7 +323,7 @@
 		(pin "2" (uuid "73000000-0000-4000-8000-000000000086"))
 		(pin "3" (uuid "73000000-0000-4000-8000-000000000087"))
 		(pin "4" (uuid "73000000-0000-4000-8000-000000000088"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000050" (reference "J_DOCK") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/73000000-0000-4000-8000-000000000084" (reference "J_DOCK") (unit 1))))
 	)
 
 	(global_label "GND" (shape input) (at 147.32 67.31 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "73000000-0000-4000-8000-000000000089"))
@@ -338,7 +338,7 @@
 		(property "Description" "10k" (at 160.02 100.33 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "73000000-0000-4000-8000-000000000094"))
 		(pin "2" (uuid "73000000-0000-4000-8000-000000000095"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000050" (reference "R_DOCK_DET_SER") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/73000000-0000-4000-8000-000000000093" (reference "R_DOCK_DET_SER") (unit 1))))
 	)
 
 	(global_label "DOCK_DETECT_RAW" (shape input) (at 152.4 100.33 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "73000000-0000-4000-8000-000000000096"))
@@ -351,7 +351,7 @@
 		(property "Description" "100k" (at 185.42 100.33 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "73000000-0000-4000-8000-000000000099"))
 		(pin "2" (uuid "73000000-0000-4000-8000-000000000100"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000050" (reference "R_DOCK_DET_PD") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/73000000-0000-4000-8000-000000000098" (reference "R_DOCK_DET_PD") (unit 1))))
 	)
 
 	(global_label "DOCK_DETECT" (shape input) (at 177.8 100.33 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "73000000-0000-4000-8000-000000000101"))
@@ -364,7 +364,7 @@
 		(property "Description" "10nF" (at 209.55 100.33 0) (effects (font (size 0.9 0.9)) (hide yes)))
 		(pin "1" (uuid "73000000-0000-4000-8000-000000000104"))
 		(pin "2" (uuid "73000000-0000-4000-8000-000000000105"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000050" (reference "C_DOCK_DET") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/73000000-0000-4000-8000-000000000103" (reference "C_DOCK_DET") (unit 1))))
 	)
 
 	(global_label "DOCK_DETECT" (shape input) (at 201.93 100.33 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "73000000-0000-4000-8000-000000000106"))
@@ -381,7 +381,7 @@
 		(pin "4" (uuid "73000000-0000-4000-8000-000000000112"))
 		(pin "5" (uuid "73000000-0000-4000-8000-000000000113"))
 		(pin "6" (uuid "73000000-0000-4000-8000-000000000114"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000050" (reference "J_DBG") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/73000000-0000-4000-8000-000000000108" (reference "J_DBG") (unit 1))))
 	)
 
 	(global_label "3V3_SYS" (shape input) (at 147.32 132.08 0) (effects (font (size 0.9 0.9)) (justify right bottom)) (uuid "73000000-0000-4000-8000-000000000115"))
@@ -399,7 +399,7 @@
 		(pin "1" (uuid "73000000-0000-4000-8000-000000000122"))
 		(pin "2" (uuid "73000000-0000-4000-8000-000000000123"))
 		(pin "3" (uuid "73000000-0000-4000-8000-000000000124"))
-		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/10000000-0000-4000-8000-000000000050" (reference "J_QI") (unit 1))))
+		(instances (project "enku-mainboard-r0.1" (path "/10000000-0000-4000-8000-000000000001/73000000-0000-4000-8000-000000000121" (reference "J_QI") (unit 1))))
 	)
 
 	(no_connect (at 212.09 134.62) (uuid "73000000-0000-4000-8000-000000000125"))

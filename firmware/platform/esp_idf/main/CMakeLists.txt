@@ -2,6 +2,7 @@ idf_component_register(
     SRCS
         "app_main.cpp"
         "../../../src/core/reader_overlay.cpp"
+        "../../../src/core/diagnostic_ring.cpp"
         "../src/esp_idf_file_store.cpp"
         "../src/esp_idf_internal_state_storage.cpp"
         "../src/esp_idf_sd_card.cpp"

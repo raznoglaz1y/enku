@@ -25,25 +25,25 @@ FILES = {
 REQUIRED_REFS = {
     "power": [
         "U2", "U3", "U4", "J1", "SW1",
-        "R_CHG_ILIM_VSET", "R_CHG_ISET", "L_3V3", "R_3V3_FB_TOP", "R_3V3_FB_BOT", "R_3V3_PG_PU", "TP_GND_PWR", "TP_VBUS_USB", "TP_VBUS_DOCK", "TP_VBAT", "TP_VSYS", "TP_3V3", "TP_SYS_EN", "TP_REG_PG",
+        "R8", "R9", "L1", "R14", "R15", "R16", "TP1", "TP2", "TP3", "TP4", "TP5", "TP6", "TP7", "TP8",
     ],
     "mcu": [
-        "U1", "J2", "U5", "U6", "SW_BOOT",
-        "SW_PREV", "SW_NEXT", "SW_SELECT", "SW_BACK",
-        "R_BAT_TOP", "R_BAT_BOT",
+        "U1", "J2", "U5", "U6", "SW2",
+        "SW3", "SW4", "SW5", "SW6",
+        "R26", "R27",
     ],
     "epd": [
-        "J3", "L_EPD", "Q_EPD", "R_RESE",
-        "D1_EPD", "D2_EPD", "D3_EPD",
-        "C0_EPD_VCI", "C1_EPD_VDD", "C2_EPD_VGH", "C3_EPD_FLY",
-        "C4_EPD_VGL", "C5_EPD_VSH1", "C6_EPD_VSH2",
-        "C7_EPD_VSL", "C8_EPD_VCOM", "R_GDR_PD", "C_EPD_IN", "TP_EPD_GDR", "TP_EPD_RESE", "TP_EPD_VGH", "TP_EPD_VGL", "TP_EPD_VCOM", "TP_GND_EPD",
+        "J3", "L2", "Q1", "R37",
+        "D1", "D2", "D3",
+        "C22", "C23", "C24", "C25",
+        "C26", "C27", "C28",
+        "C29", "C30", "R38", "C31", "TP9", "TP10", "TP11", "TP12", "TP13", "TP14",
     ],
     "frontlight": [
-        "U7", "L_FL", "R_FL_SET", "Q_FL_WARM", "Q_FL_COOL", "J4", "TP_FL_LED_PLUS", "TP_FL_FB",
+        "U7", "L3", "R39", "Q2", "Q3", "J4", "TP15", "TP16",
     ],
     "connectors": [
-        "J5", "U8", "R_CC1", "R_CC2",
+        "J5", "U8", "R62", "R63",
         "J6", "J7", "J8",
     ],
 }
@@ -188,7 +188,7 @@ def main() -> int:
             fail(errors, f"obsolete block placeholder returned: {old}")
 
     fl = texts.get("frontlight", "")
-    map_refs = set(re.findall(r'property "Reference" "(R_FL_MAP[1-6]_[PWC])"', fl))
+    map_refs = set(re.findall(r'property "Reference" "(R(?:4[4-9]|5[0-9]|6[01]))"', fl))
     if len(map_refs) != 18:
         fail(errors, f"frontlight remap matrix expected 18 DNP resistors, found {len(map_refs)}")
 
@@ -201,7 +201,7 @@ def main() -> int:
         fail(errors, "EPD HV must use current 3.97-inch 10uH inductor baseline")
     if 'property "Value" "1M 1%"' not in epd:
         fail(errors, "EPD HV missing 1M GDR pulldown")
-    if 'property "Reference" "C_EPD_IN"' not in epd:
+    if 'property "Reference" "C31"' not in epd:
         fail(errors, "EPD HV missing local booster input capacitor")
 
     power = texts.get("power", "")

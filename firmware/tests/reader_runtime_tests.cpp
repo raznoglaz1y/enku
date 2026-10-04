@@ -205,12 +205,6 @@ public:
         bool& matches
     ) override {
         ++validation_calls;
-
-        if (status != BookSourceStatus::Ok) {
-            matches = false;
-            return status;
-        }
-
         matches = source_matches;
         return BookSourceStatus::Ok;
     }

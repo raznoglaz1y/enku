@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <string_view>
 
+#include "enku/core/diagnostic_ring.hpp"
 #include "enku/runtime/application_reader_runtime.hpp"
 #include "enku/runtime/application_storage_runtime.hpp"
 #include "enku/runtime/book_availability_reconciler.hpp"
@@ -78,6 +79,9 @@ public:
     PowerOffCoordinator& powerOff();
     InputDispatcher& input();
 
+    DiagnosticRingLogService& diagnosticLog();
+    InMemoryDiagnosticsService& diagnostics();
+
     InputDispatchResult pollInput(
         std::uint32_t now_ms
     );
@@ -111,6 +115,9 @@ private:
 
 
     EspIdfPlatform& platform_;
+
+    DiagnosticRingLogService diagnostic_log_{64U};
+    InMemoryDiagnosticsService diagnostics_;
 
     ApplicationStorageRuntime storage_;
     BookAvailabilityReconciler availability_reconciler_;

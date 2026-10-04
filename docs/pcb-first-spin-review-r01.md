@@ -163,6 +163,23 @@ Routing rules are frozen only after the actual PCBWay stackup/impedance quote is
 
 ---
 
+## 5A. Charger island follows the vendor layout, not ratsnest convenience
+
+The BQ25185 placement/routing must be reviewed as one functional island before individual unrouted nets are optimized.
+
+R0.1 rules:
+- IN, SYS and BAT capacitors stay at their respective IC pins with short ground return;
+- ISET and ILIM/VSET programming resistors stay close to the charger, following TI's layout example rather than being routed across the power island;
+- high-current IN/SYS/BAT paths remain wide and direct;
+- charger status/control lines leave the island only after the local power/current-setting geometry is solved;
+- the exposed/thermal ground region gets a low-impedance ground connection and nearby stitching;
+- do not route USB, ADC, IMU or other sensitive signals through the charger current paths;
+- if existing tracks prevent the vendor-style component placement, rework the island as a unit rather than adding long vias/tracks around it.
+
+Evidence source: TI BQ25185 datasheet layout guidance and board-layout example, reviewed 2026-10-04.
+
+---
+
 ## 6. Switching regulators get a physical hot-loop review
 
 ### Lesson

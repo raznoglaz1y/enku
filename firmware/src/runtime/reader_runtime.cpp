@@ -1,6 +1,8 @@
 #include "enku/runtime/reader_runtime.hpp"
 #include "enku/runtime/reader_state_flush.hpp"
 
+#include <algorithm>
+
 namespace enku {
 
 ReaderRuntimeController::ReaderRuntimeController(
@@ -98,7 +100,32 @@ ReaderRuntimeResult ReaderRuntimeController::handle(
 
     const auto load_result = loader_.open(request);
     if (!load_result.ok()) {
-        return handle(BookOpenFailed{event.book_id});
+        const bool source_changed =
+            load_result.status ==
+                BookLoadStatus::SourceChanged;
+
+        if (source_changed) {
+            auto& unavailable =
+                app_state_.library.unavailable_books;
+
+            if (std::find(
+                    unavailable.begin(),
+                    unavailable.end(),
+                    event.book_id
+                ) == unavailable.end()) {
+                unavailable.push_back(event.book_id);
+            }
+        }
+
+        const auto recovery =
+            handle(BookOpenFailed{event.book_id});
+
+        if (source_changed &&
+            recovery == ReaderRuntimeResult::BookOpenFailed) {
+            return ReaderRuntimeResult::BookSourceChanged;
+        }
+
+        return recovery;
     }
 
     return handle(BookOpened{event.book_id});

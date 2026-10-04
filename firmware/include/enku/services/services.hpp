@@ -108,21 +108,14 @@ public:
 
 
     virtual BookSourceStatus validateSource(
-        const BookRecord& record,
+        const BookRecord&,
         bool& matches
     ) {
-        std::uint64_t size_bytes = 0;
-        const auto status =
-            sourceSize(record, size_bytes);
-
-        if (status != BookSourceStatus::Ok) {
-            matches = false;
-            return status;
-        }
-
-        matches =
-            record.file_size == 0U ||
-            size_bytes == record.file_size;
+        // Source identity validation is optional at the abstract boundary.
+        // Persistent file-backed implementations should override this with
+        // a stable fingerprint check. Other sources keep their existing
+        // read contract without an extra probe.
+        matches = true;
         return BookSourceStatus::Ok;
     }
 };

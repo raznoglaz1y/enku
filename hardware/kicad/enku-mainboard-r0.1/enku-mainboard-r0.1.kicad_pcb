@@ -1754,7 +1754,7 @@
     )
   
   (footprint "Capacitor_SMD:C_0603_1608Metric" (layer "F.Cu")
-    (at 46.2 87.0 90)
+    (at 47.2 88.0 90)
       (property "Reference" "C6" (at 0 -1.45 0) (layer "F.SilkS") hide)
       (property "Value" "100nF 25V" (at 0 1.45 0) (layer "F.Fab") hide)
       (fp_rect (start -0.8 -0.4) (end 0.8 0.4) (stroke (width 0.08) (type default)) (fill none) (layer "F.SilkS"))

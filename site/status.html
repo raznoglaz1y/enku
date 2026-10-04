@@ -100,14 +100,14 @@
     <section class="status-hero">
       <div class="shell status-hero-grid">
         <div><p class="eyebrow">PROJECT STATUS · OCT 2026</p><h1>Building the real reader.</h1></div>
-        <p class="status-lead">ENKU has moved beyond product definition and reference-board-only planning. The reader software is becoming memory-aware and device-oriented, while a portrait-first custom ENKU mainboard is now being specified in parallel with the Waveshare bring-up path.</p>
+        <p class="status-lead">ENKU has moved beyond product definition and reference-board-only planning. The reader software is now device-oriented and regression-tested across core flows, while the portrait-first custom ENKU mainboard has advanced into late R0.1 routing and pre-production verification.</p>
       </div>
     </section>
 
     <div class="shell stage-strip" aria-label="Current project stage">
-      <div class="stage-cell"><div class="stage-label">CURRENT STAGE</div><div class="stage-value">Firmware + custom R0.1</div></div>
+      <div class="stage-cell"><div class="stage-label">CURRENT STAGE</div><div class="stage-value">Firmware + R0.1 pre-production</div></div>
       <div class="stage-cell"><div class="stage-label">HARDWARE TRACKS</div><div class="stage-value">Waveshare bring-up + ENKU PCB</div></div>
-      <div class="stage-cell"><div class="stage-label">NEXT PROOF POINT</div><div class="stage-value">Validated schematic + real-device loop</div></div>
+      <div class="stage-cell"><div class="stage-label">NEXT PROOF POINT</div><div class="stage-value">USB + dock closed · zero unrouted</div></div>
     </div>
 
     <section class="status-section">
@@ -117,6 +117,7 @@
           <p>No percentage bars. These are concrete project states derived from the repository: what is established, what is being integrated now, and what still depends on the physical hardware.</p>
         </div>
         <div class="timeline">
+          <div class="timeline-row"><span class="state pending">IN PROGRESS</span><h3>Custom mainboard R0.1 closure</h3><p>The power cluster and USB-C connector-side CC/ESD area have clean native KiCad checkpoints. The fabrication gate now focuses on completing D+/D− and dock routing, proving zero unrouted connections, then running the final electrical, mechanical and manufacturing audit before Gerber/BOM/PnP generation.</p></div>
           <div class="timeline-row"><span class="state done">DONE</span><h3>Product & UI foundation</h3><p>Open-source scope, physical-control interaction model, e-paper UI principles, typography presets, localization architecture and the core Figma design system are defined.</p></div>
           <div class="timeline-row"><span class="state done">DONE</span><h3>Reader core foundation</h3><p>TXT, EPUB and FB2 now share the concrete Book Loader path. EPUB/FB2 parsing uses bounded or ranged reads, semantic positions survive relayout and section transitions, and stale checkpoints recover safely instead of breaking book open.</p></div>
                     <div class="timeline-row"><span class="state done">DONE</span><h3>Reader persistence hardening</h3><p>Checkpoint restore, invalid-section fallback, edge navigation and relayout stability are regression-tested. Back, Sleep and Power Off now share one controlled reader-state flush path instead of duplicating persistence logic.</p></div>

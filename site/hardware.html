@@ -132,7 +132,7 @@
     <div class="shell hardware-state">
       <div><div class="hardware-label">REFERENCE BOARD</div><div class="hardware-value">Waveshare ESP32-S3 ePaper 3.97″</div></div>
       <div><div class="hardware-label">DISPLAY</div><div class="hardware-value">800 × 480 · monochrome E Ink</div></div>
-      <div><div class="hardware-label">CUSTOM MAINBOARD</div><div class="hardware-value">R0.1 · active routing · native KiCad CI</div></div>
+      <div><div class="hardware-label">CUSTOM MAINBOARD</div><div class="hardware-value">R0.1 · late routing · pre-production checks</div></div>
     </div>
 
     <section class="hw-section">
@@ -174,7 +174,7 @@
       <div class="shell">
         <div class="hw-intro">
           <div><p class="eyebrow">CUSTOM HARDWARE</p><h2>From reference board to an ENKU mainboard.</h2></div>
-          <p>The custom board is now in active R0.1 routing around the actual reader UX: portrait orientation, bottom-center USB-C, a real hard power switch, right-side page controls, BMI270 motion/orientation sensing, Hall-cover wake and population options for frontlight and wireless variants. The current layout has 128 routed copper segments and 30 vias; power and EPD routing are progressing under native KiCad checks, but the board is not yet a fabrication release.</p>
+          <p>The custom board is now in late R0.1 routing around the actual reader UX: portrait orientation, bottom-center USB-C, a real hard power switch, right-side page controls, BMI270 motion/orientation sensing, Hall-cover wake and population options for frontlight and wireless variants. The power cluster is stable, and the USB-C connector-side CC and ESD work has clean native KiCad checkpoints. USB data closure, dock/unrouted closure and the final electrical/mechanical/manufacturing audit remain before fabrication.</p>
         </div>
         <div class="spec-grid">
           <div class="spec"><small>BASE</small><strong>One core PCB</strong><span>ESP32-S3, e-paper, microSD, USB-C, battery, buttons, BMI270 and service pads.</span></div>
@@ -182,7 +182,7 @@
           <div class="spec"><small>PRO</small><strong>Wireless-ready</strong><span>Coil/receiver space can be reserved without forcing wireless-charging cost into every Base unit.</span></div>
           <div class="spec"><small>OPEN HARDWARE</small><strong>Reproducible BOM</strong><span>Design files, assembly data and bring-up notes are intended to stay public and versioned.</span></div>
           <div class="spec"><small>KITS</small><strong>Future small batches</strong><span>Possible electronics, Base, Cover and Pro kits after hardware validation.</span></div>
-          <div class="spec"><small>STATUS</small><strong>Engineering in progress</strong><span>Kit availability is a roadmap item, not a current product claim.</span></div>
+          <div class="spec"><small>STATUS</small><strong>Pre-production routing</strong><span>R0.1 stays blocked from fabrication until USB/dock closure, zero unrouted connections and the final manufacturing audit.</span></div>
         </div>
       </div>
     </section>

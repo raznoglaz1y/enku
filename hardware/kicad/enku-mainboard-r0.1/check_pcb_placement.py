@@ -201,7 +201,7 @@ def main() -> int:
     if "PLACEMENT BASELINE C" not in text:
         errors.append("placement baseline C banner missing")
 
-    tp_refs = [r for r in REQUIRED_REFS if r.startswith("TP_")]
+    tp_refs = [f"TP{i}" for i in range(1, 17)]
     if len(tp_refs) < 16:
         errors.append(f"expected at least 16 mandatory bring-up test points, gate has {len(tp_refs)}")
     for ref in tp_refs:

@@ -132,6 +132,7 @@ jobs:
           grep -q '<title>Build Log — ENKU</title>' /tmp/log.html
           grep -q 'id="enku-project-system"' /tmp/log.html
           grep -q 'class="enku-next"' /tmp/log.html
+          grep -q 'ENKU enters the public feedback stage.' /tmp/log.html
 
           curl -fsSL https://enkureader.com/downloads -o /tmp/downloads.html
           grep -q '<title>Downloads — ENKU</title>' /tmp/downloads.html
@@ -151,6 +152,8 @@ jobs:
           grep -q 'src="/assets/enku-reader-approved.webp"' /tmp/home.html
           grep -q 'class="project-chevron"' /tmp/home.html
           grep -q 'One reader. Four connected layers.' /tmp/home.html
+          grep -q 'BUILD IN PUBLIC' /tmp/home.html
+          grep -q 'Help shape ENKU before the hardware is frozen.' /tmp/home.html
           grep -Eq 'class="[^"]*enku-footer-grid[^"]*"' /tmp/home.html
           ! grep -q 'href="/#hardware"' /tmp/home.html
           ! grep -q 'href="/#software"' /tmp/home.html

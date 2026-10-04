@@ -1697,6 +1697,7 @@
   
   (footprint "Resistor_SMD:R_0603_1608Metric" (layer "F.Cu")
     (at 69.6 80.5)
+    (attr dnp)
       (property "Reference" "R2" (at 0 -1.45 0) (layer "F.SilkS") hide)
       (property "Value" "0R STRAP" (at 0 1.45 0) (layer "F.Fab") hide)
       (fp_rect (start -0.8 -0.4) (end 0.8 0.4) (stroke (width 0.1) (type default)) (fill none) (layer "F.SilkS"))
@@ -1706,6 +1707,7 @@
   
   (footprint "Resistor_SMD:R_0603_1608Metric" (layer "F.Cu")
     (at 64 82)
+    (attr dnp)
       (property "Reference" "R3" (at 0 -1.45 0) (layer "F.SilkS") hide)
       (property "Value" "0R STRAP" (at 0 1.45 0) (layer "F.Fab") hide)
       (fp_rect (start -0.8 -0.4) (end 0.8 0.4) (stroke (width 0.1) (type default)) (fill none) (layer "F.SilkS"))
@@ -1715,6 +1717,7 @@
   
   (footprint "Resistor_SMD:R_0603_1608Metric" (layer "F.Cu")
     (at 66.8 82)
+    (attr dnp)
       (property "Reference" "R4" (at 0 -1.45 0) (layer "F.SilkS") hide)
       (property "Value" "0R STRAP" (at 0 1.45 0) (layer "F.Fab") hide)
       (fp_rect (start -0.8 -0.4) (end 0.8 0.4) (stroke (width 0.1) (type default)) (fill none) (layer "F.SilkS"))
@@ -1724,6 +1727,7 @@
   
   (footprint "Resistor_SMD:R_0603_1608Metric" (layer "F.Cu")
     (at 69.6 82)
+    (attr dnp)
       (property "Reference" "R5" (at 0 -1.45 0) (layer "F.SilkS") hide)
       (property "Value" "0R STRAP" (at 0 1.45 0) (layer "F.Fab") hide)
       (fp_rect (start -0.8 -0.4) (end 0.8 0.4) (stroke (width 0.1) (type default)) (fill none) (layer "F.SilkS"))
@@ -1814,6 +1818,7 @@
   
   (footprint "Resistor_SMD:R_0603_1608Metric" (layer "F.Cu")
     (at 69.6 88)
+    (attr dnp)
       (property "Reference" "R12" (at 0 -1.45 0) (layer "F.SilkS") hide)
       (property "Value" "10k DNP" (at 0 1.45 0) (layer "F.Fab") hide)
       (fp_rect (start -0.8 -0.4) (end 0.8 0.4) (stroke (width 0.1) (type default)) (fill none) (layer "F.SilkS"))

@@ -95,16 +95,21 @@ jobs:
 
           exit "$failed"
 
-      - name: Export native schematic netlist
+      - name: Validate native schematic export
         run: |
           kicad-cli sch export netlist \
             --output /tmp/enku-r01.net \
-            hardware/kicad/enku-mainboard-r0.1/enku-mainboard-r0.1.kicad_sch
+            hardware/kicad/enku-mainboard-r0.1/enku-mainboard-r0.1.kicad_sch 2>&1 | tee /tmp/enku-r01-netlist.log
           test -s /tmp/enku-r01.net
-          components="$(grep -c '<comp ref=' /tmp/enku-r01.net || true)"
+          if grep -q "annotation errors" /tmp/enku-r01-netlist.log; then
+            echo "KiCad reports schematic annotation errors."
+            exit 1
+          fi
+          components="$(grep -Ec '\(comp \(ref |<comp ref=' /tmp/enku-r01.net || true)"
           echo "Netlist components: $components"
-          if [ "$components" -eq 0 ]; then
-            echo "Native schematic netlist contains zero components; annotation/export is not healthy."
+          if [ "$components" -lt 100 ]; then
+            echo "Native schematic netlist unexpectedly contains fewer than 100 components."
+            head -80 /tmp/enku-r01.net
             exit 1
           fi
 
@@ -118,4 +123,5 @@ jobs:
             /tmp/enku-r01-drc.rpt
             /tmp/enku-r01-drc.json
             /tmp/enku-r01.net
+            /tmp/enku-r01-netlist.log
           if-no-files-found: warn

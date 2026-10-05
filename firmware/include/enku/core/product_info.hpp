@@ -8,7 +8,7 @@ inline constexpr std::string_view kProductName =
     "ENKU";
 
 inline constexpr std::string_view kProductDescription =
-    "Open-source e-reader";
+    "Repairable local-first e-reader";
 
 inline constexpr std::string_view kFirmwareVersion =
     "0.1.0-dev";

@@ -1,5 +1,7 @@
 # ENKU R0.1 — PCBWay prototype manufacturing plan
 
+> **Frontlight provenance gate (2026-10-05):** any October 2 TPS923610/10 µH/15 Ω/selector baseline in this document is historical, not fabrication-authoritative. Keep the Pro frontlight population DNP until the clean manufacturer-source re-derivation in `docs/HARDWARE_PROVENANCE.md` is complete.
+
 Status: **prototype manufacturing baseline / sponsorship-order path**
 
 ## Scope

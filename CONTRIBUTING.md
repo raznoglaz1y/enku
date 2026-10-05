@@ -2,7 +2,7 @@
 
 Thanks for helping improve ENKU.
 
-ENKU is an open-source pocket e-reader project that spans firmware, hardware, UI, documentation and enclosure design. Contributions do not need to be code.
+ENKU is a pocket e-reader project spanning firmware, hardware, UI, documentation and enclosure design. Public contribution areas are intentionally separated from production-sensitive work that may remain private until release. Contributions do not need to be code.
 
 ## Good ways to contribute
 
@@ -42,7 +42,7 @@ Do not include secrets, private credentials, generated build artifacts or unrela
 
 ## Project direction
 
-ENKU aims to stay understandable, reproducible and practical to build from accessible parts. Prefer solutions that keep the project approachable over unnecessary complexity.
+ENKU aims to stay understandable, repairable and practical to work on from accessible parts. Public source and design releases follow product maturity rather than exposing unstable production work by default. Prefer solutions that keep the project approachable over unnecessary complexity.
 
 If a contribution changes hardware assumptions, navigation, file formats or build steps, document that impact clearly.
 

@@ -1,5 +1,7 @@
 # ENKU multi-variant BOM architecture
 
+> **Frontlight provenance gate (2026-10-05):** any October 2 TPS923610/10 µH/15 Ω/selector baseline in this document is historical, not fabrication-authoritative. Keep the Pro frontlight population DNP until the clean manufacturer-source re-derivation in `docs/HARDWARE_PROVENANCE.md` is complete.
+
 Status: **pre-schematic cost architecture**
 
 This document defines what should be shared across ENKU variants before individual manufacturer part numbers are frozen.

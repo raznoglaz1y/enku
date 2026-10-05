@@ -2367,7 +2367,8 @@
   (segment (start 70.5 33.5) (end 77.5 33.5) (width 0.18) (layer "B.Cu") (net 13))
   (segment (start 77.5 33.5) (end 77.5 27.5) (width 0.18) (layer "B.Cu") (net 13))
   (via (at 77.5 27.5) (size 0.60) (drill 0.30) (layers "F.Cu" "B.Cu") (net 13))
-  (segment (start 77.5 27.5) (end 74.2 29) (width 0.18) (layer "F.Cu") (net 13))
+  (segment (start 77.5 27.5) (end 74.2 27.5) (width 0.18) (layer "F.Cu") (net 13))
+  (segment (start 74.2 27.5) (end 74.2 29) (width 0.18) (layer "F.Cu") (net 13))
 
 )
     (attr dnp)

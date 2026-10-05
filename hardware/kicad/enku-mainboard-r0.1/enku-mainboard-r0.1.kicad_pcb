@@ -876,7 +876,7 @@
   )
 
   (footprint "Capacitor_SMD:C_0805_2012Metric" (layer "F.Cu")
-    (at 66 48 0)
+    (at 67 49 0)
     (property "Reference" "C34" (at 0 -1.925 90) (layer "F.SilkS"))
     (property "Value" "4.7uF 50V" (at 0 1.925 90) (layer "F.Fab") hide)
     (fp_rect (start -1 -0.625) (end 1 0.625)
@@ -886,7 +886,7 @@
   )
 
   (footprint "Resistor_SMD:R_0603_1608Metric" (layer "F.Cu")
-    (at 69 46 0)
+    (at 72.5 47 0)
     (property "Reference" "R39" (at 0 -1.7000000000000002 90) (layer "F.SilkS"))
     (property "Value" "15R 1%" (at 0 1.7000000000000002 90) (layer "F.Fab") hide)
     (fp_rect (start -0.8 -0.4) (end 0.8 0.4)
@@ -1612,7 +1612,7 @@
     (pad "2" smd roundrect (at 0.825 0) (size 0.8 0.95) (layers "F.Cu" "F.Mask" "F.Paste") (roundrect_rratio 0.25) (net 9 "SD_CS_CARD"))
   )
   (footprint "Resistor_SMD:R_0603_1608Metric" (layer "F.Cu")
-    (at 30 107)
+    (at 33 107)
     (property "Reference" "R21" (at 0 -1.5 0) (layer "F.SilkS") hide)
     (property "Value" "0R (22R tune)" (at 0 1.5 0) (layer "F.Fab") hide)
     (fp_rect (start -0.8 -0.4125) (end 0.8 0.4125) (stroke (width 0.1) (type default)) (fill none) (layer "F.Fab"))

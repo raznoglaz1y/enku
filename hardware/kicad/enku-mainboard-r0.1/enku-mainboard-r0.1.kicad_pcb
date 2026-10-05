@@ -2226,9 +2226,6 @@
   (via (at 48.0 38.4) (size 0.60) (drill 0.30) (layers "F.Cu" "In1.Cu") (net 17))
   (segment (start 48.0 38.4) (end 46.6 39.285) (width 0.18) (layer "F.Cu") (net 17))
   (segment (start 46.6 39.285) (end 45.5 39.285) (width 0.18) (layer "F.Cu") (net 17))
-  (segment (start 54.25 26.75) (end 54.25 28.2) (width 0.25) (layer "F.Cu") (net 25))
-  (segment (start 54.25 28.2) (end 55.8 29.75) (width 0.25) (layer "F.Cu") (net 25))
-  (segment (start 55.8 29.75) (end 55.8 31.05) (width 0.25) (layer "F.Cu") (net 25))
   (segment (start 65.5875 38) (end 64.4 36.8) (width 0.2) (layer "F.Cu") (net 14))
   (via (at 64.4 36.8) (size 0.6) (drill 0.3) (layers "F.Cu" "B.Cu") (net 14))
   (segment (start 64.4 36.8) (end 70.5 38) (width 0.2) (layer "B.Cu") (net 14))
@@ -2254,23 +2251,9 @@
   (via (at 61.2 30.7) (size 0.65) (drill 0.3) (layers "In1.Cu" "B.Cu") (net 29))
   (segment (start 61.2 30.7) (end 70.5 43) (width 0.2) (layer "B.Cu") (net 29))
 
-  (segment (start 56.25 26.75) (end 54.9 28.1) (width 0.25) (layer "F.Cu") (net 23))
-  (via (at 54.9 28.1) (size 0.6) (drill 0.3) (layers "F.Cu" "In2.Cu") (net 23))
-  (segment (start 54.9 28.1) (end 48.3 35) (width 0.25) (layer "In2.Cu") (net 23))
-  (via (at 48.3 35) (size 0.6) (drill 0.3) (layers "F.Cu" "In2.Cu") (net 23))
-  (segment (start 48.3 35) (end 47.5 44.5) (width 0.25) (layer "F.Cu") (net 23))
-  (segment (start 48.3 35) (end 46.2 27.775) (width 0.2) (layer "F.Cu") (net 23))
-  (via (at 48.3 35) (size 0.6) (drill 0.3) (layers "F.Cu" "B.Cu") (net 23))
-  (segment (start 48.3 35) (end 63.825 48) (width 0.2) (layer "B.Cu") (net 23))
-  (via (at 63.825 48) (size 0.6) (drill 0.3) (layers "F.Cu" "B.Cu") (net 23))
-
-  (segment (start 55.25 26.75) (end 53.9 28.1) (width 0.2) (layer "F.Cu") (net 24))
-  (via (at 53.9 28.1) (size 0.6) (drill 0.3) (layers "F.Cu" "In1.Cu") (net 24))
-  (segment (start 53.9 28.1) (end 48.4 27.775) (width 0.2) (layer "In1.Cu") (net 24))
-  (via (at 48.4 27.775) (size 0.6) (drill 0.3) (layers "F.Cu" "In1.Cu") (net 24))
 
 
-  (segment (start 55.8 31.05) (end 55.8 32.95) (width 0.25) (layer "F.Cu") (net 25))
+
   (segment (start 44 31) (end 44 33) (width 0.3) (layer "F.Cu") (net 26))
   (segment (start 62.4 31.05) (end 62.4 32.95) (width 0.3) (layer "F.Cu") (net 29))
 
@@ -2348,5 +2331,22 @@
   (via (at 50 45.8) (size 0.65) (drill 0.3) (layers "F.Cu" "In1.Cu") (net 28))
   (via (at 48.0 41.35) (size 0.65) (drill 0.3) (layers "In1.Cu" "B.Cu") (net 28))
   (segment (start 48.0 41.35) (end 70.5 40.5) (width 0.2) (layer "B.Cu") (net 28))
+
+  (segment (start 56.25 26.75) (end 57.2 28.6) (width 0.2) (layer "F.Cu") (net 23))
+  (via (at 57.2 28.6) (size 0.6) (drill 0.3) (layers "F.Cu" "B.Cu") (net 23))
+  (segment (start 57.2 28.6) (end 47.5 44.5) (width 0.2) (layer "B.Cu") (net 23))
+  (via (at 47.5 44.5) (size 0.6) (drill 0.3) (layers "F.Cu" "B.Cu") (net 23))
+  (segment (start 57.2 28.6) (end 46.2 27.775) (width 0.2) (layer "B.Cu") (net 23))
+  (via (at 46.2 27.775) (size 0.6) (drill 0.3) (layers "F.Cu" "B.Cu") (net 23))
+  (segment (start 47.5 44.5) (end 63.825 48) (width 0.2) (layer "B.Cu") (net 23))
+
+  (segment (start 55.25 26.75) (end 55.25 24.0) (width 0.18) (layer "F.Cu") (net 24))
+  (via (at 55.25 24.0) (size 0.6) (drill 0.3) (layers "F.Cu" "B.Cu") (net 24))
+  (segment (start 55.25 24.0) (end 48.4 27.775) (width 0.18) (layer "B.Cu") (net 24))
+  (via (at 48.4 27.775) (size 0.6) (drill 0.3) (layers "F.Cu" "B.Cu") (net 24))
+
+  (segment (start 54.25 26.75) (end 54.25 29.6) (width 0.2) (layer "F.Cu") (net 25))
+  (segment (start 54.25 29.6) (end 56.8 32.0) (width 0.2) (layer "F.Cu") (net 25))
+  (segment (start 56.8 32.0) (end 55.8 32.95) (width 0.2) (layer "F.Cu") (net 25))
 
 )

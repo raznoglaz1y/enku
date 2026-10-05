@@ -72,7 +72,7 @@ The custom mainboard roadmap targets:
 - physical page controls, hard power-off, BMI270 motion/orientation sensing and magnetic-cover support;
 - USB-C as the primary charge/data connector;
 - optional magnetic pogo/dock charging;
-- a warm adjustable frontlight path promoted to production-candidate research after repeated community feedback;
+- a warm adjustable frontlight path promoted to production-candidate research after repeated community feedback; the current Pro electrical baseline is under provenance re-validation and remains DNP until cleared;
 - Pro-ready frontlight and wireless-charging population options;
 - one core PCB that can support Base / Cover / Pro variants through DNP/population choices.
 
@@ -174,6 +174,10 @@ Books remain usable without Wi-Fi. Connectivity is an optional management layer,
 ### Open and understandable
 
 The project aims to document not only the final code, but also **why** design and implementation decisions were made. UI rules, navigation behavior, hardware assumptions, power decisions and enclosure revisions are tracked openly.
+
+ENKU also uses **AI extensively as an engineering tool**: for research synthesis, design review, calculations, documentation, code and PCB iteration. The project owner directs product and engineering decisions; AI output is treated as work that still requires source checking, CI/electrical review and, where applicable, physical validation. The repository intentionally keeps that process visible rather than presenting the project as purely manual engineering.
+
+External open-hardware projects are used as engineering references where useful. Source-level provenance and license boundaries are tracked explicitly in [Hardware provenance](docs/HARDWARE_PROVENANCE.md).
 
 ### Compact hardware target
 

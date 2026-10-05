@@ -230,6 +230,9 @@ ENKU is in active firmware implementation and custom-hardware development. The W
 - [x] Select CC BY 4.0 for original project documentation
 - [x] Select CERN-OHL-P-2.0 for future project-owned hardware/mechanical source
 - [ ] Complete design-asset/third-party licensing audit
+- [x] Audit Silkscreen overlap: risk isolated to the October 2 frontlight reference pass; power/MCU/USB/SD architecture shows independent ENKU topology
+- [x] Quarantine the affected frontlight baseline from fabrication pending clean manufacturer-source re-derivation
+- [ ] Complete clean frontlight re-derivation and provenance review before any Pro frontlight population
 - [ ] Verify third-party asset licenses and attribution
 - [ ] Add firmware build and flash documentation
 - [ ] Add hardware assembly documentation
@@ -289,8 +292,8 @@ Reproducible build, documentation, case files and first tagged version.
 - [x] Select first-spin 3.3 V regulator: TPS63802DLAR after simultaneous-load margin review
 - [x] Select exact microSD connector: Hirose DM3AT-SF-PEJM5; edge orientation corrected in PCB
 - [ ] Select final low-noise page tact switches
-- [x] Select Pro frontlight driver architecture: single TPS923610 boost + warm/cool selection
-- [x] Freeze Pro frontlight prototype component baseline: TPS923610 + 10 µH + 15 Ω + low-side selectors
+- [ ] Re-derive Pro frontlight architecture from manufacturer sources after provenance audit; TPS923610 remains an eligible catalog component, but the October 2 reference combination is quarantined
+- [ ] Freeze a new Pro frontlight component baseline only after independent calculations, source-trail review and first-article validation
 - [ ] Verify FL0426-S01C pin mapping and validate warm/cool current/blending on hardware
 - [ ] Validate Qi coil / receiver / ferrite stack for Pro Wireless
 - [ ] Complete per-variant populated / DNP BOM

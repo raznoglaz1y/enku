@@ -2299,10 +2299,6 @@
   (segment (start 53.9 28.1) (end 48.4 27.775) (width 0.2) (layer "In1.Cu") (net 24))
   (via (at 48.4 27.775) (size 0.6) (drill 0.3) (layers "F.Cu" "In1.Cu") (net 24))
 
-  (segment (start 63.25 26.75) (end 66.0 28.0) (width 0.2) (layer "F.Cu") (net 13))
-  (segment (start 66.0 28.0) (end 71.0 30.95) (width 0.2) (layer "F.Cu") (net 13))
-  (segment (start 62.75 26.75) (end 65.0 27.6) (width 0.2) (layer "F.Cu") (net 14))
-  (segment (start 65.0 27.6) (end 71.0 29.05) (width 0.2) (layer "F.Cu") (net 14))
 
   (segment (start 55.8 31.05) (end 55.8 32.95) (width 0.25) (layer "F.Cu") (net 25))
   (segment (start 44 31) (end 44 33) (width 0.3) (layer "F.Cu") (net 26))
@@ -2319,5 +2315,21 @@
   (via (at 58.25 29.0) (size 0.6) (drill 0.3) (layers "F.Cu" "B.Cu") (net 20))
   (segment (start 58.25 29.0) (end 49.825 49.0) (width 0.18) (layer "B.Cu") (net 20))
   (via (at 49.825 49.0) (size 0.6) (drill 0.3) (layers "F.Cu" "B.Cu") (net 20))
+
+  (segment (start 63.25 26.75) (end 63.25 25.6) (width 0.18) (layer "F.Cu") (net 13))
+  (via (at 63.25 25.6) (size 0.6) (drill 0.3) (layers "F.Cu" "In2.Cu") (net 13))
+  (segment (start 63.25 25.6) (end 68.6 29.2) (width 0.18) (layer "In2.Cu") (net 13))
+  (via (at 68.6 29.2) (size 0.6) (drill 0.3) (layers "F.Cu" "In2.Cu") (net 13))
+  (segment (start 68.6 29.2) (end 71 30.95) (width 0.18) (layer "F.Cu") (net 13))
+
+  (segment (start 62.75 26.75) (end 62.75 28.1) (width 0.18) (layer "F.Cu") (net 14))
+  (via (at 62.75 28.1) (size 0.6) (drill 0.3) (layers "F.Cu" "In2.Cu") (net 14))
+  (segment (start 62.75 28.1) (end 67.7 30.0) (width 0.18) (layer "In2.Cu") (net 14))
+  (via (at 67.7 30.0) (size 0.6) (drill 0.3) (layers "F.Cu" "In2.Cu") (net 14))
+  (segment (start 67.7 30.0) (end 71 29.05) (width 0.18) (layer "F.Cu") (net 14))
+
+  (segment (start 62.2 38) (end 61.2 38) (width 0.18) (layer "F.Cu") (net 13))
+  (via (at 61.2 38) (size 0.6) (drill 0.3) (layers "F.Cu" "B.Cu") (net 13))
+  (segment (start 61.2 38) (end 68 38) (width 0.18) (layer "B.Cu") (net 13))
 
 )

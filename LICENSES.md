@@ -46,6 +46,13 @@ Third-party dependencies, fonts, icons, example content and other externally sou
 
 Nothing in ENKU's licensing overrides third-party terms.
 
+### External hardware references and provenance
+
+Hardware provenance is tracked in [docs/HARDWARE_PROVENANCE.md](docs/HARDWARE_PROVENANCE.md).
+
+In particular, the October 2, 2026 ENKU frontlight reference pass was informed by review of the **Silkscreen** open-hardware reader, whose hardware source is published under **CERN-OHL-S-2.0**. The affected ENKU frontlight baseline is quarantined from fabrication while a manufacturer-source re-derivation is completed. ENKU does not claim that quarantined pass as clean project-owned CERN-OHL-P-2.0 hardware source.
+
+
 ## SPDX identifiers
 
 - Software/firmware: `Apache-2.0`

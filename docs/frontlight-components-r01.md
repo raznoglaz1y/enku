@@ -1,5 +1,10 @@
 # ENKU Pro R0.1 — frontlight component freeze pass
 
+> **SUPERSEDED / DO NOT FABRICATE — provenance review 2026-10-05**
+>
+> This component freeze is no longer an approved ENKU production baseline. The 10 µH / 15 Ω / low-side-selector pass followed review of the CERN-OHL-S-2.0 Silkscreen hardware project and is therefore quarantined rather than presented as independently developed ENKU hardware. Keep these values only as historical context until a clean manufacturer-source re-derivation replaces this file's fabrication role.
+
+
 Status: **prototype electrical values selected / remap network removes 6-pin mapping as a PCB-respin blocker**
 
 ## Goal

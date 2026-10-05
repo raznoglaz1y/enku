@@ -1,5 +1,14 @@
 # ENKU Pro R0.1 — frontlight strategy
 
+> **PROVENANCE / FABRICATION HOLD — 2026-10-05**
+>
+> The October 2 single-boost reference pass was informed by review of the Silkscreen open-hardware reader. Because Silkscreen hardware source is published under CERN-OHL-S-2.0, ENKU does **not** treat the resulting TPS923610 + 15 Ω + 10 µH + low-side-selector combination as clean ENKU-owned fabrication source. This sheet is retained as engineering history only.
+>
+> **R0.1 rule:** frontlight population is DNP / not fabrication-authoritative until the block is independently re-derived from manufacturer sources (Good Display panel data/drawing and the LED-driver manufacturer's datasheet/application guidance), reviewed for provenance, and physically validated. Do not copy Silkscreen schematic/layout expression, reference designators, protection network, or component-selection rationale into the replacement.
+>
+> Using TPS923610 itself is not prohibited: it is a TI catalog component and can be selected independently. The replacement design must document its own calculations and source trail.
+
+
 Status: **quality/cost architecture selected / current 6-pin panel mapping still requires direct manufacturer-drawing verification**
 
 ## Display

@@ -125,7 +125,7 @@
     <section class="hardware-hero">
       <div class="shell hardware-hero-grid">
         <div><p class="eyebrow">HARDWARE</p><h1>A small reader, built around known parts.</h1></div>
-        <p class="hardware-lead">ENKU uses a ready ESP32-S3 + 3.97″ e-paper platform for reference validation while a dedicated portrait-first ENKU mainboard is developed in parallel. The goal is a reproducible open hardware platform that can support DIY builds, small batches and future kits without hiding the engineering record.</p>
+        <p class="hardware-lead">ENKU deliberately keeps 3.97″ as its pocket-reader target. A ready ESP32-S3 + 3.97″ e-paper platform is used for reference validation while a dedicated portrait-first ENKU mainboard is developed in parallel. The goal is a reproducible, repairable open hardware platform that can support DIY builds, small batches and future kits without hiding the engineering record.</p>
       </div>
     </section>
 
@@ -174,12 +174,12 @@
       <div class="shell">
         <div class="hw-intro">
           <div><p class="eyebrow">CUSTOM HARDWARE</p><h2>From reference board to an ENKU mainboard.</h2></div>
-          <p>The custom board is now in late R0.1 routing around the actual reader UX: portrait orientation, bottom-center USB-C, a real hard power switch, right-side page controls, BMI270 motion/orientation sensing, Hall-cover wake and population options for frontlight and wireless variants. The power cluster is stable, and the USB-C connector-side CC and ESD work has clean native KiCad checkpoints. USB data closure, dock/unrouted closure and the final electrical/mechanical/manufacturing audit remain before fabrication.</p>
+          <p>The custom board is now in late R0.1 routing around the actual reader UX: portrait orientation, bottom-center USB-C, a real hard power switch, physical page controls, BMI270 motion/orientation sensing, Hall-cover wake and population options for frontlight and wireless variants. Community review has also promoted thin bezels/screen-to-body ratio, ambidextrous controls and battery life to explicit product-level requirements. The power cluster is stable, and the USB-C connector-side CC and ESD work has clean native KiCad checkpoints. USB data closure, dock/unrouted closure and the final electrical/mechanical/manufacturing audit remain before fabrication.</p>
         </div>
         <div class="spec-grid">
           <div class="spec"><small>BASE</small><strong>One core PCB</strong><span>ESP32-S3, e-paper, microSD, USB-C, battery, buttons, BMI270 and service pads.</span></div>
           <div class="spec"><small>DOCK</small><strong>Magnetic pogo option</strong><span>Reserved low-profile secondary 5 V charging interface for a stand or cable accessory.</span></div>
-          <div class="spec"><small>PRO</small><strong>Wireless-ready</strong><span>Coil/receiver space can be reserved without forcing wireless-charging cost into every Base unit.</span></div>
+          <div class="spec"><small>PRO</small><strong>Wireless-ready</strong><span>Coil/receiver space can be reserved without forcing wireless-charging cost into every Base unit. Qi remains optional rather than a Base requirement.</span></div>
           <div class="spec"><small>OPEN HARDWARE</small><strong>Reproducible BOM</strong><span>Design files, assembly data and bring-up notes are intended to stay public and versioned.</span></div>
           <div class="spec"><small>KITS</small><strong>Future small batches</strong><span>Possible electronics, Base, Cover and Pro kits after hardware validation.</span></div>
           <div class="spec"><small>STATUS</small><strong>Pre-production routing</strong><span>R0.1 stays blocked from fabrication until USB/dock closure, zero unrouted connections and the final manufacturing audit.</span></div>

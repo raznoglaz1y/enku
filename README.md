@@ -5,11 +5,11 @@
 <h1 align="center">ENKU</h1>
 
 <p align="center">
-  <strong>Open-source compact e-reader built around a 3.97″ e-paper display and ESP32-S3.</strong>
+  <strong>A pocketable e-reader you can actually own — open hardware, repairable, offline-first.</strong>
 </p>
 
 <p align="center">
-  A focused, low-power reading device with physical controls, a carefully designed interface, local file management and an open hardware/software roadmap.
+  A focused, low-power 3.97″ reader with physical controls, local file management, no account or cloud requirement, and an open hardware/software stack.
 </p>
 
 <p align="center">
@@ -24,7 +24,7 @@
 
 ## What is ENKU?
 
-ENKU is an open-source e-reader project currently validated around the **Waveshare ESP32-S3-ePaper-3.97** platform with an **800 × 480** e-paper display, while a dedicated portrait-first ENKU mainboard is being developed in parallel.
+ENKU is an open hardware/software e-reader project currently validated around the **Waveshare ESP32-S3-ePaper-3.97** platform with an **800 × 480** e-paper display, while a dedicated portrait-first ENKU mainboard is being developed in parallel. The 3.97″ target is intentional: R0.1 remains a genuinely pocketable reader rather than growing into a small conventional e-reader.
 
 The goal is not to reproduce a full tablet or build a feature-heavy general-purpose device. ENKU is intended to be a **small, calm and purpose-built reader**: fast enough for books, simple to operate, comfortable to use offline, and understandable from both the software and hardware side.
 
@@ -72,12 +72,21 @@ The custom mainboard roadmap targets:
 - physical page controls, hard power-off, BMI270 motion/orientation sensing and magnetic-cover support;
 - USB-C as the primary charge/data connector;
 - optional magnetic pogo/dock charging;
+- a warm adjustable frontlight path promoted to production-candidate research after repeated community feedback;
 - Pro-ready frontlight and wireless-charging population options;
 - one core PCB that can support Base / Cover / Pro variants through DNP/population choices.
 
 After validation, the project may offer small-batch **electronics kits, Base kits, magnetic-cover kits and Pro/frontlight kits**. These are planned possibilities rather than products currently for sale; final contents and pricing depend on tested hardware, sourcing, compliance and fulfillment.
 
 The intent is to keep DIY builds fully documented even if assembled kits become available.
+
+### Product decisions after the first community review
+
+The first broad r/ereader review sharpened the product direction rather than changing the Pocket target. ENKU R0.1 stays at **3.97″**. The strongest recurring feedback was that open source alone is not enough differentiation, so the project is prioritizing the parts that must be better at the hardware/product level: **repairability, physical controls, battery life, screen-to-body ratio, direct USB storage access and a credible warm-frontlight path**.
+
+The firmware roadmap now includes **USB Mass Storage / direct microSD access**, **Markdown reading**, and logical control remapping for left/right-handed use in portrait and landscape. CrossPoint compatibility will be investigated rather than treating community firmware as something ENKU should exclude.
+
+A separate **compact 4.7–5.2″, preferably 4:3** hardware direction is being researched for later; it is not a replacement for the pocket 3.97″ device.
 
 ### R0.1 engineering checkpoint — October 2026
 

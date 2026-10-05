@@ -1,6 +1,6 @@
 # ENKU Pro R0.1 — frontlight strategy
 
-Status: **quality/cost architecture selected / current 6-pin panel mapping still requires direct manufacturer-drawing verification**
+Status: **ELECTRICAL REVALIDATION REQUIRED — do not route/populate for fabrication yet**
 
 ## Display
 
@@ -24,7 +24,7 @@ https://www.good-display.com/product/880.html
 
 ## R0.1 driver decision
 
-The earlier 2 × TPS61165 concept is replaced by a **single synchronous boost driver plus warm/cool return selection**.
+The earlier 2 × TPS61165 concept was provisionally replaced by a **single synchronous boost driver plus warm/cool return selection**. The TPS923610 boost/current-regulation core is now independently supported by the TI Rev. A datasheet, but the warm/cool selector implementation remains **unfrozen** until its return/sense topology is proven against the actual panel wiring.
 
 Primary driver candidate:
 
@@ -53,7 +53,7 @@ This is both cleaner and cheaper than two independent boost converters.
 
 ## Channel architecture
 
-Preferred concept:
+Candidate concept — **not production-approved until selector/sense interaction is validated**:
 
 ```text
                 TPS923610
@@ -142,7 +142,7 @@ Risk:
 - brief overlap/both-off during transitions still needs measurement;
 - exact continuous colour blending becomes a timing problem.
 
-**R0.1 preference:** reserve footprints so both strategies can be evaluated, but populate the simpler safe configuration after the actual 6-pin FPC mapping is confirmed.
+**R0.1 rule:** do not commit Q_WARM/Q_COOL copper merely from this conceptual diagram. The TI current loop requires the final LED return to flow through RSET into GND with FB sensing that node. Any colour-selection FET arrangement must preserve that current-sense loop in every allowed state. Reserve/remap capability only after the topology is independently re-derived and reviewed.
 
 ## External cross-check
 
@@ -245,3 +245,21 @@ Together with the dual-contact Hirose 6-pin connector, this removes the FPC mapp
 
 See:
 [R0.1 blocker closure](r01-blocker-closure.md)
+
+
+## 2026-10-05 electrical revalidation note
+
+The frontlight block was deliberately removed from the PCB routing queue pending a clean source-of-truth review.
+
+TI TPS923610 Rev. A establishes:
+- DRL pin 1 = VIN, pin 2 = ADIM, pin 3 = FB, pin 4 = GND, pin 5 = VOUT, pin 6 = SW;
+- FB regulates to 200 mV;
+- RSET is in series with the LED return and connects FB to GND;
+- ADIM controls the regulated FB reference/current;
+- TI explicitly calls for short/wide high-current paths, COUT close to VOUT/GND, and minimum parasitic resistance in FB-RSET-GND.
+
+For the existing 15 Ω prototype value, the nominal full-scale current is about 13.3 mA.
+
+The existing Q2/Q3 warm/cool selector capture is therefore **not accepted as fabrication-authoritative** until we prove that both selector states preserve a single, unambiguous RSET/FB current path and cannot bypass or corrupt current regulation.
+
+Primary source: Texas Instruments, TPS923610/1/2 datasheet Rev. A (SNVSCN8A, Oct 2025).

@@ -2384,6 +2384,9 @@
   (segment (start 55.25 26.75) (end 55.25 28.4) (width 0.18) (layer "F.Cu") (net 24))
   (segment (start 55.25 28.4) (end 51.8 28.4) (width 0.18) (layer "F.Cu") (net 24))
   (segment (start 51.8 28.4) (end 48.4 27.775) (width 0.18) (layer "F.Cu") (net 24))
+  (segment (start 54.25 26.75) (end 54.25 30.2) (width 0.18) (layer "F.Cu") (net 25))
+  (segment (start 54.25 30.2) (end 55.8 32.95) (width 0.18) (layer "F.Cu") (net 25))
+
 )
     (attr dnp)
     (attr dnp)

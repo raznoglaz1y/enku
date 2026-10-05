@@ -2,13 +2,14 @@
 
 This roadmap tracks the path from the current product/UI definition to a reproducible open-source e-reader release.
 
-ENKU is still pre-firmware. Hardware-dependent items remain provisional until they are verified on the real Waveshare ESP32-S3-ePaper-3.97 board.
+ENKU is in active firmware implementation and custom-hardware development. The Waveshare ESP32-S3-ePaper-3.97 remains the reference bring-up platform, while the dedicated ENKU R0.1 mainboard is in late routing / pre-production verification. Hardware-dependent claims remain provisional until physically validated.
 
 ## 1. Product foundation
 
 - [x] Define ENKU as a focused open-source e-reader project
 - [x] Select Waveshare ESP32-S3-ePaper-3.97 as the reference platform
 - [x] Define portrait and landscape as first-class orientations
+- [x] Keep 3.97″ as the R0.1 pocket-reader target; larger formats are a separate future branch, not a replacement
 - [x] Define a non-touch, physical-control interaction model
 - [x] Define English as the canonical UI/source language
 - [x] Define first localization wave: EN/RU/PL/DE/FR/ES/IT
@@ -78,6 +79,7 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 - [ ] Implement persistent settings storage
 - [ ] Implement reusable UI component layer
 - [x] Define physical-to-logical input mapping and press semantics
+- [x] Define ambidextrous control requirement: Portrait RH / Portrait LH / Landscape RH / Landscape LH with logical remapping
 - [ ] Implement deterministic focus navigation
 - [ ] Implement portrait/landscape layout switching
 - [x] Define localization key/fallback/plural architecture
@@ -98,6 +100,7 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 ## 5. Library and storage
 
 - [x] Define the initial supported book format set: EPUB, FB2 and TXT; PDF deferred
+- [ ] Add Markdown as a lightweight supported reading format
 - [x] Define Library/storage data model and transactional import semantics
 - [x] Define Library records, browse/search query model and service boundary
 - [ ] Implement LibraryService and index loading
@@ -151,7 +154,7 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 - [x] Define sleep/wake and recovery state behavior
 - [ ] Restore exact logical reading position after reboot/sleep
 
-## 7. Wi-Fi and local management
+## 7. Connectivity and local management
 
 - [ ] Implement Wi-Fi scanning and connection
 - [ ] Store credentials only after a successful connection
@@ -159,6 +162,7 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 - [ ] Define deterministic auto-connect priority
 - [ ] Implement the shared on-device keyboard
 - [ ] Implement session-scoped local web server
+- [ ] Implement USB Mass Storage / direct USB access to the microSD library
 - [ ] Support multi-file upload / drag-and-drop
 - [ ] Show storage/free-space information
 - [ ] Show import status and errors
@@ -195,7 +199,9 @@ ENKU is still pre-firmware. Hardware-dependent items remain provisional until th
 - [ ] Verify battery retention and serviceability
 - [ ] Refine grip and edge geometry
 - [ ] Minimize thickness where mechanically safe
+- [ ] Treat screen-to-body ratio / thin bezels as a mechanical KPI while preserving repairability
 - [ ] Validate portrait and landscape ergonomics
+- [ ] Validate left/right-handed ergonomics in both portrait and landscape
 - [ ] Define screws/fasteners and assembly sequence
 - [ ] Publish printable case files
 - [ ] Publish print settings/tolerance notes
@@ -273,6 +279,7 @@ Reproducible build, documentation, case files and first tagged version.
 - [x] Add BMI270 motion/orientation target
 - [x] Add Hall sensor / magnetic-cover target
 - [x] Reserve Pro frontlight and Pro Wireless Qi paths
+- [x] Raise warm adjustable frontlight to a production-candidate priority based on repeated user feedback; do not destabilize R0.1 routing to retrofit it
 - [x] Define Base display candidate: GDEY0397T81P
 - [x] Define Pro display candidate: GDEY0426T82-FL01C
 - [x] Define multi-variant BOM ceilings and competitive stop limits
@@ -343,4 +350,26 @@ Community feedback to evaluate after the 3.97-inch R0.1 baseline is validated:
 - [ ] Treat repeated community requests for a mid-size reader as a product signal, but do not change R0.1 scope before the current 3.97-inch hardware is completed and validated.
 - [ ] Explore a narrow phone-sized 5.5–5.9-inch ENKU concept as a separate future branch, using PocketBook Q as market validation for demand in the compact-but-larger-than-4-inch category.
 - [ ] Compare a 5.5–5.9-inch phone-like layout against the 4.7–5.0-inch compact-reader concept on ergonomics, BOM, battery envelope, display sourcing, enclosure width, controls and differentiation.
+
+
+
+## 13. Community-derived product decisions — October 2026
+
+The first broad r/ereader feedback review produced several product signals strong enough to record explicitly rather than leave as feature requests.
+
+- [x] Hardware differentiation is the primary positioning requirement: ENKU must justify itself through the complete physical product, not only through open-source firmware.
+- [x] Keep R0.1 at 3.97″ as a genuinely pocketable reader.
+- [ ] Research a separate compact 4.7–5.2″ reader, preferably a book-like 4:3 format, after the Pocket baseline is proven.
+- [x] Keep repairability as a core constraint: screws/fasteners, serviceable battery, documented connectors, published PCB/BOM/schematics and printable enclosure.
+- [ ] Evaluate CrossPoint compatibility / port feasibility. ENKU OS remains the default, but open hardware should not unnecessarily lock users to one open firmware stack.
+- [ ] Treat warm adjustable frontlight as a production-candidate priority; validate optics, power, thermals and BOM before committing it to a shipping variant.
+- [ ] Implement USB Mass Storage / direct microSD access alongside Wi-Fi transfer.
+- [ ] Add Markdown reading support.
+- [ ] Validate four physical-control configurations: portrait RH/LH and landscape RH/LH.
+- [ ] Optimize screen-to-body ratio and bezel width without sacrificing protection, assembly or repairability.
+- [ ] Track battery life as a product KPI, not only an electrical measurement.
+- [ ] Investigate the open 4.26″ Silkscreen project as an engineering reference / potential collaboration lead.
+- [ ] Keep BLE keyboard/writerdeck support, modular accessories and pen input in exploratory backlog.
+- [x] Keep Qi outside the Base requirement; wireless charging remains an optional higher-tier path.
+- [x] Position ENKU as a complete open hardware/software reader platform: pocketable, repairable, offline-first, no account and no cloud requirement.
 

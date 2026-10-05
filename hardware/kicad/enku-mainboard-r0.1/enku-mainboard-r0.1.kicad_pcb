@@ -886,7 +886,7 @@
   )
 
   (footprint "Resistor_SMD:R_0603_1608Metric" (layer "F.Cu")
-    (at 70.8 47 0)
+    (at 72.2 48.5 0)
     (property "Reference" "R39" (at 0 -1.7000000000000002 90) (layer "F.SilkS"))
     (property "Value" "15R 1%" (at 0 1.7000000000000002 90) (layer "F.Fab") hide)
     (fp_rect (start -0.8 -0.4) (end 0.8 0.4)
@@ -1612,7 +1612,7 @@
     (pad "2" smd roundrect (at 0.825 0) (size 0.8 0.95) (layers "F.Cu" "F.Mask" "F.Paste") (roundrect_rratio 0.25) (net 9 "SD_CS_CARD"))
   )
   (footprint "Resistor_SMD:R_0603_1608Metric" (layer "F.Cu")
-    (at 35 107)
+    (at 32.8 105.5)
     (property "Reference" "R21" (at 0 -1.5 0) (layer "F.SilkS") hide)
     (property "Value" "0R (22R tune)" (at 0 1.5 0) (layer "F.Fab") hide)
     (fp_rect (start -0.8 -0.4125) (end 0.8 0.4125) (stroke (width 0.1) (type default)) (fill none) (layer "F.Fab"))
@@ -2026,8 +2026,8 @@
   (segment (start 23.000 86.825) (end 21.175 101.225) (width 0.30) (layer "In2.Cu") (net 2))
   (via (at 21.175 101.225) (size 0.70) (drill 0.35) (layers "F.Cu" "In2.Cu") (net 2))
 
-  (via (at 30.000 55.000) (size 0.70) (drill 0.35) (layers "F.Cu" "In2.Cu") (net 2))
-  (segment (start 30.000 55.000) (end 47.575 54.500) (width 0.25) (layer "In2.Cu") (net 2))
+  (via (at 28.800 55.000) (size 0.70) (drill 0.35) (layers "F.Cu" "In2.Cu") (net 2))
+  (segment (start 28.800 55.000) (end 47.575 54.500) (width 0.25) (layer "In2.Cu") (net 2))
 
 
 

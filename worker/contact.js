@@ -82,10 +82,10 @@ const homeHtml = `
   <section class="enku-home-hero">
     <div class="shell enku-home-hero-grid">
       <div class="enku-home-hero-copy">
-        <p class="enku-kicker">OPEN-SOURCE E-READER</p>
+        <p class="enku-kicker">OPEN, REPAIRABLE E-READER</p>
         <h1>Books first.<br>Everything else second.</h1>
         <div class="enku-home-intro">
-          <p>ENKU is a compact open-source e-reader built around a 3.97″ e-paper display and ESP32-S3. Hardware, software, interface and the build itself are developed as one public project.</p>
+          <p>ENKU is a compact, repairable, local-first e-reader built around a 3.97″ e-paper display and ESP32-S3. Core behavior is documented publicly, while production-sensitive engineering is released selectively as the product matures.</p>
           <div class="enku-home-actions">
             <a class="enku-button" href="/build">Build ENKU <span>→</span></a>
             <a class="enku-text-link" href="https://github.com/raznoglaz1y/enku" target="_blank" rel="noreferrer">View GitHub ↗</a>

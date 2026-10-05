@@ -1,5 +1,7 @@
 # ENKU Mainboard R0.1 — KiCad worktree
 
+> **Frontlight provenance gate (2026-10-05):** any October 2 TPS923610/10 µH/15 Ω/selector baseline in this document is historical, not fabrication-authoritative. Keep the Pro frontlight population DNP until the clean manufacturer-source re-derivation in `docs/HARDWARE_PROVENANCE.md` is complete.
+
 This directory contains the CAD worktree for the custom ENKU mainboard.
 
 Current state:

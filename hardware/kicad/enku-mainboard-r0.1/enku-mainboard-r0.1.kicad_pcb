@@ -2277,4 +2277,7 @@
   (segment (start 64.4 41.0) (end 67.5 41.0) (width 0.18) (layer "B.Cu") (net 33))
   (via (at 67.5 41.0) (size 0.60) (drill 0.30) (layers "F.Cu" "B.Cu") (net 33))
   (segment (start 67.5 41.0) (end 66.325 43.0) (width 0.18) (layer "F.Cu") (net 33))
+  (via (at 50.2 91.0) (size 0.60) (drill 0.30) (layers "F.Cu" "B.Cu") (net 93))
+  (segment (start 50.2 91.0) (end 53.2 95.025) (width 0.18) (layer "B.Cu") (net 93))
+  (via (at 53.2 95.025) (size 0.60) (drill 0.30) (layers "F.Cu" "B.Cu") (net 93))
 )

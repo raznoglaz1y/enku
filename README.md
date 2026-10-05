@@ -5,11 +5,11 @@
 <h1 align="center">ENKU</h1>
 
 <p align="center">
-  <strong>A pocketable e-reader you can actually own — open hardware, repairable, offline-first.</strong>
+  <strong>A pocketable e-reader you can actually own — repairable, local-first, distraction-free.</strong>
 </p>
 
 <p align="center">
-  A focused, low-power 3.97″ reader with physical controls, local file management, no account or cloud requirement, and an open hardware/software stack.
+  A focused, low-power 3.97″ reader with physical controls, local file management, no account or cloud requirement, and a documented, extensible hardware/software stack.
 </p>
 
 <p align="center">
@@ -24,7 +24,7 @@
 
 ## What is ENKU?
 
-ENKU is an open hardware/software e-reader project currently validated around the **Waveshare ESP32-S3-ePaper-3.97** platform with an **800 × 480** e-paper display, while a dedicated portrait-first ENKU mainboard is being developed in parallel. The 3.97″ target is intentional: R0.1 remains a genuinely pocketable reader rather than growing into a small conventional e-reader.
+ENKU is a compact e-reader project currently validated around the **Waveshare ESP32-S3-ePaper-3.97** platform with an **800 × 480** e-paper display, while a dedicated portrait-first ENKU mainboard is being developed in parallel. The 3.97″ target is intentional: R0.1 remains a genuinely pocketable reader rather than growing into a small conventional e-reader.
 
 The goal is not to reproduce a full tablet or build a feature-heavy general-purpose device. ENKU is intended to be a **small, calm and purpose-built reader**: fast enough for books, simple to operate, comfortable to use offline, and understandable from both the software and hardware side.
 
@@ -104,7 +104,7 @@ A green DRC alone is not considered a fabrication release: R0.1 must also pass t
 
 ## Support ENKU
 
-ENKU is developed in the open. You can help the project without spending money:
+ENKU is developed publicly, while production-sensitive engineering may remain private until it is mature enough to release. You can help the project without spending money:
 
 - **Star the repository** to make the project easier to discover.
 - **Test and report issues** when firmware and hardware builds are available.
@@ -119,7 +119,7 @@ Project contact and support page: **https://enkureader.com/contact**
 
 ## Follow the project
 
-ENKU is entering its first public community-feedback stage. The immediate goal is to validate the reader, the custom R0.1 hardware and the mechanical design with open-hardware and e-reader communities before any manufacturing commitment is made.
+ENKU is entering its first public community-feedback stage. The immediate goal is to validate the reader, the custom R0.1 hardware and the mechanical design with e-reader, maker and repairability communities before any manufacturing commitment is made.
 
 A **small production run / crowdfunding campaign is being considered after hardware validation**, but no campaign, launch date, price or production quantity is being promised yet. Development remains public and technical feedback is welcome now.
 
@@ -137,7 +137,7 @@ ENKU is being designed around a deliberately narrow set of product goals:
 - use **physical controls** instead of depending on a touchscreen;
 - keep book storage, reading progress and settings under the user's control;
 - support a clean local workflow for importing and managing books;
-- make the firmware, hardware assumptions and enclosure work understandable and reproducible;
+- make the firmware, interfaces, hardware assumptions and repair path understandable, with source/design releases tied to product maturity;
 - stay small enough to be a practical everyday reader rather than a general-purpose tablet.
 
 ## Non-goals
@@ -171,9 +171,9 @@ The UI is designed for buttons and deterministic focus navigation. Focus, select
 
 Books remain usable without Wi-Fi. Connectivity is an optional management layer, not a requirement for reading.
 
-### Open and understandable
+### Open, understandable and user-owned
 
-The project aims to document not only the final code, but also **why** design and implementation decisions were made. UI rules, navigation behavior, hardware assumptions, power decisions and enclosure revisions are tracked openly.
+The project aims to document not only the final code, but also **why** design and implementation decisions were made. UI rules, navigation behavior and product decisions are documented publicly. Production-sensitive PCB, manufacturing and sourcing work may remain private during active development and be released selectively after the design stabilizes.
 
 ### Compact hardware target
 
@@ -648,9 +648,9 @@ The interface language is independent from book content and keyboard input mode.
 ENKU uses English as the canonical/fallback string set, stable semantic keys, named placeholders and a lightweight centralized plural system. Human-readable locale sources are intended to be converted into compact runtime lookup tables rather than parsed as JSON on the device.
 
 
-## Open-source licensing
+## Licensing and source-release policy
 
-ENKU uses a scoped multi-license model:
+ENKU uses a scoped multi-license model for material that is published:
 
 - **Firmware/software:** Apache License 2.0
 - **Project documentation:** Creative Commons Attribution 4.0 International (CC BY 4.0)

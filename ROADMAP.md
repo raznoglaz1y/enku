@@ -1,12 +1,12 @@
 # ENKU Roadmap
 
-This roadmap tracks the path from the current product/UI definition to a reproducible open-source e-reader release.
+This roadmap tracks the path from the current product/UI definition to a reproducible, repairable reader release with staged public source/design releases.
 
 ENKU is in active firmware implementation and custom-hardware development. The Waveshare ESP32-S3-ePaper-3.97 remains the reference bring-up platform, while the dedicated ENKU R0.1 mainboard is in late routing / pre-production verification. Hardware-dependent claims remain provisional until physically validated.
 
 ## 1. Product foundation
 
-- [x] Define ENKU as a focused open-source e-reader project
+- [x] Define ENKU as a focused, repairable, local-first e-reader project
 - [x] Select Waveshare ESP32-S3-ePaper-3.97 as the reference platform
 - [x] Define portrait and landscape as first-class orientations
 - [x] Keep 3.97″ as the R0.1 pocket-reader target; larger formats are a separate future branch, not a replacement
@@ -224,7 +224,7 @@ ENKU is in active firmware implementation and custom-hardware development. The W
 - [ ] Ghosting and refresh stress tests
 - [ ] Battery runtime test with realistic reading usage
 
-## 11. Open-source release
+## 11. Public release
 
 - [x] Select Apache-2.0 for original firmware/software
 - [x] Select CC BY 4.0 for original project documentation
@@ -259,13 +259,13 @@ Wi-Fi, local upload and browser-based management.
 **M5 — Mechanical prototype**  
 Verified printable enclosure around the final hardware stack.
 
-**M6 — Open release**  
+**M6 — Stable public release**  
 Reproducible build, documentation, case files and first tagged version.
 
 
 ## 12. Custom mainboard / productization
 
-- [x] Open-source commercialization policy fixed: commercial kits / Kickstarter are compatible with ENKU's open licenses
+- [x] Delayed-open commercialization policy fixed: ownership/repairability at launch; source/design files released selectively after maturity
 - [x] Trademark separated from open hardware/software source
 - [x] Pricing policy fixed: full COGS + sustainable margin, not raw-BOM pricing
 - [x] Kickstarter rule fixed: no launch before a working physical prototype demonstrates marketed core features
@@ -371,5 +371,5 @@ The first broad r/ereader feedback review produced several product signals stron
 - [ ] Investigate the open 4.26″ Silkscreen project as an engineering reference / potential collaboration lead.
 - [ ] Keep BLE keyboard/writerdeck support, modular accessories and pen input in exploratory backlog.
 - [x] Keep Qi outside the Base requirement; wireless charging remains an optional higher-tier path.
-- [x] Position ENKU as a complete open hardware/software reader platform: pocketable, repairable, offline-first, no account and no cloud requirement.
+- [x] Position ENKU as a complete user-owned reader platform: pocketable, repairable, offline-first, no account and no cloud requirement; source/design releases follow maturity.
 
